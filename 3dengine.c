@@ -19,6 +19,7 @@ Sint32 globalzoom=1<<ACCURACY;
 tlight light[8];
 tlight ambient;
 char lighton;
+int resize;
 
 void engineLight(char on)
 {
@@ -369,11 +370,13 @@ void initEngine()
   ambient.g=31;
   ambient.b=31;
   lighton=1;
+  resize=0;
 }
 
 
 void engineHandleEvent(void)
 {
+  resize=0;
   #ifdef PANDORA
     int s = pnd_evdev_dpad_state ( pnd_evdev_dpads );
     if ( s & pnd_evdev_pandora )
@@ -639,6 +642,7 @@ void engineHandleEvent(void)
         break;
       case SDL_VIDEORESIZE:
         resizeWindow(event.resize.w,event.resize.h);
+        resize=1;
         break;
     }
   }
@@ -799,6 +803,8 @@ void engineScale(Sint32 x,Sint32 y,Sint32 z)
 
 int sortedInsert(tdrawitem item)
 {
+  if (item.content.all.z>=0)
+    return;
   int c;
   for (c=0;c<engineDrawlistCount;c++)
   {
@@ -1381,7 +1387,9 @@ void engineDrawSurface(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface)
             + (projectionMatrix[ 7] >> HALF_ACCURACY)*(ty1 >> HALF_ACCURACY)*/
             + (projectionMatrix[11] >> HALF_ACCURACY)*(tz1 >> HALF_ACCURACY)
             /*+ (projectionMatrix[15] >> HALF_ACCURACY)*(tw1 >> HALF_ACCURACY)*/;
-      
+  
+  if (w1 == 0)
+    w1 = 1;
   Sint32 nx1 = ((x1<<HALF_ACCURACY)/w1);
   Sint32 ny1 = ((y1<<HALF_ACCURACY)/w1);
 
@@ -2112,4 +2120,8 @@ void engineListXYZS(Sint32 x,Sint32 y,Sint32 z,Sint32 s,ppoint verticies,const i
 
     sortedInsert(item);
   }
+}
+
+int wasResize() {
+  return resize;
 }

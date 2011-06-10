@@ -292,4 +292,6 @@ void engineListXYZ(Sint32 x,Sint32 y,Sint32 z,ppoint verticies,const int vcount,
 
 void engineListXYZS(Sint32 x,Sint32 y,Sint32 z,Sint32 s,ppoint verticies,const int vcount,pquad quads,const int qcount,ptriangle triangles,const int tcount,Uint16 color);
 
+int wasResize();
+
 #endif
