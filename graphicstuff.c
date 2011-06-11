@@ -6,6 +6,13 @@ Sint32 cosvalue[(2*MY_PI)>>COS_ACCURACY];
 int engineWindowX;
 int engineWindowY;
 
+#ifndef ARMCPU
+int fpdiv(int numerator,int denominator)
+{
+  return ((numerator<<HALF_ACCURACY)/denominator)<<HALF_ACCURACY;
+}
+#endif
+
 Sint32* engineGetProjectionMatrix()
 {
   return projectionMatrix;
@@ -102,8 +109,8 @@ Uint16 getRGB(Uint8 r,Uint8 g,Uint8 b)
 Uint16 getHSV(Sint32 h,Uint8 s,Uint8 v)
 {
   h=h%(2*MY_PI);
-  Uint8 hi = ((h<<HALF_ACCURACY)/(MY_PI/3))>>HALF_ACCURACY;
-  Sint32 f = (((h<<HALF_ACCURACY)/(MY_PI/3))<<HALF_ACCURACY)-(hi<<ACCURACY);
+  Uint8 hi = fpdiv(3*h,MY_PI)>>ACCURACY;//((h<<HALF_ACCURACY)/(MY_PI/3))>>HALF_ACCURACY;
+  Sint32 f = fpdiv(3*h,MY_PI)-(hi<<ACCURACY);
   Sint32 p = (v<<(HALF_ACCURACY-8))*((1<<HALF_ACCURACY)-(s<<(HALF_ACCURACY-8)));
   Sint32 q = (v<<(HALF_ACCURACY-8))*((1<<HALF_ACCURACY)-(((f>>HALF_ACCURACY)*(s<<(HALF_ACCURACY-8)))>>HALF_ACCURACY));
   Sint32 t = (v<<(HALF_ACCURACY-8))*((1<<HALF_ACCURACY)-((((1<<HALF_ACCURACY)-(f>>HALF_ACCURACY))*(s<<(HALF_ACCURACY-8)))>>HALF_ACCURACY));
@@ -192,21 +199,21 @@ void setFrustumf2(Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint
     temp2 = right - left;
     temp3 = top - bottom;
     temp4 = zfar - znear;
-    matrix[0] = (temp << ACCURACY) / temp2;
+    matrix[0] = fpdiv(temp,temp2);
     matrix[1] = 0<<ACCURACY;
     matrix[2] = 0<<ACCURACY;
     matrix[3] = 0<<ACCURACY;
     matrix[4] = 0<<ACCURACY;
-    matrix[5] = ((temp << HALF_ACCURACY) / temp3) << HALF_ACCURACY;
+    matrix[5] = fpdiv(temp,temp3);
     matrix[6] = 0<<ACCURACY;
     matrix[7] = 0<<ACCURACY;
-    matrix[8] = (((right + left)<<HALF_ACCURACY) / temp2) << HALF_ACCURACY;
-    matrix[9] = (((top + bottom)<<HALF_ACCURACY) / temp3) << HALF_ACCURACY;
-    matrix[10] = (((-zfar - znear)<<HALF_ACCURACY) / temp4) << HALF_ACCURACY;
+    matrix[8] = fpdiv(right + left,temp2);
+    matrix[9] = fpdiv(top + bottom,temp3);
+    matrix[10] = fpdiv(-zfar - znear,temp4);
     matrix[11] = -1<<ACCURACY;
     matrix[12] = 0<<ACCURACY;
     matrix[13] = 0<<ACCURACY;
-    matrix[14] = ((((-temp >> HALF_ACCURACY) * (zfar >> HALF_ACCURACY)) << HALF_ACCURACY) / temp4) << HALF_ACCURACY;
+    matrix[14] = fpdiv((-temp >> HALF_ACCURACY) * (zfar >> HALF_ACCURACY),temp4);
     matrix[15] = 0<<ACCURACY;
 }
 
@@ -225,6 +232,7 @@ void setPerspective(float fovyInDegrees, float aspectRatio,
                                   (Sint32)(znear*ACCURACY_FACTOR),
                                   (Sint32)(zfar*ACCURACY_FACTOR));
 }
+
 
 #ifndef ARMCPU
 #ifndef X86CPU   
@@ -292,6 +300,7 @@ void hline(SDL_Surface* screen,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char ch
 }    
 #endif
 
+
 void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,Sint16 y3,Sint16 color)
 {
   int mny=y1;
@@ -325,7 +334,7 @@ void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16
       if (y3<=yc || y1<=yc)
         if (y3!=y1)
         {
-          int x=(yc-y3)*mul1 / div1+x3;
+          int x=(yc-y3)*mul1 / div1 + x3;
           if (x<mnx)
             mnx=x;
           if (x>mxx)
@@ -335,7 +344,7 @@ void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16
       if (y1<=yc || y2<=yc)
         if (y1!=y2)
         {
-          int x=(yc-y1)*mul2 / div2+x1;
+          int x=(yc-y1)*mul2 / div2 + x1;
           if (x<mnx)
             mnx=x;
           if (x>mxx)
@@ -345,7 +354,7 @@ void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16
       if (y2<=yc || y3<=yc)
         if (y2!=y3)
         {
-          int x=(yc-y2)*mul3 / div3+x2;
+          int x=(yc-y2)*mul3 / div3 + x2;
           if (x<mnx)
             mnx=x;
           if (x>mxx)
@@ -397,7 +406,7 @@ void quad(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,
       if (y4<=yc || y1<=yc)
         if (y4!=y1)
         {
-          int x=(yc-y4)*mul1 / div1+x4;
+          int x= (yc-y4)*mul1 / div1 + x4;;
           if (x<mnx)
             mnx=x;
           if (x>mxx)
@@ -407,7 +416,7 @@ void quad(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,
       if (y1<=yc || y2<=yc)
         if (y1!=y2)
         {
-          int x=(yc-y1)*mul2 / div2+x1;
+          int x=(yc-y1)*mul2 / div2 + x1;
           if (x<mnx)
             mnx=x;
           if (x>mxx)
@@ -417,7 +426,7 @@ void quad(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,
       if (y2<=yc || y3<=yc)
         if (y2!=y3)
         {
-          int x=(yc-y2)*mul3 / div3+x2;
+          int x=(yc-y2)*mul3 / div3 + x2;
           if (x<mnx)
             mnx=x;
           if (x>mxx)
@@ -427,7 +436,7 @@ void quad(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,
       if (y3<=yc || y4<=yc)
         if (y3!=y4)
         {
-          int x=(yc-y3)*mul4 / div4+x3;
+          int x=(yc-y3)*mul4 / div4 + x3;
           if (x<mnx)
             mnx=x;
           if (x>mxx)

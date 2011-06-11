@@ -135,113 +135,6 @@ void calcNormal(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,
             -((y1-y2)>>HALF_ACCURACY)*((x2-x3)>>HALF_ACCURACY);
 }
 
-//senquack - fast ARM ASM 16:16 fixed point divide routine:
-//					Credit goes to Henry Thomas and the website is
-//					http://me.henri.net/fp-div.html
-//int32_t fpdiv(register int32_t numerator, register int32_t denominator)
-#ifdef ARMCPU
-int fpdiv(register int numerator, register int denominator)
-{
-//senquack
-//    register int32_t quotient;
-    register int quotient;
-//    asm("num     .req %[numerator]      @ Map Register Equates\n\t"
-    __asm__ volatile ("num     .req %[numerator]      @ Map Register Equates\n\t"
-        "den     .req %[denominator]\n\t"
-        "mod     .req r2\n\t"
-        "cnt     .req r3\n\t"
-        "quo     .req r4\n\t"
-        "sign    .req r12\n\t"
-        /* set sign and ensure numerator and denominator are positive */
-        "cmp den, #0                    @ exceptioin if den == zero\n\t"
-        "beq .div0\n\t"
-        "eor sign, num, den             @ sign = num ^ den\n\t"
-        "rsbmi den, den, #0             @ den = -den if den < 0\n\t"
-        "subs mod, den, #1              @ mod = den - 1\n\t"
-        "beq .div1                      @ return if den == 1\n\t"
-        "movs cnt, num                  @ num = -num if num < 0\n\t"
-        "rsbmi num, num, #0\n\t"
-        /* skip if deniminator >= numerator */
-        "movs cnt, num, lsr #16         @ return if den >= num << 16\n\t"
-        "bne .cont\n\t"
-        "cmp den, num, lsl #16\n\t"
-        "bhs .numLeDen\n\t"
-    "\n.cont:\n\t"
-        /* test if denominator is a power of two */
-        "tst den, mod                   @ if(den & (den - 1) == 0)\n\t"
-//senquack - was missing terminating quote here:
-        "beq .powerOf2                  @ den is power of 2\n\t"
-        /* count leading zeros */
-        "stmfd sp!, {r4}                @ push r4 (quo) onto the stack\n\t"
-        "mov cnt, #28                   @ count difference in leading zeros\n\t"
-        "mov mod, num, lsr #4           @ between num and den\n\t"
-        "cmp den, mod, lsr #12; subls cnt, cnt, #16; movls mod, mod, lsr #16\n\t"
-        "cmp den, mod, lsr #4 ; subls cnt, cnt, #8 ; movls mod, mod, lsr #8\n\t"
-        "cmp den, mod         ; subls cnt, cnt, #4 ; movls mod, mod, lsr #4\n\t"
-        /* shift numerator left by cnt bits */
-        "mov num, num, lsl cnt          @ mod:num = num << cnt\n\t"
-        "mov quo, #0\n\t"
-        "rsb den, den, #0               @ negate den for divide loop\n\t"
-        /* skip cnt iterations in the divide loop */
-        "adds num, num, num             @ start: num = mod:num / den\n\t"
-        "add pc, pc, cnt, lsl #4        @ skip cnt x 4 x 4 iterations\n\t"
-        "nop                            @ nop instruction takes care of pipeline\n\t"
-        /* inner loop unrolled x 48 */
-        ".rept 47                       @ inner loop x 48\n\t"
-        "    adcs mod, den, mod, lsl #1\n\t"
-        "    subcc mod, mod, den\n\t"
-        "    adc quo, quo, quo\n\t"
-        "    adds num, num, num\n\t"
-        ".endr\n\t"
-        "adcs mod, den, mod, lsl #1\n\t"
-        "subcc mod, mod, den\n\t"
-        "adc quo, quo, quo\n\t"
-        /* negate quotient if signed */
-        "cmp sign, #0                   @ negate quotient if sign < 0\n\t"
-        "mov num, quo\n\t"
-        "rsbmi num, num, #0\n\t"
-        "ldmfd sp!, {r4}                @ pop r4 (quo) off the stack\n\t"
-        "mov pc, lr                     @return\n\t"
-        /* divide by zero handler */
-    "\n.div0:\n\t"
-        "mov num, #0\n\t"
-        "mov pc, lr                     @return\n\t"
-        /* divide by one handler */
-    "\n.div1:\n\t"
-        "cmp sign, #0\n\t"
-        "mov num, num, asl #16\n\t"
-        "rsbmi num, num, #0\n\t"
-        "mov pc, lr                     @return\n\t"
-        /* numerator less than or equal to denominator handler */
-    "\n.numLeDen:\n\t"
-        "mov num, #0                    @ quotient = 0 if num < den\n\t"
-        "moveq num, sign, asr #31       @ negate quotient if sign < 0\n\t"
-        "orreq num, num, #1             @ quotient = 1 if num == den\n\t"
-        "mov pc, lr                     @return\n\t"
-        /* power of two handler */
-    "\n.powerOf2:\n\t"
-        "mov cnt, #0\n\t"
-        "cmp den, #(1 << 16); movhs cnt, #16    ; movhs den, den, lsr #16\n\t"
-        "cmp den, #(1 << 8) ; addhs cnt, cnt, #8; movhs den, den, lsr #8\n\t"
-        "cmp den, #(1 << 4) ; addhs cnt, cnt, #4; movhs den, den, lsr #4\n\t"
-        "cmp den, #(1 << 2) ; addhi cnt, cnt, #3; addls cnt, cnt, den, lsr #1\n\t"
-        "rsb mod, cnt, #32\n\t"
-        "mov den, num, lsr #16          @ den:num = num << 16\n\t"
-        "mov num, num, lsl #16\n\t"
-        "mov num, num, lsr cnt          @ num = num >> cnt | den << mod\n\t"
-        "orr num, num, den, lsl mod\n\t"
-        "cmp sign, #0\n\t"
-        "rsbmi num, num, #0             @ negate quotient if sign < 0"
-        /* output registers */
-        : [quotient] "=r" (quotient)
-        /* input registers */
-        : [numerator] "0" (numerator), [denominator] "r" (denominator)
-        /* clobbered registers */
-        : "r2" /* mod */, "r3" /* cnt */, "r12" /* sign */);
-    return quotient;
-}
-#endif
-
 void loadKeyMap()
 {
   int i;
@@ -741,9 +634,12 @@ void engineRotate(Sint32 x,Sint32 y,Sint32 z,Sint32 rad)
                    +(z>>HALF_ACCURACY)*(z>>HALF_ACCURACY));
 	if (l==0)
 	  return;
-	x=((x<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
+	/*x=((x<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
 	y=((y<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-	z=((z<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
+	z=((z<<HALF_ACCURACY)/l)<<HALF_ACCURACY;*/
+  x = fpdiv(x,l);
+  y = fpdiv(y,l);
+  z = fpdiv(z,l);
 	Sint32 rotate[16];
   rotate[ 0]= c+(((x>>HALF_ACCURACY)*(x>>HALF_ACCURACY))>>HALF_ACCURACY)*(((1<<ACCURACY)-c)>>HALF_ACCURACY);
   rotate[ 4]=   (((x>>HALF_ACCURACY)*(y>>HALF_ACCURACY))>>HALF_ACCURACY)*(((1<<ACCURACY)-c)>>HALF_ACCURACY)-(z>>HALF_ACCURACY)*(s>>HALF_ACCURACY);
@@ -849,9 +745,9 @@ Uint16 engineGetLightingColor(Sint32 x,Sint32 y,Sint32 z,Sint32* normal,Uint16 c
       if (ol==0)
         continue;
       
-      ox=((ox<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-      oy=((oy<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-      oz=((oz<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
+      ox=fpdiv(ox,ol);
+      oy=fpdiv(oy,ol);
+      oz=fpdiv(oz,ol);
       
       Sint32 ac = (ox>>HALF_ACCURACY)*(normal[0]>>HALF_ACCURACY)
                  +(oy>>HALF_ACCURACY)*(normal[1]>>HALF_ACCURACY)
@@ -976,12 +872,14 @@ void engineQuad(Sint32 x1,Sint32 y1,Sint32 z1,
                      (oz>>HALF_ACCURACY)*(oz>>HALF_ACCURACY));
   if (ol==0)
     return;
-  ox=((ox<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-  oy=((oy<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-  oz=((oz<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-  normal[0]=((normal[0]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-  normal[1]=((normal[1]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-  normal[2]=((normal[2]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
+  ox=fpdiv(ox,ol);
+  oy=fpdiv(oy,ol);
+  oz=fpdiv(oz,ol);
+  if (l==0)
+    return;
+  normal[0]=fpdiv(normal[0],l);
+  normal[1]=fpdiv(normal[1],l);
+  normal[2]=fpdiv(normal[2],l);;
   
   
   Sint32 ac = (ox>>HALF_ACCURACY)*(normal[0]>>HALF_ACCURACY)
@@ -1011,9 +909,11 @@ void engineQuad(Sint32 x1,Sint32 y1,Sint32 z1,
             + (projectionMatrix[ 7] >> HALF_ACCURACY)*(ty1 >> HALF_ACCURACY)*/
             + (projectionMatrix[11] >> HALF_ACCURACY)*(tz1 >> HALF_ACCURACY)
             /*+ (projectionMatrix[15] >> HALF_ACCURACY)*(tw1 >> HALF_ACCURACY)*/;
-      
-  Sint32 nx1 = ((x1<<HALF_ACCURACY)/w1);
-  Sint32 ny1 = ((y1<<HALF_ACCURACY)/w1);
+  
+  if (w1==0)
+    w1 = 1;
+  Sint32 nx1 = fpdiv(x1,w1)>>HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y1,w1)>>HALF_ACCURACY;
   //Sint32 nz1 = ((z1<<HALF_ACCURACY)/w1);
 
          x2 = (projectionMatrix[ 0] >> HALF_ACCURACY)*(tx2 >> HALF_ACCURACY)
@@ -1033,8 +933,10 @@ void engineQuad(Sint32 x1,Sint32 y1,Sint32 z1,
             + (projectionMatrix[11] >> HALF_ACCURACY)*(tz2 >> HALF_ACCURACY)
             /*+ (projectionMatrix[15] >> HALF_ACCURACY)*(tw2 >> HALF_ACCURACY)*/;
       
-  Sint32 nx2 = ((x2<<HALF_ACCURACY)/w2);
-  Sint32 ny2 = ((y2<<HALF_ACCURACY)/w2);
+  if (w2==0)
+    w2 = 2;
+  Sint32 nx2 = fpdiv(x2,w2)>>HALF_ACCURACY;
+  Sint32 ny2 = fpdiv(y2,w2)>>HALF_ACCURACY;
   //Sint32 nz2 = ((z2<<HALF_ACCURACY)/w2);
 
          x3 = (projectionMatrix[ 0] >> HALF_ACCURACY)*(tx3 >> HALF_ACCURACY)
@@ -1054,8 +956,10 @@ void engineQuad(Sint32 x1,Sint32 y1,Sint32 z1,
             + (projectionMatrix[11] >> HALF_ACCURACY)*(tz3 >> HALF_ACCURACY)
             /*+ (projectionMatrix[15] >> HALF_ACCURACY)*(tw3 >> HALF_ACCURACY)*/;
       
-  Sint32 nx3 = ((x3<<HALF_ACCURACY)/w3);
-  Sint32 ny3 = ((y3<<HALF_ACCURACY)/w3);
+  if (w3==0)
+    w3 = 3;
+  Sint32 nx3 = fpdiv(x3,w3)>>HALF_ACCURACY;
+  Sint32 ny3 = fpdiv(y3,w3)>>HALF_ACCURACY;
   //Sint32 nz3 = ((z3<<HALF_ACCURACY)/w3);
 
          x4 = (projectionMatrix[ 0] >> HALF_ACCURACY)*(tx4 >> HALF_ACCURACY)
@@ -1075,8 +979,10 @@ void engineQuad(Sint32 x1,Sint32 y1,Sint32 z1,
             + (projectionMatrix[11] >> HALF_ACCURACY)*(tz4 >> HALF_ACCURACY)
             /*+ (projectionMatrix[15] >> HALF_ACCURACY)*(tw4 >> HALF_ACCURACY)*/;
       
-  Sint32 nx4 = ((x4<<HALF_ACCURACY)/w4);
-  Sint32 ny4 = ((y4<<HALF_ACCURACY)/w4);
+  if (w4==0)
+    w4 = 4;
+  Sint32 nx4 = fpdiv(x4,w4)>>HALF_ACCURACY;
+  Sint32 ny4 = fpdiv(y4,w4)>>HALF_ACCURACY;
   //Sint32 nz4 = ((z4<<HALF_ACCURACY)/w4);
  
   
@@ -1172,9 +1078,9 @@ void engineTriangle(Sint32 x1,Sint32 y1,Sint32 z1,
 	if (l==0)
 	  return;
   //Vector von Betrachter zu Fläche
-  Sint32 ox = ((tx1+tx2+tx3)/3);
-  Sint32 oy = ((ty1+ty2+ty3)/3);
-  Sint32 oz = ((tz1+tz2+tz3)/3);
+  Sint32 ox = fpdiv(tx1+tx2+tx3,3<<ACCURACY);
+  Sint32 oy = fpdiv(ty1+ty2+ty3,3<<ACCURACY);
+  Sint32 oz = fpdiv(tz1+tz2+tz3,3<<ACCURACY);
   //Sint32 ol = (Sint32)(sqrt((float)ox*(float)ox+(float)oy*(float)oy+(float)oz*(float)oz));
   Sint32 ol = fpsqrt((ox>>HALF_ACCURACY)*(ox>>HALF_ACCURACY)+
                      (oy>>HALF_ACCURACY)*(oy>>HALF_ACCURACY)+
@@ -1182,12 +1088,14 @@ void engineTriangle(Sint32 x1,Sint32 y1,Sint32 z1,
   if (ol==0)
     return;
   
-  ox=((ox<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-  oy=((oy<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-  oz=((oz<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-  normal[0]=((normal[0]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-  normal[1]=((normal[1]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-  normal[2]=((normal[2]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
+  ox=fpdiv(ox,ol);
+  oy=fpdiv(oy,ol);
+  oz=fpdiv(oz,ol);
+  if (l==0)
+    return;
+  normal[0]=fpdiv(normal[0],l);
+  normal[1]=fpdiv(normal[1],l);
+  normal[2]=fpdiv(normal[2],l);
   
   
   Sint32 ac = (ox>>HALF_ACCURACY)*(normal[0]>>HALF_ACCURACY)
@@ -1219,9 +1127,11 @@ void engineTriangle(Sint32 x1,Sint32 y1,Sint32 z1,
             + (projectionMatrix[ 7] >> HALF_ACCURACY)*(ty1 >> HALF_ACCURACY)*/
             + (projectionMatrix[11] >> HALF_ACCURACY)*(tz1 >> HALF_ACCURACY)
             /*+ (projectionMatrix[15] >> HALF_ACCURACY)*(tw1 >> HALF_ACCURACY)*/;
-      
-  Sint32 nx1 = ((x1<<HALF_ACCURACY)/w1);
-  Sint32 ny1 = ((y1<<HALF_ACCURACY)/w1);
+  
+  if (w1 == 0)
+    w1 = 1;  
+  Sint32 nx1 = fpdiv(x1,w1)>>HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y1,w1)>>HALF_ACCURACY;
   //Sint32 nz1 = ((z1<<HALF_ACCURACY)/w1);
 
          x2 = (projectionMatrix[ 0] >> HALF_ACCURACY)*(tx2 >> HALF_ACCURACY)
@@ -1241,8 +1151,10 @@ void engineTriangle(Sint32 x1,Sint32 y1,Sint32 z1,
             + (projectionMatrix[11] >> HALF_ACCURACY)*(tz2 >> HALF_ACCURACY)
             /*+ (projectionMatrix[15] >> HALF_ACCURACY)*(tw2 >> HALF_ACCURACY)*/;
       
-  Sint32 nx2 = ((x2<<HALF_ACCURACY)/w2);
-  Sint32 ny2 = ((y2<<HALF_ACCURACY)/w2);
+  if (w2 == 0)
+    w2 = 2;  
+  Sint32 nx2 = fpdiv(x2,w2)>>HALF_ACCURACY;
+  Sint32 ny2 = fpdiv(y2,w2)>>HALF_ACCURACY;
   //Sint32 nz2 = ((z2<<HALF_ACCURACY)/w2);
 
          x3 = (projectionMatrix[ 0] >> HALF_ACCURACY)*(tx3 >> HALF_ACCURACY)
@@ -1262,16 +1174,18 @@ void engineTriangle(Sint32 x1,Sint32 y1,Sint32 z1,
             + (projectionMatrix[11] >> HALF_ACCURACY)*(tz3 >> HALF_ACCURACY)
             /*+ (projectionMatrix[15] >> HALF_ACCURACY)*(tw3 >> HALF_ACCURACY)*/;
       
-  Sint32 nx3 = ((x3<<HALF_ACCURACY)/w3);
-  Sint32 ny3 = ((y3<<HALF_ACCURACY)/w3);
+  if (w3 == 0)
+    w3 = 3;  
+  Sint32 nx3 = fpdiv(x3,w3)>>HALF_ACCURACY;
+  Sint32 ny3 = fpdiv(y3,w3)>>HALF_ACCURACY;
   //Sint32 nz3 = ((z3<<HALF_ACCURACY)/w3);
   
   tdrawitem item;
   item.type=0;
   item.content.geo.z=-ol;//min3(tz1,tz2,tz3); //smallest z
-  item.content.geo.color = engineGetLightingColor((tx1+tx2+tx3)/3,
-                                                  (ty1+ty2+ty3)/3,
-                                                  (tz1+tz2+tz3)/3,normal,color);
+  item.content.geo.color = engineGetLightingColor(fpdiv(tx1+tx2+tx3,3<<ACCURACY),
+                                                  fpdiv(ty1+ty2+ty3,3<<ACCURACY),
+                                                  fpdiv(tz1+tz2+tz3,3<<ACCURACY),normal,color);
   item.content.geo.x1=(engineWindowX >> 1)+((nx1*engineViewportX) >> ACCURACY);
   item.content.geo.y1=(engineWindowY >> 1)-((ny1*engineViewportY) >> ACCURACY);
   item.content.geo.x2=(engineWindowX >> 1)+((nx2*engineViewportX) >> ACCURACY);
@@ -1323,8 +1237,10 @@ void engineDrawTextMXMY(Sint32 x1,Sint32 y1,Sint32 z1,char* text)
             + (projectionMatrix[11] >> HALF_ACCURACY)*(tz1 >> HALF_ACCURACY)
             /*+ (projectionMatrix[15] >> HALF_ACCURACY)*(tw1 >> HALF_ACCURACY)*/;
       
-  Sint32 nx1 = ((x1<<HALF_ACCURACY)/w1);
-  Sint32 ny1 = ((y1<<HALF_ACCURACY)/w1);
+  if (w1 == 0)
+    w1 = 1;
+  Sint32 nx1 = fpdiv(x1,w1)>>HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y1,w1)>>HALF_ACCURACY;
 
   //Vector von Betrachter zu Fläche o=t1
   //Sint32 ol = (Sint32)(sqrt((float)ox*(float)ox+(float)oy*(float)oy+(float)oz*(float)oz));
@@ -1390,8 +1306,8 @@ void engineDrawSurface(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface)
   
   if (w1 == 0)
     w1 = 1;
-  Sint32 nx1 = ((x1<<HALF_ACCURACY)/w1);
-  Sint32 ny1 = ((y1<<HALF_ACCURACY)/w1);
+  Sint32 nx1 = fpdiv(x1,w1)>>HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y1,w1)>>HALF_ACCURACY;
 
   //Vector von Betrachter zu Fläche o=t1
   //Sint32 ol = (Sint32)(sqrt((float)ox*(float)ox+(float)oy*(float)oy+(float)oz*(float)oz));
@@ -1459,11 +1375,13 @@ void engineEllipseAdd(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 rx,Sint32 ry,Uint16 c
 
 /*         rx = (projectionMatrix[ 0] >> HALF_ACCURACY)*(trx >> HALF_ACCURACY);
          ry = (projectionMatrix[ 5] >> HALF_ACCURACY)*(try >> HALF_ACCURACY);*/
-      
-  Sint32 nx1 = ((x1<<HALF_ACCURACY)/w1);
-  Sint32 ny1 = ((y1<<HALF_ACCURACY)/w1);
-  Sint32 nrx = ((rx<<HALF_ACCURACY)/w1);
-  Sint32 nry = ((ry<<HALF_ACCURACY)/w1);
+
+  if (w1 == 0)
+    w1 = 1;
+  Sint32 nx1 = fpdiv(x1,w1)>>HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y1,w1)>>HALF_ACCURACY;
+  Sint32 nrx = fpdiv(rx,w1)>>HALF_ACCURACY;
+  Sint32 nry = fpdiv(ry,w1)>>HALF_ACCURACY;
 
   //Vector von Betrachter zu Fläche o=t1
   //Sint32 ol = (Sint32)(sqrt((float)ox*(float)ox+(float)oy*(float)oy+(float)oz*(float)oz));
@@ -1695,8 +1613,8 @@ void engineList(ppoint verticies,const int vcount,pquad quads,const int qcount,p
       else
         cw=1;
     }
-    verticies[i].nx = ((cx<<HALF_ACCURACY)/cw);
-    verticies[i].ny = ((cy<<HALF_ACCURACY)/cw);
+    verticies[i].nx = fpdiv(cx,cw)>>HALF_ACCURACY;
+    verticies[i].ny = fpdiv(cy,cw)>>HALF_ACCURACY;
   }
 
   //Quads  
@@ -1721,12 +1639,12 @@ void engineList(ppoint verticies,const int vcount,pquad quads,const int qcount,p
                        (oz>>HALF_ACCURACY)*(oz>>HALF_ACCURACY));
     if (ol==0)
       continue;
-    ox=((ox<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    oy=((oy<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    oz=((oz<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    normal[0]=((normal[0]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-    normal[1]=((normal[1]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-    normal[2]=((normal[2]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
+    ox=fpdiv(ox,ol);
+    oy=fpdiv(oy,ol);
+    oz=fpdiv(oz,ol);
+    normal[0]=fpdiv(normal[0],l);
+    normal[1]=fpdiv(normal[1],l);
+    normal[2]=fpdiv(normal[2],l);
     
     Sint32 ac = (ox>>HALF_ACCURACY)*(normal[0]>>HALF_ACCURACY)
                +(oy>>HALF_ACCURACY)*(normal[1]>>HALF_ACCURACY)
@@ -1751,7 +1669,6 @@ void engineList(ppoint verticies,const int vcount,pquad quads,const int qcount,p
     item.content.geo.y3=(engineWindowY >> 1)-((verticies[quads[i].p[2]].ny*engineViewportY) >> ACCURACY);
     item.content.geo.x4=(engineWindowX >> 1)+((verticies[quads[i].p[3]].nx*engineViewportX) >> ACCURACY);
     item.content.geo.y4=(engineWindowY >> 1)-((verticies[quads[i].p[3]].ny*engineViewportY) >> ACCURACY);
-
     sortedInsert(item);
   }
   
@@ -1769,21 +1686,21 @@ void engineList(ppoint verticies,const int vcount,pquad quads,const int qcount,p
     if (l==0)
       continue;
     //Vector From Viewer to Triangle
-    Sint32 ox = ((verticies[triangles[i].p[0]].tx+verticies[triangles[i].p[1]].tx+verticies[triangles[i].p[2]].tx)/3);
-    Sint32 oy = ((verticies[triangles[i].p[0]].ty+verticies[triangles[i].p[1]].ty+verticies[triangles[i].p[2]].ty)/3);
-    Sint32 oz = ((verticies[triangles[i].p[0]].tz+verticies[triangles[i].p[1]].tz+verticies[triangles[i].p[2]].tz)/3);
+    Sint32 ox = fpdiv(verticies[triangles[i].p[0]].tx+verticies[triangles[i].p[1]].tx+verticies[triangles[i].p[2]].tx,3<<ACCURACY);
+    Sint32 oy = fpdiv(verticies[triangles[i].p[0]].ty+verticies[triangles[i].p[1]].ty+verticies[triangles[i].p[2]].ty,3<<ACCURACY);
+    Sint32 oz = fpdiv(verticies[triangles[i].p[0]].tz+verticies[triangles[i].p[1]].tz+verticies[triangles[i].p[2]].tz,3<<ACCURACY);
     Sint32 ol = fpsqrt((ox>>HALF_ACCURACY)*(ox>>HALF_ACCURACY)+
                        (oy>>HALF_ACCURACY)*(oy>>HALF_ACCURACY)+
                        (oz>>HALF_ACCURACY)*(oz>>HALF_ACCURACY));
     if (ol==0)
       continue;
   
-    ox=((ox<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    oy=((oy<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    oz=((oz<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    normal[0]=((normal[0]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-    normal[1]=((normal[1]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-    normal[2]=((normal[2]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
+    ox=fpdiv(ox,ol);
+    oy=fpdiv(oy,ol);
+    oz=fpdiv(oz,ol);
+    normal[0]=fpdiv(normal[0],l);
+    normal[1]=fpdiv(normal[1],l);
+    normal[2]=fpdiv(normal[2],l);
     
     Sint32 ac = (ox>>HALF_ACCURACY)*(normal[0]>>HALF_ACCURACY)
                +(oy>>HALF_ACCURACY)*(normal[1]>>HALF_ACCURACY)
@@ -1796,9 +1713,9 @@ void engineList(ppoint verticies,const int vcount,pquad quads,const int qcount,p
     item.type=0;
     item.content.geo.z=-ol;
     item.content.geo.color = engineGetLightingColor(
-      (verticies[triangles[i].p[0]].tx+verticies[triangles[i].p[1]].tx+verticies[triangles[i].p[2]].tx)/3,
-      (verticies[triangles[i].p[0]].ty+verticies[triangles[i].p[1]].ty+verticies[triangles[i].p[2]].ty)/3,
-      (verticies[triangles[i].p[0]].tz+verticies[triangles[i].p[1]].tz+verticies[triangles[i].p[2]].tz)/3,      
+      fpdiv(verticies[triangles[i].p[0]].tx+verticies[triangles[i].p[1]].tx+verticies[triangles[i].p[2]].tx,3<<ACCURACY),
+      fpdiv(verticies[triangles[i].p[0]].ty+verticies[triangles[i].p[1]].ty+verticies[triangles[i].p[2]].ty,3<<ACCURACY),
+      fpdiv(verticies[triangles[i].p[0]].tz+verticies[triangles[i].p[1]].tz+verticies[triangles[i].p[2]].tz,3<<ACCURACY),      
       normal,color);
     item.content.geo.x1=(engineWindowX >> 1)+((verticies[triangles[i].p[0]].nx*engineViewportX) >> ACCURACY);
     item.content.geo.y1=(engineWindowY >> 1)-((verticies[triangles[i].p[0]].ny*engineViewportY) >> ACCURACY);
@@ -1806,7 +1723,6 @@ void engineList(ppoint verticies,const int vcount,pquad quads,const int qcount,p
     item.content.geo.y2=(engineWindowY >> 1)-((verticies[triangles[i].p[1]].ny*engineViewportY) >> ACCURACY);
     item.content.geo.x3=(engineWindowX >> 1)+((verticies[triangles[i].p[2]].nx*engineViewportX) >> ACCURACY);
     item.content.geo.y3=(engineWindowY >> 1)-((verticies[triangles[i].p[2]].ny*engineViewportY) >> ACCURACY);
-
     sortedInsert(item);
   }
 }
@@ -1848,8 +1764,8 @@ void engineListXYZ(Sint32 x,Sint32 y,Sint32 z,ppoint verticies,const int vcount,
       else
         cw=1;
     }
-    verticies[i].nx = ((cx<<HALF_ACCURACY)/cw);
-    verticies[i].ny = ((cy<<HALF_ACCURACY)/cw);
+    verticies[i].nx = fpdiv(cx,cw)>>HALF_ACCURACY;
+    verticies[i].ny = fpdiv(cy,cw)>>HALF_ACCURACY;
   }
 
   //Quads  
@@ -1875,12 +1791,12 @@ void engineListXYZ(Sint32 x,Sint32 y,Sint32 z,ppoint verticies,const int vcount,
     if (ol==0)
       continue;
   
-    ox=((ox<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    oy=((oy<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    oz=((oz<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    normal[0]=((normal[0]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-    normal[1]=((normal[1]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-    normal[2]=((normal[2]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
+    ox=fpdiv(ox,ol);
+    oy=fpdiv(oy,ol);
+    oz=fpdiv(oz,ol);
+    normal[0]=fpdiv(normal[0],l);
+    normal[1]=fpdiv(normal[1],l);
+    normal[2]=fpdiv(normal[2],l);
     
     Sint32 ac = (ox>>HALF_ACCURACY)*(normal[0]>>HALF_ACCURACY)
                +(oy>>HALF_ACCURACY)*(normal[1]>>HALF_ACCURACY)
@@ -1923,21 +1839,21 @@ void engineListXYZ(Sint32 x,Sint32 y,Sint32 z,ppoint verticies,const int vcount,
     if (l==0)
       continue;
     //Vector From Viewer to Triangle
-    Sint32 ox = ((verticies[triangles[i].p[0]].tx+verticies[triangles[i].p[1]].tx+verticies[triangles[i].p[2]].tx)/3);
-    Sint32 oy = ((verticies[triangles[i].p[0]].ty+verticies[triangles[i].p[1]].ty+verticies[triangles[i].p[2]].ty)/3);
-    Sint32 oz = ((verticies[triangles[i].p[0]].tz+verticies[triangles[i].p[1]].tz+verticies[triangles[i].p[2]].tz)/3);
+    Sint32 ox = fpdiv(verticies[triangles[i].p[0]].tx+verticies[triangles[i].p[1]].tx+verticies[triangles[i].p[2]].tx,3<<ACCURACY);
+    Sint32 oy = fpdiv(verticies[triangles[i].p[0]].ty+verticies[triangles[i].p[1]].ty+verticies[triangles[i].p[2]].ty,3<<ACCURACY);
+    Sint32 oz = fpdiv(verticies[triangles[i].p[0]].tz+verticies[triangles[i].p[1]].tz+verticies[triangles[i].p[2]].tz,3<<ACCURACY);
     Sint32 ol = fpsqrt((ox>>HALF_ACCURACY)*(ox>>HALF_ACCURACY)+
                        (oy>>HALF_ACCURACY)*(oy>>HALF_ACCURACY)+
                        (oz>>HALF_ACCURACY)*(oz>>HALF_ACCURACY));
     if (ol==0)
       continue;
   
-    ox=((ox<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    oy=((oy<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    oz=((oz<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    normal[0]=((normal[0]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-    normal[1]=((normal[1]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-    normal[2]=((normal[2]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
+    ox=fpdiv(ox,ol);
+    oy=fpdiv(oy,ol);
+    oz=fpdiv(oz,ol);
+    normal[0]=fpdiv(normal[0],l);
+    normal[1]=fpdiv(normal[1],l);
+    normal[2]=fpdiv(normal[2],l);
     
     Sint32 ac = (ox>>HALF_ACCURACY)*(normal[0]>>HALF_ACCURACY)
                +(oy>>HALF_ACCURACY)*(normal[1]>>HALF_ACCURACY)
@@ -1951,9 +1867,9 @@ void engineListXYZ(Sint32 x,Sint32 y,Sint32 z,ppoint verticies,const int vcount,
     item.type=0;
     item.content.geo.z=-ol;
     item.content.geo.color = engineGetLightingColor(
-      (verticies[triangles[i].p[0]].tx+verticies[triangles[i].p[1]].tx+verticies[triangles[i].p[2]].tx)/3,
-      (verticies[triangles[i].p[0]].ty+verticies[triangles[i].p[1]].ty+verticies[triangles[i].p[2]].ty)/3,
-      (verticies[triangles[i].p[0]].tz+verticies[triangles[i].p[1]].tz+verticies[triangles[i].p[2]].tz)/3,      
+      fpdiv(verticies[triangles[i].p[0]].tx+verticies[triangles[i].p[1]].tx+verticies[triangles[i].p[2]].tx,3<<ACCURACY),
+      fpdiv(verticies[triangles[i].p[0]].ty+verticies[triangles[i].p[1]].ty+verticies[triangles[i].p[2]].ty,3<<ACCURACY),
+      fpdiv(verticies[triangles[i].p[0]].tz+verticies[triangles[i].p[1]].tz+verticies[triangles[i].p[2]].tz,3<<ACCURACY),      
       normal,color);
     item.content.geo.x1=(engineWindowX >> 1)+((verticies[triangles[i].p[0]].nx*engineViewportX) >> ACCURACY);
     item.content.geo.y1=(engineWindowY >> 1)-((verticies[triangles[i].p[0]].ny*engineViewportY) >> ACCURACY);
@@ -2003,8 +1919,8 @@ void engineListXYZS(Sint32 x,Sint32 y,Sint32 z,Sint32 s,ppoint verticies,const i
       else
         cw=1;
     }
-    verticies[i].nx = ((cx<<HALF_ACCURACY)/cw);
-    verticies[i].ny = ((cy<<HALF_ACCURACY)/cw);
+    verticies[i].nx = fpdiv(cx,cw)>>HALF_ACCURACY;
+    verticies[i].ny = fpdiv(cy,cw)>>HALF_ACCURACY;
   }
 
   //Quads  
@@ -2028,16 +1944,15 @@ void engineListXYZS(Sint32 x,Sint32 y,Sint32 z,Sint32 s,ppoint verticies,const i
     Sint32 ol = fpsqrt((ox>>HALF_ACCURACY)*(ox>>HALF_ACCURACY)+
                        (oy>>HALF_ACCURACY)*(oy>>HALF_ACCURACY)+
                        (oz>>HALF_ACCURACY)*(oz>>HALF_ACCURACY));
-    
     if (ol==0)
       continue;
-
-    ox=((ox<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    oy=((oy<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    oz=((oz<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    normal[0]=((normal[0]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-    normal[1]=((normal[1]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-    normal[2]=((normal[2]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
+  
+    ox=fpdiv(ox,ol);
+    oy=fpdiv(oy,ol);
+    oz=fpdiv(oz,ol);
+    normal[0]=fpdiv(normal[0],l);
+    normal[1]=fpdiv(normal[1],l);
+    normal[2]=fpdiv(normal[2],l);
     
     Sint32 ac = (ox>>HALF_ACCURACY)*(normal[0]>>HALF_ACCURACY)
                +(oy>>HALF_ACCURACY)*(normal[1]>>HALF_ACCURACY)
@@ -2080,21 +1995,21 @@ void engineListXYZS(Sint32 x,Sint32 y,Sint32 z,Sint32 s,ppoint verticies,const i
     if (l==0)
       continue;
     //Vector From Viewer to Triangle
-    Sint32 ox = ((verticies[triangles[i].p[0]].tx+verticies[triangles[i].p[1]].tx+verticies[triangles[i].p[2]].tx)/3);
-    Sint32 oy = ((verticies[triangles[i].p[0]].ty+verticies[triangles[i].p[1]].ty+verticies[triangles[i].p[2]].ty)/3);
-    Sint32 oz = ((verticies[triangles[i].p[0]].tz+verticies[triangles[i].p[1]].tz+verticies[triangles[i].p[2]].tz)/3);
+    Sint32 ox = fpdiv(verticies[triangles[i].p[0]].tx+verticies[triangles[i].p[1]].tx+verticies[triangles[i].p[2]].tx,3<<ACCURACY);
+    Sint32 oy = fpdiv(verticies[triangles[i].p[0]].ty+verticies[triangles[i].p[1]].ty+verticies[triangles[i].p[2]].ty,3<<ACCURACY);
+    Sint32 oz = fpdiv(verticies[triangles[i].p[0]].tz+verticies[triangles[i].p[1]].tz+verticies[triangles[i].p[2]].tz,3<<ACCURACY);
     Sint32 ol = fpsqrt((ox>>HALF_ACCURACY)*(ox>>HALF_ACCURACY)+
                        (oy>>HALF_ACCURACY)*(oy>>HALF_ACCURACY)+
                        (oz>>HALF_ACCURACY)*(oz>>HALF_ACCURACY));
     if (ol==0)
       continue;
   
-    ox=((ox<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    oy=((oy<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    oz=((oz<<HALF_ACCURACY)/ol)<<HALF_ACCURACY;
-    normal[0]=((normal[0]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-    normal[1]=((normal[1]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
-    normal[2]=((normal[2]<<HALF_ACCURACY)/l)<<HALF_ACCURACY;
+    ox=fpdiv(ox,ol);
+    oy=fpdiv(oy,ol);
+    oz=fpdiv(oz,ol);
+    normal[0]=fpdiv(normal[0],l);
+    normal[1]=fpdiv(normal[1],l);
+    normal[2]=fpdiv(normal[2],l);
     
     Sint32 ac = (ox>>HALF_ACCURACY)*(normal[0]>>HALF_ACCURACY)
                +(oy>>HALF_ACCURACY)*(normal[1]>>HALF_ACCURACY)
@@ -2107,9 +2022,9 @@ void engineListXYZS(Sint32 x,Sint32 y,Sint32 z,Sint32 s,ppoint verticies,const i
     item.type=0;
     item.content.geo.z=-ol;
     item.content.geo.color = engineGetLightingColor(
-      (verticies[triangles[i].p[0]].tx+verticies[triangles[i].p[1]].tx+verticies[triangles[i].p[2]].tx)/3,
-      (verticies[triangles[i].p[0]].ty+verticies[triangles[i].p[1]].ty+verticies[triangles[i].p[2]].ty)/3,
-      (verticies[triangles[i].p[0]].tz+verticies[triangles[i].p[1]].tz+verticies[triangles[i].p[2]].tz)/3,      
+      fpdiv(verticies[triangles[i].p[0]].tx+verticies[triangles[i].p[1]].tx+verticies[triangles[i].p[2]].tx,3<<ACCURACY),
+      fpdiv(verticies[triangles[i].p[0]].ty+verticies[triangles[i].p[1]].ty+verticies[triangles[i].p[2]].ty,3<<ACCURACY),
+      fpdiv(verticies[triangles[i].p[0]].tz+verticies[triangles[i].p[1]].tz+verticies[triangles[i].p[2]].tz,3<<ACCURACY),      
       normal,color);
     item.content.geo.x1=(engineWindowX >> 1)+((verticies[triangles[i].p[0]].nx*engineViewportX) >> ACCURACY);
     item.content.geo.y1=(engineWindowY >> 1)-((verticies[triangles[i].p[0]].ny*engineViewportY) >> ACCURACY);

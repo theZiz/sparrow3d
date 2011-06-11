@@ -66,4 +66,5 @@ void engineSetWindowXasm(int x);
 
 void engineSetWindowYasm(int y);
 
+int fpdiv(int numerator,int denominator);
 #endif
