@@ -2,6 +2,7 @@
 #define _GRAPHICSTUFF_H
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
+#include <SDL/SDL_ttf.h>
 #include <math.h>
 #include <string.h>
 
@@ -15,6 +16,8 @@
 #define ACCURACY_FACTOR 65536.0
 #define MY_PI 3217*64
 #define COS_ACCURACY 4
+
+void setLetterSpacing(int* point0r);
 
 Sint32* engineGetProjectionMatrix();
 

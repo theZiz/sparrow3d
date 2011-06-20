@@ -81,6 +81,7 @@ int calc_test(Uint32 steps)
 
 int main(int argc, char **argv)
 {
+  engineSetKeymap("./font/StayPuft.ttf");
   mesh=loadMesh("./data/testmesh.obj");
   sphere=loadMesh("./data/sphere.obj");
   initEngine();

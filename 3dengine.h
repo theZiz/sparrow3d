@@ -237,6 +237,8 @@ void calcNormal(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,
 int fpdiv(register int numerator, register int denominator);
 #endif
 
+void engineSetKeymap(char* filename);
+
 void loadKeyMap();
 
 void resizeWindow(int x,int y);

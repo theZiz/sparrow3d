@@ -27,7 +27,7 @@ SDL = `sdl-config --cflags`
 all: testengine
 
 testengine: testengine.c meshloader.o 3dengine.o graphicstuff.o graphicstuff-asm.o
-	$(CPP) -O3 testengine.c 3dengine.o graphicstuff.o meshloader.o graphicstuff-asm.o $(SDL) $(INCLUDE) $(LIB) -lSDL_image -lSDL -lm $(ORIGINALFW) -o testengine
+	$(CPP) -O3 testengine.c 3dengine.o graphicstuff.o meshloader.o graphicstuff-asm.o $(SDL) $(INCLUDE) $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm $(ORIGINALFW) -o testengine
 
 meshloader.o: meshloader.c meshloader.h 3dengine.o
 	$(CPP) -O3 -c meshloader.c $(SDL) $(INCLUDE)

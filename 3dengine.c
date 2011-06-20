@@ -9,6 +9,7 @@ SDL_Surface *engineKeymapRed = NULL;
 SDL_Surface *engineSurface;
 SDL_Surface *engineScreen;
 SDL_Joystick *engineJoy = NULL;
+char* engineKeymapName = NULL;
 Uint32 engineFps = 0;
 Sint32 engineViewportX;
 Sint32 engineViewportY;
@@ -20,6 +21,7 @@ tlight light[8];
 tlight ambient;
 char lighton;
 int resize;
+int* engineLetterSpacing = NULL;
 
 void engineLight(char on)
 {
@@ -135,19 +137,89 @@ void calcNormal(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,
             -((y1-y2)>>HALF_ACCURACY)*((x2-x3)>>HALF_ACCURACY);
 }
 
+void engineSetKeymap(char* filename)
+{
+  free(engineKeymapName);
+  if (filename)
+  {
+    engineKeymapName = (char*)malloc(strlen(filename)+1);
+    sprintf(engineKeymapName,"%s",filename);  
+  }
+  else
+    engineKeymapName = NULL;
+}
+
 void loadKeyMap()
 {
-  int i;
-  if (engineKeymap!=NULL)
-    SDL_FreeSurface(engineKeymap);
   SDL_Surface* surface;
-  if (globalzoom<(2<<ACCURACY))
-    surface=IMG_Load("./data/keymap_small.png");
-  else
-  if (globalzoom<(4<<ACCURACY))
-    surface=IMG_Load("./data/keymap.png");
-  else
-    surface=IMG_Load("./data/keymap_big.png");
+  int i;
+  if (engineKeymapName == NULL) {
+    if (engineKeymap!=NULL)
+      SDL_FreeSurface(engineKeymap);
+    if (globalzoom<(2<<ACCURACY))
+      surface=IMG_Load("./data/keymap_small.png");
+    else
+    if (globalzoom<(4<<ACCURACY))
+      surface=IMG_Load("./data/keymap.png");
+    else
+      surface=IMG_Load("./data/keymap_big.png");
+  }
+  else 
+  {
+    int size = 256*globalzoom >> ACCURACY;
+    size = ((size+15)/16)*16;
+    free(engineLetterSpacing);
+    engineLetterSpacing = (int*)malloc(128*sizeof(int));
+    SDL_Surface *temp = SDL_CreateRGBSurface(SDL_SWSURFACE, size, size, 32,
+                           0xff000000, 0x00ff0000, 0x0000ff00,  0x000000ff);
+    surface = SDL_DisplayFormatAlpha(temp);
+    SDL_FreeSurface(temp);
+    SDL_FillRect(surface, NULL, SDL_MapRGBA(surface->format, 0, 0, 0, 0));
+    TTF_Font* font = TTF_OpenFont(engineKeymapName,size/16);
+    
+    //SDL_LockSurface(surface);
+    for (i=0;i<128;i++)
+    {
+      char buffer[2];
+      sprintf(buffer,"%c",i+32);
+      SDL_Color color={255,255,255};
+      SDL_Surface *letter = TTF_RenderUTF8_Blended(font,buffer,color);
+      TTF_SizeUTF8(font,buffer,&(engineLetterSpacing[i]),NULL);
+      /*SDL_Rect srcrect;
+      srcrect.x=0;
+      srcrect.y=0;
+      srcrect.w=letter->w;
+      srcrect.h=letter->h;
+      SDL_Rect dstrect;
+      dstrect.x=(i % 16)*(size >> 4);
+      dstrect.y=(i >> 4)*(size >> 3);
+      dstrect.w=letter->w;
+      dstrect.h=letter->h;
+      SDL_Surface* temp = SDL_ConvertSurface(letter,surface->format,surface->flags);
+      SDL_FreeSurface(letter);
+      letter = temp;
+      SDL_BlitSurface(letter, &srcrect, surface, &dstrect);*/
+      Uint8 * pixel = (Uint8*)(surface->pixels);
+      Uint8 * pixel2 = (Uint8*)(letter->pixels);
+      int px = i % 16 * (size>>4);
+      int py = i / 16 * (size>>3);
+      int x,y;
+      for (x = 0;x < letter->w; x++)
+        for (y = 0;y < letter->h; y++)
+        {
+          pixel[(px+x+(py+y)*surface->w)*4+0]=pixel2[(x+y*letter->w)*4+0];
+          pixel[(px+x+(py+y)*surface->w)*4+1]=pixel2[(x+y*letter->w)*4+1];
+          pixel[(px+x+(py+y)*surface->w)*4+2]=pixel2[(x+y*letter->w)*4+2];
+          pixel[(px+x+(py+y)*surface->w)*4+3]=pixel2[(x+y*letter->w)*4+3];
+        }
+      
+      
+      SDL_FreeSurface(letter);
+    }
+    //SDL_UnlockSurface(surface);
+    TTF_CloseFont(font);
+    setLetterSpacing(engineLetterSpacing);
+  }
   
   engineKeymap=SDL_DisplayFormatAlpha(surface);
   
@@ -222,7 +294,8 @@ void resizeWindow(int x,int y)
 
 void initEngine()
 {
-   #ifdef PANDORA
+  TTF_Init();
+  #ifdef PANDORA
     engineSetWindowX(800);
     engineSetWindowY(480);
   #else

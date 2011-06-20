@@ -5,6 +5,12 @@ Sint32 modellViewMatrix[16];
 Sint32 cosvalue[(2*MY_PI)>>COS_ACCURACY];
 int engineWindowX;
 int engineWindowY;
+int* letterSpacing = NULL;
+
+void setLetterSpacing(int* point0r)
+{
+  letterSpacing = point0r;
+}
 
 #ifndef ARMCPU
 int fpdiv(int numerator,int denominator)
@@ -162,23 +168,42 @@ void drawtext(SDL_Surface *screen,Sint32 x,Sint32 y,char* text,SDL_Surface *keym
     SDL_Rect srcrect;
     srcrect.x=(c % 16)*(keymap->w >> 4);
     srcrect.y=(c >> 4)*(keymap->h >> 3);
-    srcrect.w=keymap->w >> 4;
+    if (letterSpacing == NULL)
+      srcrect.w=keymap->w >> 4;
+    else
+      srcrect.w=letterSpacing[c];
     srcrect.h=keymap->h >> 3;
     SDL_Rect dstrect;
     dstrect.x=x;
     dstrect.y=y;
-    dstrect.w=keymap->w >> 4;
-    dstrect.h=keymap->h >> 3;
+    dstrect.w=srcrect.w;
+    dstrect.h=srcrect.h;
     
     SDL_BlitSurface(keymap, &srcrect, screen, &dstrect);
-    x+=keymap->w >> 4;
+    x+=srcrect.w;
     p++;
   }
 }
 
+int getTextLength(char* text,SDL_Surface* keymap)
+{
+  int p=0;
+  int x=0;
+  while (text[p]!=0 /*&& x<engineWindowX*/)
+  {
+    unsigned char c = text[p]-32;
+    if (letterSpacing == NULL)
+      x+=keymap->w >> 4;
+    else
+      x+=letterSpacing[c];
+    p++;
+  }
+  return x;
+}
+
 void drawtextMX(SDL_Surface *screen,Sint32 x,Sint32 y,char* text,SDL_Surface *keymap)
 {
-  drawtext(screen,x-(keymap->w >> 5)*strlen(text),y,text,keymap);
+  drawtext(screen,x-getTextLength(text,keymap)/2,y,text,keymap);
 }
 
 void drawtextMY(SDL_Surface *screen,Sint32 x,Sint32 y,char* text,SDL_Surface *keymap)
@@ -188,7 +213,7 @@ void drawtextMY(SDL_Surface *screen,Sint32 x,Sint32 y,char* text,SDL_Surface *ke
 
 void drawtextMXMY(SDL_Surface *screen,Uint16 x,Uint16 y,char* text,SDL_Surface *keymap)
 {
-  drawtext(screen,x-(keymap->w >> 5)*strlen(text),y-(keymap->h >> 4),text,keymap);
+  drawtext(screen,x-getTextLength(text,keymap)/2,y-(keymap->h >> 4),text,keymap);
 }
 
 void setFrustumf2(Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
