@@ -194,7 +194,7 @@ void loadKeyMap()
     surface = SDL_DisplayFormatAlpha(temp);
     SDL_FreeSurface(temp);
     SDL_FillRect(surface, NULL, SDL_MapRGBA(surface->format, 0, 0, 0, 0));
-    TTF_Font* font = TTF_OpenFont(engineKeymapName,size/16);
+    TTF_Font* font = TTF_OpenFont(engineKeymapName,size/18);
     
     //SDL_LockSurface(surface);
     for (i=0;i<128;i++)
