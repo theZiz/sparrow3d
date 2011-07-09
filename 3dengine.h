@@ -268,7 +268,11 @@ void engineHandleEvent(void);
 
 signed char engineGetAxis(int axis);
 
+void engineSetAxis(int axis,signed char value);
+
 int engineLoop(void (*engineDraw)(void),int (*engineCalc)(Uint32 steps),Uint32 minwait);
+
+void set_font_quality(int value);
 
 void quitEngine(void);
 

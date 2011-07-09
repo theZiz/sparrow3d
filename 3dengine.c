@@ -42,6 +42,13 @@ char lighton;
 int resize;
 int* engineLetterSpacing = NULL;
 
+int font_quality = 1;
+
+void set_font_quality(int value)
+{
+  font_quality = value;
+}
+
 void engineLight(char on)
 {
   lighton=on;
@@ -230,6 +237,11 @@ void loadKeyMap()
           pixel[(px+x+(py+y)*surface->w)*4+1]=pixel2[(x+y*letter->w)*4+1];
           pixel[(px+x+(py+y)*surface->w)*4+2]=pixel2[(x+y*letter->w)*4+2];
           pixel[(px+x+(py+y)*surface->w)*4+3]=pixel2[(x+y*letter->w)*4+3];
+          if (font_quality == 0 && pixel[(px+x+(py+y)*surface->w)*4+3] < 128)
+            pixel[(px+x+(py+y)*surface->w)*4+3] = 0;
+          else
+          if (font_quality == 0)
+            pixel[(px+x+(py+y)*surface->w)*4+3] = 255;
         }
       
       
@@ -664,18 +676,116 @@ signed char engineGetAxis(int axis)
   #endif
 }
 
+void engineSetAxis(int axis,signed char value)
+{
+  #ifdef GP2X
+    if (axis==0)
+    {
+      engineInput.button[AXIS_LEFTUP] = 0;
+      engineInput.button[AXIS_LEFT] = 0;
+      engineInput.button[AXIS_LEFTDOWN] = 0;
+      engineInput.button[AXIS_DOWN] = 0;
+      engineInput.button[AXIS_RIGHTDOWN] = 0;
+      engineInput.button[AXIS_RIGHT] = 0;
+      engineInput.button[AXIS_RIGHTUP] = 0;
+      engineInput.button[AXIS_UP] = 0;
+      if (engineInput.axis[1] == 1 && value == -1)
+        engineInput.button[AXIS_LEFTUP] = 1;
+      if (engineInput.axis[1] == 0 && value == -1)
+        engineInput.button[AXIS_LEFT] = 1;
+      if (engineInput.axis[1] == -1 && value == -1)
+        engineInput.button[AXIS_LEFTDOWN] = 1;
+      if (engineInput.axis[1] == -1 && value == 0)
+        engineInput.button[AXIS_DOWN] = 1;
+      if (engineInput.axis[1] == -1 && value == 1)
+        engineInput.button[AXIS_RIGHTDOWN] = 1;
+      if (engineInput.axis[1] == 0 && value == 1)
+        engineInput.button[AXIS_RIGHT] = 1;
+      if (engineInput.axis[1] == 1 && value == 1)
+        engineInput.button[AXIS_RIGHTUP] = 1;
+      if (engineInput.axis[1] == 1 && value == 0)
+        engineInput.button[AXIS_UP] = 1;
+    }
+    else
+    {
+      engineInput.button[AXIS_LEFTUP] = 0;
+      engineInput.button[AXIS_LEFT] = 0;
+      engineInput.button[AXIS_LEFTDOWN] = 0;
+      engineInput.button[AXIS_DOWN] = 0;
+      engineInput.button[AXIS_RIGHTDOWN] = 0;
+      engineInput.button[AXIS_RIGHT] = 0;
+      engineInput.button[AXIS_RIGHTUP] = 0;
+      engineInput.button[AXIS_UP] = 0;
+      if (value == 1 && engineInput.axis[0] == -1)
+        engineInput.button[AXIS_LEFTUP] = 1;
+      if (value == 0 && engineInput.axis[0] == -1)
+        engineInput.button[AXIS_LEFT] = 1;
+      if (value == -1 && engineInput.axis[0] == -1)
+        engineInput.button[AXIS_LEFTDOWN] = 1;
+      if (value == -1 && engineInput.axis[0] == 0)
+        engineInput.button[AXIS_DOWN] = 1;
+      if (value == -1 && engineInput.axis[0] == 1)
+        engineInput.button[AXIS_RIGHTDOWN] = 1;
+      if (value == 0 && engineInput.axis[0] == 1)
+        engineInput.button[AXIS_RIGHT] = 1;
+      if (value == 1 && engineInput.axis[0] == 1)
+        engineInput.button[AXIS_RIGHTUP] = 1;
+      if (value == 1 && engineInput.axis[0] == 0)
+        engineInput.button[AXIS_UP] = 1;
+        }
+    engineUpdateAxis(axis);
+  #else
+    engineInput.axis[axis] = value;
+  #endif
+}
+
+void engineUpdateAxis(int axis)
+{
+  #ifdef GP2X
+    if (axis==0)
+    {
+      engineInput.axis[axis] = 0;
+      if (engineInput.button[AXIS_LEFTUP] ||
+          engineInput.button[AXIS_LEFT]   ||
+          engineInput.button[AXIS_LEFTDOWN])
+        engineInput.axis[axis] = -1;
+      if (engineInput.button[AXIS_RIGHTUP] ||
+          engineInput.button[AXIS_RIGHT]   ||
+          engineInput.button[AXIS_RIGHTDOWN])
+        engineInput.axis[axis] = 1;
+    }
+    else
+    {
+      engineInput.axis[axis] = 0;
+      if (engineInput.button[AXIS_LEFTUP] ||
+          engineInput.button[AXIS_UP]   ||
+          engineInput.button[AXIS_RIGHTUP])
+        engineInput.axis[axis] = 1;
+      if (engineInput.button[AXIS_LEFTDOWN] ||
+          engineInput.button[AXIS_DOWN]   ||
+          engineInput.button[AXIS_RIGHTDOWN])
+        engineInput.axis[axis] = -1;
+    }
+  #endif
+}
+
+Uint32 oldticks;
+Uint32 newticks;
+
 int engineLoop(void (*engineDraw)(void),int (*engineCalc)(Uint32 steps),Uint32 minwait)
 {
     Uint32 bigsteps=0;
     Uint32 frames=0;
     int back=0;
     Uint32 steps=0;
-    Uint32 oldticks=SDL_GetTicks();
-    Uint32 newticks=SDL_GetTicks();
+    oldticks=SDL_GetTicks();
+    newticks=SDL_GetTicks();
     while( back==0 && engineGlobalDone==0 ) {
         oldticks=newticks;
         newticks=SDL_GetTicks();
         engineHandleEvent();
+        engineUpdateAxis(0);
+        engineUpdateAxis(1);
         steps+=newticks-oldticks;
         if (steps>minwait)
         {
