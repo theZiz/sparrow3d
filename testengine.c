@@ -60,6 +60,10 @@ void draw_test(void)
   //int a=SDL_GetTicks();
   drawMesh(mesh,65535);//getRGB(((1<<ACCURACY)+mysin(w))>>(ACCURACY-7),((1<<ACCURACY)+mysin(w+MY_PI))>>(ACCURACY-7),((1<<ACCURACY)+mycos(w))>>(ACCURACY-7)));
   
+  /*engineTriangle(-2<<ACCURACY,-2<<ACCURACY,0<<ACCURACY,
+                  2<<ACCURACY,-2<<ACCURACY,0<<ACCURACY,
+                 -2<<ACCURACY, 2<<ACCURACY,0<<ACCURACY,65535);*/
+  
   drawMeshXYZ(0,0, 4<<ACCURACY,sphere,getRGB(0,192,0));
   engineEllipse(0,0,-4<<ACCURACY,1<<ACCURACY,1<<ACCURACY,getRGB(192,0,0));
   engineEllipse(0, 4<<ACCURACY,0,1<<ACCURACY,1<<ACCURACY,getRGB(0,0,192));

@@ -33,7 +33,7 @@ void engineSetWindowYasm(int y)
 }
 
 #ifdef ARMCPU
-void hline(SDL_Surface* screen,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check)
+void hline(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check)
 {
   //l_++;
   if (check)
@@ -52,7 +52,6 @@ void hline(SDL_Surface* screen,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char ch
     if (l_<=0)
       return;
   }
-  Uint16* pixel=(Uint16*)screen->pixels;
   register Uint32 pos asm("r0");
   pos=((x+y*engineWindowXasm)<<1)+(Uint32)pixel;
   register Uint32 l asm("r1");
