@@ -23,6 +23,13 @@
 #include "sparrowDefines.h"
 #include <SDL.h>
 
+typedef struct SspInput *PspInput;
+typedef struct SspInput {
+  signed char axis[2];
+  char button[20];
+} TspInput;
+
+
 /* spInitCore initializes SDL, SDL_TTF and other stuff. */
 PREFIX void spInitCore(void);
 
@@ -39,6 +46,8 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
 
 /* spFlip draws the changes in the window Surface on the screen. */
 PREFIX void spFlip(void);
+
+PREFIX PspInput spGetInput(void);
 
 /* spQuitCore just quits the Core. If you don't use it, everytime you close
  * your game, the flying spaghetti monster will kill a kitten.*/
