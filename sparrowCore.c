@@ -40,7 +40,7 @@ PREFIX void spInitCore(void)
     spWindowY = 240;
   #endif 
   spZoom=1<<SP_ACCURACY;
-  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK/* | SDL_INIT_NOPARACHUTE*/); 
+  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO/* | SDL_INIT_NOPARACHUTE*/); 
   #ifdef MOBILE_DEVICE
     spJoy=SDL_JoystickOpen(0);
   #endif

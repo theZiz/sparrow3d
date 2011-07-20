@@ -466,6 +466,7 @@ void engineHandleEvent(void)
               engineInput.button[BUTTON_START]=1;
               break;
           #else //PC
+            case SDLK_KP_ENTER:
             case SDLK_RETURN:
               engineInput.button[BUTTON_START]=1;
               break;
@@ -578,6 +579,7 @@ void engineHandleEvent(void)
               engineInput.button[BUTTON_START]=0;
               break;
           #else //PC
+            case SDLK_KP_ENTER:
             case SDLK_RETURN:
               engineInput.button[BUTTON_START]=0;
               break;
