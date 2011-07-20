@@ -1,2 +1,4 @@
 *.o
 testengine
+testsparrow
+libsparrow3d.so
