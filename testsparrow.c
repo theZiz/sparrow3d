@@ -35,6 +35,8 @@ int calc_test(Uint32 steps)
   for (i = 0; i < steps; i++) 
     pixel[rand()%(spGetWindowSurface()->w*spGetWindowSurface()->h)] = rand()%65536;
   SDL_UnlockSurface(spGetWindowSurface());
+  if (spGetInput()->button[SP_BUTTON_START])
+    return 1;
   return 0; 
 }
 
