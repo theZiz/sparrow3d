@@ -194,6 +194,7 @@ void spHandleEvent(void)
               spInput.button[SP_BUTTON_START]=1;
               break;
           #else //PC
+            case SDLK_KP_ENTER:
             case SDLK_RETURN:
               spInput.button[SP_BUTTON_START]=1;
               break;
@@ -306,6 +307,7 @@ void spHandleEvent(void)
               spInput.button[SP_BUTTON_START]=0;
               break;
           #else //PC
+            case SDLK_KP_ENTER:
             case SDLK_RETURN:
               spInput.button[SP_BUTTON_START]=0;
               break;

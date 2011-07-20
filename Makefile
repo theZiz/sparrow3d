@@ -49,10 +49,10 @@ graphicstuff.o: graphicstuff.c graphicstuff.h
 graphicstuff-asm.o: graphicstuff-asm.c graphicstuff.h
 	$(CPP) $(CFLAGS_ASM) -c graphicstuff-asm.c $(SDL) $(INCLUDE)
 
-sparrowCore.o: sparrowCore.c sparrowCore.h sparrowCore.o
+sparrowCore.o: sparrowCore.c sparrowCore.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE)
 
-sparrowMath.o: sparrowMath.c sparrowMath.h sparrowMath.o
+sparrowMath.o: sparrowMath.c sparrowMath.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowMath.c $(SDL) $(INCLUDE)
 
 clean:
