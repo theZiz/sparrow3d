@@ -26,7 +26,13 @@ SDL = `sdl-config --cflags`
 #INCLUDE = -I/opt/pandora/arm-2011.03/usr/include
 #LIB = -L/opt/pandora/arm-2011.03/usr/lib -Wl,-rpath=/opt/pandora/arm-2011.03/usr/lib -lpnd
 
-all: testengine
+all: sparrow3d testsparrow
+
+testsparrow: testsparrow.c sparrow3d
+	$(CPP) -O3 testsparrow.c $(SDL) $(INCLUDE) -L. $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm -lsparrow3d $(ORIGINALFW) -o testsparrow
+
+sparrow3d: sparrowCore.o sparrowMath.o
+	$(CPP) -shared -Wl,-soname,libsparrow3d.so -o libsparrow3d.so sparrowCore.o sparrowMath.o $(SDL) $(INCLUDE) $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm $(ORIGINALFW)
 
 testengine: testengine.c meshloader.o 3dengine.o graphicstuff.o graphicstuff-asm.o
 	$(CPP) $(CFLAGS) testengine.c 3dengine.o graphicstuff.o meshloader.o graphicstuff-asm.o $(SDL) $(INCLUDE) $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm $(ORIGINALFW) -o testengine
@@ -43,6 +49,13 @@ graphicstuff.o: graphicstuff.c graphicstuff.h
 graphicstuff-asm.o: graphicstuff-asm.c graphicstuff.h
 	$(CPP) $(CFLAGS_ASM) -c graphicstuff-asm.c $(SDL) $(INCLUDE)
 
+sparrowCore.o: sparrowCore.c sparrowCore.h sparrowCore.o
+	$(CPP) -O3 -fPIC -c sparrowCore.c $(SDL) $(INCLUDE)
+
+sparrowMath.o: sparrowMath.c sparrowMath.h sparrowMath.o
+	$(CPP) -O3 -fPIC -c sparrowMath.c $(SDL) $(INCLUDE)
+
 clean:
 	rm *.o
-	rm testengine	
+	rm libsparrow3d.so
+	rm testsparrow
