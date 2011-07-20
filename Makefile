@@ -29,7 +29,7 @@ SDL = `sdl-config --cflags`
 all: sparrow3d testsparrow
 
 testsparrow: testsparrow.c sparrow3d
-	$(CPP) -O3 testsparrow.c $(SDL) $(INCLUDE) -L. $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm -lsparrow3d $(ORIGINALFW) -o testsparrow
+	$(CPP) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) -L. $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm -lsparrow3d $(ORIGINALFW) -o testsparrow
 
 sparrow3d: sparrowCore.o sparrowMath.o
 	$(CPP) -shared -Wl,-soname,libsparrow3d.so -o libsparrow3d.so sparrowCore.o sparrowMath.o $(SDL) $(INCLUDE) $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm $(ORIGINALFW)
@@ -50,10 +50,10 @@ graphicstuff-asm.o: graphicstuff-asm.c graphicstuff.h
 	$(CPP) $(CFLAGS_ASM) -c graphicstuff-asm.c $(SDL) $(INCLUDE)
 
 sparrowCore.o: sparrowCore.c sparrowCore.h sparrowCore.o
-	$(CPP) -O3 -fPIC -c sparrowCore.c $(SDL) $(INCLUDE)
+	$(CPP) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE)
 
 sparrowMath.o: sparrowMath.c sparrowMath.h sparrowMath.o
-	$(CPP) -O3 -fPIC -c sparrowMath.c $(SDL) $(INCLUDE)
+	$(CPP) $(CFLAGS) -fPIC -c sparrowMath.c $(SDL) $(INCLUDE)
 
 clean:
 	rm *.o
