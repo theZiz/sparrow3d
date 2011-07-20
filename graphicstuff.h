@@ -74,9 +74,9 @@ void setFrustumf2(Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint
 void setPerspective(float fovyInDegrees, float aspectRatio,
                       float znear, float zfar);
     
-void hline(SDL_Surface* screen,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check);
+void hline(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check);
 
-void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,Sint16 y3,Sint16 color);
+void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,Sint16 y3,Uint16 color);
 
 void quad(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,Sint16 y3,Sint16 x4,Sint16 y4,Uint16 color);
 

@@ -280,7 +280,7 @@ void setPerspective(float fovyInDegrees, float aspectRatio,
 
 #ifndef ARMCPU
 #ifndef X86CPU   
-void hline(SDL_Surface* screen,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check)
+void hline(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check)
 {
   //l_++;
   if (check)
@@ -299,7 +299,6 @@ void hline(SDL_Surface* screen,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char ch
     if (l_<=0)
       return;
   }
-  Uint16* pixel=(Uint16*)screen->pixels;
   Uint32 pos=(x+y*engineWindowX);
   int a;
   for (a=pos;a<pos+l_;a++)
@@ -309,7 +308,7 @@ void hline(SDL_Surface* screen,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char ch
 #endif
 
 #ifdef X86CPU
-void hline(SDL_Surface* screen,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check)
+void hline(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check)
 {
   //l_++;
   if (check)
@@ -328,7 +327,6 @@ void hline(SDL_Surface* screen,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char ch
     if (l_<=0)
       return;
   }
-  Uint16* pixel=(Uint16*)screen->pixels;
   Uint32 pos=(x+y*engineWindowX);
   if ((int)pixel+(pos<<1) & 2)
   {
@@ -344,10 +342,111 @@ void hline(SDL_Surface* screen,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char ch
 }    
 #endif
 
-
-void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,Sint16 y3,Sint16 color)
+void draw_and_share_X(Uint16* pixel,Sint16 x1,Sint16 x2,Sint16 y,Uint16 color)
 {
-  int mny=y1;
+  if (x1 == x2)
+    return;
+  int nx = x1+x2>>1;
+  if (nx == x1)
+    return;
+  if (nx == x2)
+    return;
+  if (nx>=0 && y>=0 && nx<engineWindowX && y<engineWindowY)
+    pixel[nx+y*engineWindowX] = color;
+  draw_and_share_X(pixel,x1,nx,y,color);
+  draw_and_share_X(pixel,nx,x2,y,color);
+}
+
+
+void draw_and_share(Uint16* pixel,Sint16 x1_l,Sint16 x1_r,Sint16 y1,Sint16 x2_l,Sint16 x2_r,Sint16 y2,Uint16 color)
+{
+  if (y1 == y2)
+    return;
+  int ny = y1+y2>>1;
+  if (ny == y1)
+    return;
+  if (ny == y2)
+    return;
+  int nx_l = x1_l+x2_l>>1;
+  int nx_r = x1_r+x2_r>>1;
+  
+  draw_and_share_X(pixel,nx_l,nx_r,ny,color);
+  /*if (nx_l < nx_r)
+    hline(pixel,nx_l,ny,nx_r-nx_l+1,color,1);
+  else
+    hline(pixel,nx_r,ny,nx_l-nx_r+1,color,1);*/
+  if (nx_l>=0 && ny>=0 && nx_l<engineWindowX && ny<engineWindowY)
+    pixel[nx_l+ny*engineWindowX] = color;
+  if (nx_r>=0 && ny>=0 && nx_r<engineWindowX && ny<engineWindowY)
+    pixel[nx_r+ny*engineWindowX] = color;
+  draw_and_share(pixel,x1_l,x1_r,y1,nx_l,nx_r,ny,color);
+  draw_and_share(pixel,nx_l,nx_r,ny,x2_l,x2_r,y2,color);
+}
+
+void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,Sint16 y3,Uint16 color)
+{
+  if (y1 > y2)
+  {
+      Sint16 temp = y1;
+      y1 = y2;
+      y2 = temp;
+      temp = x1;
+      x1 = x2;
+      x2 = temp;
+  }
+  if (y1 > y3)
+  {
+      Sint16 temp = y1;
+      y1 = y3;
+      y3 = temp;
+      temp = x1;
+      x1 = x3;
+      x3 = temp;
+  }
+  if (y2 < y3)
+  {
+      Sint16 temp = y2;
+      y2 = y3;
+      y3 = temp;
+      temp = x2;
+      x2 = x3;
+      x3 = temp;
+  }
+  
+  
+  SDL_LockSurface(screen);
+  Uint16* pixel=(Uint16*)screen->pixels;
+  
+  
+  int div = y2-y1;
+  if (div!=0)
+  {
+    if (div<0)
+      div = -div;
+    int mul = y3-y1;
+    if (mul < 0)
+      mul = -mul;
+    int x4 = x1+(x2-x1)*mul/div;
+    if (x1>=0 && y1>=0 && x1<engineWindowX && y1<engineWindowY)
+      pixel[x1+y1*engineWindowX] = color;  
+    if (x2>=0 && y2>=0 && x2<engineWindowX && y2<engineWindowY)
+      pixel[x2+y2*engineWindowX] = color;  
+    if (x3>=0 && y3>=0 && x3<engineWindowX && y3<engineWindowY)
+      pixel[x3+y3*engineWindowX] = color;  
+    if (x4>=0 && y3>=0 && x4<engineWindowX && y3<engineWindowY)
+      pixel[x4+y3*engineWindowX] = color;  
+    /*if (x4 < x3)
+      hline(pixel,x4,y3,x3-x4+1,color,1);
+    else
+      hline(pixel,x3,y3,x4-x3+1,color,1);*/
+    draw_and_share_X(pixel,x3,x4,y3,color);
+    draw_and_share(pixel,x1,x1,y1,x4,x3,y3,color);
+    draw_and_share(pixel,x4,x3,y3,x2,x2,y2,color);
+  }
+
+  
+  SDL_UnlockSurface(screen);
+  /*int mny=y1;
   int mxy=y1;
   if (y2<mny) mny=y2;
   if (y2>mxy) mxy=y2;
@@ -368,6 +467,7 @@ void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16
   int mul3=x3-x2; int div3=y3-y2;
 
   SDL_LockSurface(screen);
+  Uint16* pixel = (Uint16*)(screen->pixels);
 
   int yc;
   for (yc=mny;yc<=mxy;yc++)
@@ -409,14 +509,17 @@ void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16
     if (mxx>engineWindowX-1)
       mxx=engineWindowX-1;
     if (mnx<=mxx)
-      hline(screen,mnx,yc,mxx-mnx+1,color,1);
+      hline(pixel,mnx,yc,mxx-mnx+1,color,1);
   }
-  SDL_UnlockSurface(screen);
+  SDL_UnlockSurface(screen);*/
+  
 }
 
 void quad(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,Sint16 y3,Sint16 x4,Sint16 y4,Uint16 color)
 {
-  int mny=y1;
+  triangle(screen,x1,y1,x2,y2,x3,y3,color);
+  triangle(screen,x1,y1,x3,y3,x4,y4,color);
+  /*int mny=y1;
   int mxy=y1;
   if (y2<mny) mny=y2;
   if (y2>mxy) mxy=y2;
@@ -440,7 +543,8 @@ void quad(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,
   int mul4=x4-x3; int div4=y4-y3;
 
   SDL_LockSurface(screen);  
-
+  Uint16* pixel = (Uint16*)(screen->pixels);
+  
   int yc;
   for (yc=mny;yc<=mxy;yc++)
   {
@@ -491,17 +595,18 @@ void quad(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,
     if (mxx>engineWindowX-1)
       mxx=engineWindowX-1;
     if (mnx<=mxx)
-      hline(screen,mnx,yc,mxx-mnx+1,color,1);
+      hline(pixel,mnx,yc,mxx-mnx+1,color,1);
   }
-  SDL_UnlockSurface(screen);
+  SDL_UnlockSurface(screen);*/
 }
 
 void clearScreen(SDL_Surface* screen,Uint16 color)
 {
   SDL_LockSurface(screen);
-  hline(screen,0,0,engineWindowX-1,0,0);
-  hline(screen,0,1,engineWindowX*(engineWindowY-1),color,0); //the last scanlines makes bugs -_-
-  hline(screen,0,engineWindowY-1,engineWindowX-1,0,0);
+  Uint16* pixel = (Uint16*)(screen->pixels);
+  hline(pixel,0,0,engineWindowX-1,0,0);
+  hline(pixel,0,1,engineWindowX*(engineWindowY-1),color,0); //the last scanlines makes bugs -_-
+  hline(pixel,0,engineWindowY-1,engineWindowX-1,0,0);
   SDL_UnlockSurface(screen);
 }
 
@@ -510,6 +615,7 @@ void ellipse(SDL_Surface* screen,Sint16 mx,Sint16 my,Sint16 rx,Sint16 ry,Uint16 
   Sint16 y;
   //rx++;
   //ry++;
+  Uint16* pixel = (Uint16*)(screen->pixels);
   for (y=my-ry;y<=my+ry;y++)
   {
     Sint16 dividend = (ry*ry);
@@ -522,6 +628,6 @@ void ellipse(SDL_Surface* screen,Sint16 mx,Sint16 my,Sint16 rx,Sint16 ry,Uint16 
       continue;
     if (y==my)
       root--;*/
-    hline(screen,mx-root,y,root*2+1,color,1);
+    hline(pixel,mx-root,y,root*2+1,color,1);
   }  
 }
