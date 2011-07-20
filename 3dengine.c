@@ -334,7 +334,7 @@ void initEngine()
     engineSetWindowY(240);
   #endif 
   globalzoom=min((engineGetWindowX()<<ACCURACY)/320,(engineGetWindowY()<<ACCURACY)/240);  //GP2X sei default
-  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK/* | SDL_INIT_NOPARACHUTE*/); 
+  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO/* | SDL_INIT_NOPARACHUTE*/); 
   //engineSurface=SDL_SetVideoMode(windowx,windowy,16,SDL_DOUBLEBUF | SDL_HWPALETTE | SDL_VIDEORESIZE);
   resizeWindow(engineGetWindowX(),engineGetWindowY());
   SDL_ShowCursor(0);
