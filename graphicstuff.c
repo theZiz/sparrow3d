@@ -385,7 +385,7 @@ void draw_and_share(Uint16* pixel,Sint16 x1_l,Sint16 x1_r,Sint16 y1,Sint16 x2_l,
 
 void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,Sint16 y3,Uint16 color)
 {
-  if (y1 > y2)
+/*  if (y1 > y2)
   {
       Sint16 temp = y1;
       y1 = y2;
@@ -434,19 +434,19 @@ void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16
     if (x3>=0 && y3>=0 && x3<engineWindowX && y3<engineWindowY)
       pixel[x3+y3*engineWindowX] = color;  
     if (x4>=0 && y3>=0 && x4<engineWindowX && y3<engineWindowY)
-      pixel[x4+y3*engineWindowX] = color;  
+      pixel[x4+y3*engineWindowX] = color;  */
     /*if (x4 < x3)
       hline(pixel,x4,y3,x3-x4+1,color,1);
     else
       hline(pixel,x3,y3,x4-x3+1,color,1);*/
-    draw_and_share_X(pixel,x3,x4,y3,color);
+/*    draw_and_share_X(pixel,x3,x4,y3,color);
     draw_and_share(pixel,x1,x1,y1,x4,x3,y3,color);
     draw_and_share(pixel,x4,x3,y3,x2,x2,y2,color);
   }
 
   
-  SDL_UnlockSurface(screen);
-  /*int mny=y1;
+  SDL_UnlockSurface(screen);*/
+  int mny=y1;
   int mxy=y1;
   if (y2<mny) mny=y2;
   if (y2>mxy) mxy=y2;
@@ -511,15 +511,15 @@ void triangle(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16
     if (mnx<=mxx)
       hline(pixel,mnx,yc,mxx-mnx+1,color,1);
   }
-  SDL_UnlockSurface(screen);*/
+  SDL_UnlockSurface(screen);
   
 }
 
 void quad(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,Sint16 y3,Sint16 x4,Sint16 y4,Uint16 color)
 {
-  triangle(screen,x1,y1,x2,y2,x3,y3,color);
-  triangle(screen,x1,y1,x3,y3,x4,y4,color);
-  /*int mny=y1;
+  //triangle(screen,x1,y1,x2,y2,x3,y3,color);
+  //triangle(screen,x1,y1,x3,y3,x4,y4,color);
+  int mny=y1;
   int mxy=y1;
   if (y2<mny) mny=y2;
   if (y2>mxy) mxy=y2;
@@ -597,7 +597,7 @@ void quad(SDL_Surface* screen,Sint16 x1,Sint16 y1,Sint16 x2,Sint16 y2,Sint16 x3,
     if (mnx<=mxx)
       hline(pixel,mnx,yc,mxx-mnx+1,color,1);
   }
-  SDL_UnlockSurface(screen);*/
+  SDL_UnlockSurface(screen);
 }
 
 void clearScreen(SDL_Surface* screen,Uint16 color)
