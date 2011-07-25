@@ -100,8 +100,9 @@ PREFIX SDL_Surface* spGetWindowSurface(void)
   return spWindow;
 }
 
-void spHandleEvent(void)
+int spHandleEvent(void)
 {
+  int result = 0;
   #ifdef PANDORA
     /*int s = pnd_evdev_dpad_state ( pnd_evdev_dpads );
     if ( s & pnd_evdev_pandora )
@@ -369,9 +370,11 @@ void spHandleEvent(void)
         break;
       case SDL_VIDEORESIZE:
         spResizeWindow(event.resize.w,event.resize.h);
+        result = 1;
         break;
     }
   }
+  return result;
 }
 
 /*PREFIX signed char spGetAxis(int axis)
@@ -502,7 +505,7 @@ Uint32 oldticks;
 Uint32 olderticks;
 Uint32 newticks;
 
-PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwait)
+PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwait,void (*spResize)(Uint16 w,Uint16 h))
 {
   Uint32 bigsteps=0;
   Uint32 frames=0;
@@ -513,7 +516,8 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
   newticks=olderticks;
   while(back==0 && !spDone ) {
       newticks=SDL_GetTicks();
-      spHandleEvent();
+      if (spHandleEvent() && spResize)
+        spResize(spWindowX,spWindowY);
       spUpdateAxis(0);
       spUpdateAxis(1);
       if (newticks-oldticks > 0)

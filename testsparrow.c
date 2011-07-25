@@ -23,28 +23,37 @@ SDL_Surface* screen;
 
 void draw_test(void)
 {
-
+  spResetZBuffer();
+  spClearTarget(0);
+  int i;
+  SDL_LockSurface(spGetWindowSurface());
+  Uint16* pixel = (Uint16*)(spGetWindowSurface()->pixels);
+  for (i = 0; i < 1000; i++) 
+    pixel[rand()%(spGetWindowSurface()->w*spGetWindowSurface()->h)] = rand()%65536;
+  SDL_UnlockSurface(spGetWindowSurface());
+  spTriangle(4*100,4*100,4*-100,4*300,4*50,4*-100,4*200,4*200,4*-100,12345);
+  spTriangle(4*120,4*50,4*-150,4*270,4*100,4*-70,4*150,4*220,4*20,54321);
   spFlip();
 }
 
 int calc_test(Uint32 steps)
 {
-  int i;
-  SDL_LockSurface(spGetWindowSurface());
-  Uint16* pixel = (Uint16*)(spGetWindowSurface()->pixels);
-  for (i = 0; i < steps; i++) 
-    pixel[rand()%(spGetWindowSurface()->w*spGetWindowSurface()->h)] = rand()%65536;
-  SDL_UnlockSurface(spGetWindowSurface());
   if (spGetInput()->button[SP_BUTTON_START])
     return 1;
   return 0; 
+}
+
+void resize(Uint16 w,Uint16 h)
+{
+  spSelectRenderTarget(spGetWindowSurface());
 }
 
 int main(int argc, char **argv)
 {
   spInitCore();
   screen = spCreateWindow();
-  spLoop(draw_test,calc_test,10);
+  spSelectRenderTarget(screen);
+  spLoop(draw_test,calc_test,10,resize);
   spQuitCore();
   return 0;
 }

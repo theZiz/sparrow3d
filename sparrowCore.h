@@ -42,7 +42,7 @@ PREFIX SDL_Surface* spGetWindowSurface(void);
 
 /* spLoop starts a loop with spDraw as draw function and spCalc as calculation
  * function. If spCalc returns a value != 0, the loop breaks */
-PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwait);
+PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwait,void (*spResize)(Uint16 w,Uint16 h));
 
 /* spFlip draws the changes in the window Surface on the screen. */
 PREFIX void spFlip(void);
