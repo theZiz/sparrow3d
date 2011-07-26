@@ -39,6 +39,8 @@ PREFIX Sint32 spCos(Sint32 value);
   Sint32 spFPdiv(Sint32 numerator,Sint32 denominator);
 #endif
 
+PREFIX Sint32 spSqrt (Sint32 n);
+
 /* spMin return the smallest of 2 numbers */
 PREFIX Sint32 spMin(Sint32 a,Sint32 b);
 

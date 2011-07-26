@@ -18,22 +18,32 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com                         
 */
 #include "../sparrow3d/sparrow3d.h"
+#include <SDL_image.h>
 
 SDL_Surface* screen;
+SDL_Surface* garfield;
 
 void draw_test(void)
 {
+  int thetime = SDL_GetTicks();
   spResetZBuffer();
   spClearTarget(0);
+  printf("                                       clear time: %i ms\n",SDL_GetTicks()-thetime);
   int i;
-  SDL_LockSurface(spGetWindowSurface());
+  /*SDL_LockSurface(spGetWindowSurface());
   Uint16* pixel = (Uint16*)(spGetWindowSurface()->pixels);
   for (i = 0; i < 1000; i++) 
     pixel[rand()%(spGetWindowSurface()->w*spGetWindowSurface()->h)] = rand()%65536;
-  SDL_UnlockSurface(spGetWindowSurface());
-  spTriangle(4*100,4*100,4*-100,4*300,4*50,4*-100,4*200,4*200,4*-100,12345);
-  spTriangle(4*120,4*50,4*-150,4*270,4*100,4*-70,4*150,4*220,4*20,54321);
+  SDL_UnlockSurface(spGetWindowSurface());*/
+  thetime = SDL_GetTicks();
+  spBindTexture(garfield);
+  spTriangle_tex(100,100,-100,0,0,300,50,-100,garfield->w-1,0,200,200,-100,0,garfield->h-1,12345);
+  spTriangle_tex(300,50,-100,garfield->w-1,0,200,200,-100,0,garfield->h-1,300,200,-100,garfield->w-1,garfield->h-1,12345);
+  printf("                  render time: %i ms\n",SDL_GetTicks()-thetime);
+  //spTriangle(120,50,-150,270,100,-70,150,220,20,54321);
+  thetime = SDL_GetTicks();
   spFlip();
+  printf("flip time: %i ms\n",SDL_GetTicks()-thetime);
 }
 
 int calc_test(Uint32 steps)
@@ -48,12 +58,16 @@ void resize(Uint16 w,Uint16 h)
   spSelectRenderTarget(spGetWindowSurface());
 }
 
+
 int main(int argc, char **argv)
 {
   spInitCore();
   screen = spCreateWindow();
   spSelectRenderTarget(screen);
+  SDL_Surface* surface = IMG_Load("./data/garfield.png");
+  garfield = SDL_DisplayFormat(surface);
   spLoop(draw_test,calc_test,10,resize);
+  SDL_FreeSurface(garfield);
   spQuitCore();
   return 0;
 }

@@ -43,27 +43,14 @@ PREFIX void spClearTarget(Uint16 color);
 /* Draws a Triangle without texture and without alpha value */
 PREFIX void spTriangle(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 x3, Sint16 y3, Sint16 z3, Uint16 color);
 
-/* Draws a Triangle without texture and with alpha value */
-PREFIX void spTriangle_alpha(Sint16 x1, Sint16 y1, Sint16 z1, Uint16 c1, Uint8 a1, Sint16 x2, Sint16 y2, Sint16 z2, Uint16 c2, Uint8 a2, Sint16 x3, Sint16 y3, Sint16 z3, Uint16 c3, Uint8 a3);
-
 /* Draws a Triangle with texture and without alpha value */
-PREFIX void spTriangle_tex(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 u1, Sint16 v1, Uint16 c1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 u2, Sint16 v2, Uint16 c2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 u3, Sint16 v3, Uint16 c3);
-
-/* Draws a Triangle with texture and with alpha value */
-PREFIX void spTriangle_tex_alpha(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 u1, Sint16 v1, Uint16 c1, Uint8 a1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 u2, Sint16 v2, Uint16 c2, Uint8 a2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 u3, Sint16 v3, Uint16 c3, Uint8 a3);
+PREFIX void spTriangle_tex(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 u3, Sint16 v3, Uint16 color);
 
 /* Draws a Quad without texture and without alpha value */
-PREFIX void spQuad(Sint16 x1, Sint16 y1, Sint16 z1, Uint16 c1, Sint16 x2, Sint16 y2, Sint16 z2, Uint16 c2, Sint16 x3, Sint16 y3, Sint16 z3, Uint16 c3, Sint16 y4, Sint16 z4, Uint16 c4);
-
-/* Draws a Quad without texture and with alpha value */
-PREFIX void spQuad_alpha(Sint16 x1, Sint16 y1, Sint16 z1, Uint16 c1, Uint8 a1, Sint16 x2, Sint16 y2, Sint16 z2, Uint16 c2, Uint8 a2, Sint16 x3, Sint16 y3, Sint16 z3, Uint16 c3, Uint8 a3, Sint16 x4, Sint16 y4, Sint16 z4, Uint16 c4, Uint8 a4);
+PREFIX void spQuad(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 y4, Sint16 z4, Uint16 color);
 
 /* Draws a Quad with texture and without alpha value */
-PREFIX void spQuad_tex(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 u1, Sint16 v1, Uint16 c1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 u2, Sint16 v2, Uint16 c2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 u3, Sint16 v3, Uint16 c3, Sint16 x4, Sint16 y4, Sint16 z4, Sint16 u4, Sint16 v4, Uint16 c4);
-
-/* Draws a Quad with texture and with alpha value */
-PREFIX void spQuad_tex_alpha(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 u1, Sint16 v1, Uint16 c1, Uint8 a1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 u2, Sint16 v2, Uint16 c2, Uint8 a2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 u3, Sint16 v3, Uint16 c3, Uint8 a3, Sint16 x4, Sint16 y4, Sint16 z4, Sint16 u4, Sint16 v4, Uint16 c4, Uint8 a4);
-
+PREFIX void spQuad_tex(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 u3, Sint16 v3, Sint16 x4, Sint16 y4, Sint16 z4, Sint16 u4, Sint16 v4, Uint16 color);
 
 /* Reallocates the zBuffer. If you switch to a new Render Target, this function
  * is called */

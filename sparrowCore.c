@@ -19,6 +19,7 @@
 */
 #include "sparrowCore.h"
 #include "sparrowMath.h"
+#include <SDL_ttf.h>
 
 int spWindowX;
 int spWindowY;
