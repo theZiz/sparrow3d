@@ -25,25 +25,25 @@ SDL_Surface* garfield;
 
 void draw_test(void)
 {
-  int thetime = SDL_GetTicks();
+  //int thetime = SDL_GetTicks();
   spResetZBuffer();
   spClearTarget(0);
-  printf("                                       clear time: %i ms\n",SDL_GetTicks()-thetime);
+  //printf("                                       clear time: %i ms\n",SDL_GetTicks()-thetime);
   int i;
   /*SDL_LockSurface(spGetWindowSurface());
   Uint16* pixel = (Uint16*)(spGetWindowSurface()->pixels);
   for (i = 0; i < 1000; i++) 
     pixel[rand()%(spGetWindowSurface()->w*spGetWindowSurface()->h)] = rand()%65536;
   SDL_UnlockSurface(spGetWindowSurface());*/
-  thetime = SDL_GetTicks();
+  //thetime = SDL_GetTicks();
   spBindTexture(garfield);
   spTriangle_tex(100,100,-100,0,0,300,50,-100,garfield->w-1,0,200,200,-100,0,garfield->h-1,12345);
   spTriangle_tex(300,50,-100,garfield->w-1,0,200,200,-100,0,garfield->h-1,300,200,-100,garfield->w-1,garfield->h-1,12345);
-  printf("                  render time: %i ms\n",SDL_GetTicks()-thetime);
+  //printf("                  render time: %i ms\n",SDL_GetTicks()-thetime);
   //spTriangle(120,50,-150,270,100,-70,150,220,20,54321);
-  thetime = SDL_GetTicks();
+  //thetime = SDL_GetTicks();
   spFlip();
-  printf("flip time: %i ms\n",SDL_GetTicks()-thetime);
+  //printf("flip time: %i ms\n",SDL_GetTicks()-thetime);
 }
 
 int calc_test(Uint32 steps)

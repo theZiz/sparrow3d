@@ -154,7 +154,7 @@ PREFIX void spTriangle(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 x2, Sint16 y2, Si
   SDL_UnlockSurface(spTarget);
 }
 
-void draw_pixel_tex_ztest_zset(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16 const &u,Sint16 const &v,Uint16 const &color)
+inline void draw_pixel_tex_ztest_zset(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16 const &u,Sint16 const &v,Uint16 const &color)
 {
   if (x>=0 && y>=0 && x<spTargetX && y<spTargetY && (z<0 && z > spZBuffer[x+y*spTargetX]))
   {
@@ -163,7 +163,7 @@ void draw_pixel_tex_ztest_zset(Sint16 const &x,Sint16 const &y,Sint16 const &z,S
   }
 }
 
-void draw_pixel_tex_ztest(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16 const &u,Sint16 const &v,Uint16 const &color)
+inline void draw_pixel_tex_ztest(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16 const &u,Sint16 const &v,Uint16 const &color)
 {
   if (x>=0 && y>=0 && x<spTargetX && y<spTargetY && (z<0 && z > spZBuffer[x+y*spTargetX]))
   {
@@ -171,7 +171,7 @@ void draw_pixel_tex_ztest(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16
   }
 }
 
-void draw_pixel_tex_zset(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16 const &u,Sint16 const &v,Uint16 const &color)
+inline void draw_pixel_tex_zset(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16 const &u,Sint16 const &v,Uint16 const &color)
 {
   if (x>=0 && y>=0 && x<spTargetX && y<spTargetY)
   {
@@ -180,7 +180,7 @@ void draw_pixel_tex_zset(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16 
   }
 }
 
-void draw_pixel_tex(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16 const &u,Sint16 const &v,Uint16 const &color)
+inline void draw_pixel_tex(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16 const &u,Sint16 const &v,Uint16 const &color)
 {
   if (x>=0 && y>=0 && x<spTargetX && y<spTargetY)
   {
@@ -188,7 +188,7 @@ void draw_pixel_tex(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16 const
   }
 }
 
-void (*draw_pixel_tex_func)(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16 const &u,Sint16 const &v,Uint16 const &color) = draw_pixel_tex_ztest_zset;
+//void (*draw_pixel_tex_func)(Sint16 const &x,Sint16 const &y,Sint16 const &z,Sint16 const &u,Sint16 const &v,Uint16 const &color) = draw_pixel_tex_ztest_zset;
 
 void draw_and_share_X_tex(Sint16 const &x1,Sint16 const &z1,Sint16 const &u1,Sint16 const &v1,Sint16 const &x2,Sint16 const &z2,Sint16 const &u2,Sint16 const &v2,Sint16 const &y,Uint16 const &color)
 {
@@ -196,7 +196,7 @@ void draw_and_share_X_tex(Sint16 const &x1,Sint16 const &z1,Sint16 const &u1,Sin
   Sint16 nz = z1+z2>>1;
   Sint16 nu = u1+u2>>1;
   Sint16 nv = v1+v2>>1;
-  draw_pixel_tex_func(nx,y,nz,nu,nv,color);
+  draw_pixel_tex_ztest_zset(nx,y,nz,nu,nv,color);
   if (x1 != nx)
   {
     draw_and_share_X_tex(x1,z1,u1,v1,nx,nz,nu,nv,y,color);
@@ -218,8 +218,8 @@ void draw_and_share_tex(Sint16 const &x1_l,Sint16 const &z1_l,Sint16 const &u1_l
   Sint16 nv_l = v1_l+v2_l>>1;
   Sint16 nv_r = v1_r+v2_r>>1;
 
-  draw_pixel_tex_func(nx_l,ny,nz_l,nu_l,nv_l,color);
-  draw_pixel_tex_func(nx_r,ny,nz_r,nu_r,nv_r,color);
+  draw_pixel_tex_ztest_zset(nx_l,ny,nz_l,nu_l,nv_l,color);
+  draw_pixel_tex_ztest_zset(nx_r,ny,nz_r,nu_r,nv_r,color);
   
   draw_and_share_X_tex(nx_l,nz_l,nu_l,nv_l,nx_r,nz_r,nu_r,nv_r,ny,color);
   if (y1 != ny)
@@ -294,10 +294,10 @@ PREFIX void spTriangle_tex(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 u1, Sint16 v1
     Sint16 u4 = u1+(u2-u1)*mul/div;
     Sint16 v4 = v1+(v2-v1)*mul/div;
 
-    draw_pixel_tex_func(x1,y1,z1,u1,v1,color);
-    draw_pixel_tex_func(x2,y2,z2,u2,v2,color);
-    draw_pixel_tex_func(x3,y3,z3,u3,v3,color);
-    draw_pixel_tex_func(x4,y3,z4,u4,v4,color);
+    draw_pixel_tex_ztest_zset(x1,y1,z1,u1,v1,color);
+    draw_pixel_tex_ztest_zset(x2,y2,z2,u2,v2,color);
+    draw_pixel_tex_ztest_zset(x3,y3,z3,u3,v3,color);
+    draw_pixel_tex_ztest_zset(x4,y3,z4,u4,v4,color);
 
     if (x3<x4)
       draw_and_share_X_tex(x3,z3,u3,v3,x4,z4,u4,v4,y3,color);
@@ -353,7 +353,7 @@ PREFIX Sint32* spGetZBuffer()
 
 void reset_draw_pixel_func()
 {
-  if (spZTest)
+/*  if (spZTest)
   {
     if (spZSet)
       draw_pixel_tex_func = draw_pixel_tex_ztest_zset;
@@ -366,7 +366,7 @@ void reset_draw_pixel_func()
       draw_pixel_tex_func = draw_pixel_tex_zset;
     else
       draw_pixel_tex_func = draw_pixel_tex;
-  }  
+  }*/  
 }
 
 PREFIX void spSetZTest(char test)
