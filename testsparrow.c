@@ -37,10 +37,10 @@ void draw_test(void)
   SDL_UnlockSurface(spGetWindowSurface());*/
   //thetime = SDL_GetTicks();
   spBindTexture(garfield);
-  spTriangle_tex(100,100,-100,0,0,300,50,-100,garfield->w-1,0,200,200,-100,0,garfield->h-1,12345);
-  spTriangle_tex(300,50,-100,garfield->w-1,0,200,200,-100,0,garfield->h-1,300,200,-100,garfield->w-1,garfield->h-1,12345);
+  spTriangle(120,50,-150,270,100,-70,150,220,20,54321);
+  spTriangle_tex(100,100,-100,0,0,300,50,-100,garfield->w-1,0,200,200,-100,0,garfield->h-1,34567);
+  spTriangle_tex(300,50,-100,garfield->w-1,0,200,200,-100,0,garfield->h-1,300,200,-100,garfield->w-1,garfield->h-1,45678);
   //printf("                  render time: %i ms\n",SDL_GetTicks()-thetime);
-  //spTriangle(120,50,-150,270,100,-70,150,220,20,54321);
   //thetime = SDL_GetTicks();
   spFlip();
   //printf("flip time: %i ms\n",SDL_GetTicks()-thetime);

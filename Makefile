@@ -1,19 +1,18 @@
 #-mfloat-abi=softfp
-
 CFLAGS = -O3
 CFLAGS_ASM = -O2
 #==PC==
-CPP = gcc -g -march=native -DX86CPU
-CXX = g++ -g -march=native -DX86CPU
-SDL = `sdl-config --cflags`
+#CPP = gcc -g -march=native -DX86CPU
+#CXX = g++ -g -march=native -DX86CPU
+#SDL = `sdl-config --cflags`
 #==Consoles==
 #==GP2X/WIZ==
 #ORIGINALFW = -static -lfreetype -lpng -lpthread -lz -ljpeg -lm -s
-#CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X
-#CXX = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-g++ -DMOBILE_DEVICE -DARMCPU -DGP2X
-#SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags`
-#INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
-#LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib
+CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -std=c99
+CXX = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-g++ -DMOBILE_DEVICE -DARMCPU -DGP2X
+SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags`
+INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
+LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib
 #==Caanoo==
 #CPP = /opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/bin/arm-gph-linux-gnueabi-gcc -DMOBILE_DEVICE -DARMCPU -DCAANOO
 #CXX = /opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/bin/arm-gph-linux-gnueabi-g++ -DMOBILE_DEVICE -DARMCPU -DCAANOO
@@ -36,19 +35,19 @@ SDL = `sdl-config --cflags`
 all: sparrow3d testsparrow
 
 testsparrow: testsparrow.c sparrow3d
-	$(CXX) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) -L. $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm -lsparrow3d $(ORIGINALFW) -o testsparrow
+	$(CPP) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) -L. $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm -lsparrow3d $(ORIGINALFW) -o testsparrow
 
 sparrow3d: sparrowCore.o sparrowMath.o sparrowPrimitives.o
-	$(CXX) -shared -Wl,-soname,libsparrow3d.so -o libsparrow3d.so sparrowCore.o sparrowMath.o sparrowPrimitives.o $(SDL) $(INCLUDE) $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm $(ORIGINALFW)
+	$(CPP) -shared -Wl,-soname,libsparrow3d.so -o libsparrow3d.so sparrowCore.o sparrowMath.o sparrowPrimitives.o $(SDL) $(INCLUDE) $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm $(ORIGINALFW)
 
 sparrowCore.o: sparrowCore.c sparrowCore.h
-	$(CXX) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE)
+	$(CPP) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE)
 
 sparrowPrimitives.o: sparrowPrimitives.c sparrowPrimitives.h
-	$(CXX) $(CFLAGS)  -ftree-vectorize -ffast-math -fsingle-precision-constant -fPIC -c sparrowPrimitives.c $(SDL) $(INCLUDE)
+	$(CPP) $(CFLAGS)  -ftree-vectorize -ffast-math -fsingle-precision-constant -fPIC -c sparrowPrimitives.c $(SDL) $(INCLUDE)
 
 sparrowMath.o: sparrowMath.c sparrowMath.h
-	$(CXX) $(CFLAGS) -fPIC -c sparrowMath.c $(SDL) $(INCLUDE)
+	$(CPP) $(CFLAGS) -fPIC -c sparrowMath.c $(SDL) $(INCLUDE)
 
 clean:
 	rm *.o
