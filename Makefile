@@ -37,14 +37,17 @@ all: sparrow3d testsparrow
 testsparrow: testsparrow.c sparrow3d
 	$(CPP) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) -L. $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm -lsparrow3d $(ORIGINALFW) -o testsparrow
 
-sparrow3d: sparrowCore.o sparrowMath.o sparrowPrimitives.o
-	$(CPP) -shared -Wl,-soname,libsparrow3d.so -o libsparrow3d.so sparrowCore.o sparrowMath.o sparrowPrimitives.o $(SDL) $(INCLUDE) $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm $(ORIGINALFW)
+sparrow3d: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowRenderer.o
+	$(CPP) -shared -Wl,-soname,libsparrow3d.so -o libsparrow3d.so sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowRenderer.o $(SDL) $(INCLUDE) $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm $(ORIGINALFW)
 
 sparrowCore.o: sparrowCore.c sparrowCore.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE)
 
 sparrowPrimitives.o: sparrowPrimitives.c sparrowPrimitives.h
 	$(CPP) $(CFLAGS)  -ftree-vectorize -ffast-math -fsingle-precision-constant -fPIC -c sparrowPrimitives.c $(SDL) $(INCLUDE)
+
+sparrowRenderer.o: sparrowRenderer.c sparrowRenderer.h
+	$(CPP) $(CFLAGS) -fPIC -c sparrowRenderer.c $(SDL) $(INCLUDE)
 
 sparrowMath.o: sparrowMath.c sparrowMath.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowMath.c $(SDL) $(INCLUDE)

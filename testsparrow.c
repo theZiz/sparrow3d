@@ -25,26 +25,26 @@ SDL_Surface* garfield;
 
 void draw_test(void)
 {
-  //int thetime = SDL_GetTicks();
   spResetZBuffer();
   spClearTarget(0);
-  //printf("                                       clear time: %i ms\n",SDL_GetTicks()-thetime);
-  int i;
-  /*SDL_LockSurface(spGetWindowSurface());
-  Uint16* pixel = (Uint16*)(spGetWindowSurface()->pixels);
-  for (i = 0; i < 1000; i++) 
-    pixel[rand()%(spGetWindowSurface()->w*spGetWindowSurface()->h)] = rand()%65536;
-  SDL_UnlockSurface(spGetWindowSurface());*/
-  //thetime = SDL_GetTicks();
+  spIdentity();
+  spTranslate(0,0,-5<<SP_ACCURACY);
+  spRotate(1<<SP_ACCURACY-1,1<<SP_ACCURACY,1<<SP_ACCURACY-2,SDL_GetTicks()*64);
   spBindTexture(garfield);
-  spTriangle(120+(spCos(SDL_GetTicks()*16)>>SP_ACCURACY-9),50+(spSin(SDL_GetTicks()*16)>>SP_ACCURACY-8),-200,270,100,-120,150,220,20,54321);
-  //spTriangle(120,101,-150,270,100,-70,150,220,20,54321);
-  //spQuad_tex(100,100,-100,0,0,300,50,-100,garfield->w-1,0,300,200,-100,garfield->w-1,garfield->h-1,200,200,-100,0,garfield->h-1,65535);
-  spQuad_tex(50-(spCos(SDL_GetTicks()*64)>>SP_ACCURACY-6),10,-100,0,0,270,10-(spSin(SDL_GetTicks()*64)>>SP_ACCURACY-6),-100,garfield->w-1,0,270-(spCos(SDL_GetTicks()*64)>>SP_ACCURACY-6),210,-100,garfield->w-1,garfield->h-1,50,210-(spSin(SDL_GetTicks()*64)>>SP_ACCURACY-6),-100,0,garfield->h-1,65535);
-  //printf("                  render time: %i ms\n",SDL_GetTicks()-thetime);
-  //thetime = SDL_GetTicks();
+  spTriangle3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY,0<<SP_ACCURACY,
+                0<<SP_ACCURACY,-1<<SP_ACCURACY,0<<SP_ACCURACY,
+                1<<SP_ACCURACY, 1<<SP_ACCURACY,0<<SP_ACCURACY,65535);
+  spTriangle3D( 0<<SP_ACCURACY, 0<<SP_ACCURACY,-1<<SP_ACCURACY,
+                0<<SP_ACCURACY,-1<<SP_ACCURACY,0<<SP_ACCURACY,
+               -1<<SP_ACCURACY, 1<<SP_ACCURACY,0<<SP_ACCURACY,12345);
+  spTriangle3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY,0<<SP_ACCURACY,
+                1<<SP_ACCURACY, 1<<SP_ACCURACY,0<<SP_ACCURACY,
+                0<<SP_ACCURACY, 0<<SP_ACCURACY,-1<<SP_ACCURACY,23456);
+  spTriangle3D( 0<<SP_ACCURACY, 0<<SP_ACCURACY,-1<<SP_ACCURACY,
+                1<<SP_ACCURACY, 1<<SP_ACCURACY,0<<SP_ACCURACY,
+                0<<SP_ACCURACY,-1<<SP_ACCURACY,0<<SP_ACCURACY,34567);
+  
   spFlip();
-  //printf("flip time: %i ms\n",SDL_GetTicks()-thetime);
 }
 
 int calc_test(Uint32 steps)
@@ -57,6 +57,7 @@ int calc_test(Uint32 steps)
 void resize(Uint16 w,Uint16 h)
 {
   spSelectRenderTarget(spGetWindowSurface());
+  spSetPerspective(50.0,(float)spGetWindowSurface()->w/(float)spGetWindowSurface()->h,0.1,100);
 }
 
 
@@ -68,6 +69,7 @@ int main(int argc, char **argv)
   spSelectRenderTarget(screen);
   SDL_Surface* surface = IMG_Load("./data/garfield.png");
   garfield = SDL_DisplayFormat(surface);
+  spSetPerspective(50.0,(float)spGetWindowSurface()->w/(float)spGetWindowSurface()->h,0.1,100);
   spLoop(draw_test,calc_test,10,resize);
   SDL_FreeSurface(garfield);
   spQuitCore();
