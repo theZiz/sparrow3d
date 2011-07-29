@@ -1,18 +1,18 @@
 #-mfloat-abi=softfp
-CFLAGS = -O3
-CFLAGS_ASM = -O2
+CFLAGS = -O3 -std=c99
+CFLAGS_ASM = -O2 -std=c99
 #==PC==
-#CPP = gcc -g -march=native -DX86CPU
 #CXX = g++ -g -march=native -DX86CPU
-#SDL = `sdl-config --cflags`
+CPP = gcc -g -march=native -DX86CPU
+SDL = `sdl-config --cflags`
 #==Consoles==
 #==GP2X/WIZ==
 #ORIGINALFW = -static -lfreetype -lpng -lpthread -lz -ljpeg -lm -s
-CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -std=c99
-CXX = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-g++ -DMOBILE_DEVICE -DARMCPU -DGP2X
-SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags`
-INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
-LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib
+#CXX = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-g++ -DMOBILE_DEVICE -DARMCPU -DGP2X
+#CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X
+#SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags`
+#INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
+#LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib
 #==Caanoo==
 #CPP = /opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/bin/arm-gph-linux-gnueabi-gcc -DMOBILE_DEVICE -DARMCPU -DCAANOO
 #CXX = /opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/bin/arm-gph-linux-gnueabi-g++ -DMOBILE_DEVICE -DARMCPU -DCAANOO

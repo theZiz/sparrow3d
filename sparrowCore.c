@@ -19,6 +19,7 @@
 */
 #include "sparrowCore.h"
 #include "sparrowMath.h"
+#include "sparrowPrimitives.h"
 #include <SDL_ttf.h>
 
 int spWindowX;
@@ -55,6 +56,7 @@ PREFIX void spInitCore(void)
     spInput.button[i]=0;
   spInput.axis[0]=0;
   spInput.axis[1]=0;
+  spInitPrimitives();
 }
 
 void spResizeWindow(int x,int y)

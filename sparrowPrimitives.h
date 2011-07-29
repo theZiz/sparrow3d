@@ -23,6 +23,15 @@
 #include "sparrowDefines.h"
 #include <SDL.h>
 
+/* IMPORTANT: That means, that you still have 14 Bit for your Pixel Range
+ * minus 1 Bit for the sign. So you have 13 Bit == 8192 Pixel Width or Height
+ * Maximum!, if you use the software renderer! Furthermore the lookup table
+ * for the one_over_x function needs a 18 Bit Array. That is 1 MByte!*/
+#define SP_PRIM_ACCURACY 18
+
+/* Initializes some Look up tables. Is called from sparrowCore. */
+PREFIX void spInitPrimitives();
+
 /* Selects the Render Surface. Attention: With every Target change the
  * Z Buffer will be cleaned! */
 PREFIX void spSelectRenderTarget(SDL_Surface* target);
@@ -47,7 +56,7 @@ PREFIX void spTriangle(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 x2, Sint16 y2, Si
 PREFIX void spTriangle_tex(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 u3, Sint16 v3, Uint16 color);
 
 /* Draws a Quad without texture and without alpha value */
-PREFIX void spQuad(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 y4, Sint16 z4, Uint16 color);
+PREFIX void spQuad(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 x4,Sint16 y4, Sint16 z4, Uint16 color);
 
 /* Draws a Quad with texture and without alpha value */
 PREFIX void spQuad_tex(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 u3, Sint16 v3, Sint16 x4, Sint16 y4, Sint16 z4, Sint16 u4, Sint16 v4, Uint16 color);
