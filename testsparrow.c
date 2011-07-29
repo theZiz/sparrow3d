@@ -37,10 +37,10 @@ void draw_test(void)
   SDL_UnlockSurface(spGetWindowSurface());*/
   //thetime = SDL_GetTicks();
   spBindTexture(garfield);
-  //spTriangle(120+(spCos(SDL_GetTicks()*16)>>SP_ACCURACY-9),50+(spSin(SDL_GetTicks()*16)>>SP_ACCURACY-8),-150,270,100,-70,150,220,20,54321);
+  spTriangle(120+(spCos(SDL_GetTicks()*16)>>SP_ACCURACY-9),50+(spSin(SDL_GetTicks()*16)>>SP_ACCURACY-8),-200,270,100,-120,150,220,20,54321);
   //spTriangle(120,101,-150,270,100,-70,150,220,20,54321);
   //spQuad_tex(100,100,-100,0,0,300,50,-100,garfield->w-1,0,300,200,-100,garfield->w-1,garfield->h-1,200,200,-100,0,garfield->h-1,65535);
-  spQuad_tex(50,10,-100,0,0,270,10,-100,garfield->w-1,0,270,210,-100,garfield->w-1,garfield->h-1,50+(spSin(SDL_GetTicks()*64)>>SP_ACCURACY-6),210,-100,0,garfield->h-1,65535);
+  spQuad_tex(50-(spCos(SDL_GetTicks()*64)>>SP_ACCURACY-6),10,-100,0,0,270,10-(spSin(SDL_GetTicks()*64)>>SP_ACCURACY-6),-100,garfield->w-1,0,270-(spCos(SDL_GetTicks()*64)>>SP_ACCURACY-6),210,-100,garfield->w-1,garfield->h-1,50,210-(spSin(SDL_GetTicks()*64)>>SP_ACCURACY-6),-100,0,garfield->h-1,65535);
   //printf("                  render time: %i ms\n",SDL_GetTicks()-thetime);
   //thetime = SDL_GetTicks();
   spFlip();
