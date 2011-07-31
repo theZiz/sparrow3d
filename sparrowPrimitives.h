@@ -28,9 +28,14 @@
  * Maximum!, if you use the software renderer! Furthermore the lookup table
  * for the one_over_x function needs a 18 Bit Array. That is 1 MByte!*/
 #define SP_PRIM_ACCURACY 18
+#define SP_HALF_PRIM_ACCURACY 9
+#define SP_MAX_NEGATIVE -0x80000000
 
 /* Initializes some Look up tables. Is called from sparrowCore. */
 PREFIX void spInitPrimitives();
+
+/* Returns a pointer th 1<<SP_PRIM_ACCURACY values of 1/x */
+PREFIX Sint32* spGetOne_over_x_pointer();
 
 /* Selects the Render Surface. Attention: With every Target change the
  * Z Buffer will be cleaned! */
@@ -50,16 +55,16 @@ PREFIX void spSetZSet(char test);
 PREFIX void spClearTarget(Uint16 color);
 
 /* Draws a Triangle without texture and without alpha value */
-PREFIX void spTriangle(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 x3, Sint16 y3, Sint16 z3, Uint16 color);
+PREFIX void spTriangle(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 x3, Sint16 y3, Sint32 z3, Uint16 color);
 
 /* Draws a Triangle with texture and without alpha value */
-PREFIX void spTriangle_tex(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 u3, Sint16 v3, Uint16 color);
+PREFIX void spTriangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Uint16 color);
 
 /* Draws a Quad without texture and without alpha value */
-PREFIX void spQuad(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 x4,Sint16 y4, Sint16 z4, Uint16 color);
+PREFIX void spQuad(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 x4,Sint16 y4, Sint32 z4, Uint16 color);
 
 /* Draws a Quad with texture and without alpha value */
-PREFIX void spQuad_tex(Sint16 x1, Sint16 y1, Sint16 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint16 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint16 z3, Sint16 u3, Sint16 v3, Sint16 x4, Sint16 y4, Sint16 z4, Sint16 u4, Sint16 v4, Uint16 color);
+PREFIX void spQuad_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Sint16 x4, Sint16 y4, Sint32 z4, Sint16 u4, Sint16 v4, Uint16 color);
 
 /* Reallocates the zBuffer. If you switch to a new Render Target, this function
  * is called */
