@@ -35,35 +35,34 @@ void draw_test(void)
   
   spBindTexture(garfield);
   //Front / Back
-  spTranslate(-3<<SP_ACCURACY,0,0);
-  spQuadTex3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY, 1<<SP_ACCURACY,0,garfield->h-1,
-              -1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,0,0,
-               1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,garfield->w-1,0,
-               1<<SP_ACCURACY, 1<<SP_ACCURACY, 1<<SP_ACCURACY,garfield->w-1,garfield->h-1,12345 | 31727);
-  spQuadTex3D( 1<<SP_ACCURACY, 1<<SP_ACCURACY,-1<<SP_ACCURACY,0,garfield->h-1,
-               1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,0,0,
-              -1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,garfield->w-1,0,
-              -1<<SP_ACCURACY, 1<<SP_ACCURACY,-1<<SP_ACCURACY,garfield->w-1,garfield->h-1,23456 | 31727);
+  spQuadTex3D(-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,0,garfield->h-1,
+              -3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,0,0,
+               3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,garfield->w-1,0,
+               3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,garfield->w-1,garfield->h-1,12345 | 31727);
+  spQuadTex3D( 3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,0,garfield->h-1,
+               3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,0,0,
+              -3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,garfield->w-1,0,
+              -3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,garfield->w-1,garfield->h-1,23456 | 31727);
   //Left / Right
-  spQuadTex3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY, 1<<SP_ACCURACY,0,garfield->h-1,
-              -1<<SP_ACCURACY, 1<<SP_ACCURACY,-1<<SP_ACCURACY,0,0,
-              -1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,garfield->w-1,0,
-              -1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,garfield->w-1,garfield->h-1,34567 | 31727);
-  spQuadTex3D( 1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,0,garfield->h-1,
-               1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,0,0,
-               1<<SP_ACCURACY, 1<<SP_ACCURACY,-1<<SP_ACCURACY,garfield->w-1,0,
-               1<<SP_ACCURACY, 1<<SP_ACCURACY, 1<<SP_ACCURACY,garfield->w-1,garfield->h-1,45678 | 31727);  
+  spQuadTex3D(-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,0,garfield->h-1,
+              -3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,0,0,
+              -3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,garfield->w-1,0,
+              -3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,garfield->w-1,garfield->h-1,34567 | 31727);
+  spQuadTex3D( 3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,0,garfield->h-1,
+               3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,0,0,
+               3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,garfield->w-1,0,
+               3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,garfield->w-1,garfield->h-1,45678 | 31727);  
   //Up / Down
-  spQuadTex3D( 1<<SP_ACCURACY, 1<<SP_ACCURACY, 1<<SP_ACCURACY,0,garfield->h-1,
-               1<<SP_ACCURACY, 1<<SP_ACCURACY,-1<<SP_ACCURACY,0,0,
-              -1<<SP_ACCURACY, 1<<SP_ACCURACY,-1<<SP_ACCURACY,garfield->w-1,0,
-              -1<<SP_ACCURACY, 1<<SP_ACCURACY, 1<<SP_ACCURACY,garfield->w-1,garfield->h-1,56789 | 31727);
-  spQuadTex3D(-1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,0,garfield->h-1,
-              -1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,0,0,
-               1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,garfield->w-1,0,
-               1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,garfield->w-1,garfield->h-1,61234 | 31727);
+  spQuadTex3D( 3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,0,garfield->h-1,
+               3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,0,0,
+              -3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,garfield->w-1,0,
+              -3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,garfield->w-1,garfield->h-1,56789 | 31727);
+  spQuadTex3D(-3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,0,garfield->h-1,
+              -3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,0,0,
+               3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1,garfield->w-1,0,
+               3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,garfield->w-1,garfield->h-1,61234 | 31727);
   //Front / Back
-  spTranslate( 3<<SP_ACCURACY,0,0);
+  spTranslate(-3<<SP_ACCURACY,0,0);
   spQuad3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY, 1<<SP_ACCURACY,
            -1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,
             1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,
