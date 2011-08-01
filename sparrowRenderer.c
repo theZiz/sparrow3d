@@ -23,18 +23,22 @@
 #include "sparrowMath.h"
 #define M_PI 3.14159265358979323846
 #include <math.h>
-#include <stdio.h>
+#include <string.h>
 
 Sint32 spModelView[16];
 Sint32 spProjection[16];
+Sint32 spX_to_Y;
 
 inline Sint32 fpdiv(Sint32 a,Sint32 b)
 {
+  #ifdef FAST_BUT_UGLY_2
   if (b>=0 && b<(1<<SP_PRIM_ACCURACY))
     return a*spGetOne_over_x_pointer()[b]>>SP_PRIM_ACCURACY-SP_ACCURACY;
   if (b <0 && b>(-1<<SP_PRIM_ACCURACY))
     return -a*spGetOne_over_x_pointer()[-b]>>SP_PRIM_ACCURACY-SP_ACCURACY;
+  #endif
   return ((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY;
+
 }
 
 inline void spSetFrustumf2(Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
@@ -77,6 +81,8 @@ PREFIX void spSetPerspective(float fovyInDegrees, float aspectRatio,
                                 (Sint32)(ymax*SP_ACCURACY_FACTOR),
                                 (Sint32)(znear*SP_ACCURACY_FACTOR),
                                 (Sint32)(zfar*SP_ACCURACY_FACTOR));
+    Sint32 spRatio = (Sint32)(aspectRatio*SP_ACCURACY_FACTOR);
+    spX_to_Y = (spGetWindowSurface()->w<<SP_ACCURACY)/spGetWindowSurface()->h;
 }
 
 PREFIX void spIdentity()
@@ -237,8 +243,10 @@ PREFIX void spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 x2,Sint32 y2,Sint32 z2,
   Sint32 x3,Sint32 y3,Sint32 z3,Uint16 color)
 {
-  int windowX=spGetWindowSurface()->w;
-  int windowY=spGetWindowSurface()->h;
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
 
   Sint32 tx1,ty1,tz1,tw1;
   Sint32 tx2,ty2,tz2,tw2;
@@ -249,9 +257,18 @@ PREFIX void spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
 
   Sint32 normal[3];
   spCalcNormal(tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3,normal);
-
-         x1 = fimul(spProjection[ 0],tx1) + fimul(spProjection[ 8],tz1);
-         y1 = fimul(spProjection[ 5],ty1) + fimul(spProjection[ 9],tz1);
+  Sint32 leftX  = -spX_to_Y;
+  Sint32 rightX = +spX_to_Y;
+  Sint32 topY  = +(1<<SP_ACCURACY);
+  Sint32 bottomY = -(1<<SP_ACCURACY);
+  if (fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+      fimul(tx1-rightX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+      fimul(tx1- leftX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+      fimul(tx1-rightX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) )        
+    return;
+  
+         x1 = fimul(spProjection[ 0],tx1);// + fimul(spProjection[ 8],tz1);
+         y1 = fimul(spProjection[ 5],ty1);// + fimul(spProjection[ 9],tz1);
 //         z1 = fimul(spProjection[10],tz1) + fimul(spProjection[14],tw1);
   Sint32 w1 = fimul(spProjection[11],tz1);
   if (w1 == 0)
@@ -261,8 +278,8 @@ PREFIX void spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 ny1 = fpdiv(y1,w1)>>SP_HALF_ACCURACY;
 //  Sint32 nz1 = fpdiv(z1,w1)>>SP_HALF_ACCURACY;
 
-         x2 = fimul(spProjection[ 0],tx2) + fimul(spProjection[ 8],tz2);
-         y2 = fimul(spProjection[ 5],ty2) + fimul(spProjection[ 9],tz2);
+         x2 = fimul(spProjection[ 0],tx2);// + fimul(spProjection[ 8],tz2);
+         y2 = fimul(spProjection[ 5],ty2);// + fimul(spProjection[ 9],tz2);
 //         z2 = fimul(spProjection[10],tz2) + fimul(spProjection[14],tw2);
   Sint32 w2 = fimul(spProjection[11],tz2);
   if (w2 == 0)
@@ -271,8 +288,8 @@ PREFIX void spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 ny2 = fpdiv(y2,w2)>>SP_HALF_ACCURACY;
 //  Sint32 nz2 = fpdiv(z2,w2)>>SP_HALF_ACCURACY;
 
-         x3 = fimul(spProjection[ 0],tx3) + fimul(spProjection[ 8],tz3);
-         y3 = fimul(spProjection[ 5],ty3) + fimul(spProjection[ 9],tz3);
+         x3 = fimul(spProjection[ 0],tx3);// + fimul(spProjection[ 8],tz3);
+         y3 = fimul(spProjection[ 5],ty3);// + fimul(spProjection[ 9],tz3);
 //         z3 = fimul(spProjection[10],tz3) + fimul(spProjection[14],tw3);
   Sint32 w3 = fimul(spProjection[11],tz3);
   if (w3 == 0)
@@ -281,16 +298,12 @@ PREFIX void spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 ny3 = fpdiv(y3,w3)>>SP_HALF_ACCURACY;
 //  Sint32 nz3 = fpdiv(z3,w3)>>SP_HALF_ACCURACY;
   
-  /*spCalcNormal(x1,y1,z1,x2,y2,z2,x3,y3,z3,normal);
-  if (normal[2]<0)
-    return;  */
-
-  spTriangle((windowX >> 1)+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-             (windowY >> 1)-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,
-             (windowX >> 1)+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-             (windowY >> 1)-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,
-             (windowX >> 1)+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-             (windowY >> 1)-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,color);
+  spTriangle(viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+             viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,
+             viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+             viewPortY-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,
+             viewPortX+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+             viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,color);
 }
 
 PREFIX void spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
@@ -298,157 +311,30 @@ PREFIX void spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 x3,Sint32 y3,Sint32 z3,
   Sint32 x4,Sint32 y4,Sint32 z4,Uint16 color)
 {
-  int windowX=spGetWindowSurface()->w;
-  int windowY=spGetWindowSurface()->h;
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
 
   Sint32 tx1,ty1,tz1,tw1;
   Sint32 tx2,ty2,tz2,tw2;
   Sint32 tx3,ty3,tz3,tw3;
-  Sint32 tx4,ty4,tz4,tw4;
   spMulModellView(x1,y1,z1,&tx1,&ty1,&tz1,&tw1);
   spMulModellView(x2,y2,z2,&tx2,&ty2,&tz2,&tw2);
   spMulModellView(x3,y3,z3,&tx3,&ty3,&tz3,&tw3);
-  spMulModellView(x4,y4,z4,&tx4,&ty4,&tz4,&tw4);
 
-  
   Sint32 normal[3];
   spCalcNormal(tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3,normal);
-
-         x1 = fimul(spProjection[ 0],tx1) + fimul(spProjection[ 8],tz1);
-         y1 = fimul(spProjection[ 5],ty1) + fimul(spProjection[ 9],tz1);
-//         z1 = fimul(spProjection[10],tz1) + fimul(spProjection[14],tw1);
-  Sint32 w1 = fimul(spProjection[11],tz1);
-  if (w1 == 0)
-    w1 = 1;  
-
-  Sint32 nx1 = fpdiv(x1,w1)>>SP_HALF_ACCURACY;
-  Sint32 ny1 = fpdiv(y1,w1)>>SP_HALF_ACCURACY;
-//  Sint32 nz1 = fpdiv(z1,w1)>>SP_HALF_ACCURACY;
-
-         x2 = fimul(spProjection[ 0],tx2) + fimul(spProjection[ 8],tz2);
-         y2 = fimul(spProjection[ 5],ty2) + fimul(spProjection[ 9],tz2);
-//         z2 = fimul(spProjection[10],tz2) + fimul(spProjection[14],tw2);
-  Sint32 w2 = fimul(spProjection[11],tz2);
-  if (w2 == 0)
-    w2 = 1;
-  Sint32 nx2 = fpdiv(x2,w2)>>SP_HALF_ACCURACY;
-  Sint32 ny2 = fpdiv(y2,w2)>>SP_HALF_ACCURACY;
-//  Sint32 nz2 = fpdiv(z2,w2)>>SP_HALF_ACCURACY;
-
-         x3 = fimul(spProjection[ 0],tx3) + fimul(spProjection[ 8],tz3);
-         y3 = fimul(spProjection[ 5],ty3) + fimul(spProjection[ 9],tz3);
-//         z3 = fimul(spProjection[10],tz3) + fimul(spProjection[14],tw3);
-  Sint32 w3 = fimul(spProjection[11],tz3);
-  if (w3 == 0)
-    w3 = 1;  
-  Sint32 nx3 = fpdiv(x3,w3)>>SP_HALF_ACCURACY;
-  Sint32 ny3 = fpdiv(y3,w3)>>SP_HALF_ACCURACY;
-//  Sint32 nz3 = fpdiv(z3,w3)>>SP_HALF_ACCURACY;
-  
-  spCalcNormal(fpdiv(x1,w1),fpdiv(y1,w1),0,fpdiv(x2,w2),fpdiv(y2,w2),0,fpdiv(x3,w3),fpdiv(y3,w3),0,normal);
-  if (normal[2]<0)
+  Sint32 leftX  = -spX_to_Y;
+  Sint32 rightX = +spX_to_Y;
+  Sint32 topY  = +(1<<SP_ACCURACY);
+  Sint32 bottomY = -(1<<SP_ACCURACY);
+  if (fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+      fimul(tx1-rightX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+      fimul(tx1- leftX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+      fimul(tx1-rightX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) )        
     return;
-
-         x4 = fimul(spProjection[ 0],tx4) + fimul(spProjection[ 8],tz4);
-         y4 = fimul(spProjection[ 5],ty4) + fimul(spProjection[ 9],tz4);
-//         z4 = fimul(spProjection[10],tz4) + fimul(spProjection[14],tw4);
-  Sint32 w4 = fimul(spProjection[11],tz4);
-  if (w4 == 0)
-    w4 = 1;  
-  Sint32 nx4 = fpdiv(x4,w4)>>SP_HALF_ACCURACY;
-  Sint32 ny4 = fpdiv(y4,w4)>>SP_HALF_ACCURACY;
-//  Sint32 nz4 = fpdiv(z4,w4)>>SP_HALF_ACCURACY;
   
-  spQuad((windowX >> 1)+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-         (windowY >> 1)-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,
-         (windowX >> 1)+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-         (windowY >> 1)-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,
-         (windowX >> 1)+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-         (windowY >> 1)-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,
-         (windowX >> 1)+((nx4*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-         (windowY >> 1)-((ny4*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz4,color);
-
-}
-
-PREFIX void spTriangleTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
-  Sint32 x2,Sint32 y2,Sint32 z2,Sint32 u2,Sint32 v2,
-  Sint32 x3,Sint32 y3,Sint32 z3,Sint32 u3,Sint32 v3,Uint16 color)
-{
-  int windowX=spGetWindowSurface()->w;
-  int windowY=spGetWindowSurface()->h;
-
-  Sint32 tx1,ty1,tz1,tw1;
-  Sint32 tx2,ty2,tz2,tw2;
-  Sint32 tx3,ty3,tz3,tw3;
-  spMulModellView(x1,y1,z1,&tx1,&ty1,&tz1,&tw1);
-  spMulModellView(x2,y2,z2,&tx2,&ty2,&tz2,&tw2);
-  spMulModellView(x3,y3,z3,&tx3,&ty3,&tz3,&tw3);
-
-  Sint32 normal[3];
-  spCalcNormal(tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3,normal);
-
-         x1 = fimul(spProjection[ 0],tx1) + fimul(spProjection[ 8],tz1);
-         y1 = fimul(spProjection[ 5],ty1) + fimul(spProjection[ 9],tz1);
-//         z1 = fimul(spProjection[10],tz1) + fimul(spProjection[14],tw1);
-  Sint32 w1 = fimul(spProjection[11],tz1);
-  if (w1 == 0)
-    w1 = 1;  
-
-  Sint32 nx1 = fpdiv(x1,w1)>>SP_HALF_ACCURACY;
-  Sint32 ny1 = fpdiv(y1,w1)>>SP_HALF_ACCURACY;
-//  Sint32 nz1 = fpdiv(z1,w1)>>SP_HALF_ACCURACY;
-
-         x2 = fimul(spProjection[ 0],tx2) + fimul(spProjection[ 8],tz2);
-         y2 = fimul(spProjection[ 5],ty2) + fimul(spProjection[ 9],tz2);
-//         z2 = fimul(spProjection[10],tz2) + fimul(spProjection[14],tw2);
-  Sint32 w2 = fimul(spProjection[11],tz2);
-  if (w2 == 0)
-    w2 = 1;
-  Sint32 nx2 = fpdiv(x2,w2)>>SP_HALF_ACCURACY;
-  Sint32 ny2 = fpdiv(y2,w2)>>SP_HALF_ACCURACY;
-//  Sint32 nz2 = fpdiv(z2,w2)>>SP_HALF_ACCURACY;
-
-         x3 = fimul(spProjection[ 0],tx3) + fimul(spProjection[ 8],tz3);
-         y3 = fimul(spProjection[ 5],ty3) + fimul(spProjection[ 9],tz3);
-//         z3 = fimul(spProjection[10],tz3) + fimul(spProjection[14],tw3);
-  Sint32 w3 = fimul(spProjection[11],tz3);
-  if (w3 == 0)
-    w3 = 1;  
-  Sint32 nx3 = fpdiv(x3,w3)>>SP_HALF_ACCURACY;
-  Sint32 ny3 = fpdiv(y3,w3)>>SP_HALF_ACCURACY;
-//  Sint32 nz3 = fpdiv(z3,w3)>>SP_HALF_ACCURACY;
-
-  /*spCalcNormal(x1,y1,z1,x2,y2,z2,x3,y3,z3,normal);
-  if (normal[2]<0)
-    return;*/
-  
-  spTriangle_tex((windowX >> 1)+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-                 (windowY >> 1)-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,u1,v1,
-                 (windowX >> 1)+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-                 (windowY >> 1)-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,u2,v2,
-                 (windowX >> 1)+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-                 (windowY >> 1)-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,u3,v3,color);
-}
-
-
-PREFIX void spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
-  Sint32 x2,Sint32 y2,Sint32 z2,Sint32 u2,Sint32 v2,
-  Sint32 x3,Sint32 y3,Sint32 z3,Sint32 u3,Sint32 v3,
-  Sint32 x4,Sint32 y4,Sint32 z4,Sint32 u4,Sint32 v4,Uint16 color)
-{
-  int windowX=spGetWindowSurface()->w;
-  int windowY=spGetWindowSurface()->h;
-
-  Sint32 tx1,ty1,tz1,tw1;
-  Sint32 tx2,ty2,tz2,tw2;
-  Sint32 tx3,ty3,tz3,tw3;
-  spMulModellView(x1,y1,z1,&tx1,&ty1,&tz1,&tw1);
-  spMulModellView(x2,y2,z2,&tx2,&ty2,&tz2,&tw2);
-  spMulModellView(x3,y3,z3,&tx3,&ty3,&tz3,&tw3);
-
-  Sint32 normal[3];
-  spCalcNormal(tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3,normal);
-
   Sint32 tx4,ty4,tz4,tw4;
   spMulModellView(x4,y4,z4,&tx4,&ty4,&tz4,&tw4);
   
@@ -482,10 +368,6 @@ PREFIX void spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 nx3 = fpdiv(x3,w3)>>SP_HALF_ACCURACY;
   Sint32 ny3 = fpdiv(y3,w3)>>SP_HALF_ACCURACY;
 //  Sint32 nz3 = fpdiv(z3,w3)>>SP_HALF_ACCURACY;
-
-  spCalcNormal(fpdiv(x1,w1),fpdiv(-y1,w1),0,fpdiv(x2,w2),fpdiv(-y2,w2),0,fpdiv(x3,w3),fpdiv(-y3,w3),0,normal);
-  if (normal[2]<0)
-    return;
   
          x4 = fimul(spProjection[ 0],tx4);// + fimul(spProjection[ 8],tz4);
          y4 = fimul(spProjection[ 5],ty4);// + fimul(spProjection[ 9],tz4);
@@ -497,12 +379,163 @@ PREFIX void spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 ny4 = fpdiv(y4,w4)>>SP_HALF_ACCURACY;
 //  Sint32 nz4 = fpdiv(z4,w4)>>SP_HALF_ACCURACY;
   
-  spQuad_tex((windowX >> 1)+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-             (windowY >> 1)-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,u1,v1,
-             (windowX >> 1)+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-             (windowY >> 1)-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,u2,v2,
-             (windowX >> 1)+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-             (windowY >> 1)-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,u3,v3,
-             (windowX >> 1)+((nx4*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-             (windowY >> 1)-((ny4*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz4,u4,v4,color);
+  spQuad(viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+         viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,
+         viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+         viewPortY-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,
+         viewPortX+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+         viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,
+         viewPortX+((nx4*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+         viewPortY-((ny4*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz4,color);
+}
+
+PREFIX void spTriangleTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
+  Sint32 x2,Sint32 y2,Sint32 z2,Sint32 u2,Sint32 v2,
+  Sint32 x3,Sint32 y3,Sint32 z3,Sint32 u3,Sint32 v3,Uint16 color)
+{
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
+
+  Sint32 tx1,ty1,tz1,tw1;
+  Sint32 tx2,ty2,tz2,tw2;
+  Sint32 tx3,ty3,tz3,tw3;
+  spMulModellView(x1,y1,z1,&tx1,&ty1,&tz1,&tw1);
+  spMulModellView(x2,y2,z2,&tx2,&ty2,&tz2,&tw2);
+  spMulModellView(x3,y3,z3,&tx3,&ty3,&tz3,&tw3);
+
+  Sint32 normal[3];
+  spCalcNormal(tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3,normal);
+  Sint32 leftX  = -spX_to_Y;
+  Sint32 rightX = +spX_to_Y;
+  Sint32 topY  = +(1<<SP_ACCURACY);
+  Sint32 bottomY = -(1<<SP_ACCURACY);
+  if (fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+      fimul(tx1-rightX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+      fimul(tx1- leftX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+      fimul(tx1-rightX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) )        
+    return;
+  
+         x1 = fimul(spProjection[ 0],tx1);// + fimul(spProjection[ 8],tz1);
+         y1 = fimul(spProjection[ 5],ty1);// + fimul(spProjection[ 9],tz1);
+//         z1 = fimul(spProjection[10],tz1) + fimul(spProjection[14],tw1);
+  Sint32 w1 = fimul(spProjection[11],tz1);
+  if (w1 == 0)
+    w1 = 1;  
+
+  Sint32 nx1 = fpdiv(x1,w1)>>SP_HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y1,w1)>>SP_HALF_ACCURACY;
+//  Sint32 nz1 = fpdiv(z1,w1)>>SP_HALF_ACCURACY;
+
+         x2 = fimul(spProjection[ 0],tx2);// + fimul(spProjection[ 8],tz2);
+         y2 = fimul(spProjection[ 5],ty2);// + fimul(spProjection[ 9],tz2);
+//         z2 = fimul(spProjection[10],tz2) + fimul(spProjection[14],tw2);
+  Sint32 w2 = fimul(spProjection[11],tz2);
+  if (w2 == 0)
+    w2 = 1;
+  Sint32 nx2 = fpdiv(x2,w2)>>SP_HALF_ACCURACY;
+  Sint32 ny2 = fpdiv(y2,w2)>>SP_HALF_ACCURACY;
+//  Sint32 nz2 = fpdiv(z2,w2)>>SP_HALF_ACCURACY;
+
+         x3 = fimul(spProjection[ 0],tx3);// + fimul(spProjection[ 8],tz3);
+         y3 = fimul(spProjection[ 5],ty3);// + fimul(spProjection[ 9],tz3);
+//         z3 = fimul(spProjection[10],tz3) + fimul(spProjection[14],tw3);
+  Sint32 w3 = fimul(spProjection[11],tz3);
+  if (w3 == 0)
+    w3 = 1;  
+  Sint32 nx3 = fpdiv(x3,w3)>>SP_HALF_ACCURACY;
+  Sint32 ny3 = fpdiv(y3,w3)>>SP_HALF_ACCURACY;
+//  Sint32 nz3 = fpdiv(z3,w3)>>SP_HALF_ACCURACY;
+  
+  spTriangle_tex(viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+                 viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,u1,v1,
+                 viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+                 viewPortY-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,u2,v2,
+                 viewPortX+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+                 viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,u3,v3,color);
+}
+
+
+PREFIX void spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
+  Sint32 x2,Sint32 y2,Sint32 z2,Sint32 u2,Sint32 v2,
+  Sint32 x3,Sint32 y3,Sint32 z3,Sint32 u3,Sint32 v3,
+  Sint32 x4,Sint32 y4,Sint32 z4,Sint32 u4,Sint32 v4,Uint16 color)
+{
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
+
+  Sint32 tx1,ty1,tz1,tw1;
+  Sint32 tx2,ty2,tz2,tw2;
+  Sint32 tx3,ty3,tz3,tw3;
+  spMulModellView(x1,y1,z1,&tx1,&ty1,&tz1,&tw1);
+  spMulModellView(x2,y2,z2,&tx2,&ty2,&tz2,&tw2);
+  spMulModellView(x3,y3,z3,&tx3,&ty3,&tz3,&tw3);
+
+  Sint32 normal[3];
+  spCalcNormal(tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3,normal);
+  Sint32 leftX  = -spX_to_Y;
+  Sint32 rightX = +spX_to_Y;
+  Sint32 topY  = +(1<<SP_ACCURACY);
+  Sint32 bottomY = -(1<<SP_ACCURACY);
+  if (fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+      fimul(tx1-rightX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+      fimul(tx1- leftX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+      fimul(tx1-rightX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) )        
+    return;
+  
+  Sint32 tx4,ty4,tz4,tw4;
+  spMulModellView(x4,y4,z4,&tx4,&ty4,&tz4,&tw4);
+  
+         x1 = fimul(spProjection[ 0],tx1);// + fimul(spProjection[ 8],tz1);
+         y1 = fimul(spProjection[ 5],ty1);// + fimul(spProjection[ 9],tz1);
+//         z1 = fimul(spProjection[10],tz1) + fimul(spProjection[14],tw1);
+  Sint32 w1 = fimul(spProjection[11],tz1);
+  if (w1 == 0)
+    w1 = 1;  
+
+  Sint32 nx1 = fpdiv(x1,w1)>>SP_HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y1,w1)>>SP_HALF_ACCURACY;
+//  Sint32 nz1 = fpdiv(z1,w1)>>SP_HALF_ACCURACY;
+
+         x2 = fimul(spProjection[ 0],tx2);// + fimul(spProjection[ 8],tz2);
+         y2 = fimul(spProjection[ 5],ty2);// + fimul(spProjection[ 9],tz2);
+//         z2 = fimul(spProjection[10],tz2) + fimul(spProjection[14],tw2);
+  Sint32 w2 = fimul(spProjection[11],tz2);
+  if (w2 == 0)
+    w2 = 1;
+  Sint32 nx2 = fpdiv(x2,w2)>>SP_HALF_ACCURACY;
+  Sint32 ny2 = fpdiv(y2,w2)>>SP_HALF_ACCURACY;
+//  Sint32 nz2 = fpdiv(z2,w2)>>SP_HALF_ACCURACY;
+
+         x3 = fimul(spProjection[ 0],tx3);// + fimul(spProjection[ 8],tz3);
+         y3 = fimul(spProjection[ 5],ty3);// + fimul(spProjection[ 9],tz3);
+//         z3 = fimul(spProjection[10],tz3) + fimul(spProjection[14],tw3);
+  Sint32 w3 = fimul(spProjection[11],tz3);
+  if (w3 == 0)
+    w3 = 1;  
+  Sint32 nx3 = fpdiv(x3,w3)>>SP_HALF_ACCURACY;
+  Sint32 ny3 = fpdiv(y3,w3)>>SP_HALF_ACCURACY;
+//  Sint32 nz3 = fpdiv(z3,w3)>>SP_HALF_ACCURACY;
+  
+         x4 = fimul(spProjection[ 0],tx4);// + fimul(spProjection[ 8],tz4);
+         y4 = fimul(spProjection[ 5],ty4);// + fimul(spProjection[ 9],tz4);
+//         z4 = fimul(spProjection[10],tz4) + fimul(spProjection[14],tw4);
+  Sint32 w4 = fimul(spProjection[11],tz4);
+  if (w4 == 0)
+    w4 = 1;  
+  Sint32 nx4 = fpdiv(x4,w4)>>SP_HALF_ACCURACY;
+  Sint32 ny4 = fpdiv(y4,w4)>>SP_HALF_ACCURACY;
+//  Sint32 nz4 = fpdiv(z4,w4)>>SP_HALF_ACCURACY;
+  
+  spQuad_tex(viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+             viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,u1,v1,
+             viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+             viewPortY-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,u2,v2,
+             viewPortX+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+             viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,u3,v3,
+             viewPortX+((nx4*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+             viewPortY-((ny4*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz4,u4,v4,color);
 }
