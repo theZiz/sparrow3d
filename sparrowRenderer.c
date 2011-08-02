@@ -28,6 +28,7 @@
 Sint32 spModelView[16];
 Sint32 spProjection[16];
 Sint32 spX_to_Y;
+char spCulling = 1;
 
 inline Sint32 fpdiv(Sint32 a,Sint32 b)
 {
@@ -39,6 +40,11 @@ inline Sint32 fpdiv(Sint32 a,Sint32 b)
   #endif
   return ((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY;
 
+}
+
+PREFIX void spSetCulling(char value)
+{
+  spCulling = value;
 }
 
 inline void spSetFrustumf2(Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
@@ -148,29 +154,6 @@ PREFIX void spRotate(Sint32 x,Sint32 y,Sint32 z,Sint32 rad)
   rotate[11]= 0;
   rotate[15]= 1<<SP_ACCURACY;
 
-  /*Sint32 result[16];
-  
-  result[ 0] = fimul(spModelView[ 0],rotate[ 0]) + fimul(spModelView[ 4],rotate[ 1]) + fimul(spModelView[ 8],rotate[ 2]) + fimul(spModelView[12],rotate[ 3]);
-  result[ 1] = fimul(spModelView[ 1],rotate[ 0]) + fimul(spModelView[ 5],rotate[ 1]) + fimul(spModelView[ 9],rotate[ 2]) + fimul(spModelView[13],rotate[ 3]);
-  result[ 2] = fimul(spModelView[ 2],rotate[ 0]) + fimul(spModelView[ 6],rotate[ 1]) + fimul(spModelView[10],rotate[ 2]) + fimul(spModelView[14],rotate[ 3]);
-  result[ 3] = fimul(spModelView[ 3],rotate[ 0]) + fimul(spModelView[ 7],rotate[ 1]) + fimul(spModelView[11],rotate[ 2]) + fimul(spModelView[15],rotate[ 3]);
-
-  result[ 4] = fimul(spModelView[ 0],rotate[ 4]) + fimul(spModelView[ 4],rotate[ 5]) + fimul(spModelView[ 8],rotate[ 6]) + fimul(spModelView[12],rotate[ 7]);
-  result[ 5] = fimul(spModelView[ 1],rotate[ 4]) + fimul(spModelView[ 5],rotate[ 5]) + fimul(spModelView[ 9],rotate[ 6]) + fimul(spModelView[13],rotate[ 7]);
-  result[ 6] = fimul(spModelView[ 2],rotate[ 4]) + fimul(spModelView[ 6],rotate[ 5]) + fimul(spModelView[10],rotate[ 6]) + fimul(spModelView[14],rotate[ 7]);
-  result[ 7] = fimul(spModelView[ 3],rotate[ 4]) + fimul(spModelView[ 7],rotate[ 5]) + fimul(spModelView[11],rotate[ 6]) + fimul(spModelView[15],rotate[ 7]);
-
-  result[ 8] = fimul(spModelView[ 0],rotate[ 8]) + fimul(spModelView[ 4],rotate[ 9]) + fimul(spModelView[ 8],rotate[10]) + fimul(spModelView[12],rotate[11]);
-  result[ 9] = fimul(spModelView[ 1],rotate[ 8]) + fimul(spModelView[ 5],rotate[ 9]) + fimul(spModelView[ 9],rotate[10]) + fimul(spModelView[13],rotate[11]);
-  result[10] = fimul(spModelView[ 2],rotate[ 8]) + fimul(spModelView[ 6],rotate[ 9]) + fimul(spModelView[10],rotate[10]) + fimul(spModelView[14],rotate[11]);
-  result[11] = fimul(spModelView[ 3],rotate[ 8]) + fimul(spModelView[ 7],rotate[ 9]) + fimul(spModelView[11],rotate[10]) + fimul(spModelView[15],rotate[11]);
-
-  result[12] = fimul(spModelView[ 0],rotate[12]) + fimul(spModelView[ 4],rotate[13]) + fimul(spModelView[ 8],rotate[14]) + fimul(spModelView[12],rotate[15]);
-  result[13] = fimul(spModelView[ 1],rotate[12]) + fimul(spModelView[ 5],rotate[13]) + fimul(spModelView[ 9],rotate[14]) + fimul(spModelView[13],rotate[15]);
-  result[14] = fimul(spModelView[ 2],rotate[12]) + fimul(spModelView[ 6],rotate[13]) + fimul(spModelView[10],rotate[14]) + fimul(spModelView[14],rotate[15]);
-  result[15] = fimul(spModelView[ 3],rotate[12]) + fimul(spModelView[ 7],rotate[13]) + fimul(spModelView[11],rotate[14]) + fimul(spModelView[15],rotate[15]);
-
-  memcpy(spModelView,result,sizeof(Sint32)*16);*/
 	Sint32 result[12];
 	result[ 0]=(spModelView[ 0]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 4]>>SP_HALF_ACCURACY)*(rotate[ 1]>>SP_HALF_ACCURACY)+(spModelView[ 8]>>SP_HALF_ACCURACY)*(rotate[ 2]>>SP_HALF_ACCURACY);
 	result[ 1]=(spModelView[ 1]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 5]>>SP_HALF_ACCURACY)*(rotate[ 1]>>SP_HALF_ACCURACY)+(spModelView[ 9]>>SP_HALF_ACCURACY)*(rotate[ 2]>>SP_HALF_ACCURACY);
@@ -188,6 +171,122 @@ PREFIX void spRotate(Sint32 x,Sint32 y,Sint32 z,Sint32 rad)
 	result[11]=(spModelView[ 3]>>SP_HALF_ACCURACY)*(rotate[ 8]>>SP_HALF_ACCURACY)+(spModelView[ 7]>>SP_HALF_ACCURACY)*(rotate[ 9]>>SP_HALF_ACCURACY)+(spModelView[11]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
 
 	memcpy(spModelView,result,sizeof(Sint32)*12);
+}
+
+PREFIX void spRotateX(Sint32 rad)
+{
+	//Rotation matrix:
+	Sint32 s=spSin(rad);
+	Sint32 c=spCos(rad);
+
+	Sint32 rotate[16];
+  rotate[ 0]= 1<<SP_ACCURACY;
+  rotate[ 4]= 0;
+  rotate[ 8]= 0;
+  rotate[12]= 0;
+  rotate[ 1]= 0;
+  rotate[ 5]= c;
+  rotate[ 9]= -s;
+  rotate[13]= 0;
+  rotate[ 2]= 0;
+  rotate[ 6]= s;
+  rotate[10]= c;
+  rotate[14]= 0;
+  rotate[ 3]= 0;
+  rotate[ 7]= 0;
+  rotate[11]= 0;
+  rotate[15]= 1<<SP_ACCURACY;
+
+	Sint32 result[8];
+  //+4
+	result[ 0]=(spModelView[ 4]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY)+(spModelView[ 8]>>SP_HALF_ACCURACY)*(rotate[ 6]>>SP_HALF_ACCURACY);
+	result[ 1]=(spModelView[ 5]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY)+(spModelView[ 9]>>SP_HALF_ACCURACY)*(rotate[ 6]>>SP_HALF_ACCURACY);
+	result[ 2]=(spModelView[ 6]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY)+(spModelView[10]>>SP_HALF_ACCURACY)*(rotate[ 6]>>SP_HALF_ACCURACY);
+	result[ 3]=(spModelView[ 7]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY)+(spModelView[11]>>SP_HALF_ACCURACY)*(rotate[ 6]>>SP_HALF_ACCURACY);
+
+	result[ 4]=(spModelView[ 4]>>SP_HALF_ACCURACY)*(rotate[ 9]>>SP_HALF_ACCURACY)+(spModelView[ 8]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
+	result[ 5]=(spModelView[ 5]>>SP_HALF_ACCURACY)*(rotate[ 9]>>SP_HALF_ACCURACY)+(spModelView[ 9]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
+	result[ 6]=(spModelView[ 6]>>SP_HALF_ACCURACY)*(rotate[ 9]>>SP_HALF_ACCURACY)+(spModelView[10]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
+	result[ 7]=(spModelView[ 7]>>SP_HALF_ACCURACY)*(rotate[ 9]>>SP_HALF_ACCURACY)+(spModelView[11]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
+
+	memcpy(&(spModelView[4]),result,sizeof(Sint32)*8);
+}
+
+PREFIX void spRotateY(Sint32 rad)
+{
+	//Rotation matrix:
+	Sint32 s=spSin(rad);
+	Sint32 c=spCos(rad);
+
+	Sint32 rotate[16];
+  rotate[ 0]= c;
+  rotate[ 4]= 0;
+  rotate[ 8]= s;
+  rotate[12]= 0;
+  rotate[ 1]= 0;
+  rotate[ 5]= 1<<SP_ACCURACY;
+  rotate[ 9]= 0;
+  rotate[13]= 0;
+  rotate[ 2]= -s;
+  rotate[ 6]= 0;
+  rotate[10]= c;
+  rotate[14]= 0;
+  rotate[ 3]= 0;
+  rotate[ 7]= 0;
+  rotate[11]= 0;
+  rotate[15]= 1<<SP_ACCURACY;
+
+	Sint32 result[4];
+	Sint32 result_8[4];
+	result[ 0]=(spModelView[ 0]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 8]>>SP_HALF_ACCURACY)*(rotate[ 2]>>SP_HALF_ACCURACY);
+	result[ 1]=(spModelView[ 1]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 9]>>SP_HALF_ACCURACY)*(rotate[ 2]>>SP_HALF_ACCURACY);
+	result[ 2]=(spModelView[ 2]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[10]>>SP_HALF_ACCURACY)*(rotate[ 2]>>SP_HALF_ACCURACY);
+	result[ 3]=(spModelView[ 3]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[11]>>SP_HALF_ACCURACY)*(rotate[ 2]>>SP_HALF_ACCURACY);
+  //+8!
+	result_8[ 0]=(spModelView[ 0]>>SP_HALF_ACCURACY)*(rotate[ 8]>>SP_HALF_ACCURACY)+(spModelView[ 8]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
+	result_8[ 1]=(spModelView[ 1]>>SP_HALF_ACCURACY)*(rotate[ 8]>>SP_HALF_ACCURACY)+(spModelView[ 9]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
+	result_8[ 2]=(spModelView[ 2]>>SP_HALF_ACCURACY)*(rotate[ 8]>>SP_HALF_ACCURACY)+(spModelView[10]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
+	result_8[ 3]=(spModelView[ 3]>>SP_HALF_ACCURACY)*(rotate[ 8]>>SP_HALF_ACCURACY)+(spModelView[11]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
+	memcpy(spModelView,result,sizeof(Sint32)*4);
+	memcpy(&(spModelView[8]),result_8,sizeof(Sint32)*4);
+}
+
+PREFIX void spRotateZ(Sint32 rad)
+{
+	//Rotation matrix:
+	Sint32 s=spSin(rad);
+	Sint32 c=spCos(rad);
+
+	Sint32 rotate[16];
+  rotate[ 0]= c;
+  rotate[ 4]= -s;
+  rotate[ 8]= 0;
+  rotate[12]= 0;
+  rotate[ 1]= s;
+  rotate[ 5]= c;
+  rotate[ 9]= 0;
+  rotate[13]= 0;
+  rotate[ 2]= 0;
+  rotate[ 6]= 0;
+  rotate[10]= 1<<SP_ACCURACY;
+  rotate[14]= 0;
+  rotate[ 3]= 0;
+  rotate[ 7]= 0;
+  rotate[11]= 0;
+  rotate[15]= 1<<SP_ACCURACY;
+
+	Sint32 result[8];
+	result[ 0]=(spModelView[ 0]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 4]>>SP_HALF_ACCURACY)*(rotate[ 1]>>SP_HALF_ACCURACY);
+	result[ 1]=(spModelView[ 1]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 5]>>SP_HALF_ACCURACY)*(rotate[ 1]>>SP_HALF_ACCURACY);
+	result[ 2]=(spModelView[ 2]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 6]>>SP_HALF_ACCURACY)*(rotate[ 1]>>SP_HALF_ACCURACY);
+	result[ 3]=(spModelView[ 3]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 7]>>SP_HALF_ACCURACY)*(rotate[ 1]>>SP_HALF_ACCURACY);
+
+	result[ 4]=(spModelView[ 0]>>SP_HALF_ACCURACY)*(rotate[ 4]>>SP_HALF_ACCURACY)+(spModelView[ 4]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY);
+	result[ 5]=(spModelView[ 1]>>SP_HALF_ACCURACY)*(rotate[ 4]>>SP_HALF_ACCURACY)+(spModelView[ 5]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY);
+	result[ 6]=(spModelView[ 2]>>SP_HALF_ACCURACY)*(rotate[ 4]>>SP_HALF_ACCURACY)+(spModelView[ 6]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY);
+	result[ 7]=(spModelView[ 3]>>SP_HALF_ACCURACY)*(rotate[ 4]>>SP_HALF_ACCURACY)+(spModelView[ 7]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY);
+
+	memcpy(spModelView,result,sizeof(Sint32)*8);
 }
 
 PREFIX void spTranslate(Sint32 x,Sint32 y,Sint32 z)
@@ -261,7 +360,8 @@ PREFIX void spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 rightX = +spX_to_Y;
   Sint32 topY  = +(1<<SP_ACCURACY);
   Sint32 bottomY = -(1<<SP_ACCURACY);
-  if (fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+  if (spCulling &&
+      fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
       fimul(tx1-rightX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
       fimul(tx1- leftX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
       fimul(tx1-rightX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) )        
@@ -329,7 +429,8 @@ PREFIX void spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 rightX = +spX_to_Y;
   Sint32 topY  = +(1<<SP_ACCURACY);
   Sint32 bottomY = -(1<<SP_ACCURACY);
-  if (fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+  if (spCulling &&
+      fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
       fimul(tx1-rightX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
       fimul(tx1- leftX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
       fimul(tx1-rightX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) )        
@@ -411,7 +512,8 @@ PREFIX void spTriangleTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 rightX = +spX_to_Y;
   Sint32 topY  = +(1<<SP_ACCURACY);
   Sint32 bottomY = -(1<<SP_ACCURACY);
-  if (fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+  if (spCulling &&
+      fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
       fimul(tx1-rightX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
       fimul(tx1- leftX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
       fimul(tx1-rightX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) )        
@@ -480,7 +582,8 @@ PREFIX void spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 rightX = +spX_to_Y;
   Sint32 topY  = +(1<<SP_ACCURACY);
   Sint32 bottomY = -(1<<SP_ACCURACY);
-  if (fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
+  if (spCulling &&
+      fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
       fimul(tx1-rightX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
       fimul(tx1- leftX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
       fimul(tx1-rightX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) )        

@@ -29,6 +29,8 @@ PREFIX void spSetPerspective(float fovyInDegrees, float aspectRatio,
 
 PREFIX Sint32* spGetProjectionMatrix();
 
+PREFIX void spSetCulling(char value);
+
 PREFIX void spSetProjectionMatrix(Sint32* matrix);
 
 PREFIX void spIdentity();
@@ -36,6 +38,12 @@ PREFIX void spIdentity();
 PREFIX void spScale(Sint32 x,Sint32 y,Sint32 z);
 
 PREFIX void spRotate(Sint32 x,Sint32 y,Sint32 z,Sint32 rad);
+
+PREFIX void spRotateX(Sint32 rad);
+
+PREFIX void spRotateY(Sint32 rad);
+
+PREFIX void spRotateZ(Sint32 rad);
 
 PREFIX void spTranslate(Sint32 x,Sint32 y,Sint32 z);
 

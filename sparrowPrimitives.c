@@ -2203,32 +2203,12 @@ PREFIX Sint32* spGetZBuffer()
   return spZBuffer;
 }
 
-void reset_draw_pixel_func()
-{
-/*  if (spZTest)
-  {
-    if (spZSet)
-      draw_pixel_tex_func = draw_pixel_tex_ztest_zset;
-    else
-      draw_pixel_tex_func = draw_pixel_tex_ztest;
-  }
-  else
-  {
-    if (spZSet)
-      draw_pixel_tex_func = draw_pixel_tex_zset;
-    else
-      draw_pixel_tex_func = draw_pixel_tex;
-  }*/  
-}
-
 PREFIX void spSetZTest(char test)
 {
   spZTest = test;
-  reset_draw_pixel_func();
 }
 
 PREFIX void spSetZSet(char test)
 {
   spZSet = test;
-  reset_draw_pixel_func();
 }

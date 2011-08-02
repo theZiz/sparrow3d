@@ -4,14 +4,15 @@ Roadmap:
 + Searching all places, where I divide and try to use one_over_x-function,
   especally at normale calculation. rotation doesn't matter, to seldom...
 + cube example with garfield :)
+- "real" quads
 - try to compile for every system and getting fps from testers
-- reimplementation of light (light sources + one globlale diffuse light)
 - fake implementation (definitions and empty implementations) for
   - blitting a surface with(out) projection and with(out) ztest
   - two types of font. First with normal blitting like the font in engine.c,
     second one uses the same surface, but uses the triangle function to zoom
 - Porting Puzzletube to sparrow3D. Using 1 Quads or 2 Triangles with texture
   instead of the modells
+- reimplementation of light (light sources + one globlale diffuse light)
 - defining of a type for loading obj
 - drawing a couple of points and polygons (meshs) at once
 - loading obj

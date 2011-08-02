@@ -22,18 +22,34 @@
 
 SDL_Surface* screen;
 SDL_Surface* garfield;
+Sint32 rotation = 0;
 
 void draw_test(void)
 {
   spResetZBuffer();
   spClearTarget(0);
   spIdentity();
-  spTranslate(spSin(SDL_GetTicks()*25),spSin(SDL_GetTicks()*16),(-5<<SP_ACCURACY));
-  spRotate(1<<SP_ACCURACY-1,0,0,SDL_GetTicks()*32);
-  spRotate(0,1<<SP_ACCURACY,0,SDL_GetTicks()*32);
-  spRotate(0,0,1<<SP_ACCURACY-2,SDL_GetTicks()*32);
+  spTranslate(0,0,(-5<<SP_ACCURACY));
+  spTranslate(spSin(rotation/3),spSin(rotation/5),0);
+  spRotateX(rotation);
+  spRotateY(rotation);
+  spRotateZ(rotation);
   
   spBindTexture(garfield);
+  /*spSetCulling(0);
+  int a,y;
+  for (a = 0; a<16; a++)
+  {
+    spRotateY(SP_PI/8);
+    Sint32 brightness = (spCos(rotation+a*SP_PI/8)>>SP_HALF_ACCURACY)*abs(spCos(rotation+a*SP_PI/8)>>SP_HALF_ACCURACY)/2+(3<<SP_ACCURACY-1);
+    Uint16 color = ((brightness>>SP_ACCURACY-4)<<11)+((brightness>>SP_ACCURACY-5)<<5)+(brightness>>SP_ACCURACY-4);
+  for (y = -21; y<=21; y+=7)
+    spQuadTex3D(-3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,0,0,
+                -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,0,garfield->h-1,
+                 3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-1,garfield->h-1,
+                 3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-1,0,color);
+  }*/
+  
   //Front / Back
   spQuadTex3D(-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,0,garfield->h-1,
               -3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,0,0,
@@ -95,6 +111,7 @@ void draw_test(void)
 
 int calc_test(Uint32 steps)
 {
+  rotation+=steps*64;
   if (spGetInput()->button[SP_BUTTON_START])
     return 1;
   return 0; 
