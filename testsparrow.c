@@ -29,14 +29,14 @@ void draw_test(void)
   spResetZBuffer();
   spClearTarget(0);
   spIdentity();
-  spTranslate(0,0,(-5<<SP_ACCURACY));
+  spTranslate(0,0,(-18<<SP_ACCURACY));
   spTranslate(spSin(rotation/3),spSin(rotation/5),0);
-  spRotateX(rotation);
+  //spRotateX(rotation);
   spRotateY(rotation);
-  spRotateZ(rotation);
+  //spRotateZ(rotation);
   
   spBindTexture(garfield);
-  /*spSetCulling(0);
+  spSetCulling(0);
   int a,y;
   for (a = 0; a<16; a++)
   {
@@ -48,9 +48,9 @@ void draw_test(void)
                 -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,0,garfield->h-1,
                  3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-1,garfield->h-1,
                  3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-1,0,color);
-  }*/
+  }
   
-  //Front / Back
+  /*//Front / Back
   spQuadTex3D(-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,0,garfield->h-1,
               -3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,0,0,
                3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,garfield->w-1,0,
@@ -104,14 +104,14 @@ void draw_test(void)
   spQuad3D(-1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,
            -1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,
             1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,
-            1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,61234 | 31727);
+            1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,61234 | 31727);*/
                
   spFlip();
 }
 
 int calc_test(Uint32 steps)
 {
-  rotation+=steps*64;
+  rotation+=steps*32;
   if (spGetInput()->button[SP_BUTTON_START])
     return 1;
   return 0; 
