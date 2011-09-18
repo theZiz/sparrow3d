@@ -29,11 +29,10 @@ void draw_test(void)
   spResetZBuffer();
   spClearTarget(0);
   spIdentity();
+  
+  /*
   spTranslate(0,0,(-18<<SP_ACCURACY));
-  spTranslate(spSin(rotation/3),spSin(rotation/5),0);
-  //spRotateX(rotation);
   spRotateY(rotation);
-  //spRotateZ(rotation);
   
   spBindTexture(garfield);
   spSetCulling(0);
@@ -48,9 +47,14 @@ void draw_test(void)
                 -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,0,garfield->h-1,
                  3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-1,garfield->h-1,
                  3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-1,0,color);
-  }
+  }*/
+
+  spTranslate(spSin(rotation/3),spSin(rotation/5),(-5<<SP_ACCURACY));
+  spRotateX(rotation);
+  spRotateY(rotation);
+  spRotateZ(rotation);
   
-  /*//Front / Back
+  //Front / Back
   spQuadTex3D(-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,0,garfield->h-1,
               -3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,0,0,
                3<<SP_ACCURACY-1,-3<<SP_ACCURACY-1, 3<<SP_ACCURACY-1,garfield->w-1,0,
@@ -104,7 +108,7 @@ void draw_test(void)
   spQuad3D(-1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,
            -1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,
             1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,
-            1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,61234 | 31727);*/
+            1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,61234 | 31727);
                
   spFlip();
 }

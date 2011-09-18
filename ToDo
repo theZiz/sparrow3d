@@ -4,6 +4,7 @@ Roadmap:
 + Searching all places, where I divide and try to use one_over_x-function,
   especally at normale calculation. rotation doesn't matter, to seldom...
 + cube example with garfield :)
++ asm optimization for hline like stuff
 - "real" quads
 - try to compile for every system and getting fps from testers
 - fake implementation (definitions and empty implementations) for
