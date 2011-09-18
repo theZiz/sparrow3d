@@ -69,7 +69,10 @@ PREFIX void spBindTexture(SDL_Surface* texture)
 
 PREFIX void spClearTarget(Uint16 color)
 {
-  SDL_FillRect(spTarget,NULL,color);
+  //SDL_FillRect(spTarget,NULL,color);
+  SDL_LockSurface(spTarget);  
+  spHorizentalLine(spTargetPixel,0,0,spTargetX*spTargetY,color,0,0,0);
+  SDL_UnlockSurface(spTarget);  
 }
 
 inline Sint32 one_over_x(Sint32 x)
@@ -2200,33 +2203,7 @@ PREFIX void spQuad_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Si
     temp = v2;
     v2 = v4;
     v4 = temp;
-  }
-   //Now we say y3 < p4. That means:
-  // p1        p1
-  // | \   or  | \
-  // p2 \      p2 \
-  //  \  \      \  p3
-  //   p3 \      \/
-  //    '~.p4    p4
-  if (y3 > y4) //Mirror p3 and p4
-  {
-    temp = x3;
-    x3 = x4;
-    x4 = temp;
-    temp = y3;
-    y3 = y4;
-    y4 = temp;
-    temp = z3;
-    z3 = z4;
-    z4 = temp;
-    temp = u3;
-    u3 = u3;
-    u4 = temp;
-    temp = v3;
-    v3 = v4;
-    v4 = temp;
-  }
-  
+  }  
   
   if (spZSet)
   {
