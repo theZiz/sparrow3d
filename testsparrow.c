@@ -30,7 +30,7 @@ void draw_test(void)
   spClearTarget(0);
   spIdentity();
   
-  /*
+  
   spTranslate(0,0,(-18<<SP_ACCURACY));
   spRotateY(rotation);
   
@@ -47,7 +47,9 @@ void draw_test(void)
                 -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,0,garfield->h-1,
                  3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-1,garfield->h-1,
                  3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-1,0,color);
-  }*/
+  }
+
+  /*
 
   spTranslate(spSin(rotation/3),spSin(rotation/5),(-5<<SP_ACCURACY));
   spRotateX(rotation);
@@ -109,7 +111,7 @@ void draw_test(void)
            -1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,
             1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,
             1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,61234 | 31727);
-               
+    */           
   spFlip();
 }
 

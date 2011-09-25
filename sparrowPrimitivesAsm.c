@@ -21,27 +21,27 @@
 #include <stdlib.h>
 
 #ifdef ARMCPU
-void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check)
+PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check,int engineWindowX,int engineWindowY)
 {
   //l_++;
   if (check)
   { 
     if (y<0)
       return;
-    if (y>=engineWindowYasm) //Their is a FUCKING Bug if I write in the last line on the gp2x. Dont know why...
+    if (y>=engineWindowY) //Their is a FUCKING Bug if I write in the last line on the gp2x. Dont know why...
       return;
     if (x<0)
     {
       l_=x+l_;
       x=0;
     }
-    if (x+l_>=engineWindowXasm)
-      l_=engineWindowXasm-x;
+    if (x+l_>=engineWindowX)
+      l_=engineWindowX-x;
     if (l_<=0)
       return;
   }
   register Uint32 pos asm("r0");
-  pos=((x+y*engineWindowXasm)<<1)+(Uint32)pixel;
+  pos=((x+y*engineWindowX)<<1)+(Uint32)pixel;
   register Uint32 l asm("r1");
   l=l_;
   register Uint32 color asm("r2");
@@ -174,6 +174,6 @@ void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,ch
                "ldmfd sp!,{r3-r12} \n\t"
                : 
                : "r" (pos), "r"(l), "r"(color)
-               : "r3","r4", "r5", "r6", "r7","r8", "r9", "r10", "r11","r12", "cc");
+               : /*"r3","r4", "r5", "r6", "r7","r8", "r9", "r10", "r11","r12", */"cc");
 }    
 #endif
