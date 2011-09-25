@@ -1,6 +1,6 @@
 Roadmap:
 + copy & paste the matrix stuff from engine.c
-- implementation of 3D quads and triangles
++ implementation of 3D quads and triangles
 - Searching all places, where I divide and try to use one_over_x-function,
   especally at normale calculation. rotation doesn't matter, to seldom...
 - cube example with garfield :)
