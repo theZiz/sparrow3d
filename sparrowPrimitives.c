@@ -43,7 +43,8 @@ PREFIX Sint32* spGetOne_over_x_pointer()
 
 PREFIX void spInitPrimitives()
 {
-  for (int i = 1; i < (1<<SP_PRIM_ACCURACY); i++)
+  int i;
+  for (i = 1; i < (1<<SP_PRIM_ACCURACY); i++)
     spOne_over_x_look_up[i] = (1<<SP_PRIM_ACCURACY)/i;
   spOne_over_x_look_up[0] = 0;
 }
@@ -69,6 +70,9 @@ PREFIX void spBindTexture(SDL_Surface* texture)
 PREFIX void spClearTarget(Uint16 color)
 {
   SDL_FillRect(spTarget,NULL,color);
+  //SDL_LockSurface(spTarget);  
+  //spHorizentalLine(spTargetPixel,0,0,spTargetX*spTargetY,color,0,0,0);
+  //SDL_UnlockSurface(spTarget);  
 }
 
 inline Sint32 one_over_x(Sint32 x)
@@ -93,6 +97,8 @@ inline Sint32 z_div(Sint32 z,Sint32 d)
   #ifdef REALGP2X_TODO_FIX_ME
     return (z>>SP_HALF_PRIM_ACCURACY)*(one_over_x(d)>>SP_HALF_PRIM_ACCURACY);
   #else
+    if (d == 0)
+      return 0;
     return z/d;
   #endif
 }
@@ -139,7 +145,8 @@ inline void draw_line_ztest_zset(Sint16 x1,Sint32 z1,Sint16 x2,Sint32 z2,Sint16 
   }
   if (x2 >= spTargetX)
     x2 = spTargetX-1;
-  for (int x = x1; x<= x2; x++)
+  int x;
+  for (x = x1; x<= x2; x++)
   {
     draw_pixel_ztest_zset(x,y,z,color);
     z += sZ;
@@ -160,7 +167,8 @@ inline void draw_line_ztest(Sint16 x1,Sint32 z1,Sint16 x2,Sint32 z2,Sint16 y,Uin
   }
   if (x2 >= spTargetX)
     x2 = spTargetX-1;
-  for (int x = x1; x<= x2; x++)
+  int x;
+  for (x = x1; x<= x2; x++)
   {
     draw_pixel_ztest(x,y,z,color);
     z += sZ;
@@ -181,7 +189,8 @@ inline void draw_line_zset(Sint16 x1,Sint32 z1,Sint16 x2,Sint32 z2,Sint16 y,Uint
   }
   if (x2 >= spTargetX)
     x2 = spTargetX-1;
-  for (int x = x1; x<= x2; x++)
+  int x;
+  for (x = x1; x<= x2; x++)
   {
     draw_pixel_zset(x,y,z,color);
     z += sZ;
@@ -199,14 +208,17 @@ inline void draw_line(Sint16 x1,Sint16 x2,Sint16 y,Uint16 color)
   if (x2 >= spTargetX)
     x2 = spTargetX-1;
   //TODO: Replace with hline!
-  for (int x = x1; x<= x2; x++)
+  /*int x;
+  for (x = x1; x<= x2; x++)
   {
     draw_pixel(x,y,color);
-  }
+  }*/
+  spHorizentalLine(spTargetPixel,x1,y,x2-x1,color,1,spTargetX,spTargetY);
 }
 
 inline void sp_intern_Triangle_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 x3, Sint16 y3, Sint32 z3, Uint16 color)
 {
+  int y;
   if (y2 < 0)
     return;
   if (y1 >= spTargetY)
@@ -281,7 +293,7 @@ inline void sp_intern_Triangle_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint1
     }
     if (x4 < x3)
     {
-      for (int y = y1; y < y3; y++)
+      for (y = y1; y < y3; y++)
       { 
         //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
         //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
@@ -302,7 +314,7 @@ inline void sp_intern_Triangle_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint1
         //sZ = (z4-z3)*mul;
         sZ = z_div(z4-z3,x4-x3);
       }
-      for (int y = y1; y < y3; y++)
+      for (y = y1; y < y3; y++)
       {
         //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
         //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
@@ -349,7 +361,7 @@ inline void sp_intern_Triangle_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint1
   }
   if (x4 < x3)
   {
-    for (int y = y3; y <= y2; y++)
+    for (y = y3; y <= y2; y++)
     {      
       //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
       //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
@@ -370,7 +382,7 @@ inline void sp_intern_Triangle_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint1
       //sZ = (z4-z3)*mul;
       sZ = z_div(z4-z3,x4-x3);
     }
-    for (int y = y3; y <= y2; y++)
+    for (y = y3; y <= y2; y++)
     {
       //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
       //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
@@ -387,6 +399,7 @@ inline void sp_intern_Triangle_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint1
 
 inline void sp_intern_Triangle_ztest(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sint16 y2, Sint32 z2,   Sint16 x3, Sint16 y3, Sint32 z3,   Uint16 color)
 {
+  int y;
   if (y2 < 0)
     return;
   if (y1 >= spTargetY)
@@ -461,7 +474,7 @@ inline void sp_intern_Triangle_ztest(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x
     }
     if (x4 < x3)
     {
-      for (int y = y1; y < y3; y++)
+      for (y = y1; y < y3; y++)
       { 
         //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
         //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
@@ -482,7 +495,7 @@ inline void sp_intern_Triangle_ztest(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x
         //sZ = (z4-z3)*mul;
         sZ = z_div(z4-z3,x4-x3);
       }
-      for (int y = y1; y < y3; y++)
+      for (y = y1; y < y3; y++)
       {
         //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
         //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
@@ -529,7 +542,7 @@ inline void sp_intern_Triangle_ztest(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x
   }
   if (x4 < x3)
   {
-    for (int y = y3; y <= y2; y++)
+    for (y = y3; y <= y2; y++)
     {      
       //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
       //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
@@ -550,7 +563,7 @@ inline void sp_intern_Triangle_ztest(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x
       //sZ = (z4-z3)*mul;
       sZ = z_div(z4-z3,x4-x3);
     }
-    for (int y = y3; y <= y2; y++)
+    for (y = y3; y <= y2; y++)
     {
       //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
       //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
@@ -567,6 +580,7 @@ inline void sp_intern_Triangle_ztest(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x
 
 inline void sp_intern_Triangle_zset(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sint16 y2, Sint32 z2,   Sint16 x3, Sint16 y3, Sint32 z3,   Uint16 color)
 {
+  int y;
   if (y2 < 0)
     return;
   if (y1 >= spTargetY)
@@ -641,7 +655,7 @@ inline void sp_intern_Triangle_zset(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2
     }
     if (x4 < x3)
     {
-      for (int y = y1; y < y3; y++)
+      for (y = y1; y < y3; y++)
       { 
         //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
         //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
@@ -662,7 +676,7 @@ inline void sp_intern_Triangle_zset(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2
         //sZ = (z4-z3)*mul;
         sZ = z_div(z4-z3,x4-x3);
       }
-      for (int y = y1; y < y3; y++)
+      for (y = y1; y < y3; y++)
       {
         //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
         //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
@@ -709,7 +723,7 @@ inline void sp_intern_Triangle_zset(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2
   }
   if (x4 < x3)
   {
-    for (int y = y3; y <= y2; y++)
+    for (y = y3; y <= y2; y++)
     {      
       //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
       //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
@@ -730,7 +744,7 @@ inline void sp_intern_Triangle_zset(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2
       //sZ = (z4-z3)*mul;
       sZ = z_div(z4-z3,x4-x3);
     }
-    for (int y = y3; y <= y2; y++)
+    for (y = y3; y <= y2; y++)
     {
       //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
       //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
@@ -747,6 +761,7 @@ inline void sp_intern_Triangle_zset(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2
 
 inline void sp_intern_Triangle(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sint16 y2, Sint32 z2,   Sint16 x3, Sint16 y3, Sint32 z3,   Uint16 color)
 {
+  int y;
   if (y2 < 0)
     return;
   if (y1 >= spTargetY)
@@ -803,7 +818,7 @@ inline void sp_intern_Triangle(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sin
 
     if (x4 < x3)
     {
-      for (int y = y1; y < y3; y++)
+      for (y = y1; y < y3; y++)
       {      
         draw_line(xl>>SP_PRIM_ACCURACY,xr>>SP_PRIM_ACCURACY,y,color);
         xl += sX_l;
@@ -812,7 +827,7 @@ inline void sp_intern_Triangle(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sin
     }
     else
     {
-      for (int y = y1; y < y3; y++)
+      for (y = y1; y < y3; y++)
       {
         draw_line(xr>>SP_PRIM_ACCURACY,xl>>SP_PRIM_ACCURACY,y,color);
         xl += sX_l;
@@ -839,7 +854,7 @@ inline void sp_intern_Triangle(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sin
   
   if (x4 < x3)
   {
-    for (int y = y3; y <= y2; y++)
+    for (y = y3; y <= y2; y++)
     {
       draw_line(xl>>SP_PRIM_ACCURACY,xr>>SP_PRIM_ACCURACY,y,color);
       xl += sX_l;
@@ -848,7 +863,7 @@ inline void sp_intern_Triangle(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sin
   }
   else
   {
-    for (int y = y3; y <= y2; y++)
+    for (y = y3; y <= y2; y++)
     {
       draw_line(xr>>SP_PRIM_ACCURACY,xl>>SP_PRIM_ACCURACY,y,color);
       xl += sX_l;
@@ -1034,7 +1049,8 @@ inline void draw_line_tex_ztest_zset(Sint16 x1,Sint32 z1,Sint32 u1,Sint32 v1,Sin
   }
   if (x2 >= spTargetX)
     x2 = spTargetX-1;
-  for (int x = x1; x<= x2; x++)
+  int x;
+  for (x = x1; x<= x2; x++)
   {
     draw_pixel_tex_ztest_zset(x,y,z,u>>SP_PRIM_ACCURACY,v>>SP_PRIM_ACCURACY,color);
     u += sU;
@@ -1061,7 +1077,8 @@ inline void draw_line_tex_ztest(Sint16 x1,Sint32 z1,Sint32 u1,Sint32 v1,Sint16 x
   }
   if (x2 >= spTargetX)
     x2 = spTargetX-1;
-  for (int x = x1; x<= x2; x++)
+  int x;
+  for (x = x1; x<= x2; x++)
   {
     draw_pixel_tex_ztest(x,y,z,u>>SP_PRIM_ACCURACY,v>>SP_PRIM_ACCURACY,color);
     u += sU;
@@ -1088,7 +1105,8 @@ inline void draw_line_tex_zset(Sint16 x1,Sint32 z1,Sint32 u1,Sint32 v1,Sint16 x2
   }
   if (x2 >= spTargetX)
     x2 = spTargetX-1;
-  for (int x = x1; x<= x2; x++)
+  int x;
+  for (x = x1; x<= x2; x++)
   {
     draw_pixel_tex_zset(x,y,z,u>>SP_PRIM_ACCURACY,v>>SP_PRIM_ACCURACY,color);
     u += sU;
@@ -1113,7 +1131,8 @@ inline void draw_line_tex(Sint16 x1,Sint32 u1,Sint32 v1,Sint16 x2,Sint32 u2,Sint
   }
   if (x2 >= spTargetX)
     x2 = spTargetX-1;
-  for (int x = x1; x<= x2; x++)
+  int x;
+  for (x = x1; x<= x2; x++)
   {
     draw_pixel_tex(x,y,u>>SP_PRIM_ACCURACY,v>>SP_PRIM_ACCURACY,color);
     u += sU;
@@ -1123,64 +1142,41 @@ inline void draw_line_tex(Sint16 x1,Sint32 u1,Sint32 v1,Sint16 x2,Sint32 u2,Sint
 
 inline void sp_intern_Triangle_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Uint16 color)
 {
+  int y;
   if (y2 < 0)
     return;
   if (y1 >= spTargetY)
     return;
   SDL_LockSurface(spTarget);
 
-  Sint16 x4 = x1;
-  Sint16 y4 = y1;
-  Sint32 z4 = z1;
-  Sint16 u4 = u1;
-  Sint16 v4 = v1;  
   int div = y2-y1;
-  if (div!=0)
-  {
-    int mul = y3-y1;
-    Sint32 mul32 = mul*one_over_x(div);//(mul<<SP_PRIM_ACCURACY)/div;
-    x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
-    y4 = y3;
-    //z4 = z1+((z2-z1)*mul32>>SP_PRIM_ACCURACY-SP_ACCURACY);
-    z4 = z1+mul*z_div(z2-z1,div);
-    u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
-    v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
-  }
+  Sint32 mul = y3-y1;
+  Sint32 mul32 = mul*one_over_x(div);
+  Sint16 x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
+  Sint32 z4 = z1+mul*z_div(z2-z1,div);
+  Sint16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
+  Sint16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
+
   Sint32 xl = x1<<SP_PRIM_ACCURACY;
   Sint32 ul = u1<<SP_PRIM_ACCURACY;
   Sint32 vl = v1<<SP_PRIM_ACCURACY;
   Sint32 zl = z1;
-  Sint32 sX_l = 0;
-  Sint32 sU_l = 0;
-  Sint32 sV_l = 0;
-  Sint32 sZ_l = 0;
-  if ((y1-y2) != 0)
-  {
-    Sint32 mul = one_over_x(y1-y2);//(1<<SP_PRIM_ACCURACY)/(y1-y2);
-    sX_l = (x1-x2)*mul;
-    sU_l = (u1-u2)*mul;
-    sV_l = (v1-v2)*mul;
-    //sZ_l = (z1-z2)*mul;
-    sZ_l = z_div(z1-z2,y1-y2);
-  }
+
+  mul = one_over_x(y1-y2);
+  Sint32 sX_l = (x1-x2)*mul;
+  Sint32 sU_l = (u1-u2)*mul;
+  Sint32 sV_l = (v1-v2)*mul;
+  Sint32 sZ_l = z_div(z1-z2,y1-y2);
 
   Sint32 xr = xl;
   Sint32 ur = ul;
   Sint32 vr = vl;
   Sint32 zr = zl;
-  Sint32 sX_r = 0;
-  Sint32 sU_r = 0;
-  Sint32 sV_r = 0;
-  Sint32 sZ_r = 0;
-  if ((y1-y3) != 0)
-  {
-    Sint32 mul = one_over_x(y1-y3);//(1<<SP_PRIM_ACCURACY)/(y1-y3);
-    sX_r = (x1-x3)*mul;
-    sU_r = (u1-u3)*mul;
-    sV_r = (v1-v3)*mul;
-    //sZ_r = (z1-z3)*mul;
-    sZ_r = z_div(z1-z3,y1-y3);
-  }
+  mul = one_over_x(y1-y3);
+  Sint32 sX_r = (x1-x3)*mul;
+  Sint32 sU_r = (u1-u3)*mul;
+  Sint32 sV_r = (v1-v3)*mul;
+  Sint32 sZ_r = z_div(z1-z3,y1-y3);
 
   if (y3 < 0)
   {
@@ -1212,23 +1208,14 @@ inline void sp_intern_Triangle_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, S
     if (y3 >= spTargetY)
       y3 = spTargetY-1;
 
+    Sint32 mul = one_over_x(x4-x3);
+    Sint32 sU = (u4-u3)*mul;
+    Sint32 sV = (v4-v3)*mul;
+    Sint32 sZ = z_div(z4-z3,x4-x3);
     if (x4 < x3)
     {
-      Sint32 sU = 0;
-      Sint32 sV = 0;
-      Sint32 sZ = 0;
-      if ((x4-x3) != 0)
-      {
-        Sint32 mul = one_over_x(x4-x3);//(1<<SP_PRIM_ACCURACY)/(x4-x3);
-        sU = (u4-u3)*mul;
-        sV = (v4-v3)*mul;
-        //sZ = (z4-z3)*mul;
-        sZ = z_div(z4-z3,x4-x3);
-      }
-      for (int y = y1; y < y3; y++)
+      for (y = y1; y < y3; y++)
       { 
-        //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
-        //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
         draw_line_tex_ztest_zset(xl>>SP_PRIM_ACCURACY,zl,ul,vl,
                                  xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
         xl += sX_l;
@@ -1243,21 +1230,8 @@ inline void sp_intern_Triangle_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, S
     }
     else
     {
-      Sint32 sU = 0;
-      Sint32 sV = 0;
-      Sint32 sZ = 0;
-      if ((x3-x4) != 0)
+      for (y = y1; y < y3; y++)
       {
-        Sint32 mul = one_over_x(x3-x4);//(1<<SP_PRIM_ACCURACY)/(x3-x4);
-        sU = (u3-u4)*mul;
-        sV = (v3-v4)*mul;
-        //sZ = (z3-z4)*mul;
-        sZ = z_div(z3-z4,x3-x4);
-      }    
-      for (int y = y1; y < y3; y++)
-      {
-        //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
-        //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
         draw_line_tex_ztest_zset(xr>>SP_PRIM_ACCURACY,zr,ur,vr,
                                  xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
         xl += sX_l;
@@ -1276,19 +1250,11 @@ inline void sp_intern_Triangle_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, S
   ur = u3 << SP_PRIM_ACCURACY;
   vr = v3 << SP_PRIM_ACCURACY;
   zr = z3;
-  sX_r = 0;
-  sU_r = 0;
-  sV_r = 0;
-  sZ_r = 0;
-  if ((y2-y3) != 0)
-  {
-    Sint32 mul = one_over_x(y2-y3);//(1<<SP_PRIM_ACCURACY)/(y2-y3);
-    sX_r = (x2-x3)*mul;
-    sU_r = (u2-u3)*mul;
-    sV_r = (v2-v3)*mul;
-    //sZ_r = (z2-z3)*mul;
-    sZ_r = z_div(z2-z3,y2-y3);
-  }
+  mul = one_over_x(y2-y3);
+  sX_r = (x2-x3)*mul;
+  sU_r = (u2-u3)*mul;
+  sV_r = (v2-v3)*mul;
+  sZ_r = z_div(z2-z3,y2-y3);
 
   if (y3 < 0)
   {
@@ -1306,23 +1272,14 @@ inline void sp_intern_Triangle_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, S
   if (y2 >= spTargetY)
     y2 = spTargetY-1;
   
+  mul = one_over_x(x4-x3);
+  Sint32 sU = (u4-u3)*mul;
+  Sint32 sV = (v4-v3)*mul;
+  Sint32 sZ = z_div(z4-z3,x4-x3);
   if (x4 < x3)
   {
-    Sint32 sU = 0;
-    Sint32 sV = 0;
-    Sint32 sZ = 0;
-    if ((x4-x3) != 0)
-    {
-      Sint32 mul = one_over_x(x4-x3);//(1<<SP_PRIM_ACCURACY)/(x4-x3);
-      sU = (u4-u3)*mul;
-      sV = (v4-v3)*mul;
-      //sZ = (z4-z3)*mul;
-      sZ = z_div(z4-z3,x4-x3);
-    }
-    for (int y = y3; y <= y2; y++)
+    for (y = y3; y <= y2; y++)
     {      
-      //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
-      //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
       draw_line_tex_ztest_zset(xl>>SP_PRIM_ACCURACY,zl,ul,vl,
                                xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
       xl += sX_l;
@@ -1337,21 +1294,8 @@ inline void sp_intern_Triangle_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, S
   }
   else
   {
-    Sint32 sU = 0;
-    Sint32 sV = 0;
-    Sint32 sZ = 0;
-    if ((x3-x4) != 0)
+    for (y = y3; y <= y2; y++)
     {
-      Sint32 mul = one_over_x(x3-x4);//(1<<SP_PRIM_ACCURACY)/(x3-x4);
-      sU = (u3-u4)*mul;
-      sV = (v3-v4)*mul;
-      //sZ = (z3-z4)*mul;
-      sZ = z_div(z3-z4,x3-x4);
-    }    
-    for (int y = y3; y <= y2; y++)
-    {
-      //if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
-      //  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
       draw_line_tex_ztest_zset(xr>>SP_PRIM_ACCURACY,zr,ur,vr,
                                xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
       xl += sX_l;
@@ -1369,64 +1313,41 @@ inline void sp_intern_Triangle_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, S
 
 inline void sp_intern_Triangle_tex_ztest(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Uint16 color)
 {
+  int y;
   if (y2 < 0)
     return;
   if (y1 >= spTargetY)
     return;
   SDL_LockSurface(spTarget);
 
-  Sint16 x4 = x1;
-  Sint16 y4 = y1;
-  Sint32 z4 = z1;
-  Sint16 u4 = u1;
-  Sint16 v4 = v1;  
   int div = y2-y1;
-  if (div!=0)
-  {
-    int mul = y3-y1;
-    Sint32 mul32 = mul*one_over_x(div);//(mul<<SP_PRIM_ACCURACY)/div;
-    x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
-    y4 = y3;
-    //z4 = z1+((z2-z1)*mul32>>SP_PRIM_ACCURACY-SP_ACCURACY);
-    z4 = z1+mul*z_div(z2-z1,div);
-    u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
-    v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
-  }
+  Sint32 mul = y3-y1;
+  Sint32 mul32 = mul*one_over_x(div);
+  Sint16 x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
+  Sint32 z4 = z1+mul*z_div(z2-z1,div);
+  Sint16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
+  Sint16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
+
   Sint32 xl = x1<<SP_PRIM_ACCURACY;
   Sint32 ul = u1<<SP_PRIM_ACCURACY;
   Sint32 vl = v1<<SP_PRIM_ACCURACY;
   Sint32 zl = z1;
-  Sint32 sX_l = 0;
-  Sint32 sU_l = 0;
-  Sint32 sV_l = 0;
-  Sint32 sZ_l = 0;
-  if ((y1-y2) != 0)
-  {
-    Sint32 mul = one_over_x(y1-y2);//(1<<SP_PRIM_ACCURACY)/(y1-y2);
-    sX_l = (x1-x2)*mul;
-    sU_l = (u1-u2)*mul;
-    sV_l = (v1-v2)*mul;
-    //sZ_l = (z1-z2)*mul;
-    sZ_l = z_div(z1-z2,y1-y2);
-  }
+
+  mul = one_over_x(y1-y2);
+  Sint32 sX_l = (x1-x2)*mul;
+  Sint32 sU_l = (u1-u2)*mul;
+  Sint32 sV_l = (v1-v2)*mul;
+  Sint32 sZ_l = z_div(z1-z2,y1-y2);
 
   Sint32 xr = xl;
   Sint32 ur = ul;
   Sint32 vr = vl;
   Sint32 zr = zl;
-  Sint32 sX_r = 0;
-  Sint32 sU_r = 0;
-  Sint32 sV_r = 0;
-  Sint32 sZ_r = 0;
-  if ((y1-y3) != 0)
-  {
-    Sint32 mul = one_over_x(y1-y3);//(1<<SP_PRIM_ACCURACY)/(y1-y3);
-    sX_r = (x1-x3)*mul;
-    sU_r = (u1-u3)*mul;
-    sV_r = (v1-v3)*mul;
-    //sZ_r = (z1-z3)*mul;
-    sZ_r = z_div(z1-z3,y1-y3);
-  }
+  mul = one_over_x(y1-y3);
+  Sint32 sX_r = (x1-x3)*mul;
+  Sint32 sU_r = (u1-u3)*mul;
+  Sint32 sV_r = (v1-v3)*mul;
+  Sint32 sZ_r = z_div(z1-z3,y1-y3);
 
   if (y3 < 0)
   {
@@ -1458,25 +1379,16 @@ inline void sp_intern_Triangle_tex_ztest(Sint16 x1, Sint16 y1, Sint32 z1, Sint16
     if (y3 >= spTargetY)
       y3 = spTargetY-1;
 
+    Sint32 mul = one_over_x(x4-x3);
+    Sint32 sU = (u4-u3)*mul;
+    Sint32 sV = (v4-v3)*mul;
+    Sint32 sZ = z_div(z4-z3,x4-x3);
     if (x4 < x3)
     {
-      Sint32 sU = 0;
-      Sint32 sV = 0;
-      Sint32 sZ = 0;
-      if ((x4-x3) != 0)
-      {
-        Sint32 mul = one_over_x(x4-x3);//(1<<SP_PRIM_ACCURACY)/(x4-x3);
-        sU = (u4-u3)*mul;
-        sV = (v4-v3)*mul;
-        //sZ = (z4-z3)*mul;
-        //sZ = z_div(z4-z3,x4-x3);
-      }
-      for (int y = y1; y < y3; y++)
+      for (y = y1; y < y3; y++)
       { 
-        if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
-          sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
         draw_line_tex_ztest(xl>>SP_PRIM_ACCURACY,zl,ul,vl,
-                                 xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
+                            xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
         xl += sX_l;
         ul += sU_l;
         vl += sV_l;
@@ -1489,23 +1401,10 @@ inline void sp_intern_Triangle_tex_ztest(Sint16 x1, Sint16 y1, Sint32 z1, Sint16
     }
     else
     {
-      Sint32 sU = 0;
-      Sint32 sV = 0;
-      Sint32 sZ = 0;
-      if ((x3-x4) != 0)
+      for (y = y1; y < y3; y++)
       {
-        Sint32 mul = one_over_x(x3-x4);//(1<<SP_PRIM_ACCURACY)/(x3-x4);
-        sU = (u3-u4)*mul;
-        sV = (v3-v4)*mul;
-        //sZ = (z3-z4)*mul;
-        //sZ = z_div(z3-z4,x3-x4);
-      }    
-      for (int y = y1; y < y3; y++)
-      {
-        if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
-          sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
         draw_line_tex_ztest(xr>>SP_PRIM_ACCURACY,zr,ur,vr,
-                                 xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
+                            xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
         xl += sX_l;
         ul += sU_l;
         vl += sV_l;
@@ -1522,19 +1421,11 @@ inline void sp_intern_Triangle_tex_ztest(Sint16 x1, Sint16 y1, Sint32 z1, Sint16
   ur = u3 << SP_PRIM_ACCURACY;
   vr = v3 << SP_PRIM_ACCURACY;
   zr = z3;
-  sX_r = 0;
-  sU_r = 0;
-  sV_r = 0;
-  sZ_r = 0;
-  if ((y2-y3) != 0)
-  {
-    Sint32 mul = one_over_x(y2-y3);//(1<<SP_PRIM_ACCURACY)/(y2-y3);
-    sX_r = (x2-x3)*mul;
-    sU_r = (u2-u3)*mul;
-    sV_r = (v2-v3)*mul;
-    //sZ_r = (z2-z3)*mul;
-    sZ_r = z_div(z2-z3,y2-y3);
-  }
+  mul = one_over_x(y2-y3);
+  sX_r = (x2-x3)*mul;
+  sU_r = (u2-u3)*mul;
+  sV_r = (v2-v3)*mul;
+  sZ_r = z_div(z2-z3,y2-y3);
 
   if (y3 < 0)
   {
@@ -1552,25 +1443,16 @@ inline void sp_intern_Triangle_tex_ztest(Sint16 x1, Sint16 y1, Sint32 z1, Sint16
   if (y2 >= spTargetY)
     y2 = spTargetY-1;
   
+  mul = one_over_x(x4-x3);
+  Sint32 sU = (u4-u3)*mul;
+  Sint32 sV = (v4-v3)*mul;
+  Sint32 sZ = z_div(z4-z3,x4-x3);
   if (x4 < x3)
   {
-    Sint32 sU = 0;
-    Sint32 sV = 0;
-    Sint32 sZ = 0;
-    if ((x4-x3) != 0)
-    {
-      Sint32 mul = one_over_x(x4-x3);//(1<<SP_PRIM_ACCURACY)/(x4-x3);
-      sU = (u4-u3)*mul;
-      sV = (v4-v3)*mul;
-      //sZ = (z4-z3)*mul;
-      //sZ = z_div(z4-z3,x4-x3);
-    }
-    for (int y = y3; y <= y2; y++)
+    for (y = y3; y <= y2; y++)
     {      
-      if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
-        sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
       draw_line_tex_ztest(xl>>SP_PRIM_ACCURACY,zl,ul,vl,
-                               xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
+                          xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
       xl += sX_l;
       ul += sU_l;
       vl += sV_l;
@@ -1583,23 +1465,10 @@ inline void sp_intern_Triangle_tex_ztest(Sint16 x1, Sint16 y1, Sint32 z1, Sint16
   }
   else
   {
-    Sint32 sU = 0;
-    Sint32 sV = 0;
-    Sint32 sZ = 0;
-    if ((x3-x4) != 0)
+    for (y = y3; y <= y2; y++)
     {
-      Sint32 mul = one_over_x(x3-x4);//(1<<SP_PRIM_ACCURACY)/(x3-x4);
-      sU = (u3-u4)*mul;
-      sV = (v3-v4)*mul;
-      //sZ = (z3-z4)*mul;
-      //sZ = z_div(z3-z4,x3-x4);
-    }    
-    for (int y = y3; y <= y2; y++)
-    {
-      if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
-        sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
       draw_line_tex_ztest(xr>>SP_PRIM_ACCURACY,zr,ur,vr,
-                               xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
+                          xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
       xl += sX_l;
       ul += sU_l;
       vl += sV_l;
@@ -1615,64 +1484,41 @@ inline void sp_intern_Triangle_tex_ztest(Sint16 x1, Sint16 y1, Sint32 z1, Sint16
 
 inline void sp_intern_Triangle_tex_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Uint16 color)
 {
+  int y;
   if (y2 < 0)
     return;
   if (y1 >= spTargetY)
     return;
   SDL_LockSurface(spTarget);
 
-  Sint16 x4 = x1;
-  Sint16 y4 = y1;
-  Sint32 z4 = z1;
-  Sint16 u4 = u1;
-  Sint16 v4 = v1;  
   int div = y2-y1;
-  if (div!=0)
-  {
-    int mul = y3-y1;
-    Sint32 mul32 = mul*one_over_x(div);//(mul<<SP_PRIM_ACCURACY)/div;
-    x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
-    y4 = y3;
-    //z4 = z1+((z2-z1)*mul32>>SP_PRIM_ACCURACY-SP_ACCURACY);
-    z4 = z1+mul*z_div(z2-z1,div);
-    u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
-    v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
-  }
+  Sint32 mul = y3-y1;
+  Sint32 mul32 = mul*one_over_x(div);
+  Sint16 x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
+  Sint32 z4 = z1+mul*z_div(z2-z1,div);
+  Sint16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
+  Sint16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
+
   Sint32 xl = x1<<SP_PRIM_ACCURACY;
   Sint32 ul = u1<<SP_PRIM_ACCURACY;
   Sint32 vl = v1<<SP_PRIM_ACCURACY;
   Sint32 zl = z1;
-  Sint32 sX_l = 0;
-  Sint32 sU_l = 0;
-  Sint32 sV_l = 0;
-  Sint32 sZ_l = 0;
-  if ((y1-y2) != 0)
-  {
-    Sint32 mul = one_over_x(y1-y2);//(1<<SP_PRIM_ACCURACY)/(y1-y2);
-    sX_l = (x1-x2)*mul;
-    sU_l = (u1-u2)*mul;
-    sV_l = (v1-v2)*mul;
-    //sZ_l = (z1-z2)*mul;
-    sZ_l = z_div(z1-z2,y1-y2);
-  }
+
+  mul = one_over_x(y1-y2);
+  Sint32 sX_l = (x1-x2)*mul;
+  Sint32 sU_l = (u1-u2)*mul;
+  Sint32 sV_l = (v1-v2)*mul;
+  Sint32 sZ_l = z_div(z1-z2,y1-y2);
 
   Sint32 xr = xl;
   Sint32 ur = ul;
   Sint32 vr = vl;
   Sint32 zr = zl;
-  Sint32 sX_r = 0;
-  Sint32 sU_r = 0;
-  Sint32 sV_r = 0;
-  Sint32 sZ_r = 0;
-  if ((y1-y3) != 0)
-  {
-    Sint32 mul = one_over_x(y1-y3);//(1<<SP_PRIM_ACCURACY)/(y1-y3);
-    sX_r = (x1-x3)*mul;
-    sU_r = (u1-u3)*mul;
-    sV_r = (v1-v3)*mul;
-    //sZ_r = (z1-z3)*mul;
-    sZ_r = z_div(z1-z3,y1-y3);
-  }
+  mul = one_over_x(y1-y3);
+  Sint32 sX_r = (x1-x3)*mul;
+  Sint32 sU_r = (u1-u3)*mul;
+  Sint32 sV_r = (v1-v3)*mul;
+  Sint32 sZ_r = z_div(z1-z3,y1-y3);
 
   if (y3 < 0)
   {
@@ -1704,25 +1550,16 @@ inline void sp_intern_Triangle_tex_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 
     if (y3 >= spTargetY)
       y3 = spTargetY-1;
 
+    Sint32 mul = one_over_x(x4-x3);
+    Sint32 sU = (u4-u3)*mul;
+    Sint32 sV = (v4-v3)*mul;
+    Sint32 sZ = z_div(z4-z3,x4-x3);
     if (x4 < x3)
     {
-      Sint32 sU = 0;
-      Sint32 sV = 0;
-      Sint32 sZ = 0;
-      if ((x4-x3) != 0)
-      {
-        Sint32 mul = one_over_x(x4-x3);//(1<<SP_PRIM_ACCURACY)/(x4-x3);
-        sU = (u4-u3)*mul;
-        sV = (v4-v3)*mul;
-        //sZ = (z4-z3)*mul;
-        //sZ = z_div(z4-z3,x4-x3);
-      }
-      for (int y = y1; y < y3; y++)
+      for (y = y1; y < y3; y++)
       { 
-        if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
-          sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
         draw_line_tex_zset(xl>>SP_PRIM_ACCURACY,zl,ul,vl,
-                                 xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
+                           xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
         xl += sX_l;
         ul += sU_l;
         vl += sV_l;
@@ -1735,23 +1572,10 @@ inline void sp_intern_Triangle_tex_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 
     }
     else
     {
-      Sint32 sU = 0;
-      Sint32 sV = 0;
-      Sint32 sZ = 0;
-      if ((x3-x4) != 0)
+      for (y = y1; y < y3; y++)
       {
-        Sint32 mul = one_over_x(x3-x4);//(1<<SP_PRIM_ACCURACY)/(x3-x4);
-        sU = (u3-u4)*mul;
-        sV = (v3-v4)*mul;
-        //sZ = (z3-z4)*mul;
-        //sZ = z_div(z3-z4,x3-x4);
-      }    
-      for (int y = y1; y < y3; y++)
-      {
-        if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
-          sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
         draw_line_tex_zset(xr>>SP_PRIM_ACCURACY,zr,ur,vr,
-                                 xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
+                           xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
         xl += sX_l;
         ul += sU_l;
         vl += sV_l;
@@ -1768,19 +1592,11 @@ inline void sp_intern_Triangle_tex_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 
   ur = u3 << SP_PRIM_ACCURACY;
   vr = v3 << SP_PRIM_ACCURACY;
   zr = z3;
-  sX_r = 0;
-  sU_r = 0;
-  sV_r = 0;
-  sZ_r = 0;
-  if ((y2-y3) != 0)
-  {
-    Sint32 mul = one_over_x(y2-y3);//(1<<SP_PRIM_ACCURACY)/(y2-y3);
-    sX_r = (x2-x3)*mul;
-    sU_r = (u2-u3)*mul;
-    sV_r = (v2-v3)*mul;
-    //sZ_r = (z2-z3)*mul;
-    sZ_r = z_div(z2-z3,y2-y3);
-  }
+  mul = one_over_x(y2-y3);
+  sX_r = (x2-x3)*mul;
+  sU_r = (u2-u3)*mul;
+  sV_r = (v2-v3)*mul;
+  sZ_r = z_div(z2-z3,y2-y3);
 
   if (y3 < 0)
   {
@@ -1798,25 +1614,16 @@ inline void sp_intern_Triangle_tex_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 
   if (y2 >= spTargetY)
     y2 = spTargetY-1;
   
+  mul = one_over_x(x4-x3);
+  Sint32 sU = (u4-u3)*mul;
+  Sint32 sV = (v4-v3)*mul;
+  Sint32 sZ = z_div(z4-z3,x4-x3);
   if (x4 < x3)
   {
-    Sint32 sU = 0;
-    Sint32 sV = 0;
-    Sint32 sZ = 0;
-    if ((x4-x3) != 0)
-    {
-      Sint32 mul = one_over_x(x4-x3);//(1<<SP_PRIM_ACCURACY)/(x4-x3);
-      sU = (u4-u3)*mul;
-      sV = (v4-v3)*mul;
-      //sZ = (z4-z3)*mul;
-      //sZ = z_div(z4-z3,x4-x3);
-    }
-    for (int y = y3; y <= y2; y++)
+    for (y = y3; y <= y2; y++)
     {      
-      if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
-        sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
       draw_line_tex_zset(xl>>SP_PRIM_ACCURACY,zl,ul,vl,
-                               xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
+                         xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
       xl += sX_l;
       ul += sU_l;
       vl += sV_l;
@@ -1829,23 +1636,10 @@ inline void sp_intern_Triangle_tex_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 
   }
   else
   {
-    Sint32 sU = 0;
-    Sint32 sV = 0;
-    Sint32 sZ = 0;
-    if ((x3-x4) != 0)
+    for (y = y3; y <= y2; y++)
     {
-      Sint32 mul = one_over_x(x3-x4);//(1<<SP_PRIM_ACCURACY)/(x3-x4);
-      sU = (u3-u4)*mul;
-      sV = (v3-v4)*mul;
-      //sZ = (z3-z4)*mul;
-      //sZ = z_div(z3-z4,x3-x4);
-    }    
-    for (int y = y3; y <= y2; y++)
-    {
-      if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
-        sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
       draw_line_tex_zset(xr>>SP_PRIM_ACCURACY,zr,ur,vr,
-                               xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
+                         xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
       xl += sX_l;
       ul += sU_l;
       vl += sV_l;
@@ -1861,64 +1655,40 @@ inline void sp_intern_Triangle_tex_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 
 
 inline void sp_intern_Triangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Uint16 color)
 {
+  int y;
   if (y2 < 0)
     return;
   if (y1 >= spTargetY)
     return;
   SDL_LockSurface(spTarget);
 
-  Sint16 x4 = x1;
-  Sint16 y4 = y1;
-  Sint32 z4 = z1;
-  Sint16 u4 = u1;
-  Sint16 v4 = v1;  
   int div = y2-y1;
-  if (div!=0)
-  {
-    if (div<0)
-      div = -div;
-    int mul = y3-y1;
-    if (mul < 0)
-      mul = -mul;
-    Sint32 mul32 = mul*one_over_x(div);//(mul<<SP_PRIM_ACCURACY)/div;
-    x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
-    y4 = y3;
-    z4 = z1+((z2-z1)*mul32>>SP_PRIM_ACCURACY);
-    u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
-    v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
-  }
+  Sint32 mul = y3-y1;
+  Sint32 mul32 = mul*one_over_x(div);
+  Sint16 x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
+  Sint16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
+  Sint16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
+
   Sint32 xl = x1<<SP_PRIM_ACCURACY;
   Sint32 ul = u1<<SP_PRIM_ACCURACY;
   Sint32 vl = v1<<SP_PRIM_ACCURACY;
-  Sint32 sX_l = 0;
-  Sint32 sU_l = 0;
-  Sint32 sV_l = 0;
-  if ((y1-y2) != 0)
-  {
-    Sint32 mul = one_over_x(y1-y2);//(1<<SP_PRIM_ACCURACY)/(y1-y2);
-    sX_l = (x1-x2)*mul;
-    sU_l = (u1-u2)*mul;
-    sV_l = (v1-v2)*mul;
-  }
+
+  mul = one_over_x(y1-y2);
+  Sint32 sX_l = (x1-x2)*mul;
+  Sint32 sU_l = (u1-u2)*mul;
+  Sint32 sV_l = (v1-v2)*mul;
 
   Sint32 xr = xl;
   Sint32 ur = ul;
   Sint32 vr = vl;
-  Sint32 sX_r = 0;
-  Sint32 sU_r = 0;
-  Sint32 sV_r = 0;
-  if ((y1-y3) != 0)
-  {
-    Sint32 mul = one_over_x(y1-y3);//(1<<SP_PRIM_ACCURACY)/(y1-y3);
-    sX_r = (x1-x3)*mul;
-    sU_r = (u1-u3)*mul;
-    sV_r = (v1-v3)*mul;
-  }
+  mul = one_over_x(y1-y3);
+  Sint32 sX_r = (x1-x3)*mul;
+  Sint32 sU_r = (u1-u3)*mul;
+  Sint32 sV_r = (v1-v3)*mul;
 
   if (y3 < 0)
   {
     int diff = y3-y1;
-    y3 = 0;
     xl += sX_l*diff;
     ul += sU_l*diff;
     vl += sV_l*diff;
@@ -1942,18 +1712,13 @@ inline void sp_intern_Triangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, S
     if (y3 >= spTargetY)
       y3 = spTargetY-1;
 
+    Sint32 mul = one_over_x(x4-x3);
+    Sint32 sU = (u4-u3)*mul;
+    Sint32 sV = (v4-v3)*mul;
     if (x4 < x3)
     {
-      Sint32 sU = 0;
-      Sint32 sV = 0;
-      if ((x4-x3) != 0)
-      {
-        Sint32 mul = one_over_x(x4-x3);//(1<<SP_PRIM_ACCURACY)/(x4-x3);
-        sU = (u4-u3)*mul;
-        sV = (v4-v3)*mul;
-      }
-      for (int y = y1; y < y3; y++)
-      {      
+      for (y = y1; y < y3; y++)
+      { 
         draw_line_tex(xl>>SP_PRIM_ACCURACY,ul,vl,
                       xr>>SP_PRIM_ACCURACY,ur,vr,y,color,sU,sV);
         xl += sX_l;
@@ -1966,15 +1731,7 @@ inline void sp_intern_Triangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, S
     }
     else
     {
-      Sint32 sU = 0;
-      Sint32 sV = 0;
-      if ((x3-x4) != 0)
-      {
-        Sint32 mul = one_over_x(x3-x4);//(1<<SP_PRIM_ACCURACY)/(x3-x4);
-        sU = (u3-u4)*mul;
-        sV = (v3-v4)*mul;
-      }    
-      for (int y = y1; y < y3; y++)
+      for (y = y1; y < y3; y++)
       {
         draw_line_tex(xr>>SP_PRIM_ACCURACY,ur,vr,
                       xl>>SP_PRIM_ACCURACY,ul,vl,y,color,sU,sV);
@@ -1987,19 +1744,15 @@ inline void sp_intern_Triangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, S
       }
     }
   }
+  
   xr = x3 << SP_PRIM_ACCURACY;
   ur = u3 << SP_PRIM_ACCURACY;
   vr = v3 << SP_PRIM_ACCURACY;
-  sX_r = 0;
-  sU_r = 0;
-  sV_r = 0;
-  if ((y2-y3) != 0)
-  {
-    Sint32 mul = one_over_x(y2-y3);//(1<<SP_PRIM_ACCURACY)/(y2-y3);
-    sX_r = (x2-x3)*mul;
-    sU_r = (u2-u3)*mul;
-    sV_r = (v2-v3)*mul;
-  }
+  mul = one_over_x(y2-y3);
+  sX_r = (x2-x3)*mul;
+  sU_r = (u2-u3)*mul;
+  sV_r = (v2-v3)*mul;
+
   if (y3 < 0)
   {
     int diff = -y3;
@@ -2014,18 +1767,13 @@ inline void sp_intern_Triangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, S
   if (y2 >= spTargetY)
     y2 = spTargetY-1;
   
+  mul = one_over_x(x4-x3);
+  Sint32 sU = (u4-u3)*mul;
+  Sint32 sV = (v4-v3)*mul;
   if (x4 < x3)
   {
-    Sint32 sU = 0;
-    Sint32 sV = 0;
-    if ((x4-x3) != 0)
-    {
-      Sint32 mul = one_over_x(x4-x3);//(1<<SP_PRIM_ACCURACY)/(x4-x3);
-      sU = (u4-u3)*mul;
-      sV = (v4-v3)*mul;
-    }
-    for (int y = y3; y <= y2; y++)
-    {
+    for (y = y3; y <= y2; y++)
+    {      
       draw_line_tex(xl>>SP_PRIM_ACCURACY,ul,vl,
                     xr>>SP_PRIM_ACCURACY,ur,vr,y,color,sU,sV);
       xl += sX_l;
@@ -2038,15 +1786,7 @@ inline void sp_intern_Triangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, S
   }
   else
   {
-    Sint32 sU = 0;
-    Sint32 sV = 0;
-    if ((x3-x4) != 0)
-    {
-      Sint32 mul = one_over_x(x3-x4);//(1<<SP_PRIM_ACCURACY)/(x3-x4);
-      sU = (u3-u4)*mul;
-      sV = (v3-v4)*mul;
-    }
-    for (int y = y3; y <= y2; y++)
+    for (y = y3; y <= y2; y++)
     {
       draw_line_tex(xr>>SP_PRIM_ACCURACY,ur,vr,
                     xl>>SP_PRIM_ACCURACY,ul,vl,y,color,sU,sV);
@@ -2147,19 +1887,419 @@ PREFIX void spQuad(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 x2, Sint16 y2, Sint32
   spTriangle(mx,my,mz,x4,y4,z4,x1,y1,z1,color);
 }
 
+inline void sp_intern_Quad_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Sint16 x4, Sint16 y4, Sint32 z4, Sint16 u4, Sint16 v4, Uint16 color)
+{
+  int y;
+  if (y3>y4)
+  {
+    if (y3 < 0)
+      return;
+  }
+  else
+    if (y4 < 0)
+      return;
+  if (y1 >= spTargetY)
+    return;
+  SDL_LockSurface(spTarget);
+
+  Sint32 div = y4-y1;
+  Sint32 mul = y2-y1;
+  Sint32 mul32 = mul*one_over_x(div);
+  Sint16 xt = x1+((x4-x1)*mul32>>SP_PRIM_ACCURACY);
+  Sint32 zt = z1+mul*z_div(z4-z1,div);
+  Sint16 ut = u1+((u4-u1)*mul32>>SP_PRIM_ACCURACY);
+  Sint16 vt = v1+((v4-v1)*mul32>>SP_PRIM_ACCURACY);
+
+  Sint32 xl = x1<<SP_PRIM_ACCURACY;
+  Sint32 ul = u1<<SP_PRIM_ACCURACY;
+  Sint32 vl = v1<<SP_PRIM_ACCURACY;
+  Sint32 zl = z1;
+
+  mul = one_over_x(y1-y4);
+  Sint32 sX_l = (x1-x4)*mul;
+  Sint32 sU_l = (u1-u4)*mul;
+  Sint32 sV_l = (v1-v4)*mul;
+  Sint32 sZ_l = z_div(z1-z4,y1-y4);
+
+  Sint32 xr = xl;
+  Sint32 ur = ul;
+  Sint32 vr = vl;
+  Sint32 zr = zl;
+  mul = one_over_x(y1-y2);
+  Sint32 sX_r = (x1-x2)*mul;
+  Sint32 sU_r = (u1-u2)*mul;
+  Sint32 sV_r = (v1-v2)*mul;
+  Sint32 sZ_r = z_div(z1-z2,y1-y2);
+
+  if (y2 < 0)
+  {
+    int diff = y2-y1;
+    xl += sX_l*diff;
+    ul += sU_l*diff;
+    vl += sV_l*diff;
+    zl += sZ_l*diff;
+    xr += sX_r*diff;
+    ur += sU_r*diff;
+    vr += sV_r*diff;
+    zr += sZ_r*diff;
+  }
+  else
+  {
+    if (y1 < 0)
+    {
+      int diff = -y1;
+      y1 = 0;
+      xl += sX_l*diff;
+      ul += sU_l*diff;
+      vl += sV_l*diff;
+      zl += sZ_l*diff;
+      xr += sX_r*diff;
+      ur += sU_r*diff;
+      vr += sV_r*diff;
+      zr += sZ_r*diff;
+    }
+    if (y2 >= spTargetY)
+      y2 = spTargetY-1;
+
+    Sint32 mul = one_over_x(xt-x2);
+    Sint32 sU = (ut-u2)*mul;
+    Sint32 sV = (vt-v2)*mul;
+    Sint32 sZ = z_div(zt-z2,xt-x2);
+    if (xt < x2)
+    {
+      for (y = y1; y < y2; y++)
+      { 
+        draw_line_tex_ztest_zset(xl>>SP_PRIM_ACCURACY,zl,ul,vl,
+                                 xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
+        xl += sX_l;
+        ul += sU_l;
+        vl += sV_l;
+        zl += sZ_l;
+        xr += sX_r;
+        ur += sU_r;
+        vr += sV_r;
+        zr += sZ_r;
+      }
+    }
+    else
+    {
+      for (y = y1; y < y2; y++)
+      {
+        draw_line_tex_ztest_zset(xr>>SP_PRIM_ACCURACY,zr,ur,vr,
+                                 xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
+        xl += sX_l;
+        ul += sU_l;
+        vl += sV_l;
+        zl += sZ_l;
+        xr += sX_r;
+        ur += sU_r;
+        vr += sV_r;
+        zr += sZ_r;
+      }
+    }
+  }
+
+  xr = x2 << SP_PRIM_ACCURACY;
+  ur = u2 << SP_PRIM_ACCURACY;
+  vr = v2 << SP_PRIM_ACCURACY;
+  zr = z2;
+  mul = one_over_x(y3-y2);
+  sX_r = (x3-x2)*mul;
+  sU_r = (u3-u2)*mul;
+  sV_r = (v3-v2)*mul;
+  sZ_r = z_div(z3-z2,y3-y2);
+  
+  if (y4 < y3)
+  {      
+    if (y4 < 0)
+    {
+      int diff = -y4;
+      y4 = 0;
+      xl += sX_l*diff;
+      ul += sU_l*diff;
+      vl += sV_l*diff;
+      zl += sZ_l*diff;
+      xr += sX_r*diff;
+      ur += sU_r*diff;
+      vr += sV_r*diff;
+      zr += sZ_r*diff;
+    }
+      
+    if (y4 >= spTargetY)
+      y4 = spTargetY-1;
+      
+    mul = y4-y2;
+    div = y3-y2;
+    mul32 = mul*one_over_x(div);
+    xt = x2+((x3-x2)*mul32>>SP_PRIM_ACCURACY);
+    zt = z2+mul*z_div(z3-z2,div);
+    ut = u2+((u3-u2)*mul32>>SP_PRIM_ACCURACY);
+    vt = v2+((v3-v2)*mul32>>SP_PRIM_ACCURACY);
+      
+    if (xt > x4)
+    {
+      for (y = y2; y <= y4; y++)
+      {      
+        mul = one_over_x(xl-xr>>SP_PRIM_ACCURACY);
+        Sint32 sU = (ul-ur>>SP_PRIM_ACCURACY)*mul;
+        Sint32 sV = (vl-vr>>SP_PRIM_ACCURACY)*mul;
+        Sint32 sZ = z_div(zl-zr>>SP_PRIM_ACCURACY,xl-xr>>SP_PRIM_ACCURACY);
+        draw_line_tex_ztest_zset(xl>>SP_PRIM_ACCURACY,zl,ul,vl,
+                                 xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
+        xl += sX_l;
+        ul += sU_l;
+        vl += sV_l;
+        zl += sZ_l;
+        xr += sX_r;
+        ur += sU_r;
+        vr += sV_r;
+        zr += sZ_r;
+      }
+    }
+    else
+    {
+      for (y = y2; y <= y4; y++)
+      {
+        mul = one_over_x(xl-xr>>SP_PRIM_ACCURACY);
+        Sint32 sU = (ul-ur>>SP_PRIM_ACCURACY)*mul;
+        Sint32 sV = (vl-vr>>SP_PRIM_ACCURACY)*mul;
+        Sint32 sZ = z_div(zl-zr>>SP_PRIM_ACCURACY,xl-xr>>SP_PRIM_ACCURACY);
+        draw_line_tex_ztest_zset(xr>>SP_PRIM_ACCURACY,zr,ur,vr,
+                                 xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
+        xl += sX_l;
+        ul += sU_l;
+        vl += sV_l;
+        zl += sZ_l;
+        xr += sX_r;
+        ur += sU_r;
+        vr += sV_r;
+        zr += sZ_r;
+      }
+    }
+          
+    if (y3 >= spTargetY)
+      y3 = spTargetY-1;
+
+
+    xl = x4 << SP_PRIM_ACCURACY;
+    ul = u4 << SP_PRIM_ACCURACY;
+    vl = v4 << SP_PRIM_ACCURACY;
+    zl = z4;
+    mul = one_over_x(y3-y4);
+    sX_l = (x3-x4)*mul;
+    sU_l = (u3-u4)*mul;
+    sV_l = (v3-v4)*mul;
+    sZ_l = z_div(z3-z4,y3-y4);
+            
+    /*mul = one_over_x(xt-x4);
+    Sint32 sU = (ut-u4)*mul;
+    Sint32 sV = (vt-v4)*mul;
+    Sint32 sZ = z_div(zt-z4,xt-x4);*/
+    if (xt > x4)
+    {
+      for (y = y4; y <= y3; y++)
+      {      
+        mul = one_over_x(xl-xr>>SP_PRIM_ACCURACY);
+        Sint32 sU = (ul-ur>>SP_PRIM_ACCURACY)*mul;
+        Sint32 sV = (vl-vr>>SP_PRIM_ACCURACY)*mul;
+        Sint32 sZ = z_div(zl-zr>>SP_PRIM_ACCURACY,xl-xr>>SP_PRIM_ACCURACY);
+        draw_line_tex_ztest_zset(xl>>SP_PRIM_ACCURACY,zl,ul,vl,
+                                 xr>>SP_PRIM_ACCURACY,zr,ur,vr,y,color,sU,sV,sZ);
+        xl += sX_l;
+        ul += sU_l;
+        vl += sV_l;
+        zl += sZ_l;
+        xr += sX_r;
+        ur += sU_r;
+        vr += sV_r;
+        zr += sZ_r;
+      }
+    }
+    else
+    {
+      for (y = y4; y <= y3; y++)
+      {
+        mul = one_over_x(xl-xr>>SP_PRIM_ACCURACY);
+        Sint32 sU = (ul-ur>>SP_PRIM_ACCURACY)*mul;
+        Sint32 sV = (vl-vr>>SP_PRIM_ACCURACY)*mul;
+        Sint32 sZ = z_div(zl-zr>>SP_PRIM_ACCURACY,xl-xr>>SP_PRIM_ACCURACY);
+        draw_line_tex_ztest_zset(xr>>SP_PRIM_ACCURACY,zr,ur,vr,
+                                 xl>>SP_PRIM_ACCURACY,zl,ul,vl,y,color,sU,sV,sZ);
+        xl += sX_l;
+        ul += sU_l;
+        vl += sV_l;
+        zl += sZ_l;
+        xr += sX_r;
+        ur += sU_r;
+        vr += sV_r;
+        zr += sZ_r;
+      }
+    }
+  }
+  SDL_UnlockSurface(spTarget);  
+}
+
+
 PREFIX void spQuad_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Sint16 x4, Sint16 y4, Sint32 z4, Sint16 u4, Sint16 v4, Uint16 color)
 {
-  //spTriangle_tex(x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,color);
-  //spTriangle_tex(x1,y1,z1,u1,v1,x3,y3,z3,u3,v3,x4,y4,z4,u4,v4,color);
-  Sint16 mx = x1+x2+x3+x4>>2;
-  Sint16 my = y1+y2+y3+y4>>2;
-  Sint32 mz = (z1>>2)+(z2>>2)+(z3>>2)+(z4>>2);
-  Sint16 mu = u1+u2+u3+u4>>2;
-  Sint16 mv = v1+v2+v3+v4>>2;
-  spTriangle_tex(mx,my,mz,mu,mv,x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,color);
-  spTriangle_tex(mx,my,mz,mu,mv,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,color);
-  spTriangle_tex(mx,my,mz,mu,mv,x3,y3,z3,u3,v3,x4,y4,z4,u4,v4,color);
-  spTriangle_tex(mx,my,mz,mu,mv,x4,y4,z4,u4,v4,x1,y1,z1,u1,v1,color);
+  spTriangle_tex(x1,y1,z1,u1,v1,
+                 x2,y2,z2,u2,v2,
+                 x3,y3,z3,u3,v3,color);
+  spTriangle_tex(x1,y1,z1,u1,v1,
+                 x3,y3,z3,u3,v3,
+                 x4,y4,z4,u4,v4,color);
+  
+  /*int smallest = 1; //y1
+  if (y2 < y1)
+  {
+    if (y2 < y3)
+    {
+      if (y2 < y4)
+        smallest = 2;
+      else
+        smallest = 4;
+    }
+    else
+    {
+      if (y3 < y4)
+        smallest = 3;
+      else
+        smallest = 4;
+    }
+  } 
+  else
+  {
+    if (y1 < y3)
+    {
+      if (y1 < y4)
+        smallest = 1;
+      else
+        smallest = 4;
+    }
+    else
+    {
+      if (y3 < y4)
+        smallest = 3;
+      else
+        smallest = 4;
+    }
+  }
+  Sint32 temp;
+  switch (smallest)
+  {
+    case 2: //shift to the left
+      temp = x1;
+      x1 = x2;
+      x2 = x3;
+      x3 = x4;
+      x4 = temp;
+      temp = y1;
+      y1 = y2;
+      y2 = y3;
+      y3 = y4;
+      y4 = temp;
+      temp = z1;
+      z1 = z2;
+      z2 = z3;
+      z3 = z4;
+      z4 = temp;
+      temp = u1;
+      u1 = u2;
+      u2 = u3;
+      u3 = u4;
+      u4 = temp;
+      temp = v1;
+      v1 = v2;
+      v2 = v3;
+      v3 = v4;
+      v4 = temp;
+    break;
+    case 3: //Mirror (switch of 3 and 1)
+      temp = x1;
+      x1 = x3;
+      x3 = temp;
+      temp = y1;
+      y1 = y3;
+      y3 = temp;
+      temp = z1;
+      z1 = z3;
+      z3 = temp;
+      temp = u1;
+      u1 = u3;
+      u3 = temp;
+      temp = v1;
+      v1 = v3;
+      v3 = temp;
+    break;
+    case 4: //shift to the right
+      temp = x4;
+      x4 = x3;
+      x3 = x2;
+      x2 = x1;
+      x1 = temp;
+      temp = y4;
+      y4 = y3;
+      y3 = y2;
+      y2 = y1;
+      y1 = temp;
+      temp = z4;
+      z4 = z3;
+      z3 = z2;
+      z2 = z1;
+      z1 = temp;
+      temp = u4;
+      u4 = u3;
+      u3 = u2;
+      u2 = u1;
+      u1 = temp;
+      temp = v4;
+      v4 = v3;
+      v3 = v2;
+      v2 = v1;
+      v1 = temp;
+    break;
+  }
+  //we say, that all quads are convex! So p2 or p4 is the nearest point to p1
+  //Furthermore we define, that it should be p2, e.g.
+  // p1        p1
+  // | \       | \
+  // p2 \      p2 \
+  //  \  \      \  p4
+  //   p3 \      \/
+  //    '~.p4    p3
+  if (y2 > y4) //Mirror p2 and p4
+  {
+    temp = x2;
+    x2 = x4;
+    x4 = temp;
+    temp = y2;
+    y2 = y4;
+    y4 = temp;
+    temp = z2;
+    z2 = z4;
+    z4 = temp;
+    temp = u2;
+    u2 = u4;
+    u4 = temp;
+    temp = v2;
+    v2 = v4;
+    v4 = temp;
+  }  
+  
+  if (spZSet)
+  {
+    if (spZTest)
+      sp_intern_Quad_tex_ztest_zset(x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,x4,y4,z4,u4,v4,color);
+    else
+      sp_intern_Triangle_tex_zset      (x1,y1,z1,u1,v1,x3,y3,z3,u3,v3,x2,y2,z2,u2,v2,color);
+  }
+  else
+  {
+    if (spZTest)
+      sp_intern_Triangle_tex_ztest     (x1,y1,z1,u1,v1,x3,y3,z3,u3,v3,x2,y2,z2,u2,v2,color);
+    else
+      sp_intern_Triangle_tex           (x1,y1,z1,u1,v1,x3,y3,z3,u3,v3,x2,y2,z2,u2,v2,color);
+  }*/
 }
 
 PREFIX void spReAllocateZBuffer()
@@ -2182,32 +2322,76 @@ PREFIX Sint32* spGetZBuffer()
   return spZBuffer;
 }
 
-void reset_draw_pixel_func()
-{
-/*  if (spZTest)
-  {
-    if (spZSet)
-      draw_pixel_tex_func = draw_pixel_tex_ztest_zset;
-    else
-      draw_pixel_tex_func = draw_pixel_tex_ztest;
-  }
-  else
-  {
-    if (spZSet)
-      draw_pixel_tex_func = draw_pixel_tex_zset;
-    else
-      draw_pixel_tex_func = draw_pixel_tex;
-  }*/  
-}
-
 PREFIX void spSetZTest(char test)
 {
   spZTest = test;
-  reset_draw_pixel_func();
 }
 
 PREFIX void spSetZSet(char test)
 {
   spZSet = test;
-  reset_draw_pixel_func();
 }
+
+#ifndef ARMCPU
+#ifndef X86CPU   
+PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check,int engineWindowX,int engineWindowY)
+{
+  //l_++;
+  if (check)
+  { 
+    if (y<0)
+      return;
+    if (y>=engineWindowY) //Their is a FUCKING Bug if I write in the last line on the gp2x. Dont know why...
+      return;
+    if (x<0)
+    {
+      l_=x+l_;
+      x=0;
+    }
+    if (x+l_>=engineWindowX)
+      l_=engineWindowX-x;
+    if (l_<=0)
+      return;
+  }
+  Uint32 pos=(x+y*engineWindowX);
+  int a;
+  for (a=pos;a<pos+l_;a++)
+    pixel[a]=color_;
+}    
+#endif
+#endif
+
+#ifdef X86CPU
+PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check,int engineWindowX,int engineWindowY)
+{
+  //l_++;
+  if (check)
+  { 
+    if (y<0)
+      return;
+    if (y>=engineWindowY) //Their is a FUCKING Bug if I write in the last line on the gp2x. Dont know why...
+      return;
+    if (x<0)
+    {
+      l_=x+l_;
+      x=0;
+    }
+    if (x+l_>=engineWindowX)
+      l_=engineWindowX-x;
+    if (l_<=0)
+      return;
+  }
+  Uint32 pos=(x+y*engineWindowX);
+  if ((int)pixel+(pos<<1) & 2)
+  {
+    pixel[pos]=color_;
+    pos++;
+    l_--;
+  }
+  Uint32 color=color_ | (color_<<16);
+  int a;
+  for (a=pos>>1;a<(pos+l_>>1);a++)
+    ((Uint32*)pixel)[a]=color;
+  pixel[pos+l_-1]=color_;
+}    
+#endif
