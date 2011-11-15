@@ -70,5 +70,6 @@ PREFIX void spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 x2,Sint32 y2,Sint32 z2,Sint32 u2,Sint32 v2,
   Sint32 x3,Sint32 y3,Sint32 z3,Sint32 u3,Sint32 v3,
   Sint32 x4,Sint32 y4,Sint32 z4,Sint32 u4,Sint32 v4,Uint16 color);
-
+  
+PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface);
 #endif

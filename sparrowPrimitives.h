@@ -30,6 +30,8 @@
 #define SP_PRIM_ACCURACY 18
 #define SP_HALF_PRIM_ACCURACY 9
 #define SP_MAX_NEGATIVE -0x80000000
+#define SP_SingedInt16 Sint32
+#define SP_UnsingedInt16 Uint32
 
 /* Initializes some Look up tables. Is called from sparrowCore. */
 PREFIX void spInitPrimitives();
@@ -45,26 +47,26 @@ PREFIX void spSelectRenderTarget(SDL_Surface* target);
 PREFIX void spBindTexture(SDL_Surface* texture);
 
 /* (De)Activates the Z test (default on) */
-PREFIX void spSetZTest(char test);
+PREFIX void spSetZTest(Uint32 test);
 
 /* (De)Activates the Z set (default on)*/
-PREFIX void spSetZSet(char test);
+PREFIX void spSetZSet(Uint32 test);
 
 /* Clears the Rendertarget with the color. But attention: The z Buffer will
  * not be cleaned! */
-PREFIX void spClearTarget(Uint16 color);
+PREFIX void spClearTarget(SP_UnsingedInt16 color);
 
 /* Draws a Triangle without texture and without alpha value */
-PREFIX void spTriangle(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 x3, Sint16 y3, Sint32 z3, Uint16 color);
+PREFIX void spTriangle(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_UnsingedInt16 color);
 
 /* Draws a Triangle with texture and without alpha value */
-PREFIX void spTriangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Uint16 color);
+PREFIX void spTriangle_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color);
 
 /* Draws a Quad without texture and without alpha value */
-PREFIX void spQuad(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 x4,Sint16 y4, Sint32 z4, Uint16 color);
+PREFIX void spQuad(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 x4,SP_SingedInt16 y4, Sint32 z4, SP_UnsingedInt16 color);
 
 /* Draws a Quad with texture and without alpha value */
-PREFIX void spQuad_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Sint16 x4, Sint16 y4, Sint32 z4, Sint16 u4, Sint16 v4, Uint16 color);
+PREFIX void spQuad_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_SingedInt16 x4, SP_SingedInt16 y4, Sint32 z4, SP_SingedInt16 u4, SP_SingedInt16 v4, SP_UnsingedInt16 color);
 
 /* Reallocates the zBuffer. If you switch to a new Render Target, this function
  * is called */
@@ -78,6 +80,8 @@ PREFIX void spResetZBuffer();
 PREFIX Sint32* spGetZBuffer();
 
 /* Draws a very fast horizental line with one color */
-PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check,int engineWindowX,int engineWindowY);
+PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,SP_UnsingedInt16 color_,Uint32 check,Sint32 engineWindowX,Sint32 engineWindowY);
 
+/* Draws a Surface on the targer */
+PREFIX void spBlitSurface(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface);
 #endif

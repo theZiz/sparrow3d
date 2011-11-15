@@ -22,6 +22,7 @@
 
 SDL_Surface* screen;
 SDL_Surface* garfield;
+SDL_Surface* pepper;
 Sint32 rotation = 0;
 
 void draw_test(void)
@@ -36,17 +37,22 @@ void draw_test(void)
   
   spBindTexture(garfield);
   spSetCulling(0);
+  spSetZSet(1);
+  spSetZTest(1);
   int a,y;
   for (a = 0; a<16; a++)
   {
     spRotateY(SP_PI/8);
     Sint32 brightness = (spCos(rotation+a*SP_PI/8)>>SP_HALF_ACCURACY)*abs(spCos(rotation+a*SP_PI/8)>>SP_HALF_ACCURACY)/2+(3<<SP_ACCURACY-1);
     Uint16 color = ((brightness>>SP_ACCURACY-4)<<11)+((brightness>>SP_ACCURACY-5)<<5)+(brightness>>SP_ACCURACY-4);
-  for (y = -21; y<=21; y+=7)
-    spQuadTex3D(-3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,0,0,
-                -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,0,garfield->h-1,
-                 3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-1,garfield->h-1,
-                 3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-1,0,color);
+    for (y = -21; y<=21; y+=7)
+    {
+      spQuadTex3D(-3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,8,8,
+                  -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,1,garfield->h-9,
+                   3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-9,garfield->h-9,
+                   3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-9,8,color);
+      spBlit3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,pepper);
+    }
   }
 
   /*
@@ -138,10 +144,15 @@ int main(int argc, char **argv)
   spSelectRenderTarget(screen);
   SDL_Surface* surface = IMG_Load("./data/garfield.png");
   garfield = SDL_DisplayFormat(surface);
+  SDL_FreeSurface(surface);
+  surface = IMG_Load("./data/pepper.png");
+  pepper = SDL_DisplayFormat(surface);
+  SDL_FreeSurface(surface);
   spBindTexture(garfield);
   spSetPerspective(50.0,(float)spGetWindowSurface()->w/(float)spGetWindowSurface()->h,0.1,100);
   spLoop(draw_test,calc_test,10,resize);
   SDL_FreeSurface(garfield);
+  SDL_FreeSurface(pepper);
   spQuitCore();
   return 0;
 }

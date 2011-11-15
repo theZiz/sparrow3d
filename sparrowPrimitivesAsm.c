@@ -21,7 +21,7 @@
 #include <stdlib.h>
 
 #ifdef ARMCPU
-PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check,int engineWindowX,int engineWindowY)
+PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,SP_UnsingedInt16 color_,Uint32 check,Sint32 engineWindowX,Sint32 engineWindowY)
 {
   //l_++;
   if (check)

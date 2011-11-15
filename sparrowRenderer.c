@@ -30,7 +30,7 @@ Sint32 spProjection[16];
 Sint32 spX_to_Y;
 char spCulling = 1;
 
-inline Sint32 fpdiv(Sint32 a,Sint32 b)
+/*inline Sint32 fpdiv(Sint32 a,Sint32 b)
 {
   #ifdef FAST_BUT_UGLY_2
   if (b>=0 && b<(1<<SP_PRIM_ACCURACY))
@@ -39,8 +39,19 @@ inline Sint32 fpdiv(Sint32 a,Sint32 b)
     return -a*spGetOne_over_x_pointer()[-b]>>SP_PRIM_ACCURACY-SP_ACCURACY;
   #endif
   return ((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY;
+}*/
 
-}
+#ifdef FAST_BUT_UGLY_2
+  #define fpdiv(a,b) (b>=0 && b<(1<<SP_PRIM_ACCURACY))? \
+                       (a*spGetOne_over_x_pointer()[b]>>SP_PRIM_ACCURACY-SP_ACCURACY): \
+                       ( \
+                         (b <0 && b>(-1<<SP_PRIM_ACCURACY))? \
+                         (-a*spGetOne_over_x_pointer()[-b]>>SP_PRIM_ACCURACY-SP_ACCURACY): \
+                         (((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY) \
+                       )
+#else
+  #define fpdiv(a,b) ((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY
+#endif
 
 PREFIX void spSetCulling(char value)
 {
@@ -118,10 +129,12 @@ PREFIX void spScale(Sint32 x,Sint32 y,Sint32 z)
 	spModelView[10]=(spModelView[10]>>SP_HALF_ACCURACY)*(z>>SP_HALF_ACCURACY);
 }  
 
-inline Sint32 fimul(Sint32 a,Sint32 b)
+/*inline Sint32 fimul(Sint32 a,Sint32 b)
 {
   return (a>>SP_HALF_ACCURACY)*(b>>SP_HALF_ACCURACY);
-}
+}*/
+
+#define fimul(a,b) (a>>SP_HALF_ACCURACY)*(b>>SP_HALF_ACCURACY)
 
 PREFIX void spRotate(Sint32 x,Sint32 y,Sint32 z,Sint32 rad)
 {
@@ -641,4 +654,31 @@ PREFIX void spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
              viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,u3,v3,
              viewPortX+((nx4*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
              viewPortY-((ny4*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz4,u4,v4,color);
+}
+
+PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface)
+{
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
+  Sint32 tx1,ty1,tz1,tw1;
+  spMulModellView(x1,y1,z1,&tx1,&ty1,&tz1,&tw1);
+
+         x1 = fimul(spProjection[ 0],tx1);// + fimul(spProjection[ 8],tz1);
+         y1 = fimul(spProjection[ 5],ty1);// + fimul(spProjection[ 9],tz1);
+//         z1 = fimul(spProjection[10],tz1) + fimul(spProjection[14],tw1);
+  Sint32 w1 = fimul(spProjection[11],tz1);
+  if (w1 == 0)
+    w1 = 1;  
+
+  Sint32 nx1 = fpdiv(x1,w1)>>SP_HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y1,w1)>>SP_HALF_ACCURACY;
+//  Sint32 nz1 = fpdiv(z1,w1)>>SP_HALF_ACCURACY;
+
+  spBlitSurface(viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+                viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+                tz1,
+                surface);
+  
 }

@@ -26,13 +26,13 @@ SDL_Surface* spTarget = NULL;
 Uint16* spTargetPixel = NULL;
 SDL_Surface* spTexture = NULL;
 Uint16* spTexturePixel = NULL;
-char spZTest = 1;
-char spZSet = 1;
+Uint32 spZTest = 1;
+Uint32 spZSet = 1;
 Sint32* spZBuffer = NULL;
-Uint16 spTargetX = 0;
-Uint16 spTargetY = 0;
-Uint16 spTextureX = 0;
-Uint16 spTextureY = 0;
+SP_UnsingedInt16 spTargetX = 0;
+SP_UnsingedInt16 spTargetY = 0;
+SP_UnsingedInt16 spTextureX = 0;
+SP_UnsingedInt16 spTextureY = 0;
 Uint32 spTextureXY = 0;
 Sint32 spOne_over_x_look_up[1<<SP_PRIM_ACCURACY];
 
@@ -67,12 +67,12 @@ PREFIX void spBindTexture(SDL_Surface* texture)
   spTexturePixel=(Uint16*)texture->pixels;
 }
 
-PREFIX void spClearTarget(Uint16 color)
+PREFIX void spClearTarget(SP_UnsingedInt16 color)
 {
   SDL_FillRect(spTarget,NULL,color);
-  //SDL_LockSurface(spTarget);  
-  //spHorizentalLine(spTargetPixel,0,0,spTargetX*spTargetY,color,0,0,0);
-  //SDL_UnlockSurface(spTarget);  
+  /*SDL_LockSurface(spTarget);  
+  spHorizentalLine(spTargetPixel,0,0,spTargetX*spTargetY,color,0,0,0);
+  SDL_UnlockSurface(spTarget);*/
 }
 
 inline Sint32 one_over_x(Sint32 x)
@@ -103,7 +103,7 @@ inline Sint32 z_div(Sint32 z,Sint32 d)
   #endif
 }
 
-inline void draw_pixel_ztest_zset(Sint16 x,Sint16 y,Sint32 z,Uint16 color)
+inline void draw_pixel_ztest_zset(SP_SingedInt16 x,SP_SingedInt16 y,Sint32 z,SP_UnsingedInt16 color)
 {
   if (z<0 && z > spZBuffer[x+y*spTargetX])
   {
@@ -112,7 +112,7 @@ inline void draw_pixel_ztest_zset(Sint16 x,Sint16 y,Sint32 z,Uint16 color)
   }
 }
 
-inline void draw_pixel_ztest(Sint16 x,Sint16 y,Sint32 z,Uint16 color)
+inline void draw_pixel_ztest(SP_SingedInt16 x,SP_SingedInt16 y,Sint32 z,SP_UnsingedInt16 color)
 {
   if (z<0 && z > spZBuffer[x+y*spTargetX])
   {
@@ -120,18 +120,18 @@ inline void draw_pixel_ztest(Sint16 x,Sint16 y,Sint32 z,Uint16 color)
   }
 }
 
-inline void draw_pixel_zset(Sint16 x,Sint16 y,Sint32 z,Uint16 color)
+inline void draw_pixel_zset(SP_SingedInt16 x,SP_SingedInt16 y,Sint32 z,SP_UnsingedInt16 color)
 {
   spTargetPixel[x+y*spTargetX] = color;
   spZBuffer[x+y*spTargetX] = z;
 }
 
-inline void draw_pixel(Sint16 x,Sint16 y,Uint16 color)
+inline void draw_pixel(SP_SingedInt16 x,SP_SingedInt16 y,SP_UnsingedInt16 color)
 {
   spTargetPixel[x+y*spTargetX] = color;
 }
 
-inline void draw_line_ztest_zset(Sint16 x1,Sint32 z1,Sint16 x2,Sint32 z2,Sint16 y,Uint16 color,Sint32 sZ)
+inline void draw_line_ztest_zset(SP_SingedInt16 x1,Sint32 z1,SP_SingedInt16 x2,Sint32 z2,SP_SingedInt16 y,SP_UnsingedInt16 color,Sint32 sZ)
 {
   if (x1 >= spTargetX)
     return;
@@ -153,7 +153,7 @@ inline void draw_line_ztest_zset(Sint16 x1,Sint32 z1,Sint16 x2,Sint32 z2,Sint16 
   }
 }
 
-inline void draw_line_ztest(Sint16 x1,Sint32 z1,Sint16 x2,Sint32 z2,Sint16 y,Uint16 color,Sint32 sZ)
+inline void draw_line_ztest(SP_SingedInt16 x1,Sint32 z1,SP_SingedInt16 x2,Sint32 z2,SP_SingedInt16 y,SP_UnsingedInt16 color,Sint32 sZ)
 {
   if (x1 >= spTargetX)
     return;
@@ -175,7 +175,7 @@ inline void draw_line_ztest(Sint16 x1,Sint32 z1,Sint16 x2,Sint32 z2,Sint16 y,Uin
   }
 }
 
-inline void draw_line_zset(Sint16 x1,Sint32 z1,Sint16 x2,Sint32 z2,Sint16 y,Uint16 color,Sint32 sZ)
+inline void draw_line_zset(SP_SingedInt16 x1,Sint32 z1,SP_SingedInt16 x2,Sint32 z2,SP_SingedInt16 y,SP_UnsingedInt16 color,Sint32 sZ)
 {
   if (x1 >= spTargetX)
     return;
@@ -197,7 +197,7 @@ inline void draw_line_zset(Sint16 x1,Sint32 z1,Sint16 x2,Sint32 z2,Sint16 y,Uint
   }
 }
 
-inline void draw_line(Sint16 x1,Sint16 x2,Sint16 y,Uint16 color)
+inline void draw_line(SP_SingedInt16 x1,SP_SingedInt16 x2,SP_SingedInt16 y,SP_UnsingedInt16 color)
 {
   if (x1 >= spTargetX)
     return;
@@ -216,7 +216,7 @@ inline void draw_line(Sint16 x1,Sint16 x2,Sint16 y,Uint16 color)
   spHorizentalLine(spTargetPixel,x1,y,x2-x1,color,1,spTargetX,spTargetY);
 }
 
-inline void sp_intern_Triangle_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 x3, Sint16 y3, Sint32 z3, Uint16 color)
+inline void sp_intern_Triangle_ztest_zset(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_UnsingedInt16 color)
 {
   int y;
   if (y2 < 0)
@@ -225,8 +225,8 @@ inline void sp_intern_Triangle_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint1
     return;
   SDL_LockSurface(spTarget);
 
-  Sint16 x4 = x1;
-  Sint16 y4 = y1;
+  SP_SingedInt16 x4 = x1;
+  SP_SingedInt16 y4 = y1;
   Sint32 z4 = z1;
   int div = y2-y1;
   if (div!=0)
@@ -397,7 +397,7 @@ inline void sp_intern_Triangle_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint1
   SDL_UnlockSurface(spTarget);  
 }
 
-inline void sp_intern_Triangle_ztest(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sint16 y2, Sint32 z2,   Sint16 x3, Sint16 y3, Sint32 z3,   Uint16 color)
+inline void sp_intern_Triangle_ztest(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1,   SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2,   SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3,   SP_UnsingedInt16 color)
 {
   int y;
   if (y2 < 0)
@@ -406,8 +406,8 @@ inline void sp_intern_Triangle_ztest(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x
     return;
   SDL_LockSurface(spTarget);
 
-  Sint16 x4 = x1;
-  Sint16 y4 = y1;
+  SP_SingedInt16 x4 = x1;
+  SP_SingedInt16 y4 = y1;
   Sint32 z4 = z1;
   int div = y2-y1;
   if (div!=0)
@@ -578,7 +578,7 @@ inline void sp_intern_Triangle_ztest(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x
   SDL_UnlockSurface(spTarget);
 }
 
-inline void sp_intern_Triangle_zset(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sint16 y2, Sint32 z2,   Sint16 x3, Sint16 y3, Sint32 z3,   Uint16 color)
+inline void sp_intern_Triangle_zset(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1,   SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2,   SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3,   SP_UnsingedInt16 color)
 {
   int y;
   if (y2 < 0)
@@ -587,8 +587,8 @@ inline void sp_intern_Triangle_zset(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2
     return;
   SDL_LockSurface(spTarget);
 
-  Sint16 x4 = x1;
-  Sint16 y4 = y1;
+  SP_SingedInt16 x4 = x1;
+  SP_SingedInt16 y4 = y1;
   Sint32 z4 = z1;
   int div = y2-y1;
   if (div!=0)
@@ -759,7 +759,7 @@ inline void sp_intern_Triangle_zset(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2
   SDL_UnlockSurface(spTarget);
 }
 
-inline void sp_intern_Triangle(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sint16 y2, Sint32 z2,   Sint16 x3, Sint16 y3, Sint32 z3,   Uint16 color)
+inline void sp_intern_Triangle(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1,   SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2,   SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3,   SP_UnsingedInt16 color)
 {
   int y;
   if (y2 < 0)
@@ -768,8 +768,8 @@ inline void sp_intern_Triangle(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sin
     return;
   SDL_LockSurface(spTarget);
 
-  Sint16 x4 = x1;
-  Sint16 y4 = y1;
+  SP_SingedInt16 x4 = x1;
+  SP_SingedInt16 y4 = y1;
   int div = y2-y1;
   if (div!=0)
   {
@@ -873,7 +873,7 @@ inline void sp_intern_Triangle(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sin
   SDL_UnlockSurface(spTarget);  
 }
 
-PREFIX void spTriangle(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sint16 y2, Sint32 z2,   Sint16 x3, Sint16 y3, Sint32 z3,   Uint16 color)
+PREFIX void spTriangle(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1,   SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2,   SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3,   SP_UnsingedInt16 color)
 {
   if (y1 > y2)
   {
@@ -927,14 +927,14 @@ PREFIX void spTriangle(Sint16 x1, Sint16 y1, Sint32 z1,   Sint16 x2, Sint16 y2, 
   }
 }
 
-inline void draw_pixel_tex_ztest_zset(Sint16 x,Sint16 y,Sint32 z,Sint16 u,Sint16 v,Uint16 color)
+inline void draw_pixel_tex_ztest_zset(SP_SingedInt16 x,SP_SingedInt16 y,Sint32 z,SP_SingedInt16 u,SP_SingedInt16 v,SP_UnsingedInt16 color)
 {
   if (z<0 && z > spZBuffer[x+y*spTargetX])
   {
     #ifdef FAST_BUT_UGLY
-    if (u+v*spTextureX < 0 || u+v*spTextureX >= spTextureXY)
-      spTargetPixel[x+y*spTargetX] = color;
-    else
+    //if (u+v*spTextureX < 0 || u+v*spTextureX >= spTextureXY)
+    //  spTargetPixel[x+y*spTargetX] = color; 
+    //else
     #else
     if (u < 0)
       u = 0;
@@ -945,24 +945,21 @@ inline void draw_pixel_tex_ztest_zset(Sint16 x,Sint16 y,Sint32 z,Sint16 u,Sint16
     if (v >= spTextureY)
       v = spTextureY-1;
     #endif
-    {
-      Uint16 r = ((spTexturePixel[u+v*spTextureX] >> 11) * (color >> 11)) >> 5;
-      Uint16 g = (((spTexturePixel[u+v*spTextureX] & 2016) >> 5) * ((color & 2016) >> 5)) >> 6;
-      Uint16 b = ((spTexturePixel[u+v*spTextureX] & 31) * (color & 31)) >> 5;
-      spTargetPixel[x+y*spTargetX] = (r<<11) + (g<<5) + b;
-    }
+      spTargetPixel[x+y*spTargetX] = ((spTexturePixel[u+v*spTextureX] * color >> 16) & 63488)
+                                   + (((spTexturePixel[u+v*spTextureX] & 2047) * (color & 2047) >> 11) & 2016)
+                                   + ((spTexturePixel[u+v*spTextureX] & 31) * (color & 31) >> 5);
     spZBuffer[x+y*spTargetX] = z;
   }
 }
 
-inline void draw_pixel_tex_ztest(Sint16 x,Sint16 y,Sint32 z,Sint16 u,Sint16 v,Uint16 color)
+inline void draw_pixel_tex_ztest(SP_SingedInt16 x,SP_SingedInt16 y,Sint32 z,SP_SingedInt16 u,SP_SingedInt16 v,SP_UnsingedInt16 color)
 {
   if (z<0 && z > spZBuffer[x+y*spTargetX])
   {
     #ifdef FAST_BUT_UGLY
-    if (u+v*spTextureX < 0 || u+v*spTextureX >= spTextureXY)
-      spTargetPixel[x+y*spTargetX] = color;
-    else
+    //if (u+v*spTextureX < 0 || u+v*spTextureX >= spTextureXY)
+    //  spTargetPixel[x+y*spTargetX] = color; 
+    //else
     #else
     if (u < 0)
       u = 0;
@@ -973,21 +970,18 @@ inline void draw_pixel_tex_ztest(Sint16 x,Sint16 y,Sint32 z,Sint16 u,Sint16 v,Ui
     if (v >= spTextureY)
       v = spTextureY-1;
     #endif
-    {
-      Uint16 r = ((spTexturePixel[u+v*spTextureX] >> 11) * (color >> 11)) >> 5;
-      Uint16 g = (((spTexturePixel[u+v*spTextureX] & 2016) >> 5) * ((color & 2016) >> 5)) >> 6;
-      Uint16 b = ((spTexturePixel[u+v*spTextureX] & 31) * (color & 31)) >> 5;
-      spTargetPixel[x+y*spTargetX] = (r<<11) + (g<<5) + b;
-    }
+      spTargetPixel[x+y*spTargetX] = ((spTexturePixel[u+v*spTextureX] * color >> 16) & 63488)
+                                   + (((spTexturePixel[u+v*spTextureX] & 2047) * (color & 2047) >> 11) & 2016)
+                                   + ((spTexturePixel[u+v*spTextureX] & 31) * (color & 31) >> 5);
   }
 }
 
-inline void draw_pixel_tex_zset(Sint16 x,Sint16 y,Sint32 z,Sint16 u,Sint16 v,Uint16 color)
+inline void draw_pixel_tex_zset(SP_SingedInt16 x,SP_SingedInt16 y,Sint32 z,SP_SingedInt16 u,SP_SingedInt16 v,SP_UnsingedInt16 color)
 {
   #ifdef FAST_BUT_UGLY
-  if (u+v*spTextureX < 0 || u+v*spTextureX >= spTextureXY)
-    spTargetPixel[x+y*spTargetX] = color;
-  else
+  //if (u+v*spTextureX < 0 || u+v*spTextureX >= spTextureXY)
+  //  spTargetPixel[x+y*spTargetX] = color; 
+  //else
   #else
   if (u < 0)
     u = 0;
@@ -998,21 +992,18 @@ inline void draw_pixel_tex_zset(Sint16 x,Sint16 y,Sint32 z,Sint16 u,Sint16 v,Uin
   if (v >= spTextureY)
     v = spTextureY-1;
   #endif
-  {
-    Uint16 r = ((spTexturePixel[u+v*spTextureX] >> 11) * (color >> 11)) >> 5;
-    Uint16 g = (((spTexturePixel[u+v*spTextureX] & 2016) >> 5) * ((color & 2016) >> 5)) >> 6;
-    Uint16 b = ((spTexturePixel[u+v*spTextureX] & 31) * (color & 31)) >> 5;
-    spTargetPixel[x+y*spTargetX] = (r<<11) + (g<<5) + b;
-  }
+    spTargetPixel[x+y*spTargetX] = ((spTexturePixel[u+v*spTextureX] * color >> 16) & 63488)
+                                 + (((spTexturePixel[u+v*spTextureX] & 2047) * (color & 2047) >> 11) & 2016)
+                                 + ((spTexturePixel[u+v*spTextureX] & 31) * (color & 31) >> 5);
   spZBuffer[x+y*spTargetX] = z;
 }
 
-inline void draw_pixel_tex(Sint16 x,Sint16 y,Sint16 u,Sint16 v,Uint16 color)
+inline void draw_pixel_tex(SP_SingedInt16 x,SP_SingedInt16 y,SP_SingedInt16 u,SP_SingedInt16 v,SP_UnsingedInt16 color)
 {
   #ifdef FAST_BUT_UGLY
-  if (u+v*spTextureX < 0 || u+v*spTextureX >= spTextureXY)
-    spTargetPixel[x+y*spTargetX] = color;
-  else
+  //if (u+v*spTextureX < 0 || u+v*spTextureX >= spTextureXY)
+  //  spTargetPixel[x+y*spTargetX] = color; 
+  //else
   #else
   if (u < 0)
     u = 0;
@@ -1023,15 +1014,12 @@ inline void draw_pixel_tex(Sint16 x,Sint16 y,Sint16 u,Sint16 v,Uint16 color)
   if (v >= spTextureY)
     v = spTextureY-1;
   #endif
-  {
-    Uint16 r = ((spTexturePixel[u+v*spTextureX] >> 11) * (color >> 11)) >> 5;
-    Uint16 g = (((spTexturePixel[u+v*spTextureX] & 2016) >> 5) * ((color & 2016) >> 5)) >> 6;
-    Uint16 b = ((spTexturePixel[u+v*spTextureX] & 31) * (color & 31)) >> 5;
-    spTargetPixel[x+y*spTargetX] = (r<<11) + (g<<5) + b;
-  }
+    spTargetPixel[x+y*spTargetX] = ((spTexturePixel[u+v*spTextureX] * color >> 16) & 63488)
+                                 + (((spTexturePixel[u+v*spTextureX] & 2047) * (color & 2047) >> 11) & 2016)
+                                 + ((spTexturePixel[u+v*spTextureX] & 31) * (color & 31) >> 5);
 }
 
-inline void draw_line_tex_ztest_zset(Sint16 x1,Sint32 z1,Sint32 u1,Sint32 v1,Sint16 x2,Sint32 z2,Sint32 u2,Sint32 v2,Sint16 y,Uint16 color,Sint32 sU,Sint32 sV,Sint32 sZ)
+inline void draw_line_tex_ztest_zset(SP_SingedInt16 x1,Sint32 z1,Sint32 u1,Sint32 v1,SP_SingedInt16 x2,Sint32 z2,Sint32 u2,Sint32 v2,SP_SingedInt16 y,SP_UnsingedInt16 color,Sint32 sU,Sint32 sV,Sint32 sZ)
 {
   if (x1 >= spTargetX)
     return;
@@ -1059,7 +1047,7 @@ inline void draw_line_tex_ztest_zset(Sint16 x1,Sint32 z1,Sint32 u1,Sint32 v1,Sin
   }
 }
 
-inline void draw_line_tex_ztest(Sint16 x1,Sint32 z1,Sint32 u1,Sint32 v1,Sint16 x2,Sint32 z2,Sint32 u2,Sint32 v2,Sint16 y,Uint16 color,Sint32 sU,Sint32 sV,Sint32 sZ)
+inline void draw_line_tex_ztest(SP_SingedInt16 x1,Sint32 z1,Sint32 u1,Sint32 v1,SP_SingedInt16 x2,Sint32 z2,Sint32 u2,Sint32 v2,SP_SingedInt16 y,SP_UnsingedInt16 color,Sint32 sU,Sint32 sV,Sint32 sZ)
 {
   if (x1 >= spTargetX)
     return;
@@ -1087,7 +1075,7 @@ inline void draw_line_tex_ztest(Sint16 x1,Sint32 z1,Sint32 u1,Sint32 v1,Sint16 x
   }
 }
 
-inline void draw_line_tex_zset(Sint16 x1,Sint32 z1,Sint32 u1,Sint32 v1,Sint16 x2,Sint32 z2,Sint32 u2,Sint32 v2,Sint16 y,Uint16 color,Sint32 sU,Sint32 sV,Sint32 sZ)
+inline void draw_line_tex_zset(SP_SingedInt16 x1,Sint32 z1,Sint32 u1,Sint32 v1,SP_SingedInt16 x2,Sint32 z2,Sint32 u2,Sint32 v2,SP_SingedInt16 y,SP_UnsingedInt16 color,Sint32 sU,Sint32 sV,Sint32 sZ)
 {
   if (x1 >= spTargetX)
     return;
@@ -1115,7 +1103,7 @@ inline void draw_line_tex_zset(Sint16 x1,Sint32 z1,Sint32 u1,Sint32 v1,Sint16 x2
   }
 }
 
-inline void draw_line_tex(Sint16 x1,Sint32 u1,Sint32 v1,Sint16 x2,Sint32 u2,Sint32 v2,Sint16 y,Uint16 color,Sint32 sU,Sint32 sV)
+inline void draw_line_tex(SP_SingedInt16 x1,Sint32 u1,Sint32 v1,SP_SingedInt16 x2,Sint32 u2,Sint32 v2,SP_SingedInt16 y,SP_UnsingedInt16 color,Sint32 sU,Sint32 sV)
 {
   if (x1 >= spTargetX)
     return;
@@ -1140,7 +1128,7 @@ inline void draw_line_tex(Sint16 x1,Sint32 u1,Sint32 v1,Sint16 x2,Sint32 u2,Sint
   }
 }
 
-inline void sp_intern_Triangle_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Uint16 color)
+inline void sp_intern_Triangle_tex_ztest_zset(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color)
 {
   int y;
   if (y2 < 0)
@@ -1152,10 +1140,10 @@ inline void sp_intern_Triangle_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, S
   int div = y2-y1;
   Sint32 mul = y3-y1;
   Sint32 mul32 = mul*one_over_x(div);
-  Sint16 x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
   Sint32 z4 = z1+mul*z_div(z2-z1,div);
-  Sint16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
-  Sint16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
 
   Sint32 xl = x1<<SP_PRIM_ACCURACY;
   Sint32 ul = u1<<SP_PRIM_ACCURACY;
@@ -1311,7 +1299,7 @@ inline void sp_intern_Triangle_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, S
   SDL_UnlockSurface(spTarget);  
 }
 
-inline void sp_intern_Triangle_tex_ztest(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Uint16 color)
+inline void sp_intern_Triangle_tex_ztest(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color)
 {
   int y;
   if (y2 < 0)
@@ -1323,10 +1311,10 @@ inline void sp_intern_Triangle_tex_ztest(Sint16 x1, Sint16 y1, Sint32 z1, Sint16
   int div = y2-y1;
   Sint32 mul = y3-y1;
   Sint32 mul32 = mul*one_over_x(div);
-  Sint16 x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
   Sint32 z4 = z1+mul*z_div(z2-z1,div);
-  Sint16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
-  Sint16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
 
   Sint32 xl = x1<<SP_PRIM_ACCURACY;
   Sint32 ul = u1<<SP_PRIM_ACCURACY;
@@ -1482,7 +1470,7 @@ inline void sp_intern_Triangle_tex_ztest(Sint16 x1, Sint16 y1, Sint32 z1, Sint16
   SDL_UnlockSurface(spTarget);  
 }
 
-inline void sp_intern_Triangle_tex_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Uint16 color)
+inline void sp_intern_Triangle_tex_zset(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color)
 {
   int y;
   if (y2 < 0)
@@ -1494,10 +1482,10 @@ inline void sp_intern_Triangle_tex_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 
   int div = y2-y1;
   Sint32 mul = y3-y1;
   Sint32 mul32 = mul*one_over_x(div);
-  Sint16 x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
   Sint32 z4 = z1+mul*z_div(z2-z1,div);
-  Sint16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
-  Sint16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
 
   Sint32 xl = x1<<SP_PRIM_ACCURACY;
   Sint32 ul = u1<<SP_PRIM_ACCURACY;
@@ -1653,7 +1641,7 @@ inline void sp_intern_Triangle_tex_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 
   SDL_UnlockSurface(spTarget);  
 }
 
-inline void sp_intern_Triangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Uint16 color)
+inline void sp_intern_Triangle_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color)
 {
   int y;
   if (y2 < 0)
@@ -1665,9 +1653,9 @@ inline void sp_intern_Triangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, S
   int div = y2-y1;
   Sint32 mul = y3-y1;
   Sint32 mul32 = mul*one_over_x(div);
-  Sint16 x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
-  Sint16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
-  Sint16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 x4 = x1+((x2-x1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
 
   Sint32 xl = x1<<SP_PRIM_ACCURACY;
   Sint32 ul = u1<<SP_PRIM_ACCURACY;
@@ -1801,7 +1789,7 @@ inline void sp_intern_Triangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, S
   SDL_UnlockSurface(spTarget);  
 }
 
-PREFIX void spTriangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Uint16 color)
+PREFIX void spTriangle_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color)
 {
   if (y1 > y2)
   {
@@ -1874,12 +1862,12 @@ PREFIX void spTriangle_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1
 }
 
 
-PREFIX void spQuad(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 x4,Sint16 y4, Sint32 z4, Uint16 color)
+PREFIX void spQuad(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 x4,SP_SingedInt16 y4, Sint32 z4, SP_UnsingedInt16 color)
 {
   //spTriangle(x1,y1,z1,x2,y2,z2,x3,y3,z3,color);
   //spTriangle(x1,y1,z1,x3,y3,z3,x4,y4,z4,color);
-  Sint16 mx = x1+x2+x3+x4>>2;
-  Sint16 my = y1+y2+y3+y4>>2;
+  SP_SingedInt16 mx = x1+x2+x3+x4>>2;
+  SP_SingedInt16 my = y1+y2+y3+y4>>2;
   Sint32 mz = (z1>>2)+(z2>>2)+(z3>>2)+(z4>>2);
   spTriangle(mx,my,mz,x1,y1,z1,x2,y2,z2,color);
   spTriangle(mx,my,mz,x2,y2,z2,x3,y3,z3,color);
@@ -1887,7 +1875,7 @@ PREFIX void spQuad(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 x2, Sint16 y2, Sint32
   spTriangle(mx,my,mz,x4,y4,z4,x1,y1,z1,color);
 }
 
-inline void sp_intern_Quad_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Sint16 x4, Sint16 y4, Sint32 z4, Sint16 u4, Sint16 v4, Uint16 color)
+inline void sp_intern_Quad_tex_ztest_zset(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_SingedInt16 x4, SP_SingedInt16 y4, Sint32 z4, SP_SingedInt16 u4, SP_SingedInt16 v4, SP_UnsingedInt16 color)
 {
   int y;
   if (y3>y4)
@@ -1905,10 +1893,10 @@ inline void sp_intern_Quad_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint1
   Sint32 div = y4-y1;
   Sint32 mul = y2-y1;
   Sint32 mul32 = mul*one_over_x(div);
-  Sint16 xt = x1+((x4-x1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 xt = x1+((x4-x1)*mul32>>SP_PRIM_ACCURACY);
   Sint32 zt = z1+mul*z_div(z4-z1,div);
-  Sint16 ut = u1+((u4-u1)*mul32>>SP_PRIM_ACCURACY);
-  Sint16 vt = v1+((v4-v1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 ut = u1+((u4-u1)*mul32>>SP_PRIM_ACCURACY);
+  SP_SingedInt16 vt = v1+((v4-v1)*mul32>>SP_PRIM_ACCURACY);
 
   Sint32 xl = x1<<SP_PRIM_ACCURACY;
   Sint32 ul = u1<<SP_PRIM_ACCURACY;
@@ -2140,7 +2128,7 @@ inline void sp_intern_Quad_tex_ztest_zset(Sint16 x1, Sint16 y1, Sint32 z1, Sint1
 }
 
 
-PREFIX void spQuad_tex(Sint16 x1, Sint16 y1, Sint32 z1, Sint16 u1, Sint16 v1, Sint16 x2, Sint16 y2, Sint32 z2, Sint16 u2, Sint16 v2, Sint16 x3, Sint16 y3, Sint32 z3, Sint16 u3, Sint16 v3, Sint16 x4, Sint16 y4, Sint32 z4, Sint16 u4, Sint16 v4, Uint16 color)
+PREFIX void spQuad_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_SingedInt16 x4, SP_SingedInt16 y4, Sint32 z4, SP_SingedInt16 u4, SP_SingedInt16 v4, SP_UnsingedInt16 color)
 {
   spTriangle_tex(x1,y1,z1,u1,v1,
                  x2,y2,z2,u2,v2,
@@ -2322,19 +2310,19 @@ PREFIX Sint32* spGetZBuffer()
   return spZBuffer;
 }
 
-PREFIX void spSetZTest(char test)
+PREFIX void spSetZTest(Uint32 test)
 {
   spZTest = test;
 }
 
-PREFIX void spSetZSet(char test)
+PREFIX void spSetZSet(Uint32 test)
 {
   spZSet = test;
 }
 
 #ifndef ARMCPU
 #ifndef X86CPU   
-PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check,int engineWindowX,int engineWindowY)
+PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,SP_UnsingedInt16 color_,Uint32 check,Sint32 engineWindowX,Sint32 engineWindowY)
 {
   //l_++;
   if (check)
@@ -2362,7 +2350,7 @@ PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 co
 #endif
 
 #ifdef X86CPU
-PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 color_,char check,int engineWindowX,int engineWindowY)
+PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,SP_UnsingedInt16 color_,Uint32 check,Sint32 engineWindowX,Sint32 engineWindowY)
 {
   //l_++;
   if (check)
@@ -2395,3 +2383,104 @@ PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint16 co
   pixel[pos+l_-1]=color_;
 }    
 #endif
+
+PREFIX void spBlitSurface(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface)
+{
+  if (spZSet)
+  {
+    if (spZTest)
+    {
+      SDL_LockSurface(spTarget);
+      Sint16 *pixel;
+      pixel = (Sint16*)(surface->pixels);
+      int u = -surface->w/2;
+      if (x+u < 0)
+        u = -x;
+      int maxu = surface->w/2;
+      if (x+maxu > spTargetX)
+        maxu = spTargetX - x;
+      int minv = -surface->h/2;
+      if (y+minv < 0)
+        minv = -y;
+      int maxv = surface->h/2;
+      if (y+maxv > spTargetY)
+        maxv = spTargetY - y;
+      int v;
+      for (;u < maxu;u++)
+        for (v = minv;v < maxv;v++)
+          if (z<0 && z > spZBuffer[(x+u)+(y+v)*spTargetX])
+          {
+            spTargetPixel[(x+u)+(y+v)*spTargetX] = pixel[(u+surface->w/2)+(v+surface->h/2)*surface->w];
+            spZBuffer[(x+u)+(y+v)*spTargetX] = z;
+          }
+      SDL_UnlockSurface(spTarget);
+    }
+    else
+    {
+      int u = x-surface->w/2;
+      if (u < 0)
+        u = 0;
+      if (u >= spTargetX)
+        return;
+      int v = y-surface->h/2;
+      if (v < 0)
+        v = 0;
+      if (v >= spTargetY)
+        return;
+      int umax = x+surface->w/2;
+      if (umax > spTargetX)
+        umax = spTargetX;
+      int vmax = y+surface->h/2;
+      if (vmax > spTargetY)
+        vmax = spTargetY;
+      for (;u<umax;u++)
+        for (;v<vmax;v++)
+          spZBuffer[u+v*spTargetX] = z;
+      SDL_Rect dest;
+      dest.x = x-surface->w/2;
+      dest.y = y-surface->h/2;
+      dest.w = surface->w;
+      dest.h = surface->h;
+      SDL_BlitSurface(surface,NULL,spTarget,&dest);
+    }
+  }
+  else
+  {
+    if (spZTest)
+    {
+      SDL_LockSurface(spTarget);
+      Sint16 *pixel;
+      pixel = (Sint16*)(surface->pixels);
+      int u = -surface->w/2;
+      if (x+u < 0)
+        u = -x;
+      int maxu = surface->w/2;
+      if (x+maxu > spTargetX)
+        maxu = spTargetX - x;
+      int minv = -surface->h/2;
+      if (y+minv < 0)
+        minv = -y;
+      int maxv = surface->h/2;
+      if (y+maxv > spTargetY)
+        maxv = spTargetY - y;
+      int v;
+      for (;u < maxu;u++)
+        for (v = minv;v < maxv;v++)
+          {
+            spTargetPixel[(x+u)+(y+v)*spTargetX] = pixel[(u+surface->w/2)+(v+surface->h/2)*surface->w];
+            spZBuffer[(x+u)+(y+v)*spTargetX] = z;
+          }
+      SDL_UnlockSurface(spTarget);
+    }
+    else
+    {
+      SDL_Rect dest;
+      dest.x = x;
+      dest.y = y;
+      dest.w = surface->w;
+      dest.h = surface->h;
+      SDL_BlitSurface(surface,NULL,spTarget,&dest);
+    }
+  }
+
+}

@@ -60,7 +60,7 @@ PREFIX void spInitCore(void)
   SDL_ShowCursor(SDL_DISABLE);
 }
 
-void spResizeWindow(int x,int y)
+inline void spResizeWindow(int x,int y)
 {
    #ifdef GP2X
     spScreen=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE);
@@ -104,7 +104,7 @@ PREFIX SDL_Surface* spGetWindowSurface(void)
   return spWindow;
 }
 
-int spHandleEvent(void)
+inline int spHandleEvent(void)
 {
   int result = 0;
   #ifdef PANDORA
@@ -475,7 +475,7 @@ int spHandleEvent(void)
   #endif
 }*/
 
-void spUpdateAxis(int axis)
+inline void spUpdateAxis(int axis)
 {
   #ifdef GP2X
     if (axis==0)
@@ -530,7 +530,7 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
         oldticks = newticks;
       }
       steps+=newticks-olderticks;
-      if (steps>minwait)
+      if (steps>=minwait)
       {
         spDraw();
         frames++;
@@ -542,11 +542,11 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
           printf("FPS: %i\n",spFPS);
           frames=0;
         }
+        //if (steps-minwait > 0)
+        //  SDL_Delay(steps-minwait);
         steps=0;
         olderticks = newticks;
       }
-      if (newticks == oldticks)
-        SDL_Delay(1);
   }
   return back;  
 }
