@@ -7,17 +7,16 @@ Roadmap:
 + asm optimization for hline like stuff
 + "real" quads
 + much assembler code review to optimize the puzzle tube like example. 29 fps peak now (23 fps peak before)
-- implementation for
-  + blitting a surface with(out) projection and with(out) ztest
-  - font loading
-    - setting, which characters the user wants (with saving in binary tree)
-      - multiple fonts (e.g. differnt font, differnt size, etc.) possible
-      - every fonts has its own root.
-    - loading theses characters in 16 Bit - pink is alpha surfaces
-    - feedbackfunction, which recreates all these characters
-    - getSurface(character,root)
-    - Drawing function with(out) zoom and with(out) z-stuff
-    - 3D function for the both possibilities (fontBlit and fontRender)
++ blitting a surface with(out) projection and with(out) ztest
+- font loading
+  - setting, which characters the user wants (with saving in binary tree)
+    - multiple fonts (e.g. differnt font, differnt size, etc.) possible
+    - every fonts has its own root.
+  - loading theses characters in 16 Bit - pink is alpha surfaces
+  - feedbackfunction, which recreates all these characters
+  - getSurface(character,root)
+  - Drawing function with(out) zoom and with(out) z-stuff
+  - 3D function for the both possibilities (fontBlit and fontRender)
 - Pink = Alpha
   - e.g. spSetAlpha(value) like the z-stuff
   - implementation in
