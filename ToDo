@@ -8,6 +8,11 @@ Roadmap:
 + "real" quads
 + much assembler code review to optimize the puzzle tube like example. 29 fps peak now (23 fps peak before)
 + blitting a surface with(out) projection and with(out) ztest
++ Pink = Alpha
+  + e.g. spSetAlpha(value) like the z-stuff
+  + implementation in
+    + polygon
+    + blit
 - font loading
   - setting, which characters the user wants (with saving in binary tree)
     - multiple fonts (e.g. differnt font, differnt size, etc.) possible
@@ -17,11 +22,6 @@ Roadmap:
   - getSurface(character,root)
   - Drawing function with(out) zoom and with(out) z-stuff
   - 3D function for the both possibilities (fontBlit and fontRender)
-- Pink = Alpha
-  - e.g. spSetAlpha(value) like the z-stuff
-  - implementation in
-    - polygon
-    - blit
 - Porting Puzzletube to sparrow3D
   - Using 1 Quads or 2 Triangles with texture instead of the modells
   - Using "dizzy" Alpha (monochrome-Alpha) for selection
@@ -45,13 +45,3 @@ Nice to have:
 - better Quads 
 - cool intro with sparrows
 - ponies => rainbow dash would make my engine 20% cooler...
-
-
-Forumsbeitrag:
-+ Assembler rumprobiert
-+ Alles 32 Bit Integer
-+ Überprüfungsoptimierung
-+ Farbberechnungsoptimierung
-+ gcc Optimierungsversuche
-+ #define Spielerei
-+ Blit mit z-Test (+ Video)

@@ -39,6 +39,7 @@ void draw_test(void)
   spSetCulling(0);
   spSetZSet(1);
   spSetZTest(1);
+  spSetAlphaTest(1);
   int a,y;
   for (a = 0; a<16; a++)
   {

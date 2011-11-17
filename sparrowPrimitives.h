@@ -29,6 +29,7 @@
  * for the one_over_x function needs a 18 Bit Array. That is 1 MByte!*/
 #define SP_PRIM_ACCURACY 18
 #define SP_HALF_PRIM_ACCURACY 9
+#define SP_ALPHA_COLOR 63519
 #define SP_MAX_NEGATIVE -0x80000000
 #define SP_SingedInt16 Sint32
 #define SP_UnsingedInt16 Uint32
@@ -51,6 +52,9 @@ PREFIX void spSetZTest(Uint32 test);
 
 /* (De)Activates the Z set (default on)*/
 PREFIX void spSetZSet(Uint32 test);
+
+/* (De)Activates the Alpha test (default off)*/
+PREFIX void spSetAlphaTest(Uint32 test);
 
 /* Clears the Rendertarget with the color. But attention: The z Buffer will
  * not be cleaned! */
