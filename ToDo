@@ -48,10 +48,10 @@ Nice to have:
 
 
 Forumsbeitrag:
-- Assembler rumprobiert
-- Farbberechnungsoptimierung
-- Überprüfungsoptimierung
-- gcc Optimierungsversuche
-- Alles 32 Bit Integer
-- #define Spielerei
-- Blit mit z-Test (+ Video)
++ Assembler rumprobiert
++ Alles 32 Bit Integer
++ Überprüfungsoptimierung
++ Farbberechnungsoptimierung
++ gcc Optimierungsversuche
++ #define Spielerei
++ Blit mit z-Test (+ Video)

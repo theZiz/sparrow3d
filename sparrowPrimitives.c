@@ -29,11 +29,11 @@ Uint16* spTexturePixel = NULL;
 Uint32 spZTest = 1;
 Uint32 spZSet = 1;
 Sint32* spZBuffer = NULL;
-SP_UnsingedInt16 spTargetX = 0;
-SP_UnsingedInt16 spTargetY = 0;
-SP_UnsingedInt16 spTextureX = 0;
-SP_UnsingedInt16 spTextureY = 0;
-Uint32 spTextureXY = 0;
+SP_SingedInt16 spTargetX = 0;
+SP_SingedInt16 spTargetY = 0;
+SP_SingedInt16 spTextureX = 0;
+SP_SingedInt16 spTextureY = 0;
+Sint32 spTextureXY = 0;
 Sint32 spOne_over_x_look_up[1<<SP_PRIM_ACCURACY];
 
 PREFIX Sint32* spGetOne_over_x_pointer()

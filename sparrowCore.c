@@ -57,7 +57,6 @@ PREFIX void spInitCore(void)
   spInput.axis[0]=0;
   spInput.axis[1]=0;
   spInitPrimitives();
-  SDL_ShowCursor(SDL_DISABLE);
 }
 
 inline void spResizeWindow(int x,int y)
@@ -91,6 +90,7 @@ inline void spResizeWindow(int x,int y)
     spWindowX = x ;
   spWindowY = y;
   spZoom=spMin((spWindowX<<SP_ACCURACY)/320,(spWindowY<<SP_ACCURACY)/240);  //Bei 320x240 == 1
+  SDL_ShowCursor(SDL_DISABLE);
 }
 
 PREFIX SDL_Surface* spCreateWindow(void)

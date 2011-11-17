@@ -4,7 +4,7 @@
 #==global Flags. Even on the gp2x with 16 kb Cache, -O3 is much better then -Os
 CFLAGS = -O3
 CFLAGS_ASM = -O2
-GENERAL_TWEAKS = -DFAST_BUT_UGLY -DFAST_BUT_UGLY_2 -ffast-math
+GENERAL_TWEAKS = -DFAST_BUT_UGLY -DFAST_BUT_UGLY_2 -ffast-math -fgcse-lm -fgcse-sm -fsched-spec-load
 #==PC==
 CPP = gcc -g -march=native -DX86CPU $(GENERAL_TWEAKS)
 SDL = `sdl-config --cflags`
