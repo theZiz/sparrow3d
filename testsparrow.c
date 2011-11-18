@@ -24,7 +24,7 @@ SDL_Surface* screen;
 SDL_Surface* garfield;
 SDL_Surface* pepper;
 Sint32 rotation = 0;
-spFontPointer font;
+spFontPointer font = NULL;
 
 void draw_test(void)
 {
@@ -36,7 +36,7 @@ void draw_test(void)
   spTranslate(spSin(rotation>>2)*8,0,(-18<<SP_ACCURACY)+spSin(rotation)*8);
   spRotateY(rotation);
   
-  //spBindTexture(garfield);
+  spBindTexture(garfield);
   spSetCulling(0);
   spSetZSet(1);
   spSetZTest(1);
@@ -44,8 +44,6 @@ void draw_test(void)
   int a,y;
   for (a = 0; a<16; a++)
   {
-    garfield = spFontGetLetter(font,'A'+a)->surface;
-    spBindTexture(garfield);
     spRotateY(SP_PI/8);
     Sint32 brightness = (spCos(rotation+a*SP_PI/8)>>SP_HALF_ACCURACY)*abs(spCos(rotation+a*SP_PI/8)>>SP_HALF_ACCURACY)/2+(3<<SP_ACCURACY-1);
     Uint16 color = ((brightness>>SP_ACCURACY-4)<<11)+((brightness>>SP_ACCURACY-5)<<5)+(brightness>>SP_ACCURACY-4);
@@ -121,8 +119,15 @@ void draw_test(void)
            -1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,
             1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,
             1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,61234 | 31727);
-    */           
-  //spQuad(10,10+(spSin(rotation)>>SP_ACCURACY-4),-10,100,10,-10,100,100,-10,10,100,-10,65535);
+    */          
+
+  spSetZSet(0);
+  spSetZTest(0);
+  spFontDrawMiddle(screen->w/2,2,-1,"Yo dawg, hello World!!!",font);
+  char buffer[16];
+  sprintf(buffer,"fps: %i",spGetFPS());
+  spFontDrawRight(screen->w,screen->h-font->maxheight,-1,buffer,font);
+  
   spFlip();
 }
 
@@ -136,8 +141,16 @@ int calc_test(Uint32 steps)
 
 void resize(Uint16 w,Uint16 h)
 {
+  //Setup of the new/resized window
   spSelectRenderTarget(spGetWindowSurface());
   spSetPerspective(50.0,(float)spGetWindowSurface()->w/(float)spGetWindowSurface()->h,0.1,100);
+
+  //Font Loading
+  if (font)
+    spFontDelete(font);
+  font = spFontLoad("./font/StayPuft.ttf",20*spGetSizeFactor()>>SP_ACCURACY);
+  spFontAddRange(font,' ','~',0);//whole ASCII
+  spFontAddBorder(font,65535);
 }
 
 
@@ -149,16 +162,8 @@ int main(int argc, char **argv)
   
   //Setup
   screen = spCreateWindow();
-  spSelectRenderTarget(screen);
-  spSetPerspective(50.0,(float)spGetWindowSurface()->w/(float)spGetWindowSurface()->h,0.1,100);
+  resize(screen->w,screen->h);
   
-  //Font Loading
-  font = spFontLoad("./font/StayPuft.ttf",40);
-  int a;
-  for (a = 0; a<16; a++)
-    spFontAdd(font,'A'+a,4095*(a+1));
-  for (a = 0; a<16; a++)
-    printf("%i\n",spFontGetLetter(font,'A'+a)->character);
   
   //Textures loading
   SDL_Surface* surface = IMG_Load("./data/garfield.png");

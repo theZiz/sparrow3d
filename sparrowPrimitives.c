@@ -3376,8 +3376,8 @@ PREFIX void spBlitSurface(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface)
         SDL_Rect dest;
         dest.x = x;
         dest.y = y;
-        dest.w = surface->w;
-        dest.h = surface->h;
+        dest.x = x-surface->w/2;
+        dest.y = y-surface->h/2;
         SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, SP_ALPHA_COLOR);
         SDL_BlitSurface(surface,NULL,spTarget,&dest);
       }
@@ -3475,8 +3475,8 @@ PREFIX void spBlitSurface(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface)
       else
       {
         SDL_Rect dest;
-        dest.x = x;
-        dest.y = y;
+        dest.x = x-surface->w/2;
+        dest.y = y-surface->h/2;
         dest.w = surface->w;
         dest.h = surface->h;
         SDL_SetColorKey(surface, 0, 0);

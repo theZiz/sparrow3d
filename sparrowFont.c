@@ -34,6 +34,7 @@ PREFIX spFontPointer spFontLoad(char* fontname,Uint32 size)
   font->font = ttf;
   font->root = NULL;
   font->size = size;
+  font->maxheight = 0;
   return font;
 }
 
@@ -119,6 +120,7 @@ PREFIX void spFontAdd(spFontPointer font,Uint32 character,Uint16 color)
 {
   spLetterPointer letter = (spLetterPointer)malloc(sizeof(spLetterStruct));
   letter->character = character;
+  letter->color = color;
   char buffer[5];
   buffer[0]=character;
   buffer[1]=0; //TODO: utf8
@@ -141,7 +143,9 @@ PREFIX void spFontAdd(spFontPointer font,Uint32 character,Uint16 color)
   SDL_FreeSurface(dummy);
   SDL_FreeSurface(surface);
   
-  TTF_SizeUTF8(font->font,buffer,&(letter->width),NULL);
+  TTF_SizeUTF8(font->font,buffer,&(letter->width),&(letter->height));
+  if (font->maxheight < letter->height)
+    font->maxheight = letter->height;
   
   //tree insert
   font->root = spFontInsert(letter,font->root);
@@ -152,6 +156,42 @@ PREFIX void spFontAddRange(spFontPointer font,Uint32 from,Uint32 to,Uint16 color
   Uint32 letter;
   for (letter = from; letter <= to; letter++)
     spFontAdd(font,letter,color);
+}
+
+void spLetterAddBorder(spLetterPointer letter,Uint16 bordercolor)
+{
+  if (letter == NULL)
+    return;
+  spLetterAddBorder(letter->left,bordercolor);
+  spLetterAddBorder(letter->right,bordercolor);
+  SDL_LockSurface(letter->surface);
+  Uint16* pixel = (Uint16*)(letter->surface->pixels);
+  int x,y;
+  for (x = 0; x < letter->surface->w; x++)
+    for (y = 0; y < letter->surface->h; y++)
+      if (pixel[x+y*letter->surface->w] == letter->color)
+      {
+        //Left
+        if (x-1>=0 && pixel[x-1+y*letter->surface->w] == SP_ALPHA_COLOR)
+          pixel[x-1+y*letter->surface->w] = bordercolor;
+        //Right
+        if (x+1<letter->surface->w && pixel[x+1+y*letter->surface->w] == SP_ALPHA_COLOR)
+          pixel[x+1+y*letter->surface->w] = bordercolor;
+        //Up
+        if (y-1>=0 && pixel[x+(y-1)*letter->surface->w] == SP_ALPHA_COLOR)
+          pixel[x+(y-1)*letter->surface->w] = bordercolor;
+        //Down
+        if (y+1<letter->surface->h && pixel[x+(y+1)*letter->surface->w] == SP_ALPHA_COLOR)
+          pixel[x+(y+1)*letter->surface->w] = bordercolor;
+        
+      }
+  SDL_UnlockSurface(letter->surface);
+  letter->width++;
+}
+
+PREFIX void spFontAddBorder(spFontPointer font,Uint16 bordercolor)
+{
+  spLetterAddBorder(font->root,bordercolor);
 }
 
 spLetterPointer spLetterFind(spLetterPointer root,Uint32 character)
@@ -171,8 +211,114 @@ PREFIX spLetterPointer spFontGetLetter(spFontPointer font,Uint32 character)
   return spLetterFind(font->root,character);
 }
 
+PREFIX void spFontDraw(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font)
+{
+  int l = 0;
+  int pos = x;
+  while (text[l]!=0)
+  {
+    spLetterPointer letter = spFontGetLetter(font,text[l]); //TODO utf8
+    if (letter)
+    {
+      pos+=letter->width>>1;
+      spBlitSurface(pos,y+letter->height/2,z,letter->surface);
+      pos+=letter->width>>1;
+    }
+    l++;
+  }
+  
+}
+
+PREFIX void spFontDrawRight(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font)
+{
+  int l = 0;
+  int width = 0;
+  spLetterIterPointer first = NULL;
+  spLetterIterPointer last = NULL;
+  while (text[l]!=0)
+  {
+    spLetterPointer letter = spFontGetLetter(font,text[l]); //TODO utf8
+    if (letter)
+    {
+      spLetterIterPointer iter = (spLetterIterPointer)malloc(sizeof(spLetterIterStruct));
+      iter->letter = letter;
+      if (first == NULL)
+      {
+        first = iter;
+        last = iter;
+      }
+      else
+      {
+        last->next = iter;
+        last = iter;
+      }
+      width += letter->width;
+      iter->next = NULL;
+    }
+    l++;
+  }  
+  int pos = x-width;
+  while (first != NULL)
+  {
+    pos+=first->letter->width>>1;
+    spBlitSurface(pos,y+first->letter->height/2,z,first->letter->surface);
+    pos+=first->letter->width>>1;
+    first = first->next;
+  }
+}
+
+PREFIX void spFontDrawMiddle(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font)
+{
+  int l = 0;
+  int width = 0;
+  spLetterIterPointer first = NULL;
+  spLetterIterPointer last = NULL;
+  while (text[l]!=0)
+  {
+    spLetterPointer letter = spFontGetLetter(font,text[l]); //TODO utf8
+    if (letter)
+    {
+      spLetterIterPointer iter = (spLetterIterPointer)malloc(sizeof(spLetterIterStruct));
+      iter->letter = letter;
+      if (first == NULL)
+      {
+        first = iter;
+        last = iter;
+      }
+      else
+      {
+        last->next = iter;
+        last = iter;
+      }
+      width += letter->width;
+      iter->next = NULL;
+    }
+    l++;
+  }  
+  int pos = x-width/2;
+  while (first != NULL)
+  {
+    pos+=first->letter->width>>1;
+    spBlitSurface(pos,y+first->letter->height/2,z,first->letter->surface);
+    pos+=first->letter->width>>1;
+    first = first->next;
+  }
+}
+
+
+void spLetterDelete(spLetterPointer letter)
+{
+  if (letter == NULL)
+    return;
+  spLetterDelete(letter->left);
+  spLetterDelete(letter->right);
+  SDL_FreeSurface(letter->surface);
+  free(letter);
+}
 
 PREFIX void spFontDelete(spFontPointer font)
 {
-  //TODO: Implement
+  spLetterDelete(font->root);
+  TTF_CloseFont(font->font);
+  free(font);
 }

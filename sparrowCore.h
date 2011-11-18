@@ -53,4 +53,10 @@ PREFIX PspInput spGetInput(void);
  * your game, the flying spaghetti monster will kill a kitten.*/
 PREFIX void spQuitCore(void);
 
+/* spGetFPS returns the FPS of the Loop Function */
+PREFIX int spGetFPS(void);
+
+/* spGetSizeFactor returns a fixed point factor for the screen size. */
+PREFIX Sint32 spGetSizeFactor(void);
+
 #endif

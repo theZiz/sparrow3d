@@ -13,15 +13,13 @@ Roadmap:
   + implementation in
     + polygon
     + blit
-- font loading
++ font loading
   + setting, which characters the user wants (with saving in binary tree)
     + multiple fonts (e.g. differnt font, differnt size, etc.) possible
     + every fonts has its own root.
   + loading theses characters in 16 Bit - pink is alpha surfaces
   + getSurface(character,root)
-  - feedbackfunction, which recreates all these characters
-  - Drawing function with(out) zoom and with(out) z-stuff
-  - 3D function for the both possibilities (fontBlit and fontRender)
+  + Drawing function with(out) zoom and with(out) z-stuff
 - Porting Puzzletube to sparrow3D
   - Using 1 Quads or 2 Triangles with texture instead of the modells
   - Using "dizzy" Alpha (monochrome-Alpha) for selection

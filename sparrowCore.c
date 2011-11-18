@@ -539,7 +539,7 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
         {
           bigsteps-=1000;
           spFPS=frames;
-          printf("FPS: %i\n",spFPS);
+          //printf("FPS: %i\n",spFPS);
           frames=0;
         }
         //if (steps-minwait > 0)
@@ -578,4 +578,14 @@ PREFIX void spQuitCore(void)
     SDL_JoystickClose(spJoy);
   #endif
   SDL_Quit();
+}
+
+PREFIX int spGetFPS(void)
+{
+  return spFPS;
+}
+
+PREFIX Sint32 spGetSizeFactor(void)
+{
+  return spZoom;
 }
