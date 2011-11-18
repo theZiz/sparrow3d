@@ -61,32 +61,10 @@ PREFIX Sint32 spSqrt (Sint32 n)
 
 PREFIX Sint32 spMin(Sint32 a,Sint32 b)
 {
-  if (a<b)
-    return a;
-  return b;
-}
-
-PREFIX Sint32 spMin3(Sint32 a,Sint32 b, Sint32 c)
-{
-  
-}
-
-PREFIX Sint32 spMin4(Sint32 a,Sint32 b, Sint32 c, Sint32 d)
-{
-  
+  return (a < b) ? a : b;
 }
 
 PREFIX Sint32 spMax(Sint32 a,Sint32 b)
 {
-  
-}
-
-PREFIX Sint32 spMax3(Sint32 a,Sint32 b, Sint32 c)
-{
-  
-}
-
-PREFIX Sint32 spMax4(Sint32 a,Sint32 b, Sint32 c, Sint32 d)
-{
-  
+  return (a > b) ? a : b;
 }

@@ -14,12 +14,12 @@ Roadmap:
     + polygon
     + blit
 - font loading
-  - setting, which characters the user wants (with saving in binary tree)
-    - multiple fonts (e.g. differnt font, differnt size, etc.) possible
-    - every fonts has its own root.
-  - loading theses characters in 16 Bit - pink is alpha surfaces
+  + setting, which characters the user wants (with saving in binary tree)
+    + multiple fonts (e.g. differnt font, differnt size, etc.) possible
+    + every fonts has its own root.
+  + loading theses characters in 16 Bit - pink is alpha surfaces
+  + getSurface(character,root)
   - feedbackfunction, which recreates all these characters
-  - getSurface(character,root)
   - Drawing function with(out) zoom and with(out) z-stuff
   - 3D function for the both possibilities (fontBlit and fontRender)
 - Porting Puzzletube to sparrow3D

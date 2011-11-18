@@ -24,6 +24,7 @@ SDL_Surface* screen;
 SDL_Surface* garfield;
 SDL_Surface* pepper;
 Sint32 rotation = 0;
+spFontPointer font;
 
 void draw_test(void)
 {
@@ -35,7 +36,7 @@ void draw_test(void)
   spTranslate(spSin(rotation>>2)*8,0,(-18<<SP_ACCURACY)+spSin(rotation)*8);
   spRotateY(rotation);
   
-  spBindTexture(garfield);
+  //spBindTexture(garfield);
   spSetCulling(0);
   spSetZSet(1);
   spSetZTest(1);
@@ -43,16 +44,18 @@ void draw_test(void)
   int a,y;
   for (a = 0; a<16; a++)
   {
+    garfield = spFontGetLetter(font,'A'+a)->surface;
+    spBindTexture(garfield);
     spRotateY(SP_PI/8);
     Sint32 brightness = (spCos(rotation+a*SP_PI/8)>>SP_HALF_ACCURACY)*abs(spCos(rotation+a*SP_PI/8)>>SP_HALF_ACCURACY)/2+(3<<SP_ACCURACY-1);
     Uint16 color = ((brightness>>SP_ACCURACY-4)<<11)+((brightness>>SP_ACCURACY-5)<<5)+(brightness>>SP_ACCURACY-4);
     for (y = -21; y<=21; y+=7)
     {
-      spQuadTex3D(-3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,8,8,
-                  -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,1,garfield->h-9,
-                   3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-9,garfield->h-9,
-                   3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-9,8,color);
-      //spBlit3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,pepper);
+      spQuadTex3D(-3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,SP_FONT_EXTRASPACE,SP_FONT_EXTRASPACE,
+                  -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,1,garfield->h-SP_FONT_EXTRASPACE-1,
+                   3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-SP_FONT_EXTRASPACE-1,garfield->h-SP_FONT_EXTRASPACE-1,
+                   3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-SP_FONT_EXTRASPACE-1,8,color);
+      //spBlit3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,/*pepper*/spFontGetLetter(font,'A')->surface);
     }
   }
 
@@ -140,10 +143,24 @@ void resize(Uint16 w,Uint16 h)
 
 int main(int argc, char **argv)
 {
+  //sparrow3D Init
   spInitCore();
   spInitMath();
+  
+  //Setup
   screen = spCreateWindow();
   spSelectRenderTarget(screen);
+  spSetPerspective(50.0,(float)spGetWindowSurface()->w/(float)spGetWindowSurface()->h,0.1,100);
+  
+  //Font Loading
+  font = spFontLoad("./font/StayPuft.ttf",40);
+  int a;
+  for (a = 0; a<16; a++)
+    spFontAdd(font,'A'+a,4095*(a+1));
+  for (a = 0; a<16; a++)
+    printf("%i\n",spFontGetLetter(font,'A'+a)->character);
+  
+  //Textures loading
   SDL_Surface* surface = IMG_Load("./data/garfield.png");
   garfield = SDL_DisplayFormat(surface);
   SDL_FreeSurface(surface);
@@ -151,8 +168,12 @@ int main(int argc, char **argv)
   pepper = SDL_DisplayFormat(surface);
   SDL_FreeSurface(surface);
   spBindTexture(garfield);
-  spSetPerspective(50.0,(float)spGetWindowSurface()->w/(float)spGetWindowSurface()->h,0.1,100);
+
+  //All glory the main loop
   spLoop(draw_test,calc_test,10,resize);
+  
+  //Wrap up
+  spFontDelete(font);
   SDL_FreeSurface(garfield);
   SDL_FreeSurface(pepper);
   spQuitCore();

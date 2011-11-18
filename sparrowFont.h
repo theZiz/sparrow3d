@@ -21,5 +21,39 @@
 #define _SPARROW_FONT_H
 
 #include "sparrowDefines.h"
+#include <SDL.h>
+#include <SDL_ttf.h>
+
+#define SP_FONT_EXTRASPACE 8
+
+/*a letter in a binary tree of a font*/
+typedef struct spLetterStruct_ *spLetterPointer;
+typedef struct spLetterStruct_
+{
+  Uint32 character; //later it could be utf8 characters
+  SDL_Surface* surface; //the character's surface
+  Sint32 width; //the character's length
+  Sint32 binary_height; //NOT the height of the letter! just for the binary tree
+  spLetterPointer left,right; //smaller and bigger character
+} spLetterStruct;
+
+/*root of a binary tree of all letters in this font*/
+typedef struct spFontStruct_ *spFontPointer;
+typedef struct spFontStruct_
+{
+  TTF_Font* font;
+  spLetterPointer root; //the root of the binary letter tree
+  Uint32 size;
+} spFontStruct;
+
+PREFIX spFontPointer spFontLoad(char* fontname,Uint32 size);
+
+PREFIX void spFontAdd(spFontPointer font,Uint32 character,Uint16 color);
+
+PREFIX void spFontAddRange(spFontPointer font,Uint32 from,Uint32 to,Uint16 color);
+
+PREFIX spLetterPointer spFontGetLetter(spFontPointer font,Uint32 character);
+
+PREFIX void spFontDelete(spFontPointer font);
 
 #endif

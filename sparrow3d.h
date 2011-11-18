@@ -26,6 +26,7 @@
 #include "sparrowMath.h"
 #include "sparrowMesh.h"
 #include "sparrowPrimitives.h"
+#include "sparrowFont.h"
 #include "sparrowRenderer.h"
 
 #endif

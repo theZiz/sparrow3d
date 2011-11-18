@@ -38,19 +38,7 @@ PREFIX Sint32 spSqrt (Sint32 n);
 /* spMin return the smallest of 2 numbers */
 PREFIX Sint32 spMin(Sint32 a,Sint32 b);
 
-/* spMin3 return the smallest of 3 numbers */
-PREFIX Sint32 spMin3(Sint32 a,Sint32 b, Sint32 c);
-
-/* spMin4 return the smallest of 4 numbers */
-PREFIX Sint32 spMin4(Sint32 a,Sint32 b, Sint32 c, Sint32 d);
-
 /* spMax return the biggest of 2 numbers */
 PREFIX Sint32 spMax(Sint32 a,Sint32 b);
-
-/* spMax3 return the biggest of 2 numbers */
-PREFIX Sint32 spMax3(Sint32 a,Sint32 b, Sint32 c);
-
-/* spMax4 return the biggest of 2 numbers */
-PREFIX Sint32 spMax4(Sint32 a,Sint32 b, Sint32 c, Sint32 d);
 
 #endif
