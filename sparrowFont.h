@@ -24,7 +24,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 
-#define SP_FONT_EXTRASPACE 8
+#define SP_FONT_EXTRASPACE 1
 
 /*a letter in a binary tree of a font*/
 typedef struct spLetterStruct_ *spLetterPointer;

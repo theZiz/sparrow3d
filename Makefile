@@ -2,8 +2,8 @@
 # -DFAST_BUT_UGLY <- could crash, uses possibly memory (just reading) Try always to have some border pixels to your textures if using!
 # -DFAST_BUT_UGLY_2
 #==global Flags. Even on the gp2x with 16 kb Cache, -O3 is much better then -Os
-CFLAGS = -O3
-CFLAGS_ASM = -O2
+CFLAGS = -O3 -fsingle-precision-constant -fPIC 
+CFLAGS_ASM = -O2 -fsingle-precision-constant -fPIC
 GENERAL_TWEAKS = -DFAST_BUT_UGLY -DFAST_BUT_UGLY_2 -ffast-math -fgcse-lm -fgcse-sm -fsched-spec-load
 #==PC==
 CPP = gcc -g -march=native -DX86CPU $(GENERAL_TWEAKS)
@@ -53,7 +53,7 @@ sparrowCore.o: sparrowCore.c sparrowCore.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE)
 
 sparrowPrimitives.o: sparrowPrimitives.c sparrowPrimitives.h
-	$(CPP) $(CFLAGS)  -fsingle-precision-constant -fPIC -c sparrowPrimitives.c $(SDL) $(INCLUDE)
+	$(CPP) $(CFLAGS)  -c sparrowPrimitives.c $(SDL) $(INCLUDE)
 
 sparrowPrimitivesAsm.o: sparrowPrimitivesAsm.c sparrowPrimitives.h
 	$(CPP) $(CFLAGS)  -fsingle-precision-constant -fPIC -c sparrowPrimitivesAsm.c $(SDL) $(INCLUDE)

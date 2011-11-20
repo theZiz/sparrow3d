@@ -20,6 +20,8 @@
 #include "sparrowCore.h"
 #include "sparrowMath.h"
 #include "sparrowPrimitives.h"
+#include <SDL.h>
+#include <SDL_image.h>
 #include <SDL_ttf.h>
 
 int spWindowX;
@@ -588,4 +590,43 @@ PREFIX int spGetFPS(void)
 PREFIX Sint32 spGetSizeFactor(void)
 {
   return spZoom;
+}
+
+PREFIX SDL_Surface* spLoadSurface(char* name)
+{
+  SDL_Surface* surface = IMG_Load(name);
+  /*printf("%s: %i\n",name,surface->format->BitsPerPixel);
+  if (surface->format->BitsPerPixel==32) //removing alpha
+  {
+    SDL_LockSurface(surface);
+    Uint8* pixel = (Uint8*)(surface->pixels);
+    int x,y;
+    for (x = 0; x < surface->w; x++)
+      for (y = 0; y < surface->h; y++)
+      {
+        if (pixel[(x+y*surface->w)*4+3] > 128)
+        {
+          pixel[(x+y*surface->w)*4+3] = 255;
+          if (pixel[(x+y*surface->w)*4+0] == 255 &&
+              pixel[(x+y*surface->w)*4+1] == 0   &&
+              pixel[(x+y*surface->w)*4+2] == 255 ) //removing pink
+          {
+            pixel[(x+y*surface->w)*4+0] = 247;
+            pixel[(x+y*surface->w)*4+2] = 247;
+          }
+        }
+        else
+        {
+          pixel[(x+y*surface->w)*4+0] = 255;
+          pixel[(x+y*surface->w)*4+1] = 0;
+          pixel[(x+y*surface->w)*4+2] = 255;
+          pixel[(x+y*surface->w)*4+3] = 255;
+        }       
+      }
+    
+    SDL_UnlockSurface(surface);
+  }*/
+  SDL_Surface* result = SDL_DisplayFormat(surface);
+  SDL_FreeSurface(surface);
+  return result;
 }

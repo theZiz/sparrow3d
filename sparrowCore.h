@@ -59,4 +59,6 @@ PREFIX int spGetFPS(void);
 /* spGetSizeFactor returns a fixed point factor for the screen size. */
 PREFIX Sint32 spGetSizeFactor(void);
 
+/* spLoadSurface loads a 16 Surface needed by the engine */
+PREFIX SDL_Surface* spLoadSurface(char* name);
 #endif
