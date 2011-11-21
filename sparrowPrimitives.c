@@ -2003,6 +2003,54 @@ inline void draw_line_tex_alpha(SP_SingedInt16 x1,Sint32 u1,Sint32 v1,SP_SingedI
   }
 }
 
+/*inline void horz_tex_zset_zset_alpha(SP_SingedInt16 xl,SP_SingedInt16 xr,SP_SingedInt16 y,
+                              SP_SingedInt16 zl,SP_SingedInt16 zr,
+                              SP_SingedInt16 ul,SP_SingedInt16 ur,
+                              SP_SingedInt16 vl,SP_SingedInt16 vr,SP_UnsingedInt16 color)
+{
+  if (xl+1 >= xr)
+    return;
+  Sint32 xm = xl+xr>>1;
+  Sint32 zm = zl+zr>>1;
+  Sint32 um = ul+ur>>1;
+  Sint32 vm = vl+vr>>1;
+  draw_pixel_tex_ztest_zset_alpha(xm,y,zm,um,vm,color);
+  horz_tex_zset_zset_alpha(xl,xm,y,zl,zm,ul,um,vl,vm,color);
+  horz_tex_zset_zset_alpha(xm,xr,y,zm,zr,um,ur,vm,vr,color);
+}
+
+inline void vert_tex_ztest_zset_alpha(SP_SingedInt16 xtl,SP_SingedInt16 xtr,SP_SingedInt16 yt,
+                                       Sint32 ztl,        Sint32 ztr,
+                               SP_SingedInt16 utl,SP_SingedInt16 utr,
+                               SP_SingedInt16 vtl,SP_SingedInt16 vtr,
+                               SP_SingedInt16 xbl,SP_SingedInt16 xbr,SP_SingedInt16 yb,
+                                       Sint32 zbl,        Sint32 zbr,
+                               SP_SingedInt16 ubl,SP_SingedInt16 ubr,
+                               SP_SingedInt16 vbl,SP_SingedInt16 vbr,SP_UnsingedInt16 color)
+{
+  if (yt+1 >= yb)
+    return;
+  Sint32 xml = xtl + xbl >>1;
+  Sint32 xmr = xtr + xbr >>1;
+  Sint32 ym  =  yt +  yb >>1;
+  Sint32 zml = ztl + zbl >>1;
+  Sint32 zmr = ztr + zbr >>1;
+  Sint32 uml = utl + ubl >>1;
+  Sint32 umr = utr + ubr >>1;
+  Sint32 vml = vtl + vbl >>1;
+  Sint32 vmr = vtr + vbr >>1;
+  vert_tex_ztest_zset_alpha(xtl,xtr,yt,ztl,ztr,utl,utr,vtl,vtr,
+                            xml,xmr,ym,zml,zmr,uml,umr,vml,vmr,color);
+  draw_pixel_tex_ztest_zset_alpha(xml,ym,zml,uml,vml,color);
+  if (xml < xmr)
+    horz_tex_zset_zset_alpha(xml,xmr,ym,zml,zmr,uml,umr,vml,vmr,color);
+  else
+    horz_tex_zset_zset_alpha(xmr,xml,ym,zmr,zml,umr,uml,vmr,vml,color);
+  draw_pixel_tex_ztest_zset_alpha(xmr,ym,zmr,umr,vmr,color);
+  vert_tex_ztest_zset_alpha(xml,xmr,ym,zml,zmr,uml,umr,vml,vmr,
+                            xbl,xbr,yb,zbl,zbr,ubl,ubr,vbl,vbr,color);
+}*/
+
 inline void sp_intern_Triangle_tex_ztest_zset_alpha(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color)
 {
   int y;
@@ -2019,7 +2067,20 @@ inline void sp_intern_Triangle_tex_ztest_zset_alpha(SP_SingedInt16 x1, SP_Singed
   Sint32 z4 = z1+mul*z_div(z2-z1,div);
   SP_SingedInt16 u4 = u1+((u2-u1)*mul32>>SP_PRIM_ACCURACY);
   SP_SingedInt16 v4 = v1+((v2-v1)*mul32>>SP_PRIM_ACCURACY);
-
+  
+  /*draw_pixel_tex_ztest_zset_alpha(x1,y1,z1,u1,v1,color);
+  vert_tex_ztest_zset_alpha(x1,x1,y1,z1,z1,u1,u1,v1,v1,
+                            x3,x4,y3,z3,z4,u3,u4,v3,v4,color);
+  if (x3 < x4)
+    horz_tex_zset_zset_alpha(x3,x4,y3,z3,z4,u3,u4,v3,v4,color);
+  else
+    horz_tex_zset_zset_alpha(x4,x3,y3,z4,z3,u4,u3,v4,v3,color);
+  vert_tex_ztest_zset_alpha(x3,x4,y3,z3,z4,u3,u4,v3,v4,
+                            x2,x2,y2,z2,z2,u2,u2,v2,v2,color);
+  draw_pixel_tex_ztest_zset_alpha(x2,y2,z2,u2,v2,color);
+  */
+  
+  
   Sint32 xl = x1<<SP_PRIM_ACCURACY;
   Sint32 ul = u1<<SP_PRIM_ACCURACY;
   Sint32 vl = v1<<SP_PRIM_ACCURACY;
@@ -2171,7 +2232,7 @@ inline void sp_intern_Triangle_tex_ztest_zset_alpha(SP_SingedInt16 x1, SP_Singed
       zr += sZ_r;
     }
   }
-  SDL_UnlockSurface(spTarget);  
+  SDL_UnlockSurface(spTarget); 
 }
 
 inline void sp_intern_Triangle_tex_ztest_alpha(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color)
