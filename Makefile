@@ -38,10 +38,17 @@ SDL = `/opt/pandora/arm-2011.03/usr/bin/sdl-config --cflags`
 INCLUDE = -I/opt/pandora/arm-2011.03/usr/include
 LIB = -L/opt/pandora/arm-2011.03/usr/lib -Wl,-rpath=/opt/pandora/arm-2011.03/usr/lib -lpnd
 endif
+#==Maemo==
+ifeq ($(TARGET),maemo)
+CPP = gcc -DARMCPU -DMAEMO $(GENERAL_TWEAKS)
+SDL = `sdl-config --cflags`
+endif
+
+
 all: sparrow3d testsparrow
 
 targets:
-	@echo "gp2x (=wiz), caanoo, dingoo, pandora"
+	@echo "gp2x (=wiz), caanoo, dingoo, pandora, maemo"
 
 testsparrow: testsparrow.c sparrow3d
 	$(CPP) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) -L. $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm -lsparrow3d $(ORIGINALFW) -o testsparrow
