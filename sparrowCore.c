@@ -40,6 +40,12 @@ PREFIX void spInitCore(void)
   #ifdef PANDORA
     spWindowX = 800;
     spWindowY = 480;
+  #elif defined MAEMO5
+    spWindowX = 800;
+    spWindowY = 480;
+  #elif defined MAEMO6
+    spWindowX = 854;
+    spWindowY = 480;
   #else
     spWindowX = 320;
     spWindowY = 240;
@@ -77,6 +83,9 @@ inline void spResizeWindow(int x,int y)
     spScreen=NULL;
     spWindow=SDL_SetVideoMode(x,y,16,SDL_SWSURFACE);
   #elif defined PANDORA
+    spScreen=NULL;
+    spWindow=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+  #elif defined MAEMO
     spScreen=NULL;
     spWindow=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
   #else
