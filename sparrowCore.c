@@ -33,12 +33,20 @@ SDL_Joystick *spJoy = NULL;
 char spDone;
 int spFPS;
 TspInput spInput;
+int debug_time;
 
 PREFIX void spInitCore(void)
 {
+  debug_time = 0;
   TTF_Init();
   #ifdef PANDORA
     spWindowX = 800;
+    spWindowY = 480;
+  #elif defined MAEMO5
+    spWindowX = 800;
+    spWindowY = 480;
+  #elif defined MAEMO6
+    spWindowX = 854;
     spWindowY = 480;
   #else
     spWindowX = 320;
@@ -61,6 +69,17 @@ PREFIX void spInitCore(void)
   spInitPrimitives();
 }
 
+PREFIX void spPrintDebug(char* text)
+{
+  Sint32 time = SDL_GetTicks();
+  int time_diff = time-debug_time;
+  if (time_diff > 100)
+    printf("%05i (%3i LONG!): %s\n",time,time_diff,text);
+  else
+    printf("%05i (%3i): %s\n",time,time_diff,text);
+  debug_time = time;
+}
+
 inline void spResizeWindow(int x,int y)
 {
    #ifdef GP2X
@@ -77,6 +96,9 @@ inline void spResizeWindow(int x,int y)
     spScreen=NULL;
     spWindow=SDL_SetVideoMode(x,y,16,SDL_SWSURFACE);
   #elif defined PANDORA
+    spScreen=NULL;
+    spWindow=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+  #elif defined MAEMO
     spScreen=NULL;
     spWindow=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
   #else
@@ -123,7 +145,9 @@ inline int spHandleEvent(void)
   {
     #ifdef CORE_DEBUG
       counter++;
-      printf("%i: Fetching Event %i\n",SDL_GetTicks(),counter);
+      char buffer[32];
+      sprintf(buffer,"    Fetching Event %i\n",counter);
+      spPrintDebug(buffer);
     #endif
     switch (event.type)
     {
@@ -529,28 +553,40 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
   newticks=olderticks;
   while(back==0 && !spDone ) {
       #ifdef CORE_DEBUG
-        printf("%i: Main Loop Begin\n",SDL_GetTicks());
+        spPrintDebug("Start mainloop");
       #endif
       newticks=SDL_GetTicks();
       if (spHandleEvent() && spResize)
+      {
         spResize(spWindowX,spWindowY);
+        #ifdef CORE_DEBUG
+          spPrintDebug("  Did events and resize");
+        #endif
+      }
+      #ifdef CORE_DEBUG
+        else
+          spPrintDebug("  Did events");
+      #endif
       spUpdateAxis(0);
       spUpdateAxis(1);
       #ifdef CORE_DEBUG
-        printf("%i: Input Handling done\n",SDL_GetTicks());
+        spPrintDebug("  Did axis update");
       #endif
       if (newticks-oldticks > 0)
       {
         back = spCalc(newticks-oldticks);
-        oldticks = newticks;
         #ifdef CORE_DEBUG
-          printf("%i: There was calc\n",SDL_GetTicks());
+          spPrintDebug("  Did calc");
         #endif
+        oldticks = newticks;
       }
       steps+=newticks-olderticks;
       if (steps>=minwait)
       {
         spDraw();
+        #ifdef CORE_DEBUG
+          spPrintDebug("  Did draw");
+        #endif
         frames++;
         bigsteps=bigsteps+steps;
         while (bigsteps>=1000)
@@ -564,9 +600,6 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
         //  SDL_Delay(steps-minwait);
         steps=0;
         olderticks = newticks;
-        #ifdef CORE_DEBUG
-          printf("%i: There was draw\n",SDL_GetTicks());
-        #endif
       }
   }
   return back;  
@@ -575,7 +608,7 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
 PREFIX void spFlip(void)
 {
   #ifdef CORE_DEBUG
-    printf("%i: Flip in\n",SDL_GetTicks());
+    spPrintDebug("    Flip in");
   #endif
   //The Flip
   #ifdef GP2X
@@ -588,9 +621,10 @@ PREFIX void spFlip(void)
     SDL_Flip(spWindow);
   #else //PC, Dingoo and Pandora
     SDL_Flip(spWindow);
+    //SDL_UpdateRect(spWindow, 0, 0, 0, 0);
   #endif
   #ifdef CORE_DEBUG
-    printf("%i: Flip out\n",SDL_GetTicks());
+    spPrintDebug("    Flip out");
   #endif
 }
 
