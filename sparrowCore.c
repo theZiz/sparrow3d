@@ -33,9 +33,11 @@ SDL_Joystick *spJoy = NULL;
 char spDone;
 int spFPS;
 TspInput spInput;
+int debug_time;
 
 PREFIX void spInitCore(void)
 {
+  debug_time = 0;
   TTF_Init();
   #ifdef PANDORA
     spWindowX = 800;
@@ -65,6 +67,17 @@ PREFIX void spInitCore(void)
   spInput.axis[0]=0;
   spInput.axis[1]=0;
   spInitPrimitives();
+}
+
+PREFIX void spPrintDebug(char* text)
+{
+  Sint32 time = SDL_GetTicks();
+  int time_diff = time-debug_time;
+  if (time_diff > 100)
+    printf("%05i (%3i LONG!): %s\n",time,time_diff,text);
+  else
+    printf("%05i (%3i): %s\n",time,time_diff,text);
+  debug_time = time;
 }
 
 inline void spResizeWindow(int x,int y)
@@ -530,20 +543,41 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
   oldticks=olderticks;
   newticks=olderticks;
   while(back==0 && !spDone ) {
+      #ifdef CORE_DEBUG
+        spPrintDebug("Start mainloop");
+      #endif
       newticks=SDL_GetTicks();
       if (spHandleEvent() && spResize)
+      {
         spResize(spWindowX,spWindowY);
+        #ifdef CORE_DEBUG
+          spPrintDebug("  Did events and resize");
+        #endif
+      }
+      #ifdef CORE_DEBUG
+        else
+          spPrintDebug("  Did events");
+      #endif
       spUpdateAxis(0);
       spUpdateAxis(1);
+      #ifdef CORE_DEBUG
+        spPrintDebug("  Did axis update");
+      #endif
       if (newticks-oldticks > 0)
       {
         back = spCalc(newticks-oldticks);
+        #ifdef CORE_DEBUG
+          spPrintDebug("  Did calc");
+        #endif
         oldticks = newticks;
       }
       steps+=newticks-olderticks;
       if (steps>=minwait)
       {
         spDraw();
+        #ifdef CORE_DEBUG
+          spPrintDebug("  Did draw");
+        #endif
         frames++;
         bigsteps=bigsteps+steps;
         while (bigsteps>=1000)
@@ -564,6 +598,9 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
 
 PREFIX void spFlip(void)
 {
+  #ifdef CORE_DEBUG
+    spPrintDebug("    Flip in");
+  #endif
   //The Flip
   #ifdef GP2X
     SDL_BlitSurface(spWindow, NULL, spScreen, NULL);
@@ -575,6 +612,10 @@ PREFIX void spFlip(void)
     SDL_Flip(spWindow);
   #else //PC, Dingoo and Pandora
     SDL_Flip(spWindow);
+    //SDL_UpdateRect(spWindow, 0, 0, 0, 0);
+  #endif
+  #ifdef CORE_DEBUG
+    spPrintDebug("    Flip out");
   #endif
 }
 

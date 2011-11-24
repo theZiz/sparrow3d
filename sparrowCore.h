@@ -33,6 +33,9 @@ typedef struct SspInput {
 /* spInitCore initializes SDL, SDL_TTF and other stuff. */
 PREFIX void spInitCore(void);
 
+/* spPrintDebug prints debug Stuff*/
+PREFIX void spPrintDebug(char* text);
+
 /* spCreateWindow creates the Window in the plattform depended resolution.
  * You will get the created SDL_Surface to render to, whoever you want. */
 PREFIX SDL_Surface* spCreateWindow(void);
