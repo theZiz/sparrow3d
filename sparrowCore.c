@@ -115,9 +115,16 @@ inline int spHandleEvent(void)
       spDone=1;*/
   #endif
   char new_axis = 0;
+  #ifdef CORE_DEBUG
+    int counter = 0;
+  #endif
   SDL_Event event; 
   while (SDL_PollEvent(&event)==1)
   {
+    #ifdef CORE_DEBUG
+      counter++;
+      printf("%i: Fetching Event %i\n",SDL_GetTicks(),counter);
+    #endif
     switch (event.type)
     {
       case SDL_JOYBUTTONDOWN:
@@ -521,15 +528,24 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
   oldticks=olderticks;
   newticks=olderticks;
   while(back==0 && !spDone ) {
+      #ifdef CORE_DEBUG
+        printf("%i: Main Loop Begin\n",SDL_GetTicks());
+      #endif
       newticks=SDL_GetTicks();
       if (spHandleEvent() && spResize)
         spResize(spWindowX,spWindowY);
       spUpdateAxis(0);
       spUpdateAxis(1);
+      #ifdef CORE_DEBUG
+        printf("%i: Input Handling done\n",SDL_GetTicks());
+      #endif
       if (newticks-oldticks > 0)
       {
         back = spCalc(newticks-oldticks);
         oldticks = newticks;
+        #ifdef CORE_DEBUG
+          printf("%i: There was calc\n",SDL_GetTicks());
+        #endif
       }
       steps+=newticks-olderticks;
       if (steps>=minwait)
@@ -548,6 +564,9 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
         //  SDL_Delay(steps-minwait);
         steps=0;
         olderticks = newticks;
+        #ifdef CORE_DEBUG
+          printf("%i: There was draw\n",SDL_GetTicks());
+        #endif
       }
   }
   return back;  
@@ -555,6 +574,9 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
 
 PREFIX void spFlip(void)
 {
+  #ifdef CORE_DEBUG
+    printf("%i: Flip in\n",SDL_GetTicks());
+  #endif
   //The Flip
   #ifdef GP2X
     SDL_BlitSurface(spWindow, NULL, spScreen, NULL);
@@ -566,6 +588,9 @@ PREFIX void spFlip(void)
     SDL_Flip(spWindow);
   #else //PC, Dingoo and Pandora
     SDL_Flip(spWindow);
+  #endif
+  #ifdef CORE_DEBUG
+    printf("%i: Flip out\n",SDL_GetTicks());
   #endif
 }
 
