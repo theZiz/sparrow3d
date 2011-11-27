@@ -116,10 +116,8 @@ spLetterPointer spFontInsert(spLetterPointer letter,spLetterPointer root)
   return root;
 }
 
-PREFIX void spFontAdd(spFontPointer font,Uint32 character,Uint16 color)
+PREFIX void spFontChangeLetter(spFontPointer font,spLetterPointer letter,Uint32 character,Uint16 color)
 {
-  spLetterPointer letter = (spLetterPointer)malloc(sizeof(spLetterStruct));
-  letter->character = character;
   letter->color = color;
   char buffer[5];
   buffer[0]=character;
@@ -145,8 +143,16 @@ PREFIX void spFontAdd(spFontPointer font,Uint32 character,Uint16 color)
   
   TTF_SizeUTF8(font->font,buffer,&(letter->width),&(letter->height));
   if (font->maxheight < letter->height)
-    font->maxheight = letter->height;
+    font->maxheight = letter->height;  
+}
+
+PREFIX void spFontAdd(spFontPointer font,Uint32 character,Uint16 color)
+{
+  spLetterPointer letter = (spLetterPointer)malloc(sizeof(spLetterStruct));
   
+  spFontChangeLetter(font,letter,character,color);
+  letter->character = character;
+    
   //tree insert
   font->root = spFontInsert(letter,font->root);
 }
@@ -165,26 +171,30 @@ void spLetterAddBorder(spLetterPointer letter,Uint16 bordercolor)
   spLetterAddBorder(letter->left,bordercolor);
   spLetterAddBorder(letter->right,bordercolor);
   SDL_LockSurface(letter->surface);
+  //create copy of the pixel data
+  Uint16* inputpixel = (Uint16*)malloc(sizeof(Uint16)*letter->surface->w*letter->surface->h);
   Uint16* pixel = (Uint16*)(letter->surface->pixels);
+  memcpy(inputpixel,pixel,sizeof(Uint16)*letter->surface->w*letter->surface->h);
   int x,y;
   for (x = 0; x < letter->surface->w; x++)
     for (y = 0; y < letter->surface->h; y++)
-      if (pixel[x+y*letter->surface->w] == letter->color)
+      if (inputpixel[x+y*letter->surface->w] != SP_ALPHA_COLOR)
       {
         //Left
-        if (x-1>=0 && pixel[x-1+y*letter->surface->w] == SP_ALPHA_COLOR)
+        if (x-1>=0 && inputpixel[x-1+y*letter->surface->w] == SP_ALPHA_COLOR)
           pixel[x-1+y*letter->surface->w] = bordercolor;
         //Right
-        if (x+1<letter->surface->w && pixel[x+1+y*letter->surface->w] == SP_ALPHA_COLOR)
+        if (x+1<letter->surface->w && inputpixel[x+1+y*letter->surface->w] == SP_ALPHA_COLOR)
           pixel[x+1+y*letter->surface->w] = bordercolor;
         //Up
-        if (y-1>=0 && pixel[x+(y-1)*letter->surface->w] == SP_ALPHA_COLOR)
+        if (y-1>=0 && inputpixel[x+(y-1)*letter->surface->w] == SP_ALPHA_COLOR)
           pixel[x+(y-1)*letter->surface->w] = bordercolor;
         //Down
-        if (y+1<letter->surface->h && pixel[x+(y+1)*letter->surface->w] == SP_ALPHA_COLOR)
+        if (y+1<letter->surface->h && inputpixel[x+(y+1)*letter->surface->w] == SP_ALPHA_COLOR)
           pixel[x+(y+1)*letter->surface->w] = bordercolor;
         
       }
+  free(inputpixel);
   SDL_UnlockSurface(letter->surface);
   letter->width++;
 }
