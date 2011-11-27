@@ -3745,10 +3745,10 @@ PREFIX void spBlitSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Si
       else
       {
         SDL_Rect dest;
-        dest.x = x;
-        dest.y = y;
         dest.x = x-surface->w/2;
         dest.y = y-surface->h/2;
+        dest.w = surface->w;
+        dest.h = surface->h;
         SDL_Rect src;
         src.x = sx;
         src.y = sy;
