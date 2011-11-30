@@ -24,6 +24,32 @@
 #include <SDL.h>
 
 
+typedef struct spPointStruct *spPointPointer;
+typedef struct spPointStruct {
+  Sint32 x,y,z;
+} spPoint;
+
+typedef struct spTexPointStruct *spTexPointPointer;
+typedef struct spTexPointStruct {
+  Sint32 x,y,z;
+  Sint32 u,v;
+} spTexPoint;
+
+typedef struct spTriangleStruct *spTrianglePointer;
+typedef struct spTriangleStruct {
+  int point[3];
+  int was_drawn;
+} spTriangleS;
+
+typedef struct spModelStruct *spModelPointer;
+typedef struct spModelStruct {
+  SDL_Surface* texture;
+  spPointPointer    point; //"normal" points
+  spTexPointPointer texPoint; //points with u,v coordinates
+  spTrianglePointer triangle,texTriangle; //the triangles of the modell
+} spModel;
+
+
 PREFIX void spSetPerspective(float fovyInDegrees, float aspectRatio,
                              float znear, float zfar);
 
@@ -53,20 +79,20 @@ PREFIX Sint32* spGetMatrix();
 
 PREFIX void spSetMatrix(Sint32* matrix);
 
-PREFIX void spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
+PREFIX int spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 x2,Sint32 y2,Sint32 z2,
   Sint32 x3,Sint32 y3,Sint32 z3,Uint16 color);
 
-PREFIX void spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
+PREFIX int spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 x2,Sint32 y2,Sint32 z2,
   Sint32 x3,Sint32 y3,Sint32 z3,
   Sint32 x4,Sint32 y4,Sint32 z4,Uint16 color);
 
-PREFIX void spTriangleTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
+PREFIX int spTriangleTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 x2,Sint32 y2,Sint32 z2,Sint32 u2,Sint32 v2,
   Sint32 x3,Sint32 y3,Sint32 z3,Sint32 u3,Sint32 v3,Uint16 color);
 
-PREFIX void spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
+PREFIX int spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 x2,Sint32 y2,Sint32 z2,Sint32 u2,Sint32 v2,
   Sint32 x3,Sint32 y3,Sint32 z3,Sint32 u3,Sint32 v3,
   Sint32 x4,Sint32 y4,Sint32 z4,Sint32 u4,Sint32 v4,Uint16 color);
