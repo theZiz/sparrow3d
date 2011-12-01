@@ -65,6 +65,8 @@ PREFIX void spFontAddRange(spFontPointer font,Uint32 from,Uint32 to,Uint16 color
 
 PREFIX void spFontAddBorder(spFontPointer font,Uint16 bordercolor);
 
+PREFIX void spFontMulWidth(spFontPointer font,Sint32 factor);
+
 PREFIX void spFontChangeLetter(spFontPointer font,spLetterPointer letter,Uint32 character,Uint16 color);
 
 PREFIX spLetterPointer spFontGetLetter(spFontPointer font,Uint32 character);

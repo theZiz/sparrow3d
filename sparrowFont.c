@@ -204,6 +204,20 @@ PREFIX void spFontAddBorder(spFontPointer font,Uint16 bordercolor)
   spLetterAddBorder(font->root,bordercolor);
 }
 
+void spLetterMulWidth(spLetterPointer letter,Sint32 factor)
+{
+  if (letter == NULL)
+    return;
+  spLetterMulWidth(letter->left,factor);
+  spLetterMulWidth(letter->right,factor);
+  letter->width = letter->width * factor >> SP_ACCURACY;
+}
+
+PREFIX void spFontMulWidth(spFontPointer font,Sint32 factor)
+{
+  spLetterMulWidth(font->root,factor);
+}
+
 spLetterPointer spLetterFind(spLetterPointer root,Uint32 character)
 {
   if (root == NULL)
@@ -232,7 +246,7 @@ PREFIX void spFontDraw(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font)
     {
       pos+=letter->width>>1;
       spBlitSurface(pos,y+letter->height/2,z,letter->surface);
-      pos+=letter->width>>1;
+      pos+=letter->width-(letter->width>>1);
     }
     l++;
   }
@@ -272,7 +286,7 @@ PREFIX void spFontDrawRight(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer 
   {
     pos+=first->letter->width>>1;
     spBlitSurface(pos,y+first->letter->height/2,z,first->letter->surface);
-    pos+=first->letter->width>>1;
+    pos+=first->letter->width-(first->letter->width>>1);
     first = first->next;
   }
 }
@@ -310,7 +324,7 @@ PREFIX void spFontDrawMiddle(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer
   {
     pos+=first->letter->width>>1;
     spBlitSurface(pos,y+first->letter->height/2,z,first->letter->surface);
-    pos+=first->letter->width>>1;
+    pos+=first->letter->width-(first->letter->width>>1);
     first = first->next;
   }
 }
