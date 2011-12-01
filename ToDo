@@ -1,5 +1,4 @@
 Roadmap:
-- defining of a type for loading obj
 - drawing a couple of points and polygons (meshs) at once
 - loading obj
 - reimplementation of light

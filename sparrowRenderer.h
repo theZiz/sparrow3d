@@ -27,18 +27,27 @@
 typedef struct spPointStruct *spPointPointer;
 typedef struct spPointStruct {
   Sint32 x,y,z;
+  Sint32 px,py;
 } spPoint;
 
 typedef struct spTexPointStruct *spTexPointPointer;
 typedef struct spTexPointStruct {
   Sint32 x,y,z;
+  Sint32 px,py;
   Sint32 u,v;
 } spTexPoint;
+
+typedef struct spEdgeStruct *spEdgePointer;
+typedef struct spEdgeStruct {
+  int point[2];
+  int status; //-1 background, 0 border, 1 foreground
+} spEdge;
 
 typedef struct spTriangleStruct *spTrianglePointer;
 typedef struct spTriangleStruct {
   int point[3];
   int was_drawn;
+  int edge[3];
 } spTriangleS;
 
 typedef struct spModelStruct *spModelPointer;
@@ -47,6 +56,7 @@ typedef struct spModelStruct {
   spPointPointer    point; //"normal" points
   spTexPointPointer texPoint; //points with u,v coordinates
   spTrianglePointer triangle,texTriangle; //the triangles of the modell
+  spEdgePointer edge,texEdges; //the edges of the modell
 } spModel;
 
 
