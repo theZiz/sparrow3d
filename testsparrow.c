@@ -23,6 +23,7 @@
 SDL_Surface* screen;
 SDL_Surface* garfield;
 SDL_Surface* pepper;
+spModelPointer mesh;
 Sint32 rotation = 0;
 spFontPointer font = NULL;
 
@@ -33,7 +34,8 @@ void draw_test(void)
   spIdentity();
   
   
-  spTranslate(spSin(rotation>>2)*8,0,(-18<<SP_ACCURACY)+spSin(rotation)*8);
+  //spTranslate(spSin(rotation>>2)*8,0,(-18<<SP_ACCURACY)+spSin(rotation)*8);
+  spTranslate(0,0,-20<<SP_ACCURACY);
   spRotateY(rotation);
   
   spBindTexture(garfield);
@@ -131,8 +133,20 @@ void draw_test(void)
   spFlip();
 }
 
+Uint32 fpssum = 0;
+Sint32 divisor = -5000;
+
 int calc_test(Uint32 steps)
 {
+  int i;
+  for (i = 0;i<steps;i++)
+  {
+    divisor++;
+    if (divisor>0)
+      fpssum+=spGetFPS();
+    if (divisor == 600000)
+      return 1;
+  }
   rotation+=steps*32;
   if (spGetInput()->button[SP_BUTTON_START])
     return 1;
@@ -166,13 +180,13 @@ int main(int argc, char **argv)
   
   
   //Textures loading
-  SDL_Surface* surface = IMG_Load("./data/garfield.png");
-  garfield = SDL_DisplayFormat(surface);
-  SDL_FreeSurface(surface);
-  surface = IMG_Load("./data/pepper.png");
-  pepper = SDL_DisplayFormat(surface);
-  SDL_FreeSurface(surface);
+  garfield = spLoadSurface("./data/garfield.png");
+  pepper = spLoadSurface("./data/pepper.png");
   spBindTexture(garfield);
+  
+  //Mesh loading
+  mesh = spMeshLoadObj("./data/bam.obj",garfield);
+  
 
   //All glory the main loop
   spLoop(draw_test,calc_test,10,resize);
@@ -182,5 +196,6 @@ int main(int argc, char **argv)
   SDL_FreeSurface(garfield);
   SDL_FreeSurface(pepper);
   spQuitCore();
+  printf("Average fps: %.1f\n",(float)fpssum/(float)divisor);
   return 0;
 }

@@ -2051,6 +2051,41 @@ inline void vert_tex_ztest_zset_alpha(SP_SingedInt16 xtl,SP_SingedInt16 xtr,SP_S
                             xbl,xbr,yb,zbl,zbr,ubl,ubr,vbl,vbr,color);
 }*/
 
+/*inline void sp_intern_recursive_Triangle_tex_ztest_zset_alpha(
+  Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
+  Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2,
+  Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, SP_UnsingedInt16 color)
+{
+  Sint32 nx = (x1+x2+x3)/3;
+  Sint32 ny = (y1+y2+y3)/3;
+  if (((x1>>SP_ACCURACY) == (nx>>SP_ACCURACY) && (y1>>SP_ACCURACY) == (ny>>SP_ACCURACY)) ||
+      ((x2>>SP_ACCURACY) == (nx>>SP_ACCURACY) && (y2>>SP_ACCURACY) == (ny>>SP_ACCURACY)) ||
+      ((x3>>SP_ACCURACY) == (nx>>SP_ACCURACY) && (y3>>SP_ACCURACY) == (ny>>SP_ACCURACY)))
+    return;
+  Sint32 nz = (z1+z2+z3)/3;
+  Sint32 nu = (u1+u2+u3)/3;
+  Sint32 nv = (v1+v2+v3)/3;
+  draw_pixel_tex_ztest_zset_alpha(nx>>SP_ACCURACY,ny>>SP_ACCURACY,nz,
+                                  nu>>SP_ACCURACY,nv>>SP_ACCURACY,color);
+  sp_intern_recursive_Triangle_tex_ztest_zset_alpha(x1,y1,z1,u1,v1,
+                                                    x2,y2,z2,u2,v2,
+                                                    nx,ny,nz,nu,nv,color);
+  sp_intern_recursive_Triangle_tex_ztest_zset_alpha(x2,y2,z2,u2,v2,
+                                                    x3,y3,z3,u3,v3,
+                                                    nx,ny,nz,nu,nv,color);
+  sp_intern_recursive_Triangle_tex_ztest_zset_alpha(x1,y1,z1,u1,v1,
+                                                    x3,y3,z3,u3,v3,
+                                                    nx,ny,nz,nu,nv,color);
+}
+
+
+void sp_intern_Triangle_tex_ztest_zset_alpha(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color)
+{
+  sp_intern_recursive_Triangle_tex_ztest_zset_alpha(x1<<SP_ACCURACY,y1<<SP_ACCURACY,z1,u1<<SP_ACCURACY,v1<<SP_ACCURACY,
+                                                    x2<<SP_ACCURACY,y2<<SP_ACCURACY,z2,u2<<SP_ACCURACY,v2<<SP_ACCURACY,
+                                                    x3<<SP_ACCURACY,y3<<SP_ACCURACY,z3,u3<<SP_ACCURACY,v3<<SP_ACCURACY,color);
+}*/
+
 inline void sp_intern_Triangle_tex_ztest_zset_alpha(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color)
 {
   int y;

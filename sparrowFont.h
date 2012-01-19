@@ -24,6 +24,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 
+#define SP_FONT_DEFAULT_CACHE 16384
 #define SP_FONT_EXTRASPACE 1
 
 /*a letter in a binary tree of a font*/
@@ -36,6 +37,7 @@ typedef struct spLetterStruct_
   Sint32 height; //the character's height
   Sint32 binary_height; //NOT the height of the letter! just for the binary tree
   Uint16 color;
+  Sint32 counter; //How often is this letter used?
   spLetterPointer left,right; //smaller and bigger character
   spLetterPointer next; //For the Drawing functions
 } spLetterStruct;
@@ -47,6 +49,15 @@ typedef struct spLetterIterStruct_
   spLetterIterPointer next; //For the Drawing functions
 } spLetterIterStruct;
 
+typedef struct spFontCacheStruct *spFontCachePointer;
+typedef struct spFontCacheStruct
+{
+  Uint32 size;
+  spLetterPointer *cache;
+  Uint32 counter;
+  Uint8 size_div;
+} spFontCacheStruct;
+
 /*root of a binary tree of all letters in this font*/
 typedef struct spFontStruct_ *spFontPointer;
 typedef struct spFontStruct_
@@ -54,6 +65,8 @@ typedef struct spFontStruct_
   TTF_Font* font;
   Sint32 maxheight;
   spLetterPointer root; //the root of the binary letter tree
+  Uint32 cacheOffset;
+  spFontCacheStruct cache;
   Uint32 size;
 } spFontStruct;
 
@@ -78,5 +91,7 @@ PREFIX void spFontDrawRight(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer 
 PREFIX void spFontDrawMiddle(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font);
 
 PREFIX void spFontDelete(spFontPointer font);
+
+PREFIX void spFontChangeCacheSize(spFontPointer font, Sint32 size);
 
 #endif

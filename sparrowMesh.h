@@ -21,5 +21,10 @@
 #define _SPARROW_MESH_H
 
 #include "sparrowDefines.h"
+#include "sparrowRenderer.h"
+
+PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture);
+
+PREFIX void spMeshDelete(spModelPointer mesh);
 
 #endif

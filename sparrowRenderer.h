@@ -23,20 +23,22 @@
 #include "sparrowDefines.h"
 #include <SDL.h>
 
-
+//A point with the projected coordinates, but without uv-coordinates
 typedef struct spPointStruct *spPointPointer;
 typedef struct spPointStruct {
   Sint32 x,y,z;
-  Sint32 px,py;
+  Sint32 px,py; //projected
 } spPoint;
 
+//A point with the projected coordinates and uv-coordinates
 typedef struct spTexPointStruct *spTexPointPointer;
 typedef struct spTexPointStruct {
   Sint32 x,y,z;
-  Sint32 px,py;
+  Sint32 px,py; //projected
   Sint32 u,v;
 } spTexPoint;
 
+//An edge with a status-flag, e.g. for borderlines
 typedef struct spEdgeStruct *spEdgePointer;
 typedef struct spEdgeStruct {
   int point[2];
@@ -46,16 +48,20 @@ typedef struct spEdgeStruct {
 typedef struct spTriangleStruct *spTrianglePointer;
 typedef struct spTriangleStruct {
   int point[3];
-  int was_drawn;
-  int edge[3];
+  int was_drawn; //shows (always), whether the triangle was drawn the last time
+  int edge[3]; //the update of the Edges status flag is optional!
 } spTriangleS;
 
 typedef struct spModelStruct *spModelPointer;
 typedef struct spModelStruct {
   SDL_Surface* texture;
+  int pointCount;
   spPointPointer    point; //"normal" points
+  int texPointCount;
   spTexPointPointer texPoint; //points with u,v coordinates
+  int triangleCount,texTriangleCount;
   spTrianglePointer triangle,texTriangle; //the triangles of the modell
+  int edgeCount,texEdgeCount;
   spEdgePointer edge,texEdges; //the edges of the modell
 } spModel;
 
@@ -108,4 +114,7 @@ PREFIX int spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 x4,Sint32 y4,Sint32 z4,Sint32 u4,Sint32 v4,Uint16 color);
   
 PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface);
+
+PREFIX void spMesh3D(spModelPointer mesh);
+
 #endif
