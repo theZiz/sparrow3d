@@ -80,9 +80,11 @@
   #define SP_BUTTON_R 5
   #define SP_BUTTON_START 6
   #define SP_BUTTON_TIP 7
-  #define SP_BUTTON_SELECT 7
-  #define SP_BUTTON_VOLPLUS 8
-  #define SP_BUTTON_VOLMINUS 9
+  //SELECT == HELP I
+  #define SP_BUTTON_SELECT 8
+  //the Caanoo has a hardware volume control...
+  #define SP_BUTTON_VOLPLUS 18
+  #define SP_BUTTON_VOLMINUS 19
   #define SP_PRACTICE_OK SP_BUTTON_B
 #else //PC and DINGOO and PANDORA
   #define SP_BUTTON_START 8
@@ -99,7 +101,7 @@
   #define SP_PRACTICE_OK SP_BUTTON_A
 #endif
 
-#ifdef GP2X
+#ifdef F100
   #define SP_BUTTON_START_NAME "Start"
   #define SP_BUTTON_SELECT_NAME "Select"
   #define SP_BUTTON_A_NAME "A"
@@ -108,9 +110,18 @@
   #define SP_BUTTON_Y_NAME "Y"
   #define SP_PAD_NAME "D-Pad"
   #define SP_PRACTICE_OK_NAME SP_BUTTON_B_NAME
-#elif defined CAANOO
-  #define SP_BUTTON_START_NAME "Start"
+#elif defined WIZ
+  #define SP_BUTTON_START_NAME "Menu"
   #define SP_BUTTON_SELECT_NAME "Select"
+  #define SP_BUTTON_A_NAME "A"
+  #define SP_BUTTON_B_NAME "B"
+  #define SP_BUTTON_X_NAME "X"
+  #define SP_BUTTON_Y_NAME "Y"
+  #define SP_PAD_NAME "D-Pad"
+  #define SP_PRACTICE_OK_NAME SP_BUTTON_B_NAME
+#elif defined CAANOO
+  #define SP_BUTTON_START_NAME "Home"
+  #define SP_BUTTON_SELECT_NAME "Help I"
   #define SP_BUTTON_A_NAME "A"
   #define SP_BUTTON_B_NAME "B"
   #define SP_BUTTON_X_NAME "X"

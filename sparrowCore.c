@@ -94,7 +94,7 @@ inline void spResizeWindow(int x,int y)
     SDL_FreeSurface(surface);
   #elif defined DINGOO
     spScreen=NULL;
-    spWindow=SDL_SetVideoMode(x,y,16,SDL_SWSURFACE);
+    spWindow=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_FULLSCREEN);
   #elif defined PANDORA
     spScreen=NULL;
     spWindow=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
@@ -411,6 +411,10 @@ inline int spHandleEvent(void)
         break;
     }
   }
+  #ifdef CAANOO
+    spInput.button[SP_BUTTON_VOLPLUS] = 0;
+    spInput.button[SP_BUTTON_VOLMINUS] = 0;
+  #endif
   return result;
 }
 
