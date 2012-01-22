@@ -1,3 +1,0 @@
-#!/bin/sh
-./testengine
-cd /usr/gp2x; ./gp2xmenu

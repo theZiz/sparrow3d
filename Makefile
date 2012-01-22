@@ -1,6 +1,8 @@
 #==Use if to slow!==
 # -DFAST_BUT_UGLY <- could crash, uses possibly memory (just reading) Try always to have some border pixels to your textures if using!
 # -DFAST_BUT_UGLY_2
+#==stuff linked to
+DYNAMIC = -lSDL_ttf -lSDL_image -lSDL -lm
 #==global Flags. Even on the gp2x with 16 kb Cache, -O3 is much better then -Os
 CFLAGS = -O3 -fsingle-precision-constant -fPIC 
 CFLAGS_ASM = -O2 -fsingle-precision-constant -fPIC
@@ -11,9 +13,16 @@ CPP = gcc -g -march=native -DX86CPU $(GENERAL_TWEAKS)
 SDL = `sdl-config --cflags`
 #==Consoles==
 #==GP2X/WIZ==
-#ORIGINALFW = -static -lfreetype -lpng -lpthread -lz -ljpeg -lm -s
+ifeq ($(TARGET),open2x)
+CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 $(GENERAL_TWEAKS) -DFAST_BUT_UGLY_2 
+SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags`
+INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
+LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib
+endif
 ifeq ($(TARGET),gp2x)
 CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 $(GENERAL_TWEAKS) -DFAST_BUT_UGLY_2 
+STATIC = -Wl,-Bstatic -lSDL -lm -Wl,-Bdynamic
+DYNAMIC = -lSDL_image -lSDL_ttf -lfreetype -lpng -lz -ljpeg
 SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags`
 INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
 LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib
@@ -61,22 +70,22 @@ endif
 all: sparrow3d testsparrow
 
 targets:
-	@echo "gp2x (=wiz), caanoo, dingoo, pandora, maemo5, maemo6"
+	@echo "gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingoo, pandora, maemo5, maemo6"
 
 testsparrow: testsparrow.c sparrow3d
-	$(CPP) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) -L. $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm -lsparrow3d $(ORIGINALFW) -o testsparrow
+	$(CPP) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) -L. $(LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testsparrow
 
 sparrow3d: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o
-	$(CPP) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -o libsparrow3d.so sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowPrimitivesAsm.o sparrowRenderer.o $(SDL) $(INCLUDE) $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm $(ORIGINALFW)
+	$(CPP) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -o libsparrow3d.so sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowPrimitivesAsm.o sparrowRenderer.o $(SDL) $(INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
 sparrowCore.o: sparrowCore.c sparrowCore.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE)
 
 sparrowPrimitives.o: sparrowPrimitives.c sparrowPrimitives.h
-	$(CPP) $(CFLAGS)  -c sparrowPrimitives.c $(SDL) $(INCLUDE)
+	$(CPP) $(CFLAGS) -fPIC -c sparrowPrimitives.c $(SDL) $(INCLUDE)
 
 sparrowPrimitivesAsm.o: sparrowPrimitivesAsm.c sparrowPrimitives.h
-	$(CPP) $(CFLAGS)  -fsingle-precision-constant -fPIC -c sparrowPrimitivesAsm.c $(SDL) $(INCLUDE)
+	$(CPP) $(CFLAGS) -fsingle-precision-constant -fPIC -c sparrowPrimitivesAsm.c $(SDL) $(INCLUDE)
 
 sparrowRenderer.o: sparrowRenderer.c sparrowRenderer.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowRenderer.c $(SDL) $(INCLUDE)
@@ -94,18 +103,3 @@ clean:
 	rm *.o
 	rm libsparrow3d.so
 	rm testsparrow
-
-testengine: testengine.c meshloader.o 3dengine.o graphicstuff.o graphicstuff-asm.o
-	$(CPP) $(CFLAGS) testengine.c 3dengine.o graphicstuff.o meshloader.o graphicstuff-asm.o $(SDL) $(INCLUDE) $(LIB) -lSDL_ttf -lSDL_image -lSDL -lm $(ORIGINALFW) -o testengine
-
-meshloader.o: meshloader.c meshloader.h 3dengine.o
-	$(CPP) $(CFLAGS) -c meshloader.c $(SDL) $(INCLUDE)
-
-3dengine.o: 3dengine.c 3dengine.h graphicstuff.o
-	$(CPP) $(CFLAGS) -c 3dengine.c -w $(SDL) $(INCLUDE)
-
-graphicstuff.o: graphicstuff.c graphicstuff.h
-	$(CPP) $(CFLAGS) -c graphicstuff.c $(SDL) $(INCLUDE)
-
-graphicstuff-asm.o: graphicstuff-asm.c graphicstuff.h
-	$(CPP) $(CFLAGS_ASM) -c graphicstuff-asm.c $(SDL) $(INCLUDE)
