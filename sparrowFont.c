@@ -278,8 +278,7 @@ PREFIX void spFontDraw(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font)
       pos+=letter->width-(letter->width>>1);
     }
     l++;
-  }
-  
+  }  
 }
 
 PREFIX void spFontDrawRight(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font)
@@ -316,7 +315,9 @@ PREFIX void spFontDrawRight(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer 
     pos+=first->letter->width>>1;
     spBlitSurface(pos,y+first->letter->height/2,z,first->letter->surface);
     pos+=first->letter->width-(first->letter->width>>1);
+    spLetterIterPointer mom = first;
     first = first->next;
+    free(mom);
   }
 }
 
@@ -354,7 +355,9 @@ PREFIX void spFontDrawMiddle(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer
     pos+=first->letter->width>>1;
     spBlitSurface(pos,y+first->letter->height/2,z,first->letter->surface);
     pos+=first->letter->width-(first->letter->width>>1);
+    spLetterIterPointer mom = first;
     first = first->next;
+    free(mom);
   }
 }
 
