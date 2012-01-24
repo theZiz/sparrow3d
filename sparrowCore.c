@@ -29,7 +29,7 @@ int spWindowY;
 int spZoom;
 SDL_Surface* spScreen; //the real screen
 SDL_Surface* spWindow; //the thing we draw to
-SDL_Joystick *spJoy = NULL;
+SDL_Joystick **spJoy = NULL;
 char spDone;
 int spFPS;
 TspInput spInput;
@@ -54,14 +54,21 @@ PREFIX void spInitCore(void)
   #endif 
   spZoom=1<<SP_ACCURACY;
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO/* | SDL_INIT_NOPARACHUTE*/); 
+  int i;
   #ifdef MOBILE_DEVICE
-    spJoy=SDL_JoystickOpen(0);
+  if (SDL_NumJoysticks() > 0)
+  {
+    spJoy = (SDL_Joystick**)malloc(SDL_NumJoysticks()*sizeof(SDL_Joystick*));
+    for (i = 0; i < SDL_NumJoysticks(); i++);
+      spJoy[i] = SDL_JoystickOpen(0);
+  }
+  else
+    spJoy = NULL;
   #endif
   spScreen = NULL;
   spWindow = NULL;
   spDone = 0;
   spFPS = 0;
-  int i;
   for (i=0;i<20;i++)
     spInput.button[i]=0;
   spInput.axis[0]=0;
@@ -383,7 +390,7 @@ inline int spHandleEvent(void)
         }
         break;
       case SDL_JOYAXISMOTION:
-        if (event.jaxis.axis==0)
+        if (!(event.jaxis.axis & 1))
         {
           if (event.jaxis.value<SP_JOYSTICK_MIN)
             spInput.axis[event.jaxis.axis]=-1;
@@ -392,7 +399,7 @@ inline int spHandleEvent(void)
           else
             spInput.axis[event.jaxis.axis]= 0;
         }
-        if (event.jaxis.axis==1)
+        if (event.jaxis.axis & 1)
         {
           if (event.jaxis.value<SP_JOYSTICK_MIN)
             spInput.axis[event.jaxis.axis]= 1;
@@ -640,7 +647,13 @@ PREFIX PspInput spGetInput(void)
 PREFIX void spQuitCore(void)
 {
   #ifdef MOBILE_DEVICE
-    SDL_JoystickClose(spJoy);
+  if (SDL_NumJoysticks() > 0)
+  {
+    int i;
+    for (i = 0; i < SDL_NumJoysticks(); i++);
+      SDL_JoystickClose(spJoy[i]);
+    free(spJoy);
+  }
   #endif
   SDL_Quit();
 }
