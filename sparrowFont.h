@@ -37,7 +37,6 @@ typedef struct spLetterStruct_
   Sint32 height; //the character's height
   Sint32 binary_height; //NOT the height of the letter! just for the binary tree
   Uint16 color;
-  Sint32 counter; //How often is this letter used?
   spLetterPointer left,right; //smaller and bigger character
   spLetterPointer next; //For the Drawing functions
 } spLetterStruct;
@@ -54,8 +53,6 @@ typedef struct spFontCacheStruct
 {
   Uint32 size;
   spLetterPointer *cache;
-  Uint32 counter;
-  Uint8 size_div;
 } spFontCacheStruct;
 
 /*root of a binary tree of all letters in this font*/
@@ -93,5 +90,9 @@ PREFIX void spFontDrawMiddle(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer
 PREFIX void spFontDelete(spFontPointer font);
 
 PREFIX void spFontChangeCacheSize(spFontPointer font, Sint32 size);
+
+PREFIX void spFontSetCacheStart(spFontPointer font, Sint32 letter);
+
+PREFIX Sint32 spFontGetCacheStart(spFontPointer font);
 
 #endif

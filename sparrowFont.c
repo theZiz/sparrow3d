@@ -238,30 +238,15 @@ PREFIX spLetterPointer spFontGetLetter(spFontPointer font,Uint32 character)
   //Caching
   if (character >= font->cacheOffset && character < font->cacheOffset+font->cache.size)
   {
-    font->cache.counter++;
     spLetterPointer result = font->cache.cache[character-font->cacheOffset];
     if (result != (void*)(0xFFFFFFFF)) //Found
-    {
-      if (result)
-        result->counter++;
       return result;
-    }
     //Else: Save in Cache
     result = spLetterFind(font->root,character);
     font->cache.cache[character-font->cacheOffset] = result;
     return result;
   }
-  spLetterPointer result = spLetterFind(font->root,character);
-  if (result)
-  {
-    result->counter++;
-    if (result->counter > font->cache.counter >> font->cache.size_div)
-    {
-      font->cacheOffset = (character >> font->cache.size_div) << font->cache.size_div;
-      memset(font->cache.cache,0xFF,font->cache.size*sizeof(spLetterPointer));
-    }
-  }
-  return result;
+  return spLetterFind(font->root,character);
 }
 
 PREFIX void spFontDraw(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font)
@@ -388,4 +373,15 @@ PREFIX void spFontChangeCacheSize(spFontPointer font, Sint32 size)
   font->cache.size = size;
   font->cache.cache = (spLetterPointer*)malloc(font->cache.size*sizeof(spLetterPointer));
   memset(font->cache.cache,0xFF,font->cache.size*sizeof(spLetterPointer));
+}
+
+PREFIX void spFontSetCacheStart(spFontPointer font, Sint32 letter)
+{
+  font->cacheOffset = letter;
+  memset(font->cache.cache,0xFF,font->cache.size*sizeof(spLetterPointer));  
+}
+
+PREFIX Sint32 spFontGetCacheStart(spFontPointer font)
+{
+  return font->cacheOffset;
 }
