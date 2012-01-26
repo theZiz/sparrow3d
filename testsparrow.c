@@ -26,6 +26,7 @@ SDL_Surface* pepper;
 spModelPointer mesh;
 Sint32 rotation = 0;
 spFontPointer font = NULL;
+int quality=1;
 
 void draw_test(void)
 {
@@ -33,9 +34,13 @@ void draw_test(void)
   spClearTarget(0);
   spIdentity();
   
+  spSetZSet(1);
+  spSetZTest(1);
+  spSetAlphaTest(0);
+  spSetAffineTextureHack(quality);
   
   //spTranslate(spSin(rotation>>2)*8,0,(-18<<SP_ACCURACY)+spSin(rotation)*8);
-  spTranslate(0,0,-20<<SP_ACCURACY);
+  /*spTranslate(0,0,-20<<SP_ACCURACY);
   spRotateY(rotation);
   
   spBindTexture(garfield);
@@ -66,11 +71,10 @@ void draw_test(void)
                   3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,color);
       
     }
-  }
+  }*/
 
-  /*
-
-  spTranslate(spSin(rotation/3),spSin(rotation/5),(-5<<SP_ACCURACY));
+  
+  spTranslate(spSin(rotation/3),spSin(rotation/5),(-7<<SP_ACCURACY));
   spRotateX(rotation);
   spRotateY(rotation);
   spRotateZ(rotation);
@@ -130,10 +134,14 @@ void draw_test(void)
            -1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,
             1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,
             1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,61234 | 31727);
-    */          
-
+    
   spSetZSet(0);
   spSetZTest(0);
+  spSetAlphaTest(1);
+  if (quality)
+    spFontDraw(0,screen->h-font->maxheight,-1,"Affine Hack",font);
+  else
+    spFontDraw(0,screen->h-font->maxheight,-1,"Bad Affine",font);
   spFontDrawMiddle(screen->w/2,2,-1,"Yo dawg, hello World!!!",font);
   char buffer[16];
   sprintf(buffer,"fps: %i",spGetFPS());
@@ -157,6 +165,11 @@ int calc_test(Uint32 steps)
       return 1;
   }
   rotation+=steps*32;
+  if (spGetInput()->button[SP_BUTTON_A])
+  {
+    spGetInput()->button[SP_BUTTON_A] = 0;
+    quality = 1-quality;
+  }
   if (spGetInput()->button[SP_BUTTON_START])
     return 1;
   return 0; 

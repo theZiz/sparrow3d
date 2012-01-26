@@ -7,8 +7,8 @@ Roadmap:
   - up to 8 lights (openGL like)
     - using in the spRender in all Render-functions
   - one white default light at (0,0,0)
+- z Buffer Caching (if changing the Render Target)
 
 Nice to have:
-- better Quads 
 - cool intro with sparrows
 - ponies => rainbow dash would make my engine 20% cooler...

@@ -53,8 +53,13 @@ PREFIX void spSetZTest(Uint32 test);
 /* (De)Activates the Z set (default on)*/
 PREFIX void spSetZSet(Uint32 test);
 
-/* (De)Activates the Alpha test (default off)*/
+/* (De)Activates the Alpha test (default on)*/
 PREFIX void spSetAlphaTest(Uint32 test);
+
+/* The Texture Rendering is fast - and a bit wrong. It is affine. To
+ * reduce the effect, activate this dirty hack. It could be a bit
+ * slower. Only affects Quads. (default on) */
+PREFIX void spSetAffineTextureHack(Uint32 test);
 
 /* Clears the Rendertarget with the color. But attention: The z Buffer will
  * not be cleaned! */

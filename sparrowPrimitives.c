@@ -29,6 +29,7 @@ Uint16* spTexturePixel = NULL;
 Uint32 spZTest = 1;
 Uint32 spZSet = 1;
 Uint32 spAlphaTest = 1;
+Uint32 spQuadQuali = 1;
 Sint32* spZBuffer = NULL;
 SP_SingedInt16 spTargetX = 0;
 SP_SingedInt16 spTargetY = 0;
@@ -2859,13 +2860,6 @@ PREFIX void spQuad(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt
 {
   spTriangle(x1,y1,z1,x2,y2,z2,x3,y3,z3,color);
   spTriangle(x1,y1,z1,x3,y3,z3,x4,y4,z4,color);
-  /*SP_SingedInt16 mx = x1+x2+x3+x4>>2;
-  SP_SingedInt16 my = y1+y2+y3+y4>>2;
-  Sint32 mz = (z1>>2)+(z2>>2)+(z3>>2)+(z4>>2);
-  spTriangle(mx,my,mz,x1,y1,z1,x2,y2,z2,color);
-  spTriangle(mx,my,mz,x2,y2,z2,x3,y3,z3,color);
-  spTriangle(mx,my,mz,x3,y3,z3,x4,y4,z4,color);
-  spTriangle(mx,my,mz,x4,y4,z4,x1,y1,z1,color);*/
 }
 
 inline void sp_intern_Quad_tex_ztest_zset(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_SingedInt16 x4, SP_SingedInt16 y4, Sint32 z4, SP_SingedInt16 u4, SP_SingedInt16 v4, SP_UnsingedInt16 color)
@@ -3123,164 +3117,27 @@ inline void sp_intern_Quad_tex_ztest_zset(SP_SingedInt16 x1, SP_SingedInt16 y1, 
 
 PREFIX void spQuad_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_SingedInt16 x4, SP_SingedInt16 y4, Sint32 z4, SP_SingedInt16 u4, SP_SingedInt16 v4, SP_UnsingedInt16 color)
 {
-  spTriangle_tex(x1,y1,z1,u1,v1,
-                 x2,y2,z2,u2,v2,
-                 x3,y3,z3,u3,v3,color);
-  spTriangle_tex(x1,y1,z1,u1,v1,
-                 x3,y3,z3,u3,v3,
-                 x4,y4,z4,u4,v4,color);
-  
-  /*int smallest = 1; //y1
-  if (y2 < y1)
+  if (spQuadQuali)
   {
-    if (y2 < y3)
-    {
-      if (y2 < y4)
-        smallest = 2;
-      else
-        smallest = 4;
-    }
-    else
-    {
-      if (y3 < y4)
-        smallest = 3;
-      else
-        smallest = 4;
-    }
-  } 
-  else
-  {
-    if (y1 < y3)
-    {
-      if (y1 < y4)
-        smallest = 1;
-      else
-        smallest = 4;
-    }
-    else
-    {
-      if (y3 < y4)
-        smallest = 3;
-      else
-        smallest = 4;
-    }
-  }
-  Sint32 temp;
-  switch (smallest)
-  {
-    case 2: //shift to the left
-      temp = x1;
-      x1 = x2;
-      x2 = x3;
-      x3 = x4;
-      x4 = temp;
-      temp = y1;
-      y1 = y2;
-      y2 = y3;
-      y3 = y4;
-      y4 = temp;
-      temp = z1;
-      z1 = z2;
-      z2 = z3;
-      z3 = z4;
-      z4 = temp;
-      temp = u1;
-      u1 = u2;
-      u2 = u3;
-      u3 = u4;
-      u4 = temp;
-      temp = v1;
-      v1 = v2;
-      v2 = v3;
-      v3 = v4;
-      v4 = temp;
-    break;
-    case 3: //Mirror (switch of 3 and 1)
-      temp = x1;
-      x1 = x3;
-      x3 = temp;
-      temp = y1;
-      y1 = y3;
-      y3 = temp;
-      temp = z1;
-      z1 = z3;
-      z3 = temp;
-      temp = u1;
-      u1 = u3;
-      u3 = temp;
-      temp = v1;
-      v1 = v3;
-      v3 = temp;
-    break;
-    case 4: //shift to the right
-      temp = x4;
-      x4 = x3;
-      x3 = x2;
-      x2 = x1;
-      x1 = temp;
-      temp = y4;
-      y4 = y3;
-      y3 = y2;
-      y2 = y1;
-      y1 = temp;
-      temp = z4;
-      z4 = z3;
-      z3 = z2;
-      z2 = z1;
-      z1 = temp;
-      temp = u4;
-      u4 = u3;
-      u3 = u2;
-      u2 = u1;
-      u1 = temp;
-      temp = v4;
-      v4 = v3;
-      v3 = v2;
-      v2 = v1;
-      v1 = temp;
-    break;
-  }
-  //we say, that all quads are convex! So p2 or p4 is the nearest point to p1
-  //Furthermore we define, that it should be p2, e.g.
-  // p1        p1
-  // | \       | \
-  // p2 \      p2 \
-  //  \  \      \  p4
-  //   p3 \      \/
-  //    '~.p4    p3
-  if (y2 > y4) //Mirror p2 and p4
-  {
-    temp = x2;
-    x2 = x4;
-    x4 = temp;
-    temp = y2;
-    y2 = y4;
-    y4 = temp;
-    temp = z2;
-    z2 = z4;
-    z4 = temp;
-    temp = u2;
-    u2 = u4;
-    u4 = temp;
-    temp = v2;
-    v2 = v4;
-    v4 = temp;
-  }  
-  
-  if (spZSet)
-  {
-    if (spZTest)
-      sp_intern_Quad_tex_ztest_zset(x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,x4,y4,z4,u4,v4,color);
-    else
-      sp_intern_Triangle_tex_zset      (x1,y1,z1,u1,v1,x3,y3,z3,u3,v3,x2,y2,z2,u2,v2,color);
+    SP_SingedInt16 mx = x1+x2+x3+x4>>2;
+    SP_SingedInt16 my = y1+y2+y3+y4>>2;
+    SP_SingedInt16 mu = u1+u2+u3+u4>>2;
+    SP_SingedInt16 mv = v1+v2+v3+v4>>2;
+    Sint32 mz = (z1>>2)+(z2>>2)+(z3>>2)+(z4>>2);
+    spTriangle_tex(mx,my,mz,mu,mv,x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,color);
+    spTriangle_tex(mx,my,mz,mu,mv,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,color);
+    spTriangle_tex(mx,my,mz,mu,mv,x3,y3,z3,u3,v3,x4,y4,z4,u4,v4,color);
+    spTriangle_tex(mx,my,mz,mu,mv,x4,y4,z4,u4,v4,x1,y1,z1,u1,v1,color);
   }
   else
   {
-    if (spZTest)
-      sp_intern_Triangle_tex_ztest     (x1,y1,z1,u1,v1,x3,y3,z3,u3,v3,x2,y2,z2,u2,v2,color);
-    else
-      sp_intern_Triangle_tex           (x1,y1,z1,u1,v1,x3,y3,z3,u3,v3,x2,y2,z2,u2,v2,color);
-  }*/
+    spTriangle_tex(x1,y1,z1,u1,v1,
+                   x2,y2,z2,u2,v2,
+                   x3,y3,z3,u3,v3,color);
+    spTriangle_tex(x1,y1,z1,u1,v1,
+                   x3,y3,z3,u3,v3,
+                   x4,y4,z4,u4,v4,color);
+  }
 }
 
 PREFIX void spReAllocateZBuffer()
@@ -3316,6 +3173,11 @@ PREFIX void spSetZSet(Uint32 test)
 PREFIX void spSetAlphaTest(Uint32 test)
 {
   spAlphaTest = test;
+}
+
+PREFIX void spSetAffineTextureHack(Uint32 test)
+{
+  spQuadQuali = test;
 }
 
 #ifndef ARMCPU
