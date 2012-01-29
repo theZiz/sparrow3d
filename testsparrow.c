@@ -27,6 +27,8 @@ spModelPointer mesh;
 Sint32 rotation = 0;
 spFontPointer font = NULL;
 int quality=1;
+Uint32 fpssum = 0;
+Sint32 divisor = -5000;
 
 void draw_test(void)
 {
@@ -40,7 +42,7 @@ void draw_test(void)
   spSetAffineTextureHack(quality);
   
   //spTranslate(spSin(rotation>>2)*8,0,(-18<<SP_ACCURACY)+spSin(rotation)*8);
-  /*spTranslate(0,0,-20<<SP_ACCURACY);
+  spTranslate(0,0,-20<<SP_ACCURACY);
   spRotateY(rotation);
   
   spBindTexture(garfield);
@@ -56,25 +58,25 @@ void draw_test(void)
     Uint16 color = ((brightness>>SP_ACCURACY-4)<<11)+((brightness>>SP_ACCURACY-5)<<5)+(brightness>>SP_ACCURACY-4);
     for (y = -21; y<=21; y+=7)
     {
-      if ((y*a) & 3)
+      //if ((y*a) & 3)
         spQuadTex3D(-3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,SP_FONT_EXTRASPACE,SP_FONT_EXTRASPACE,
                     -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,1,garfield->h-SP_FONT_EXTRASPACE-1,
                      3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-SP_FONT_EXTRASPACE-1,garfield->h-SP_FONT_EXTRASPACE-1,
                      3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-SP_FONT_EXTRASPACE-1,SP_FONT_EXTRASPACE,color);
-      else
-      if ((y*a) & 4)
-        spBlit3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,pepper);
-      else
-        spQuad3D(-3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
-                 -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
-                  3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
-                  3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,color);
+      //else
+      //if ((y*a) & 4)
+      //  spBlit3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,pepper);
+      //else
+      //  spQuad3D(-3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
+      //           -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
+      //            3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
+      //            3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,color);
       
     }
-  }*/
+  }
 
   
-  spTranslate(spSin(rotation/3),spSin(rotation/5),(-7<<SP_ACCURACY));
+  /*spTranslate(spSin(rotation/3),spSin(rotation/5),(-7<<SP_ACCURACY));
   spRotateX(rotation);
   spRotateY(rotation);
   spRotateZ(rotation);
@@ -133,7 +135,7 @@ void draw_test(void)
   spQuad3D(-1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,
            -1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,
             1<<SP_ACCURACY,-1<<SP_ACCURACY,-1<<SP_ACCURACY,
-            1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,61234 | 31727);
+            1<<SP_ACCURACY,-1<<SP_ACCURACY, 1<<SP_ACCURACY,61234 | 31727);*/
     
   spSetZSet(0);
   spSetZTest(0);
@@ -144,14 +146,14 @@ void draw_test(void)
     spFontDraw(0,screen->h-font->maxheight,-1,"Bad Affine",font);
   spFontDrawMiddle(screen->w/2,2,-1,"Yo dawg, hello World!!!",font);
   char buffer[16];
+  sprintf(buffer,"%02i:%02i",divisor/60000,(divisor/1000)%60);
+  spFontDrawMiddle(screen->w/2,screen->h-font->maxheight,-1,buffer,font);
   sprintf(buffer,"fps: %i",spGetFPS());
   spFontDrawRight(screen->w,screen->h-font->maxheight,-1,buffer,font);
   
   spFlip();
 }
 
-Uint32 fpssum = 0;
-Sint32 divisor = -5000;
 
 int calc_test(Uint32 steps)
 {
@@ -161,7 +163,7 @@ int calc_test(Uint32 steps)
     divisor++;
     if (divisor>0)
       fpssum+=spGetFPS();
-    if (divisor == 600000)
+    if (divisor == 60000)
       return 1;
   }
   rotation+=steps*32;

@@ -6,8 +6,18 @@ DYNAMIC = -lSDL_ttf -lSDL_image -lSDL -lm
 #==global Flags. Even on the gp2x with 16 kb Cache, -O3 is much better then -Os
 CFLAGS = -O3 -fsingle-precision-constant -fPIC 
 CFLAGS_ASM = -O2 -fsingle-precision-constant -fPIC
-# Testtweaks: -fgcse-lm -fgcse-sm -fsched-spec-load -fmodulo-sched -funsafe-loop-optimizations -Wunsafe-loop-optimizations -fgcse-las -fgcse-after-reload -fvariable-expansion-in-unroller -ftracer -fbranch-target-load-optimize
-GENERAL_TWEAKS = -ffast-math -DFAST_BUT_UGLY_2 -fgcse-lm -fgcse-sm -fsched-spec-load -fmodulo-sched -funsafe-loop-optimizations -Wunsafe-loop-optimizations -fgcse-las -fgcse-after-reload -fvariable-expansion-in-unroller -ftracer -fbranch-target-load-optimize
+# Testtweaks: -fgcse-lm -fgcse-sm -fsched-spec-load -fmodulo-sched -funsafe-loop-optimizations -Wunsafe-loop-optimizations -fgcse-las -fvariable-expansion-in-unroller -ftracer -fbranch-target-load-optimize
+GENERAL_TWEAKS = -ffast-math -DFAST_BUT_UGLY_2 -fgcse-sm -fsched-spec-load -fmodulo-sched -funsafe-loop-optimizations -Wunsafe-loop-optimizations -fgcse-las -fvariable-expansion-in-unroller -ftracer
+# some FPS values from my netbook @ 360 Mhz
+# nothing special avg 46.0 peak 46.9
+#-fgcse-las avg 46.0 peak 46.7
+#-fgcse-sm avg 46.0 peak 46.3
+#-fsched-spec-load avg 46.1 peak 46.6
+#-fmodulo-sched avg 46.1 peak 46.6
+#-funsafe-loop-optimizations -Wunsafe-loop-optimizations avg 46.0 peak 47.1
+#-fvariable-expansion-in-unroller avg 46.5 peak 46.2
+#-ftracer avg 47.2 peak 46.1
+# all avg 46.7 peak 47.8
 #==PC==
 CPP = gcc -g -march=native -DX86CPU $(GENERAL_TWEAKS)
 SDL = `sdl-config --cflags`
