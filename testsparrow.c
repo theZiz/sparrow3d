@@ -42,14 +42,66 @@ void draw_test(void)
   spSetAffineTextureHack(quality);
   
   //spTranslate(spSin(rotation>>2)*8,0,(-18<<SP_ACCURACY)+spSin(rotation)*8);
-  spTranslate(0,0,-20<<SP_ACCURACY);
-  spRotateY(rotation);
-  
   spBindTexture(garfield);
-  spSetCulling(0);
+  spSetCulling(1);
   spSetZSet(1);
   spSetZTest(1);
-  spSetAlphaTest(1);
+  spSetAlphaTest(0);
+  spTranslate(0,0,(-10<<SP_ACCURACY)+spSin(rotation*4)*4);  
+  int x,y;
+  for (x = -5; x <= 5; x++)
+    for (y = -3; y<= 3; y++)
+    {
+      Sint32 matrix[16];
+      memcpy(matrix,spGetMatrix(),16*sizeof(Sint32));
+      spTranslate(x<<SP_ACCURACY+1,y<<SP_ACCURACY+1,0);
+      if (x+y & 1)
+      {
+        spQuad3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY, 0,
+                 -1<<SP_ACCURACY,-1<<SP_ACCURACY, 0,
+                  1<<SP_ACCURACY,-1<<SP_ACCURACY, 0,
+                  1<<SP_ACCURACY, 1<<SP_ACCURACY, 0,32767);
+        //spQuadTex3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY, 0,SP_FONT_EXTRASPACE,SP_FONT_EXTRASPACE,
+        //            -1<<SP_ACCURACY,-1<<SP_ACCURACY, 0,1,garfield->h-SP_FONT_EXTRASPACE-1,
+        //             1<<SP_ACCURACY,-1<<SP_ACCURACY, 0,garfield->w-SP_FONT_EXTRASPACE-1,garfield->h-SP_FONT_EXTRASPACE-1,
+        //             1<<SP_ACCURACY, 1<<SP_ACCURACY, 0,garfield->w-SP_FONT_EXTRASPACE-1,SP_FONT_EXTRASPACE,65535);        
+      }
+      else
+      {
+        spQuad3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,
+                 -1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,
+                  1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,
+                  1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,65535);
+        //top
+        if (y<0)
+        spQuad3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,
+                  1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,
+                  1<<SP_ACCURACY, 1<<SP_ACCURACY, 0<<SP_ACCURACY,
+                 -1<<SP_ACCURACY, 1<<SP_ACCURACY, 0<<SP_ACCURACY,12345);
+        //bottom
+        if (y>0)
+        spQuad3D(-1<<SP_ACCURACY,-1<<SP_ACCURACY, 0<<SP_ACCURACY,
+                  1<<SP_ACCURACY,-1<<SP_ACCURACY, 0<<SP_ACCURACY,
+                  1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,
+                 -1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,23456);
+        //left
+        if (x>0)
+        spQuad3D(-1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,
+                 -1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,
+                 -1<<SP_ACCURACY, 1<<SP_ACCURACY, 0<<SP_ACCURACY,
+                 -1<<SP_ACCURACY,-1<<SP_ACCURACY, 0<<SP_ACCURACY,34567);
+        //right
+        if (x<0)
+        spQuad3D( 1<<SP_ACCURACY,-1<<SP_ACCURACY, 0<<SP_ACCURACY,
+                  1<<SP_ACCURACY, 1<<SP_ACCURACY, 0<<SP_ACCURACY,
+                  1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,
+                  1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,45678);
+      }
+      memcpy(spGetMatrix(),matrix,16*sizeof(Sint32));      
+    }
+  /*
+  spTranslate(0,0,-20<<SP_ACCURACY);  
+  spRotateY(rotation);
   int a,y;
   for (a = 0; a<16; a++)
   {
@@ -73,7 +125,7 @@ void draw_test(void)
       //            3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,color);
       
     }
-  }
+  }*/
 
   
   /*spTranslate(spSin(rotation/3),spSin(rotation/5),(-7<<SP_ACCURACY));
@@ -202,7 +254,6 @@ int main(int argc, char **argv)
   screen = spCreateWindow();
   resize(screen->w,screen->h);
   
-  
   //Textures loading
   garfield = spLoadSurface("./data/garfield.png");
   pepper = spLoadSurface("./data/pepper.png");
@@ -210,7 +261,6 @@ int main(int argc, char **argv)
   
   //Mesh loading
   mesh = spMeshLoadObj("./data/bam.obj",garfield);
-  
 
   //All glory the main loop
   spLoop(draw_test,calc_test,10,resize);
