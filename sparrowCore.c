@@ -55,16 +55,19 @@ PREFIX void spInitCore(void)
   spZoom=1<<SP_ACCURACY;
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO/* | SDL_INIT_NOPARACHUTE*/); 
   int i;
-  #ifdef MOBILE_DEVICE
+  spJoy = NULL;
+  //#ifdef MOBILE_DEVICE
+  printf("Found %i Joysticks\n", SDL_NumJoysticks());
   if (SDL_NumJoysticks() > 0)
   {
     spJoy = (SDL_Joystick**)malloc(SDL_NumJoysticks()*sizeof(SDL_Joystick*));
-    for (i = 0; i < SDL_NumJoysticks(); i++);
-      spJoy[i] = SDL_JoystickOpen(0);
+    for (i = 0; i < SDL_NumJoysticks(); i++)
+    {
+      spJoy[i] = SDL_JoystickOpen(i);
+      printf("  Opened Joystick %i (%s)\n",i,SDL_JoystickName(i));
+    }
   }
-  else
-    spJoy = NULL;
-  #endif
+  //#endif
   spScreen = NULL;
   spWindow = NULL;
   spDone = 0;
@@ -99,9 +102,11 @@ inline void spResizeWindow(int x,int y)
     SDL_Surface* surface=SDL_CreateRGBSurface(SDL_HWSURFACE,x,y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0);
     spWindow=SDL_DisplayFormat(surface);
     SDL_FreeSurface(surface);
-  #elif defined DINGOO
-    spScreen=NULL;
-    spWindow=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_FULLSCREEN);
+  #elif defined DINGUX
+    spScreen=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_FULLSCREEN);
+    SDL_Surface* surface=SDL_CreateRGBSurface(SDL_HWSURFACE,x,y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0);
+    spWindow=SDL_DisplayFormat(surface);
+    SDL_FreeSurface(surface);
   #elif defined PANDORA
     spScreen=NULL;
     spWindow=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
@@ -179,7 +184,7 @@ inline int spHandleEvent(void)
           case SDLK_DOWN:
             spInput.axis[1]=-1;
             break;
-          #ifdef DINGOO
+          #ifdef DINGUX
             case SDLK_RETURN:
               spInput.button[SP_BUTTON_START]=1;
               break;
@@ -295,7 +300,7 @@ inline int spHandleEvent(void)
             if (spInput.axis[1] == -1)
               spInput.axis[1]= 0;
             break;
-          #ifdef DINGOO
+          #ifdef DINGUX
             case SDLK_RETURN:
               spInput.button[SP_BUTTON_START]=0;
               break;
@@ -628,9 +633,12 @@ PREFIX void spFlip(void)
     SDL_BlitSurface(spWindow, NULL, spScreen, NULL);
   #elif defined PANDORA
     /*int arg = 0;
-    ioctl(fbdev, FBIO_WAITFORVSYNC, &arg);*/
+    ioctl(fbdev, FBIO_WAITFORVSYNC, &arg);*/    
     SDL_Flip(spWindow);
-  #else //PC, Dingoo and Pandora
+  #elif defined DINGUX
+    SDL_BlitSurface(spWindow, NULL, spScreen, NULL);
+    //SDL_Flip(spWindow);
+  #else //PC
     SDL_Flip(spWindow);
     //SDL_UpdateRect(spWindow, 0, 0, 0, 0);
   #endif
@@ -646,7 +654,7 @@ PREFIX PspInput spGetInput(void)
 
 PREFIX void spQuitCore(void)
 {
-  #ifdef MOBILE_DEVICE
+  //#ifdef MOBILE_DEVICE
   if (SDL_NumJoysticks() > 0)
   {
     int i;
@@ -654,7 +662,7 @@ PREFIX void spQuitCore(void)
       SDL_JoystickClose(spJoy[i]);
     free(spJoy);
   }
-  #endif
+  //#endif
   SDL_Quit();
 }
 

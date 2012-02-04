@@ -86,7 +86,7 @@
   #define SP_BUTTON_VOLPLUS 18
   #define SP_BUTTON_VOLMINUS 19
   #define SP_PRACTICE_OK SP_BUTTON_B
-#else //PC and DINGOO and PANDORA
+#else //PC and DINGUX and PANDORA
   #define SP_BUTTON_START 8
   #define SP_BUTTON_SELECT 9
   #define SP_BUTTON_L 10
@@ -128,7 +128,7 @@
   #define SP_BUTTON_Y_NAME "Y"
   #define SP_PAD_NAME "Stick"
   #define SP_PRACTICE_OK_NAME SP_BUTTON_B_NAME
-#elif defined DINGOO
+#elif defined DINGUX
   #define SP_BUTTON_START_NAME "Start"
   #define SP_BUTTON_SELECT_NAME "Select"
   #define SP_BUTTON_A_NAME "A"
