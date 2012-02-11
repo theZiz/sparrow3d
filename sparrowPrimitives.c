@@ -3657,3 +3657,8 @@ PREFIX void spBlitSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Si
     }
   }
 }
+
+void spCircleBillboard(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_UnsingedInt16 color)
+{
+  
+}

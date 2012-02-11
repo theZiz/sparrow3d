@@ -52,6 +52,13 @@ typedef struct spTriangleStruct {
   int edge[3]; //the update of the Edges status flag is optional!
 } spTriangleS;
 
+typedef struct spQuadStruct *spQuadPointer;
+typedef struct spQuadStruct {
+  int point[4];
+  int was_drawn; //shows (always), whether the quad was drawn the last time
+  int edge[4]; //the update of the Edges status flag is optional!
+} spQuadS;
+
 typedef struct spModelStruct *spModelPointer;
 typedef struct spModelStruct {
   SDL_Surface* texture;
@@ -61,6 +68,8 @@ typedef struct spModelStruct {
   spTexPointPointer texPoint; //points with u,v coordinates
   int triangleCount,texTriangleCount;
   spTrianglePointer triangle,texTriangle; //the triangles of the modell
+  int quadCount,texQuadCount;
+  spQuadPointer quad,texQuad; //the quads of the modell
   int edgeCount,texEdgeCount;
   spEdgePointer edge,texEdges; //the edges of the modell
 } spModel;

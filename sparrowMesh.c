@@ -34,7 +34,6 @@ int meshReadLine(char* buffer,SDL_RWops *file,int max) //Returns 0 at EOF, other
   return pos;
 }
 
-
 void meshParseVertex(char* buffer,spPointPointer point,int max)
 {
   point->x = 0;
@@ -122,7 +121,7 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture)
     SDL_RWops *file=SDL_RWFromFile(name,"rb");
     if (file == NULL)
       return NULL;
-    int vertexCount = 0,uvCount = 0,faceCount = 0, faceTexCount = 0;
+    int vertexCount = 0,uvCount = 0,triCount = 0, triTexCount = 0,quadCount = 0, quadTexCount = 0;
     while (meshReadLine(buffer,file,255))
     {
       if (buffer[0]=='v' && buffer[1]==' ')
@@ -133,16 +132,30 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture)
       {
         // searching"//"
         int pos = 2;
+        int count = 0;
         while (pos < 256 && buffer[pos]!=0)
         {
           if (buffer[pos]=='/' && buffer[pos-1]=='/')
             break;
           pos++;
         }
+        for (pos = 0; pos < 256 && buffer[pos]!=0; pos++)
+          if (buffer[pos]=='/')
+            count++;
         if (buffer[pos]=='/')
-          faceCount++;
+        {
+          if (count > 6)
+            quadCount++;
+          else
+            triCount++;
+        }
         else
-          faceTexCount++;
+        {
+          if (count > 6)
+            quadTexCount++;
+          else
+            triTexCount++;
+        }
       }
     }
     SDL_RWclose(file);
@@ -152,11 +165,17 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture)
     if (uvCount > 0)
       rawUV = (spTexPointPointer)malloc(sizeof(spTexPoint)*uvCount);
     spTrianglePointer triangles = NULL;
-    if (faceCount > 0)
-      triangles = (spTrianglePointer)malloc(sizeof(spTriangleS)*faceCount);
+    if (triCount > 0)
+      triangles = (spTrianglePointer)malloc(sizeof(spTriangleS)*triCount);
     spTrianglePointer texTriangles = NULL;
-    if (faceTexCount > 0)
-      texTriangles = (spTrianglePointer)malloc(sizeof(spTriangleS)*faceTexCount);
+    if (triTexCount > 0)
+      texTriangles = (spTrianglePointer)malloc(sizeof(spTriangleS)*triTexCount);
+    spQuadPointer quads = NULL;
+    if (quadCount > 0)
+      quads = (spQuadPointer)malloc(sizeof(spQuadS)*quadCount);
+    spQuadPointer texQuads = NULL;
+    if (quadTexCount > 0)
+      texQuads = (spQuadPointer)malloc(sizeof(spQuadS)*quadTexCount);
       
     
     //Reading
@@ -165,8 +184,10 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture)
       return NULL;
     vertexCount = 0;
     uvCount = 0;
-    faceCount = 0;
-    faceTexCount = 0;
+    triCount = 0;
+    triTexCount = 0;
+    quadCount = 0;
+    quadTexCount = 0;
     while (meshReadLine(buffer,file,255))
     {
       if (buffer[0]=='v' && buffer[1]==' ')
@@ -180,6 +201,11 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture)
         uvCount++;
       }
     }
+    ToDo: Faces lesen und
+    - entscheiden, ob Triangle, TriangleTex, Quad oder QuadTex
+    - Schauen, ob alle referenzierten Punktkombination (Punkt<->UV Kombo) schon
+      extieren. Im Zweifel hinzufügen. Dann Quad/Triangle hinzufügen
+    - Kantenliste erstellen
     SDL_RWclose(file);
 }
 
