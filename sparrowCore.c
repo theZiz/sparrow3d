@@ -663,6 +663,7 @@ PREFIX void spQuitCore(void)
     free(spJoy);
   }
   //#endif
+  spQuitPrimitives();
   SDL_Quit();
 }
 

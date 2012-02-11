@@ -47,7 +47,7 @@ void draw_test(void)
   spSetZSet(1);
   spSetZTest(1);
   spSetAlphaTest(0);
-  /*spTranslate(0,0,(-10<<SP_ACCURACY)+spSin(rotation*4)*4);  
+  spTranslate(0,0,(-10<<SP_ACCURACY)+spSin(rotation*4)*4);  
   int x,y;
   for (x = -5; x <= 5; x++)
     for (y = -3; y<= 3; y++)
@@ -98,7 +98,7 @@ void draw_test(void)
                   1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,45678);
       }
       memcpy(spGetMatrix(),matrix,16*sizeof(Sint32));      
-    }*/
+    }
   /*
   spTranslate(0,0,-20<<SP_ACCURACY);  
   spRotateY(rotation);

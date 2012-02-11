@@ -1,6 +1,7 @@
 Roadmap:
-- drawing a couple of points and polygons (meshs) at once
 - loading obj
+- drawing a couple of points and polygons (meshs) at once
+- functions for lines, circles, rectangles -> with linewidth!
 - reimplementation of light
   - spSetLight(value) in spRender like z-stuff
   - global Light as one function

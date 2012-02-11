@@ -201,11 +201,11 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture)
         uvCount++;
       }
     }
-    ToDo: Faces lesen und
+    /*ToDo: Faces lesen und
     - entscheiden, ob Triangle, TriangleTex, Quad oder QuadTex
     - Schauen, ob alle referenzierten Punktkombination (Punkt<->UV Kombo) schon
       extieren. Im Zweifel hinzufügen. Dann Quad/Triangle hinzufügen
-    - Kantenliste erstellen
+    - Kantenliste erstellen*/
     SDL_RWclose(file);
 }
 
