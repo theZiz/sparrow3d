@@ -37,6 +37,11 @@ SP_SingedInt16 spTextureX = 0;
 SP_SingedInt16 spTextureY = 0;
 Sint32 spTextureXY = 0;
 Sint32 spOne_over_x_look_up[1<<SP_PRIM_ACCURACY];
+Uint32 spZBufferCacheCount = 16;
+Uint32 spZBufferCacheLast;
+Sint32** spZBufferCache = NULL;
+SDL_Surface** spTargetCache = NULL;
+
 
 PREFIX Sint32* spGetOne_over_x_pointer()
 {
@@ -49,6 +54,19 @@ PREFIX void spInitPrimitives()
   for (i = 1; i < (1<<SP_PRIM_ACCURACY); i++)
     spOne_over_x_look_up[i] = (1<<SP_PRIM_ACCURACY)/i;
   spOne_over_x_look_up[0] = 0;
+  spSetZBufferCache(spZBufferCacheCount);
+}
+
+PREFIX void spQuitPrimitives()
+{
+  int cacheline;
+  for (cacheline = 0;cacheline < spZBufferCacheCount;cacheline++)
+    if (spZBufferCache[cacheline])  
+      free(spZBufferCache[cacheline]);
+  if (spZBufferCache)
+    free(spZBufferCache);
+  if (spTargetCache)
+    free(spTargetCache); 
 }
 
 PREFIX void spSelectRenderTarget(SDL_Surface* target)
@@ -3142,9 +3160,26 @@ PREFIX void spQuad_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_Singe
 
 PREFIX void spReAllocateZBuffer()
 {
-  if (spZBuffer)
-    free(spZBuffer);
-  spZBuffer = (Sint32*)malloc(spTargetX*spTargetY*sizeof(Sint32));
+  //in Cache?
+  int cacheline;
+  for (cacheline = 0;cacheline < spZBufferCacheCount;cacheline++)
+    if (spTargetCache[cacheline] == spTarget)
+      break;
+  
+  if (cacheline == spZBufferCacheCount) //not found
+  {
+    spZBufferCacheLast = (spZBufferCacheLast+1) % spZBufferCacheCount;
+    if (spZBufferCache[spZBufferCacheLast])
+      free(spZBufferCache[spZBufferCacheLast]);
+    spZBuffer = (Sint32*)malloc(spTargetX*spTargetY*sizeof(Sint32));    
+    spZBufferCache[spZBufferCacheLast] = spZBuffer;
+    spTargetCache[spZBufferCacheLast] = spTarget;
+  }
+  else
+  {
+    spZBuffer = spZBufferCache[cacheline];
+  }
+  
 }
 
 PREFIX void spResetZBuffer()
@@ -3661,4 +3696,18 @@ PREFIX void spBlitSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Si
 void spCircleBillboard(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_UnsingedInt16 color)
 {
   
+}
+
+PREFIX void spSetZBufferCache(Uint32 value)
+{
+  if (spZBufferCache)
+    free(spZBufferCache);
+  if (spTargetCache)
+    free(spTargetCache);
+  spZBufferCacheCount = value;
+  spZBufferCache = (Sint32**)malloc(sizeof(Sint32*)*spZBufferCacheCount);
+  spTargetCache = (SDL_Surface**)malloc(sizeof(SDL_Surface*)*spZBufferCacheCount);
+  memset(spZBufferCache,0,sizeof(Sint32*)*spZBufferCacheCount);
+  memset(spTargetCache,0,sizeof(SDL_Surface*)*spZBufferCacheCount);
+  spZBufferCacheLast = -1;
 }

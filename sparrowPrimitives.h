@@ -34,8 +34,12 @@
 #define SP_SingedInt16 Sint32
 #define SP_UnsingedInt16 Uint32
 
-/* Initializes some Look up tables. Is called from sparrowCore. */
+/* Initializes some Look up tables and the zBufferCache. Is called from
+ * sparrowCore. */
 PREFIX void spInitPrimitives();
+
+/* Releases stuff and frees memory. Is called from sparrowCore. */
+PREFIX void spQuitPrimitives();
 
 /* Returns a pointer th 1<<SP_PRIM_ACCURACY values of 1/x */
 PREFIX Sint32* spGetOne_over_x_pointer();
@@ -76,6 +80,12 @@ PREFIX void spQuad(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt
 
 /* Draws a Quad with texture and without alpha value */
 PREFIX void spQuad_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_SingedInt16 x4, SP_SingedInt16 y4, Sint32 z4, SP_SingedInt16 u4, SP_SingedInt16 v4, SP_UnsingedInt16 color);
+
+/* Cache ZBuffers. If you use many Render Targets every time you switch
+ * it the old ZBuffer will be destroyed and a new one created, which is
+ * slow. So I implemented this caching. The engine will hold as much
+ * zBuffer as you say. Default: 16*/
+PREFIX void spSetZBufferCache(Uint32 value);
 
 /* Reallocates the zBuffer. If you switch to a new Render Target, this function
  * is called */
