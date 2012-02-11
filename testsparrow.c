@@ -291,7 +291,7 @@ int main(int argc, char **argv)
   
   //Mesh loading
   //mesh = spMeshLoadObj("./data/bam.obj",garfield);
-  mesh = spMeshLoadObj("/tmp/foobar.obj",garfield,65535);
+  mesh = spMeshLoadObj("./data/foobar.obj",garfield,65535);
   
   //All glory the main loop
   spLoop(draw_test,calc_test,10,resize);
