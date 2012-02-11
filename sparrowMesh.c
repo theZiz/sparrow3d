@@ -34,6 +34,41 @@ int meshReadLine(char* buffer,SDL_RWops *file,int max) //Returns 0 at EOF, other
   return pos;
 }
 
+typedef struct spMeshTempStruct *spMeshTempPointer;
+typedef struct spMeshTempStruct {
+  Uint32 point;
+  Uint32 uv;
+  Uint32 nr;
+  spMeshTempPointer next;
+} spMeshTemp;
+
+Uint32 meshGetNumber(spMeshTempPointer* first,Uint32 point,Uint32 uv)
+{
+  spMeshTempPointer mom = *first;
+  Uint32 nr = -1;
+  while (mom != NULL)
+  {
+    if (mom->point == point && mom->uv == uv)
+      return mom->nr; //found!
+    mom = mom->next;
+  }
+  //not forund:
+  mom = (spMeshTempPointer)malloc(sizeof(spMeshTemp));
+  mom->point = point;
+  mom->uv = uv;
+  if (*first)
+  {
+    mom->nr = (*first)->nr+1;
+    mom->next = (*first);
+    (*first) = mom;
+    return mom->nr;
+  }
+  (*first) = mom;
+  mom->next = NULL;
+  mom->nr = 0;
+  return mom->nr;
+}
+
 void meshParseVertex(char* buffer,spPointPointer point,int max)
 {
   point->x = 0;
@@ -81,7 +116,7 @@ void meshParseVertex(char* buffer,spPointPointer point,int max)
   buffer[right]=oldc;
 }
 
-void meshParseUV(char* buffer,spTexPointPointer point,int max)
+void meshParseUV(char* buffer,spTexPointPointer point,int max,int texw,int texh)
 {
   point->u = 0;
   point->v = 0;
@@ -97,7 +132,7 @@ void meshParseUV(char* buffer,spTexPointPointer point,int max)
   char oldc = buffer[right];
   buffer[right] = 0;
   float number = atof(&(buffer[left]));
-  point->u = (int)(number*SP_ACCURACY_FACTOR);
+  point->u = (int)(number*(float)texw);
   buffer[right]=oldc;
   
   //second number
@@ -110,11 +145,64 @@ void meshParseUV(char* buffer,spTexPointPointer point,int max)
   oldc = buffer[right];
   buffer[right] = 0;
   number = atof(&(buffer[left]));
-  point->v = (int)(number*SP_ACCURACY_FACTOR);
+  point->v = (int)(number*(float)texh);
   buffer[right]=oldc;
 }
 
-PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture)
+int meshParseFace(char* buffer,int* face,int max) //3 triangle, 4 quad
+{
+  int count = 0;
+  //search ' ' after 'f'
+  int left = 0;
+  while (left < max && buffer[left]!=' ')
+    left++;
+  //now buffer[left] is the ' ' after 'f' before the first number
+  while (1)
+  {
+    left++;
+    int right=left+1;
+    while (right < max && buffer[right]!='/')
+      right++; 
+    //now buffer[right] is the '/' after the number
+    char oldc = buffer[right];
+    buffer[right] = 0;
+    face[count*3+0] = atoi(&(buffer[left]));
+    buffer[right]=oldc;
+    //second number?
+    if (buffer[right+1]!='/')
+    {
+      left = right+1;
+      right=left+1;
+      while (right < max && buffer[right]!='/')
+        right++; 
+      //now buffer[right] is the '/' after the number
+      oldc = buffer[right];
+      buffer[right] = 0;
+      face[count*3+1] = atoi(&(buffer[left]));
+      buffer[right]=oldc;
+      left = right+1;
+    }
+    else
+    {
+      face[count*3+1] = -1;
+      left = right+2;
+    }
+    right=left+1;
+    while (right < max && buffer[right]!=' ' && buffer[right]!='\n')
+      right++; 
+    //now buffer[right] is the sign after the number
+    oldc = buffer[right];
+    buffer[right] = 0;
+    face[count*3+2] = atoi(&(buffer[left]));
+    buffer[right]=oldc;
+    left = right;
+    count++;
+    if (buffer[left]=='\n' || buffer[left]==0 || left>=max)
+      return count;
+  }
+}
+
+PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture,Uint16 color)
 {
     char buffer[256];
     //Counting
@@ -131,17 +219,18 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture)
       if (buffer[0]=='f' && buffer[1]==' ')
       {
         // searching"//"
-        int pos = 2;
         int count = 0;
+        int pos;
+        for (pos = 2; pos < 256 && buffer[pos]!=0; pos++)
+          if (buffer[pos]=='/')
+            count++;
+        pos = 2;
         while (pos < 256 && buffer[pos]!=0)
         {
           if (buffer[pos]=='/' && buffer[pos-1]=='/')
             break;
           pos++;
-        }
-        for (pos = 0; pos < 256 && buffer[pos]!=0; pos++)
-          if (buffer[pos]=='/')
-            count++;
+        }            
         if (buffer[pos]=='/')
         {
           if (count > 6)
@@ -161,9 +250,10 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture)
     SDL_RWclose(file);
     //Getting memory
     spPointPointer rawPoints = (spPointPointer)malloc(sizeof(spPoint)*vertexCount);
-    spTexPointPointer rawUV = NULL;
+    spTexPointPointer rawUV = NULL;    
     if (uvCount > 0)
       rawUV = (spTexPointPointer)malloc(sizeof(spTexPoint)*uvCount);
+      
     spTrianglePointer triangles = NULL;
     if (triCount > 0)
       triangles = (spTrianglePointer)malloc(sizeof(spTriangleS)*triCount);
@@ -177,6 +267,12 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture)
     if (quadTexCount > 0)
       texQuads = (spQuadPointer)malloc(sizeof(spQuadS)*quadTexCount);
       
+    printf("Reading \"%s\" with\n",name);
+    printf("  %i Triangles without uv\n",triCount);
+    printf("  %i Triangles with uv\n",triTexCount);
+    printf("  %i Quads without uv\n",quadCount);
+    printf("  %i Quads with uv\n",quadTexCount);
+      
     
     //Reading
     file=SDL_RWFromFile(name,"rb");
@@ -188,8 +284,18 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture)
     triTexCount = 0;
     quadCount = 0;
     quadTexCount = 0;
+    int texw = 256;
+    int texh = 256;
+    if (texture)
+    {
+      texw = texture->w;
+      texh = texture->h;
+    }
+    spMeshTempPointer tempPointer = NULL;
+    spMeshTempPointer texTempPointer = NULL;
     while (meshReadLine(buffer,file,255))
     {
+      //Reading Vertexes and uv coordinates
       if (buffer[0]=='v' && buffer[1]==' ')
       {
         meshParseVertex(buffer,&(rawPoints[vertexCount]),255);
@@ -197,19 +303,119 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture)
       }
       if (buffer[0]=='v' && buffer[1]=='t')
       {
-        meshParseUV(buffer,&(rawUV[uvCount]),255);
+        meshParseUV(buffer,&(rawUV[uvCount]),255,texw,texh);
         uvCount++;
       }
+      if (buffer[0]=='f' && buffer[1]==' ')
+      {
+        int face[12];
+        int count = meshParseFace(buffer,face,255);
+        if (count == 3)
+        {
+          if (face[1]==-1)
+          {
+            triangles[triCount].point[0] = meshGetNumber(&tempPointer,face[0]-1,face[1]-1);
+            triangles[triCount].point[1] = meshGetNumber(&tempPointer,face[3]-1,face[4]-1);
+            triangles[triCount].point[2] = meshGetNumber(&tempPointer,face[6]-1,face[7]-1);
+            triCount++;
+          }
+          else
+          {
+            texTriangles[triTexCount].point[0] = meshGetNumber(&texTempPointer,face[0]-1,face[1]-1);
+            texTriangles[triTexCount].point[1] = meshGetNumber(&texTempPointer,face[3]-1,face[4]-1);
+            texTriangles[triTexCount].point[2] = meshGetNumber(&texTempPointer,face[6]-1,face[7]-1);
+            triTexCount++;
+          }
+        }
+        else
+        {
+          if (face[1]==-1)
+          {
+            quads[quadCount].point[0] = meshGetNumber(&tempPointer,face[0]-1,face[1]-1);
+            quads[quadCount].point[1] = meshGetNumber(&tempPointer,face[3]-1,face[4]-1);
+            quads[quadCount].point[2] = meshGetNumber(&tempPointer,face[6]-1,face[7]-1);
+            quads[quadCount].point[3] = meshGetNumber(&tempPointer,face[9]-1,face[10]-1);
+            quadCount++;
+          }
+          else
+          {
+            texQuads[quadTexCount].point[0] = meshGetNumber(&texTempPointer,face[0]-1,face[1]-1);
+            texQuads[quadTexCount].point[1] = meshGetNumber(&texTempPointer,face[3]-1,face[4]-1);
+            texQuads[quadTexCount].point[2] = meshGetNumber(&texTempPointer,face[6]-1,face[7]-1);
+            texQuads[quadTexCount].point[3] = meshGetNumber(&texTempPointer,face[9]-1,face[10]-1);
+            quadTexCount++;
+          }
+        }
+      }
     }
-    /*ToDo: Faces lesen und
-    - entscheiden, ob Triangle, TriangleTex, Quad oder QuadTex
-    - Schauen, ob alle referenzierten Punktkombination (Punkt<->UV Kombo) schon
-      extieren. Im Zweifel hinzufügen. Dann Quad/Triangle hinzufügen
-    - Kantenliste erstellen*/
+    //Creating Point lists
+    vertexCount = 0;
+    spPointPointer points = NULL;
+    if (tempPointer)
+    {
+      vertexCount = tempPointer->nr+1;
+      points = (spPointPointer)malloc(sizeof(spPoint)*vertexCount);
+    }
+    uvCount = 0;
+    spTexPointPointer texPoints = NULL;    
+    if (texTempPointer)
+    {
+      uvCount = texTempPointer->nr+1;
+      texPoints = (spTexPointPointer)malloc(sizeof(spTexPoint)*uvCount);
+    }
+    while (tempPointer)
+    {
+      points[tempPointer->nr].x = rawPoints[tempPointer->point].x;
+      points[tempPointer->nr].y = rawPoints[tempPointer->point].y;
+      points[tempPointer->nr].z = rawPoints[tempPointer->point].z;
+      spMeshTempPointer next = tempPointer->next;
+      free(tempPointer);
+      tempPointer = next;
+    }
+    while (texTempPointer)
+    {
+      texPoints[texTempPointer->nr].x = rawPoints[texTempPointer->point].x;
+      texPoints[texTempPointer->nr].y = rawPoints[texTempPointer->point].y;
+      texPoints[texTempPointer->nr].z = rawPoints[texTempPointer->point].z;
+      texPoints[texTempPointer->nr].u = rawUV[texTempPointer->uv].u;
+      texPoints[texTempPointer->nr].v = rawUV[texTempPointer->uv].v;
+      spMeshTempPointer next = texTempPointer->next;
+      free(texTempPointer);
+      texTempPointer = next;
+    }
+    free(rawPoints);
+    free(rawUV);
+    
+    spModelPointer model = (spModelPointer)malloc(sizeof(spModel));
+    model->texture = texture;
+    model->pointCount = vertexCount;
+    model->point = points;
+    model->texPointCount = uvCount;
+    model->texPoint = texPoints;
+    model->triangleCount = triCount;
+    model->texTriangleCount = triTexCount;
+    model->triangle = triangles;
+    model->texTriangle = texTriangles;
+    model->quadCount = quadCount;
+    model->texQuadCount = quadTexCount;
+    model->quad = quads;
+    model->texQuad = texQuads;
+    model->edgeCount = 0;
+    model->texEdgeCount = 0;
+    model->edge = NULL;
+    model->texEdges = NULL;
+    model->color = color;
     SDL_RWclose(file);
+    return model;
 }
 
 PREFIX void spMeshDelete(spModelPointer mesh)
 {
-  
+  free(mesh->point);
+  free(mesh->texPoint);
+  free(mesh->triangle);
+  free(mesh->texTriangle);
+  free(mesh->quad);
+  free(mesh->texQuad);
+  free(mesh);
 }

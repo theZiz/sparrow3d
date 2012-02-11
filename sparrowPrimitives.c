@@ -41,6 +41,8 @@ Uint32 spZBufferCacheCount = 16;
 Uint32 spZBufferCacheLast;
 Sint32** spZBufferCache = NULL;
 SDL_Surface** spTargetCache = NULL;
+Uint32* spSizeCache = NULL;
+char spCulling = 1;
 
 
 PREFIX Sint32* spGetOne_over_x_pointer()
@@ -67,6 +69,8 @@ PREFIX void spQuitPrimitives()
     free(spZBufferCache);
   if (spTargetCache)
     free(spTargetCache); 
+  if (spSizeCache)
+    free(spSizeCache); 
 }
 
 PREFIX void spSelectRenderTarget(SDL_Surface* target)
@@ -893,10 +897,12 @@ inline void sp_intern_Triangle(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, 
   SDL_UnlockSurface(spTarget);  
 }
 
-PREFIX void spTriangle(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1,   SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2,   SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3,   SP_UnsingedInt16 color)
+PREFIX int spTriangle(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1,   SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2,   SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3,   SP_UnsingedInt16 color)
 {
   if (spAlphaTest && color==SP_ALPHA_COLOR)
-    return;
+    return 0;
+  if (spCulling && (x2-x1)*(y3-y1)-(y2-y1)*(x3-x1)>0)
+    return 0;
   if (y1 > y2)
   {
     Sint32 temp = x1;
@@ -947,6 +953,7 @@ PREFIX void spTriangle(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1,   SP_Sin
     else
       sp_intern_Triangle           (x1,y1,z1,x2,y2,z2,x3,y3,z3,color);
   }
+  return 1;
 }
 
 inline void draw_pixel_tex_ztest_zset(SP_SingedInt16 x,SP_SingedInt16 y,Sint32 z,SP_SingedInt16 u,SP_SingedInt16 v,SP_UnsingedInt16 color)
@@ -2779,10 +2786,12 @@ inline void sp_intern_Triangle_tex_alpha(SP_SingedInt16 x1, SP_SingedInt16 y1, S
   SDL_UnlockSurface(spTarget);  
 }
 
-PREFIX void spTriangle_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color)
+PREFIX int spTriangle_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color)
 {
   if (spAlphaTest && color==SP_ALPHA_COLOR)
-    return;
+    return 0;
+  if (spCulling && (x2-x1)*(y3-y1)-(y2-y1)*(x3-x1)>0)
+    return 0;    
   if (y1 > y2)
   {
     Sint32 temp = x1;
@@ -2871,13 +2880,15 @@ PREFIX void spTriangle_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_S
         sp_intern_Triangle_tex           (x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,color);
     }
   }
+  return 1;
 }
 
 
-PREFIX void spQuad(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 x4,SP_SingedInt16 y4, Sint32 z4, SP_UnsingedInt16 color)
+PREFIX int spQuad(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 x4,SP_SingedInt16 y4, Sint32 z4, SP_UnsingedInt16 color)
 {
-  spTriangle(x1,y1,z1,x2,y2,z2,x3,y3,z3,color);
-  spTriangle(x1,y1,z1,x3,y3,z3,x4,y4,z4,color);
+  if (spTriangle(x1,y1,z1,x2,y2,z2,x3,y3,z3,color))
+    return spTriangle(x1,y1,z1,x3,y3,z3,x4,y4,z4,color);
+  return 0;
 }
 
 inline void sp_intern_Quad_tex_ztest_zset(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_SingedInt16 x4, SP_SingedInt16 y4, Sint32 z4, SP_SingedInt16 u4, SP_SingedInt16 v4, SP_UnsingedInt16 color)
@@ -3133,7 +3144,7 @@ inline void sp_intern_Quad_tex_ztest_zset(SP_SingedInt16 x1, SP_SingedInt16 y1, 
 }
 
 
-PREFIX void spQuad_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_SingedInt16 x4, SP_SingedInt16 y4, Sint32 z4, SP_SingedInt16 u4, SP_SingedInt16 v4, SP_UnsingedInt16 color)
+PREFIX int spQuad_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_SingedInt16 x4, SP_SingedInt16 y4, Sint32 z4, SP_SingedInt16 u4, SP_SingedInt16 v4, SP_UnsingedInt16 color)
 {
   if (spQuadQuali)
   {
@@ -3142,20 +3153,21 @@ PREFIX void spQuad_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_Singe
     SP_SingedInt16 mu = u1+u2+u3+u4>>2;
     SP_SingedInt16 mv = v1+v2+v3+v4>>2;
     Sint32 mz = (z1>>2)+(z2>>2)+(z3>>2)+(z4>>2);
-    spTriangle_tex(mx,my,mz,mu,mv,x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,color);
-    spTriangle_tex(mx,my,mz,mu,mv,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,color);
-    spTriangle_tex(mx,my,mz,mu,mv,x3,y3,z3,u3,v3,x4,y4,z4,u4,v4,color);
-    spTriangle_tex(mx,my,mz,mu,mv,x4,y4,z4,u4,v4,x1,y1,z1,u1,v1,color);
+    if (spTriangle_tex(mx,my,mz,mu,mv,x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,color))
+    {
+      spTriangle_tex(mx,my,mz,mu,mv,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,color);
+      spTriangle_tex(mx,my,mz,mu,mv,x3,y3,z3,u3,v3,x4,y4,z4,u4,v4,color);
+      return spTriangle_tex(mx,my,mz,mu,mv,x4,y4,z4,u4,v4,x1,y1,z1,u1,v1,color);
+    }
+    return 0;
   }
-  else
-  {
-    spTriangle_tex(x1,y1,z1,u1,v1,
-                   x2,y2,z2,u2,v2,
-                   x3,y3,z3,u3,v3,color);
-    spTriangle_tex(x1,y1,z1,u1,v1,
-                   x3,y3,z3,u3,v3,
-                   x4,y4,z4,u4,v4,color);
-  }
+  if (spTriangle_tex(x1,y1,z1,u1,v1,
+                     x2,y2,z2,u2,v2,
+                     x3,y3,z3,u3,v3,color))
+    return spTriangle_tex(x1,y1,z1,u1,v1,
+                          x3,y3,z3,u3,v3,
+                          x4,y4,z4,u4,v4,color);
+  return 0;
 }
 
 PREFIX void spReAllocateZBuffer()
@@ -3163,7 +3175,7 @@ PREFIX void spReAllocateZBuffer()
   //in Cache?
   int cacheline;
   for (cacheline = 0;cacheline < spZBufferCacheCount;cacheline++)
-    if (spTargetCache[cacheline] == spTarget)
+    if (spTargetCache[cacheline] == spTarget && spSizeCache[cacheline] == spTarget->w*spTarget->h)
       break;
   
   if (cacheline == spZBufferCacheCount) //not found
@@ -3174,6 +3186,7 @@ PREFIX void spReAllocateZBuffer()
     spZBuffer = (Sint32*)malloc(spTargetX*spTargetY*sizeof(Sint32));    
     spZBufferCache[spZBufferCacheLast] = spZBuffer;
     spTargetCache[spZBufferCacheLast] = spTarget;
+    spSizeCache[spZBufferCacheLast] = spTarget->w*spTarget->h;
   }
   else
   {
@@ -3704,10 +3717,19 @@ PREFIX void spSetZBufferCache(Uint32 value)
     free(spZBufferCache);
   if (spTargetCache)
     free(spTargetCache);
+  if (spSizeCache)
+    free(spSizeCache);
   spZBufferCacheCount = value;
   spZBufferCache = (Sint32**)malloc(sizeof(Sint32*)*spZBufferCacheCount);
   spTargetCache = (SDL_Surface**)malloc(sizeof(SDL_Surface*)*spZBufferCacheCount);
+  spSizeCache = (SDL_Surface**)malloc(sizeof(Uint32)*spZBufferCacheCount);
   memset(spZBufferCache,0,sizeof(Sint32*)*spZBufferCacheCount);
   memset(spTargetCache,0,sizeof(SDL_Surface*)*spZBufferCacheCount);
+  memset(spSizeCache,0,sizeof(Uint32)*spZBufferCacheCount);
   spZBufferCacheLast = -1;
+}
+
+PREFIX void spSetCulling(char value)
+{
+  spCulling = value;
 }

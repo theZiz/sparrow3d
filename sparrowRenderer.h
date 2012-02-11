@@ -27,14 +27,14 @@
 typedef struct spPointStruct *spPointPointer;
 typedef struct spPointStruct {
   Sint32 x,y,z;
-  Sint32 px,py; //projected
+  Sint32 px,py,pz; //projected
 } spPoint;
 
 //A point with the projected coordinates and uv-coordinates
 typedef struct spTexPointStruct *spTexPointPointer;
 typedef struct spTexPointStruct {
   Sint32 x,y,z;
-  Sint32 px,py; //projected
+  Sint32 px,py,pz; //projected
   Sint32 u,v;
 } spTexPoint;
 
@@ -70,8 +70,9 @@ typedef struct spModelStruct {
   spTrianglePointer triangle,texTriangle; //the triangles of the modell
   int quadCount,texQuadCount;
   spQuadPointer quad,texQuad; //the quads of the modell
-  int edgeCount,texEdgeCount;
-  spEdgePointer edge,texEdges; //the edges of the modell
+  int edgeCount,texEdgeCount; //TODO! Don't use it. Will be implemented soon™
+  spEdgePointer edge,texEdges; //the edges of the modell //TODO! Don't use it. Will be implemented soon™
+  Uint16 color;
 } spModel;
 
 
@@ -79,8 +80,6 @@ PREFIX void spSetPerspective(float fovyInDegrees, float aspectRatio,
                              float znear, float zfar);
 
 PREFIX Sint32* spGetProjectionMatrix();
-
-PREFIX void spSetCulling(char value);
 
 PREFIX void spSetProjectionMatrix(Sint32* matrix);
 
@@ -124,6 +123,6 @@ PREFIX int spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   
 PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface);
 
-PREFIX void spMesh3D(spModelPointer mesh);
+PREFIX void spMesh3D(spModelPointer mesh,int updateEdgeList);
 
 #endif

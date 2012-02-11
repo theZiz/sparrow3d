@@ -1,6 +1,7 @@
 Roadmap:
-- loading obj
-- drawing a couple of points and polygons (meshs) at once
++ loading obj
++ drawing a couple of points and polygons (meshs) at once
++ moved culling
 - functions for lines, circles, rectangles -> with linewidth!
 - reimplementation of light
   - spSetLight(value) in spRender like z-stuff
@@ -8,7 +9,7 @@ Roadmap:
   - up to 8 lights (openGL like)
     - using in the spRender in all Render-functions
   - one white default light at (0,0,0)
-- z Buffer Caching (if changing the Render Target)
+- Edgelist
 
 Nice to have:
 - cool intro with sparrows

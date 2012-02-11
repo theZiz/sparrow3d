@@ -28,7 +28,6 @@
 Sint32 spModelView[16];
 Sint32 spProjection[16];
 Sint32 spX_to_Y;
-char spCulling = 1;
 
 /*inline Sint32 fpdiv(Sint32 a,Sint32 b)
 {
@@ -52,11 +51,6 @@ char spCulling = 1;
 #else
   #define fpdiv(a,b) ((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY
 #endif
-
-PREFIX void spSetCulling(char value)
-{
-  spCulling = value;
-}
 
 inline void spSetFrustumf2(Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
                            Sint32 znear, Sint32 zfar)
@@ -367,19 +361,6 @@ PREFIX int spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   spMulModellView(x2,y2,z2,&tx2,&ty2,&tz2,&tw2);
   spMulModellView(x3,y3,z3,&tx3,&ty3,&tz3,&tw3);
 
-  Sint32 normal[3];
-  spCalcNormal(tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3,normal);
-  Sint32 leftX  = -spX_to_Y;
-  Sint32 rightX = +spX_to_Y;
-  Sint32 topY  = +(1<<SP_ACCURACY);
-  Sint32 bottomY = -(1<<SP_ACCURACY);
-  if (spCulling &&
-      fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
-      fimul(tx1-rightX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
-      fimul(tx1- leftX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
-      fimul(tx1-rightX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) )        
-    return 0;
-  
          x1 = fimul(spProjection[ 0],tx1);// + fimul(spProjection[ 8],tz1);
          y1 = fimul(spProjection[ 5],ty1);// + fimul(spProjection[ 9],tz1);
 //         z1 = fimul(spProjection[10],tz1) + fimul(spProjection[14],tw1);
@@ -410,7 +391,7 @@ PREFIX int spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 nx3 = fpdiv(x3,w3)>>SP_HALF_ACCURACY;
   Sint32 ny3 = fpdiv(y3,w3)>>SP_HALF_ACCURACY;
 //  Sint32 nz3 = fpdiv(z3,w3)>>SP_HALF_ACCURACY;
-  
+
   spTriangle(viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
              viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,
              viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
@@ -437,19 +418,6 @@ PREFIX int spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
   spMulModellView(x2,y2,z2,&tx2,&ty2,&tz2,&tw2);
   spMulModellView(x3,y3,z3,&tx3,&ty3,&tz3,&tw3);
 
-  Sint32 normal[3];
-  spCalcNormal(tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3,normal);
-  Sint32 leftX  = -spX_to_Y;
-  Sint32 rightX = +spX_to_Y;
-  Sint32 topY  = +(1<<SP_ACCURACY);
-  Sint32 bottomY = -(1<<SP_ACCURACY);
-  if (spCulling &&
-      fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
-      fimul(tx1-rightX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
-      fimul(tx1- leftX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
-      fimul(tx1-rightX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) )        
-    return 0;
-  
   Sint32 tx4,ty4,tz4,tw4;
   spMulModellView(x4,y4,z4,&tx4,&ty4,&tz4,&tw4);
   
@@ -521,19 +489,6 @@ PREFIX int spTriangleTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   spMulModellView(x2,y2,z2,&tx2,&ty2,&tz2,&tw2);
   spMulModellView(x3,y3,z3,&tx3,&ty3,&tz3,&tw3);
 
-  Sint32 normal[3];
-  spCalcNormal(tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3,normal);
-  Sint32 leftX  = -spX_to_Y;
-  Sint32 rightX = +spX_to_Y;
-  Sint32 topY  = +(1<<SP_ACCURACY);
-  Sint32 bottomY = -(1<<SP_ACCURACY);
-  if (spCulling &&
-      fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
-      fimul(tx1-rightX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
-      fimul(tx1- leftX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
-      fimul(tx1-rightX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) )        
-    return 0;
-  
          x1 = fimul(spProjection[ 0],tx1);// + fimul(spProjection[ 8],tz1);
          y1 = fimul(spProjection[ 5],ty1);// + fimul(spProjection[ 9],tz1);
 //         z1 = fimul(spProjection[10],tz1) + fimul(spProjection[14],tw1);
@@ -592,18 +547,6 @@ PREFIX int spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   spMulModellView(x2,y2,z2,&tx2,&ty2,&tz2,&tw2);
   spMulModellView(x3,y3,z3,&tx3,&ty3,&tz3,&tw3);
 
-  Sint32 normal[3];
-  spCalcNormal(tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3,normal);
-  Sint32 leftX  = -spX_to_Y;
-  Sint32 rightX = +spX_to_Y;
-  Sint32 topY  = +(1<<SP_ACCURACY);
-  Sint32 bottomY = -(1<<SP_ACCURACY);
-  if (spCulling &&
-      fimul(tx1- leftX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
-      fimul(tx1-rightX,normal[0]) + fimul(ty1-   topY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
-      fimul(tx1- leftX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) > 0 &&
-      fimul(tx1-rightX,normal[0]) + fimul(ty1-bottomY,normal[1]) + fimul(tz1,normal[2]) )        
-    return 0;
   
   Sint32 tx4,ty4,tz4,tw4;
   spMulModellView(x4,y4,z4,&tx4,&ty4,&tz4,&tw4);
@@ -684,5 +627,121 @@ PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface)
                 viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
                 tz1,
                 surface);
+  
+}
+
+PREFIX void spMesh3D(spModelPointer mesh,int updateEdgeList)
+{
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
+  //Project Points
+  int i;
+  for (i = 0; i < mesh->pointCount; i++)
+  {
+    Sint32 tx1,ty1,tz1,tw1;
+    spMulModellView(mesh->point[i].x,mesh->point[i].y,mesh->point[i].z,&tx1,&ty1,&tz1,&tw1);
+    Sint32 x1 = fimul(spProjection[ 0],tx1);
+    Sint32 y1 = fimul(spProjection[ 5],ty1);
+    Sint32 w1 = fimul(spProjection[11],tz1);
+    if (w1 == 0)
+      w1 = 1;  
+    Sint32 nx1 = fpdiv(x1,w1)>>SP_HALF_ACCURACY;
+    Sint32 ny1 = fpdiv(y1,w1)>>SP_HALF_ACCURACY;
+    mesh->point[i].px = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+    mesh->point[i].py = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+    mesh->point[i].pz = tz1;    
+  }
+  for (i = 0; i < mesh->texPointCount; i++)
+  {
+    Sint32 tx1,ty1,tz1,tw1;
+    spMulModellView(mesh->texPoint[i].x,mesh->texPoint[i].y,mesh->texPoint[i].z,&tx1,&ty1,&tz1,&tw1);
+    Sint32 x1 = fimul(spProjection[ 0],tx1);
+    Sint32 y1 = fimul(spProjection[ 5],ty1);
+    Sint32 w1 = fimul(spProjection[11],tz1);
+    if (w1 == 0)
+      w1 = 1;  
+    Sint32 nx1 = fpdiv(x1,w1)>>SP_HALF_ACCURACY;
+    Sint32 ny1 = fpdiv(y1,w1)>>SP_HALF_ACCURACY;
+    mesh->texPoint[i].px = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+    mesh->texPoint[i].py = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+    mesh->texPoint[i].pz = tz1;    
+  }
+  //Draw Faces, if seeable
+  for (i = 0; i < mesh->triangleCount; i++)
+  {
+    mesh->triangle[i].was_drawn = 
+    spTriangle(mesh->point[mesh->triangle[i].point[0]].px,
+               mesh->point[mesh->triangle[i].point[0]].py,
+               mesh->point[mesh->triangle[i].point[0]].pz,
+               mesh->point[mesh->triangle[i].point[1]].px,
+               mesh->point[mesh->triangle[i].point[1]].py,
+               mesh->point[mesh->triangle[i].point[1]].pz,
+               mesh->point[mesh->triangle[i].point[2]].px,
+               mesh->point[mesh->triangle[i].point[2]].py,
+               mesh->point[mesh->triangle[i].point[2]].pz,mesh->color);
+  }
+  for (i = 0; i < mesh->quadCount; i++)
+  {
+    mesh->quad[i].was_drawn = 
+    spQuad(mesh->point[mesh->quad[i].point[0]].px,
+           mesh->point[mesh->quad[i].point[0]].py,
+           mesh->point[mesh->quad[i].point[0]].pz,
+           mesh->point[mesh->quad[i].point[1]].px,
+           mesh->point[mesh->quad[i].point[1]].py,
+           mesh->point[mesh->quad[i].point[1]].pz,
+           mesh->point[mesh->quad[i].point[2]].px,
+           mesh->point[mesh->quad[i].point[2]].py,
+           mesh->point[mesh->quad[i].point[2]].pz,
+           mesh->point[mesh->quad[i].point[3]].px,
+           mesh->point[mesh->quad[i].point[3]].py,
+           mesh->point[mesh->quad[i].point[3]].pz,mesh->color);    
+  }
+  if (mesh->texQuadCount + mesh->texTriangleCount > 0)
+    spBindTexture(mesh->texture);
+  for (i = 0; i < mesh->texTriangleCount; i++)
+  {
+    mesh->texTriangle[i].was_drawn =
+    spTriangle_tex(mesh->texPoint[mesh->texTriangle[i].point[0]].px,
+                   mesh->texPoint[mesh->texTriangle[i].point[0]].py,
+                   mesh->texPoint[mesh->texTriangle[i].point[0]].pz,
+                   mesh->texPoint[mesh->texTriangle[i].point[0]].u,
+                   mesh->texPoint[mesh->texTriangle[i].point[0]].v,
+                   mesh->texPoint[mesh->texTriangle[i].point[1]].px,
+                   mesh->texPoint[mesh->texTriangle[i].point[1]].py,
+                   mesh->texPoint[mesh->texTriangle[i].point[1]].pz,
+                   mesh->texPoint[mesh->texTriangle[i].point[1]].u,
+                   mesh->texPoint[mesh->texTriangle[i].point[1]].v,
+                   mesh->texPoint[mesh->texTriangle[i].point[2]].px,
+                   mesh->texPoint[mesh->texTriangle[i].point[2]].py,
+                   mesh->texPoint[mesh->texTriangle[i].point[2]].pz,
+                   mesh->texPoint[mesh->texTriangle[i].point[2]].u,
+                   mesh->texPoint[mesh->texTriangle[i].point[2]].v,mesh->color);
+  }
+  for (i = 0; i < mesh->texQuadCount; i++)
+  {
+    mesh->texQuad[i].was_drawn =
+    spQuad_tex(mesh->texPoint[mesh->texQuad[i].point[0]].px,
+               mesh->texPoint[mesh->texQuad[i].point[0]].py,
+               mesh->texPoint[mesh->texQuad[i].point[0]].pz,
+               mesh->texPoint[mesh->texQuad[i].point[0]].u,
+               mesh->texPoint[mesh->texQuad[i].point[0]].v,
+               mesh->texPoint[mesh->texQuad[i].point[1]].px,
+               mesh->texPoint[mesh->texQuad[i].point[1]].py,
+               mesh->texPoint[mesh->texQuad[i].point[1]].pz,
+               mesh->texPoint[mesh->texQuad[i].point[1]].u,
+               mesh->texPoint[mesh->texQuad[i].point[1]].v,
+               mesh->texPoint[mesh->texQuad[i].point[2]].px,
+               mesh->texPoint[mesh->texQuad[i].point[2]].py,
+               mesh->texPoint[mesh->texQuad[i].point[2]].pz,
+               mesh->texPoint[mesh->texQuad[i].point[2]].u,
+               mesh->texPoint[mesh->texQuad[i].point[2]].v,
+               mesh->texPoint[mesh->texQuad[i].point[3]].px,
+               mesh->texPoint[mesh->texQuad[i].point[3]].py,
+               mesh->texPoint[mesh->texQuad[i].point[3]].pz,
+               mesh->texPoint[mesh->texQuad[i].point[3]].u,
+               mesh->texPoint[mesh->texQuad[i].point[3]].v,mesh->color);
+  }
   
 }
