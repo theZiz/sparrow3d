@@ -41,21 +41,17 @@ void draw_test(void)
   spIdentity();
   
   count = 0;
-  spSetZSet(1);
-  spSetZTest(1);
-  spSetAlphaTest(0);
-  spSetAffineTextureHack(quality);
   
-  //spTranslate(spSin(rotation>>2)*8,0,(-18<<SP_ACCURACY)+spSin(rotation)*8);
   spBindTexture(garfield);
+  spSetAffineTextureHack(quality);
   spSetCulling(1);
   spSetZSet(1);
   spSetZTest(1);
-  spSetAlphaTest(1);
   
   switch (test)
   {
     case 3:
+      spSetAlphaTest(0);
       spTranslate(0,0,-8<<SP_ACCURACY);
       spRotateX(rotation);
       spRotateY(rotation);
@@ -63,6 +59,7 @@ void draw_test(void)
       count = spMesh3D(mesh,0);
       break;
     case 2:
+      spSetAlphaTest(1);
       spTranslate(0,0,(-10<<SP_ACCURACY)+spSin(rotation*4)*4);  
       int x,y;
       for (x = -5; x <= 5; x++)
@@ -117,6 +114,7 @@ void draw_test(void)
         }
       break;
     case 1:
+      spSetAlphaTest(1);
       spTranslate(0,0,-20<<SP_ACCURACY);  
       spRotateY(rotation);
       int a;
@@ -145,6 +143,7 @@ void draw_test(void)
       }
       break;
     case 0: 
+      spSetAlphaTest(0);
       spTranslate(spSin(rotation/3),spSin(rotation/5),(-7<<SP_ACCURACY));
       spRotateX(rotation);
       spRotateY(rotation);
@@ -295,7 +294,7 @@ int main(int argc, char **argv)
   spBindTexture(garfield);
   
   //Mesh loading
-  mesh = spMeshLoadObj("./data/testmeshuv.obj",garfield,65535);
+  mesh = spMeshLoadObj("./data/testmeshuv_tri.obj",garfield,65535);
   //mesh = spMeshLoadObj("./data/bamuv.obj",garfield,65535);
   //mesh = spMeshLoadObj("./data/foobar.obj",garfield,65535);
   
