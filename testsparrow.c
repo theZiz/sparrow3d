@@ -31,6 +31,7 @@ Uint32 fpssum = 0;
 Sint32 divisor = -5000;
 int test = 0;
 int clear = 1;
+int count;
 
 void draw_test(void)
 {
@@ -39,6 +40,7 @@ void draw_test(void)
     spClearTarget(0);
   spIdentity();
   
+  count = 0;
   spSetZSet(1);
   spSetZTest(1);
   spSetAlphaTest(0);
@@ -54,11 +56,11 @@ void draw_test(void)
   switch (test)
   {
     case 3:
-      spTranslate(0,0,(-6<<SP_ACCURACY));
+      spTranslate(0,0,-8<<SP_ACCURACY);
       spRotateX(rotation);
       spRotateY(rotation);
       spRotateZ(rotation);
-      spMesh3D(mesh,0);
+      count = spMesh3D(mesh,0);
       break;
     case 2:
       spTranslate(0,0,(-10<<SP_ACCURACY)+spSin(rotation*4)*4);  
@@ -216,12 +218,15 @@ void draw_test(void)
     spFontDraw(0,2,-1,"Do clear",font);
   else
     spFontDraw(0,2,-1,"Do not clear",font);
-  
-  char buffer[16];
+  char buffer[256];
+  sprintf(buffer,"%i Faces",mesh->quadCount+mesh->triangleCount+mesh->texQuadCount+mesh->texTriangleCount);
+  spFontDrawRight(screen->w-2,2,-1,buffer,font);
+  sprintf(buffer,"%i Drawn",count);
+  spFontDrawRight(screen->w-2,2+font->maxheight,-1,buffer,font);
   sprintf(buffer,"%02i:%02i",divisor/60000,(divisor/1000)%60);
   spFontDrawMiddle(screen->w/2,screen->h-font->maxheight,-1,buffer,font);
   sprintf(buffer,"fps: %i",spGetFPS());
-  spFontDrawRight(screen->w,screen->h-font->maxheight,-1,buffer,font);
+  spFontDrawRight(screen->w-2,screen->h-font->maxheight,-1,buffer,font);
   
   spFlip();
 }
@@ -290,8 +295,9 @@ int main(int argc, char **argv)
   spBindTexture(garfield);
   
   //Mesh loading
-  //mesh = spMeshLoadObj("./data/bam.obj",garfield);
-  mesh = spMeshLoadObj("./data/foobar.obj",garfield,65535);
+  mesh = spMeshLoadObj("./data/testmeshuv.obj",garfield,65535);
+  //mesh = spMeshLoadObj("./data/bamuv.obj",garfield,65535);
+  //mesh = spMeshLoadObj("./data/foobar.obj",garfield,65535);
   
   //All glory the main loop
   spLoop(draw_test,calc_test,10,resize);

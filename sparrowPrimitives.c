@@ -20,8 +20,6 @@
 #include "sparrowPrimitives.h"
 #include <stdlib.h>
 
-//#define FAST_BUT_UGLY
-
 SDL_Surface* spTarget = NULL;
 Uint16* spTargetPixel = NULL;
 SDL_Surface* spTexture = NULL;

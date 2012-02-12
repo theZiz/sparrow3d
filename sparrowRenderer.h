@@ -123,6 +123,7 @@ PREFIX int spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   
 PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface);
 
-PREFIX void spMesh3D(spModelPointer mesh,int updateEdgeList);
+/* Returns the number of drawn Faces */
+PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList);
 
 #endif

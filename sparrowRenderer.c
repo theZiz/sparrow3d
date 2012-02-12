@@ -49,7 +49,7 @@ Sint32 spX_to_Y;
                          (((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY) \
                        )
 #else
-  #define fpdiv(a,b) ((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY
+  #define fpdiv(a,b) (((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY)
 #endif
 
 inline void spSetFrustumf2(Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
@@ -630,12 +630,13 @@ PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface)
   
 }
 
-PREFIX void spMesh3D(spModelPointer mesh,int updateEdgeList)
+PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList)
 {
-  int windowX = spGetWindowSurface()->w;
-  int windowY = spGetWindowSurface()->h;
-  int viewPortX = (windowX >> 1);
-  int viewPortY = (windowY >> 1);
+  int count = 0;
+  Sint32 windowX = spGetWindowSurface()->w;
+  Sint32 windowY = spGetWindowSurface()->h;
+  Sint32 viewPortX = (windowX >> 1);
+  Sint32 viewPortY = (windowY >> 1);
   //Project Points
   int i;
   for (i = 0; i < mesh->pointCount; i++)
@@ -671,7 +672,7 @@ PREFIX void spMesh3D(spModelPointer mesh,int updateEdgeList)
   //Draw Faces, if seeable
   for (i = 0; i < mesh->triangleCount; i++)
   {
-    mesh->triangle[i].was_drawn = 
+    count+= mesh->triangle[i].was_drawn = 
     spTriangle(mesh->point[mesh->triangle[i].point[0]].px,
                mesh->point[mesh->triangle[i].point[0]].py,
                mesh->point[mesh->triangle[i].point[0]].pz,
@@ -681,10 +682,11 @@ PREFIX void spMesh3D(spModelPointer mesh,int updateEdgeList)
                mesh->point[mesh->triangle[i].point[2]].px,
                mesh->point[mesh->triangle[i].point[2]].py,
                mesh->point[mesh->triangle[i].point[2]].pz,mesh->color);
+    
   }
   for (i = 0; i < mesh->quadCount; i++)
   {
-    mesh->quad[i].was_drawn = 
+    count+= mesh->quad[i].was_drawn = 
     spQuad(mesh->point[mesh->quad[i].point[0]].px,
            mesh->point[mesh->quad[i].point[0]].py,
            mesh->point[mesh->quad[i].point[0]].pz,
@@ -702,7 +704,7 @@ PREFIX void spMesh3D(spModelPointer mesh,int updateEdgeList)
     spBindTexture(mesh->texture);
   for (i = 0; i < mesh->texTriangleCount; i++)
   {
-    mesh->texTriangle[i].was_drawn =
+    count+= mesh->texTriangle[i].was_drawn =
     spTriangle_tex(mesh->texPoint[mesh->texTriangle[i].point[0]].px,
                    mesh->texPoint[mesh->texTriangle[i].point[0]].py,
                    mesh->texPoint[mesh->texTriangle[i].point[0]].pz,
@@ -721,7 +723,7 @@ PREFIX void spMesh3D(spModelPointer mesh,int updateEdgeList)
   }
   for (i = 0; i < mesh->texQuadCount; i++)
   {
-    mesh->texQuad[i].was_drawn =
+    count+= mesh->texQuad[i].was_drawn =
     spQuad_tex(mesh->texPoint[mesh->texQuad[i].point[0]].px,
                mesh->texPoint[mesh->texQuad[i].point[0]].py,
                mesh->texPoint[mesh->texQuad[i].point[0]].pz,
@@ -743,5 +745,5 @@ PREFIX void spMesh3D(spModelPointer mesh,int updateEdgeList)
                mesh->texPoint[mesh->texQuad[i].point[3]].u,
                mesh->texPoint[mesh->texQuad[i].point[3]].v,mesh->color);
   }
-  
+  return count;
 }

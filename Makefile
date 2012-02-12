@@ -24,13 +24,13 @@ SDL = `sdl-config --cflags`
 #==Consoles==
 #==GP2X/WIZ==
 ifeq ($(TARGET),open2x)
-CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 $(GENERAL_TWEAKS) -DFAST_BUT_UGLY_2 
+CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 $(GENERAL_TWEAKS)
 SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags`
 INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
 LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib
 endif
 ifeq ($(TARGET),gp2x)
-CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 $(GENERAL_TWEAKS) -DFAST_BUT_UGLY_2 
+CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 $(GENERAL_TWEAKS)
 STATIC = -Wl,-Bstatic -lSDL -lm -Wl,-Bdynamic
 DYNAMIC = -lSDL_image -lSDL_ttf -lfreetype -lpng -lz -ljpeg
 SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags`
@@ -38,7 +38,7 @@ INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
 LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib
 endif
 ifeq ($(TARGET),wiz)
-CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DWIZ $(GENERAL_TWEAKS) -DFAST_BUT_UGLY_2 
+CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DWIZ $(GENERAL_TWEAKS)
 SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags`
 INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
 LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib

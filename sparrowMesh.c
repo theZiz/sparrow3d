@@ -18,6 +18,7 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com                         
 */
 #include "sparrowMesh.h"
+#include <math.h>
 
 int meshReadLine(char* buffer,SDL_RWops *file,int max) //Returns 0 at EOF, otherwise amount of letters
 {
@@ -69,6 +70,66 @@ Uint32 meshGetNumber(spMeshTempPointer* first,Uint32 point,Uint32 uv)
   return mom->nr;
 }
 
+float meshatof(char* buffer)
+{
+  double number = 0.0f;
+  double sign = 1.0f;
+  int pos = 0;
+  //crap at the beginning
+  while (buffer[pos]!=0 && buffer[pos]<'0' && buffer[pos]>'9' && buffer[pos]!='+' && buffer[pos]!='-')
+    pos++;
+  if (buffer[pos]==0)
+    return number;
+  if (buffer[pos]=='+')
+    pos++;
+  else
+  if (buffer[pos]=='-')
+  {
+    pos++;
+    sign = -1.0f;
+  }
+  //the number itself
+  while (buffer[pos]>='0' && buffer[pos]<='9')
+  {
+    number = number*10.0f + (double)(buffer[pos]-'0');
+    pos++;
+  }
+  if (buffer[pos]!='.')
+    return sign*number;
+  //after the comma
+  pos++;
+  double divisor = 1.0f;
+  double aftercomma = 0.0f;
+  while (buffer[pos]>='0' && buffer[pos]<='9')
+  {
+    divisor*=10.0f;
+    aftercomma = aftercomma + (double)(buffer[pos]-'0')/divisor;
+    pos++;
+  }
+  if (buffer[pos]!='e' && buffer[pos]!='E')
+    return sign*(number+aftercomma);
+  //after e
+  pos++;
+  double e = 1.0f;
+  int esign = 1;
+  if (buffer[pos]=='+')
+    pos++;
+  else
+  if (buffer[pos]=='-')
+  {
+    pos++;
+    esign = 0;
+  }
+  while (buffer[pos]>='0' && buffer[pos]<='9')
+  {
+    e = e*10.0f + (double)(buffer[pos]-'0');
+    pos++;
+  }
+  if (esign)
+    return sign*(number+aftercomma)*pow(10.0f,e);
+  return sign*(number+aftercomma)/pow(10.0f,e);
+}
+
 void meshParseVertex(char* buffer,spPointPointer point,int max)
 {
   point->x = 0;
@@ -79,13 +140,14 @@ void meshParseVertex(char* buffer,spPointPointer point,int max)
   while (left < max && buffer[left]!=' ')
     left++;
   //now buffer[left] is the ' ' after 'v' before the first number
+  left++;
   int right=left+1;
   while (right < max && buffer[right]!=' ')
     right++; 
   //now buffer[right] is the ' ' after the number
   char oldc = buffer[right];
   buffer[right] = 0;
-  float number = atof(&(buffer[left]));
+  float number = meshatof(&(buffer[left]));
   point->x = (int)(number*SP_ACCURACY_FACTOR);
   buffer[right]=oldc;
   
@@ -93,12 +155,13 @@ void meshParseVertex(char* buffer,spPointPointer point,int max)
   left = right;
   while (left < max && buffer[left]!=' ')
     left++;
+  left++;
   right=left+1;
   while (right < max && buffer[right]!=' ')
     right++; 
   oldc = buffer[right];
   buffer[right] = 0;
-  number = atof(&(buffer[left]));
+  number = meshatof(&(buffer[left]));
   point->y = (int)(number*SP_ACCURACY_FACTOR);
   buffer[right]=oldc;
 
@@ -106,12 +169,13 @@ void meshParseVertex(char* buffer,spPointPointer point,int max)
   left = right;
   while (left < max && buffer[left]!=' ')
     left++;
+  left++;
   right=left+1;
-  while (right < max && buffer[right]!=' ')
+  while (right < max && buffer[right]>' ')
     right++; 
   oldc = buffer[right];
   buffer[right] = 0;
-  number = atof(&(buffer[left]));
+  number = meshatof(&(buffer[left]));
   point->z = (int)(number*SP_ACCURACY_FACTOR);
   buffer[right]=oldc;
 }
@@ -125,13 +189,14 @@ void meshParseUV(char* buffer,spTexPointPointer point,int max,int texw,int texh)
   while (left < max && buffer[left]!=' ')
     left++;
   //now buffer[left] is the ' ' after 't' before the first number
+  left++;
   int right=left+1;
   while (right < max && buffer[right]!=' ')
     right++; 
   //now buffer[right] is the ' ' after the number
   char oldc = buffer[right];
   buffer[right] = 0;
-  float number = atof(&(buffer[left]));
+  float number = meshatof(&(buffer[left]));
   point->u = (int)(number*(float)texw);
   buffer[right]=oldc;
   
@@ -139,12 +204,13 @@ void meshParseUV(char* buffer,spTexPointPointer point,int max,int texw,int texh)
   left = right;
   while (left < max && buffer[left]!=' ')
     left++;
+  left++;
   right=left+1;
   while (right < max && buffer[right]!=' ')
     right++; 
   oldc = buffer[right];
   buffer[right] = 0;
-  number = atof(&(buffer[left]));
+  number = meshatof(&(buffer[left]));
   point->v = (int)(number*(float)texh);
   buffer[right]=oldc;
 }
