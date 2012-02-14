@@ -50,6 +50,10 @@ void draw_test(void)
   
   switch (test)
   {
+    case 4:
+      spLine(rand()%screen->w,rand()%screen->h,-1,
+             rand()%screen->w,rand()%screen->h,-1,1,rand()%65536);
+      break;
     case 3:
       spSetAlphaTest(0);
       spTranslate(0,0,-8<<SP_ACCURACY);
@@ -256,7 +260,7 @@ int calc_test(Uint32 steps)
   if (spGetInput()->button[SP_BUTTON_B])
   {
     spGetInput()->button[SP_BUTTON_B] = 0;
-    test = (test+1)%4;
+    test = (test+1)%5;
   }
   if (spGetInput()->button[SP_BUTTON_START])
     return 1;

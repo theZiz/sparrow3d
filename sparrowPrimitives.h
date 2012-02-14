@@ -23,6 +23,12 @@
 #include "sparrowDefines.h"
 #include <SDL.h>
 
+/* Some words to colors: Even if I use 32 Bit values, this part of the engine
+ * works ONLY with 16 Bit color, with the 5 bit red, 6 bit green and 5 bit blue.
+ * I just use 32 bit values, because it is faster. Otherwise the compiler always
+ * convertets 16 bit to 32 bit and the other direction. If the compiler,
+ * "thinks", that it is just 32 Bit, it is faster. */
+
 /* IMPORTANT: That means, that you still have 14 Bit for your Pixel Range
  * minus 1 Bit for the sign. So you have 13 Bit == 8192 Pixel Width or Height
  * Maximum!, if you use the software renderer! Furthermore the lookup table
@@ -31,8 +37,6 @@
 #define SP_HALF_PRIM_ACCURACY 9
 #define SP_ALPHA_COLOR 63519
 #define SP_MAX_NEGATIVE -0x80000000
-#define SP_SingedInt16 Sint32
-#define SP_UnsingedInt16 Uint32
 
 /* Initializes some Look up tables and the zBufferCache. Is called from
  * sparrowCore. */
@@ -67,23 +71,23 @@ PREFIX void spSetAffineTextureHack(Uint32 test);
 
 /* Clears the Rendertarget with the color. But attention: The z Buffer will
  * not be cleaned! */
-PREFIX void spClearTarget(SP_UnsingedInt16 color);
+PREFIX void spClearTarget(Uint32 color);
 
 /* Draws a Triangle without texture and without alpha value. Returns 1
  * if drawn (culling)*/
-PREFIX int spTriangle(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_UnsingedInt16 color);
+PREFIX int spTriangle(Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color);
 
 /* Draws a Triangle with texture and without alpha value Returns 1
  * if drawn (culling)*/
-PREFIX int spTriangle_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_UnsingedInt16 color);
+PREFIX int spTriangle_tex(Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color);
 
 /* Draws a Quad without texture and without alpha value Returns 1
  * if drawn (culling)*/
-PREFIX int spQuad(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 x4,SP_SingedInt16 y4, Sint32 z4, SP_UnsingedInt16 color);
+PREFIX int spQuad(Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 x4,Sint32 y4, Sint32 z4, Uint32 color);
 
 /* Draws a Quad with texture and without alpha value Returns 1
  * if drawn (culling)*/
-PREFIX int spQuad_tex(SP_SingedInt16 x1, SP_SingedInt16 y1, Sint32 z1, SP_SingedInt16 u1, SP_SingedInt16 v1, SP_SingedInt16 x2, SP_SingedInt16 y2, Sint32 z2, SP_SingedInt16 u2, SP_SingedInt16 v2, SP_SingedInt16 x3, SP_SingedInt16 y3, Sint32 z3, SP_SingedInt16 u3, SP_SingedInt16 v3, SP_SingedInt16 x4, SP_SingedInt16 y4, Sint32 z4, SP_SingedInt16 u4, SP_SingedInt16 v4, SP_UnsingedInt16 color);
+PREFIX int spQuad_tex(Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 x4, Sint32 y4, Sint32 z4, Sint32 u4, Sint32 v4, Uint32 color);
 
 /* Cache ZBuffers. If you use many Render Targets every time you switch
  * it the old ZBuffer will be destroyed and a new one created, which is
@@ -102,14 +106,28 @@ PREFIX void spResetZBuffer();
 /* Returns the Z Buffer Array*/
 PREFIX Sint32* spGetZBuffer();
 
-/* Draws a very fast horizental line with one color */
-PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,SP_UnsingedInt16 color_,Uint32 check,Sint32 engineWindowX,Sint32 engineWindowY);
+/* Draws a very fast horizental line with one color. Used it e.g with
+ * your_render_target->pixels. Don't forget to lock your surface for this
+ * function! Because of some optimizations I can't do it for you. If you are
+ * not sure, use spLine instead. */
+PREFIX void spHorizentalLine(Uint16* pixel,Sint32 x,Sint32 y,Sint32 l_,Uint32 color_,Uint32 check,Sint32 engineWindowX,Sint32 engineWindowY);
 
-/* Draws a Surface on the targer */
+/* Draws a Surface on the target */
 PREFIX void spBlitSurface(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface);
 
+/* Draws a part of a Surface on the target */
 PREFIX void spBlitSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 sx,Sint32 sy,Sint32 w,Sint32 h);
 
+/* Sets Culling on or off. Culling means, that depending on the order of the
+ * edges, the primitive is drawn - or not. Default is on. That means: Every
+ * primitive defined counterclockwise will be drawn. That's very important for
+ * Rendering meshes, because you can't see the backside of a triangle or quad
+ * of an object. So why drawing it? */
 PREFIX void spSetCulling(char value);
+
+/* Draws a line from (x1,y1,z1) to (x2,y2,z2) with the specified color and
+ * linewidth (in pixel) */
+PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,Uint32 linewidth, Uint32 color);
+
 
 #endif
