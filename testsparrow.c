@@ -47,12 +47,14 @@ void draw_test(void)
   spSetCulling(1);
   spSetZSet(1);
   spSetZTest(1);
-  
+  int i;
+
   switch (test)
   {
     case 4:
-      spLine(rand()%screen->w,rand()%screen->h,-1,
-             rand()%screen->w,rand()%screen->h,-1,1,rand()%65536);
+      for (i = 0;i<1000;i++)
+        spLine(rand()%screen->w,rand()%screen->h,-1,
+               rand()%screen->w,rand()%screen->h,-1,rand()%65536);
       break;
     case 3:
       spSetAlphaTest(0);

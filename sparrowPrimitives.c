@@ -3732,7 +3732,7 @@ PREFIX void spSetCulling(char value)
   spCulling = value;
 }
 
-PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,Uint32 linewidth, Uint32 color)
+PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2, Uint32 color)
 {
   if (y1==y2)
   {
@@ -3746,43 +3746,62 @@ PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,U
         x2 = 0;
       if (x1 >= spTargetX)
         x1 = spTargetX-1;
-      y1-=linewidth;
-      y2+=linewidth;
       if (y1 >= spTargetY)
-        return;
-      if (y2 < 0)
         return;
       if (y1 < 0)
-        y2 = 0;
-      if (y1 >= spTargetY)
-        y1 = spTargetY-1;
-      int i;
-      for (i = y1;i<=y2;i++)
-        spHorizentalLine(spTargetPixel,x2,i,x1-x2,color,0,spTargetX,spTargetY);
+        return;
+      SDL_LockSurface(spTarget);
+      spHorizentalLine(spTargetPixel,x2,y1,x1-x2,color,0,spTargetX,spTargetY);
+      SDL_UnlockSurface(spTarget);
       return;
     }
-    if (x1 >= spTargetX)
+    if (x1 < x2)
+    {
+      if (x1 >= spTargetX)
+        return;
+      if (x2 < 0)
+        return;
+      if (x1 < 0)
+        x1 = 0;
+      if (x2 >= spTargetX)
+        x2 = spTargetX-1;
+      if (y1 >= spTargetY)
+        return;
+      if (y1 < 0)
+        return;
+      SDL_LockSurface(spTarget);
+      spHorizentalLine(spTargetPixel,x1,y1,x2-x1,color,0,spTargetX,spTargetY);
+      SDL_UnlockSurface(spTarget);
       return;
-    if (x2 < 0)
-      return;
-    if (x1 < 0)
-      x1 = 0;
-    if (x2 >= spTargetX)
-      x2 = spTargetX-1;
-    y1-=linewidth;
-    y2+=linewidth;
-    if (y1 >= spTargetY)
-      return;
-    if (y2 < 0)
-      return;
-    if (y1 < 0)
-      y2 = 0;
-    if (y1 >= spTargetY)
-      y1 = spTargetY-1;
-    int i;
-    for (i = y1;i<=y2;i++)
-      spHorizentalLine(spTargetPixel,x1,i,x2-x1,color,0,spTargetX,spTargetY);
-    return;
+    }
   }
-    
+  Sint32 dx = abs(x2-x1);
+  Sint32 dy = abs(y2-y1);
+  Sint32 sx = -1;
+  Sint32 sy = -1;
+  if (x1 < x2)
+    sx = 1;
+  if (y1 < y2)
+    sy = 1;
+  int err = dx-dy;
+  SDL_LockSurface(spTarget);
+  while (1)
+  {
+    if (x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY)
+      draw_pixel(x1,y1,color);
+    if (x1 == x2 && y1 == y2)
+      break;
+    Sint32 e2 = 2*err;
+    if (e2 > -dy)
+    {
+      err = err - dy;
+      x1 = x1 + sx;
+    }
+    if (e2 < dx)
+    {
+      err = err + dx;
+      y1 = y1 + sy;
+    }
+  }
+  SDL_UnlockSurface(spTarget);
 }
