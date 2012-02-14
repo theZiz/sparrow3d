@@ -8,6 +8,7 @@ Roadmap:
     - using in the spRender in all Render-functions
   - one white default light at (0,0,0)
 - Edgelist
+- Sprites
 - Sound API. Bitches LOVE Sound.
 
 Nice to have:
