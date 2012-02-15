@@ -28,6 +28,9 @@
 Sint32 spModelView[16];
 Sint32 spProjection[16];
 Sint32 spX_to_Y;
+int spLightOn = -1;
+spLight spLightDiffuse[SP_MAX_LIGHTS];
+Uint32 spLightAmbient[3] = {1<<SP_ACCURACY-2,1<<SP_ACCURACY-2,1<<SP_ACCURACY-2};
 
 /*inline Sint32 fpdiv(Sint32 a,Sint32 b)
 {
@@ -41,13 +44,13 @@ Sint32 spX_to_Y;
 }*/
 
 #ifdef FAST_BUT_UGLY_2
-  #define fpdiv(a,b) (b>=0 && b<(1<<SP_PRIM_ACCURACY))? \
+  #define fpdiv(a,b) ((b>=0 && b<(1<<SP_PRIM_ACCURACY))? \
                        (a*spGetOne_over_x_pointer()[b]>>SP_PRIM_ACCURACY-SP_ACCURACY): \
                        ( \
                          (b <0 && b>(-1<<SP_PRIM_ACCURACY))? \
                          (-a*spGetOne_over_x_pointer()[-b]>>SP_PRIM_ACCURACY-SP_ACCURACY): \
                          (((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY) \
-                       )
+                       ))
 #else
   #define fpdiv(a,b) (((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY)
 #endif
@@ -128,7 +131,7 @@ PREFIX void spScale(Sint32 x,Sint32 y,Sint32 z)
   return (a>>SP_HALF_ACCURACY)*(b>>SP_HALF_ACCURACY);
 }*/
 
-#define fimul(a,b) (a>>SP_HALF_ACCURACY)*(b>>SP_HALF_ACCURACY)
+#define fimul(a,b) ((a>>SP_HALF_ACCURACY)*(b>>SP_HALF_ACCURACY))
 
 PREFIX void spRotate(Sint32 x,Sint32 y,Sint32 z,Sint32 rad)
 {
@@ -345,6 +348,84 @@ inline void spMulModellView(Sint32 x,Sint32 y,Sint32 z,Sint32 *tx,Sint32 *ty,Sin
         + (spModelView[15]);// >> SP_HALF_ACCURACY)*( 1 << SP_HALF_ACCURACY);
 }
 
+//senquack - credit for this fast sqrt goes to Wilco Dijkstra http://www.finesse.demon.co.uk/steven/sqrt.html
+#define iter1(N) \
+  try = root + (1 << (N)); \
+  if (n >= try << (N))   \
+    {   n -= try << (N);   \
+    root |= 2 << (N); \
+}
+   
+ Sint32 fpsqrt (Sint32 n)
+ {
+   Sint32 root = 0, try;
+   iter1 (15);    iter1 (14);    iter1 (13);    iter1 (12);
+   iter1 (11);    iter1 (10);    iter1 ( 9);    iter1 ( 8);
+   iter1 ( 7);    iter1 ( 6);    iter1 ( 5);    iter1 ( 4);
+   iter1 ( 3);    iter1 ( 2);    iter1 ( 1);    iter1 ( 0);
+   return root << (SP_HALF_ACCURACY-1);
+ }
+
+
+inline Uint16 rendererLightCalculation(Uint16 color,Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,Sint32 x3,Sint32 y3,Sint32 z3)
+{
+  if (!spLightOn)
+    return color;
+  Uint32 or = (color >> 11); //0..31
+  Uint32 og = ((color & 2047) >> 5); //0..63
+  Uint32 ob = (color & 31); //0..31
+  //globale light:
+  
+  Uint32 r = spLightAmbient[0] * or;
+  Uint32 g = spLightAmbient[1] * og;
+  Uint32 b = spLightAmbient[2] * ob;
+  
+  //the other lights
+  int i;
+  for (i = 0; i < SP_MAX_LIGHTS; i++)
+  {
+    if (!spLightDiffuse[i].active)
+      continue;
+    Sint32 normale[3];
+    spCalcNormal(x1,y1,z1,x2,y2,z2,x3,y3,z3,normale);
+    Sint32 normale_length = fpsqrt(fimul(normale[0],normale[0]) +
+                                   fimul(normale[1],normale[1]) +
+                                   fimul(normale[2],normale[2]));
+                                   
+    Sint32 direction[3];
+    direction[0] = spLightDiffuse[i].x-(x1+x2 >> 1);
+    direction[1] = spLightDiffuse[i].y-(y1+y2 >> 1);
+    direction[2] = spLightDiffuse[i].z-(z1+z2 >> 1);
+    Sint32 direction_length = fpsqrt(fimul(direction[0],direction[0]) +
+                                     fimul(direction[1],direction[1]) +
+                                     fimul(direction[2],direction[2]));
+                                  
+    Sint32 ac = fpdiv(fimul(direction[0],normale[0])+
+                      fimul(direction[1],normale[1])+
+                      fimul(direction[2],normale[2]),
+                      fimul(direction_length,normale_length));
+    if (ac < 0)
+      ac = 0;
+    if (ac > (1 << SP_ACCURACY))
+      ac = 1 << SP_ACCURACY;
+    r += fimul(ac,spLightDiffuse[i].r) * or;
+    g += fimul(ac,spLightDiffuse[i].g) * og;
+    b += fimul(ac,spLightDiffuse[i].b) * ob;
+  }
+  
+  r = r >> SP_ACCURACY;
+  if (r > 31)
+    r = 31;
+  g = g >> SP_ACCURACY;
+  if (g > 63)
+    g = 63;
+  b = b >> SP_ACCURACY;
+  if (b > 31)
+    b = 31;
+  color = (r << 11) + (g << 5) + b;
+  return color;
+}
+
 PREFIX int spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 x2,Sint32 y2,Sint32 z2,
   Sint32 x3,Sint32 y3,Sint32 z3,Uint16 color)
@@ -398,7 +479,7 @@ PREFIX int spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
              viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
              viewPortY-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,
              viewPortX+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-             viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,color);
+             viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,rendererLightCalculation(color,tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3));
 }
 
 PREFIX int spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
@@ -470,7 +551,7 @@ PREFIX int spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
          viewPortX+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
          viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,
          viewPortX+((nx4*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-         viewPortY-((ny4*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz4,color);
+         viewPortY-((ny4*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz4,rendererLightCalculation(color,tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3));
 }
 
 PREFIX int spTriangleTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
@@ -525,7 +606,7 @@ PREFIX int spTriangleTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
                  viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
                  viewPortY-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,u2,v2,
                  viewPortX+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-                 viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,u3,v3,color);
+                 viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,u3,v3,rendererLightCalculation(color,tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3));
 }
 
 
@@ -599,7 +680,7 @@ PREFIX int spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
              viewPortX+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
              viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,u3,v3,
              viewPortX+((nx4*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
-             viewPortY-((ny4*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz4,u4,v4,color);
+             viewPortY-((ny4*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz4,u4,v4,rendererLightCalculation(color,tx1,ty1,tz1,tx2,ty2,tz2,tx3,ty3,tz3));
 }
 
 PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface)
@@ -640,33 +721,33 @@ PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList)
   int i;
   for (i = 0; i < mesh->pointCount; i++)
   {
-    Sint32 tx1,ty1,tz1,tw1;
-    spMulModellView(mesh->point[i].x,mesh->point[i].y,mesh->point[i].z,&tx1,&ty1,&tz1,&tw1);
-    Sint32 x1 = fimul(spProjection[ 0],tx1);
-    Sint32 y1 = fimul(spProjection[ 5],ty1);
-    Sint32 w1 = fimul(spProjection[11],tz1);
+    Sint32 tw;
+    spMulModellView(mesh->point[i].x,mesh->point[i].y,mesh->point[i].z,&(mesh->point[i].tx),&(mesh->point[i].ty),&(mesh->point[i].tz),&tw);
+    Sint32 x1 = fimul(spProjection[ 0],mesh->point[i].tx);
+    Sint32 y1 = fimul(spProjection[ 5],mesh->point[i].ty);
+    Sint32 w1 = fimul(spProjection[11],mesh->point[i].tz);
     if (w1 == 0)
       w1 = 1;  
     Sint32 nx1 = fpdiv(x1,w1)>>SP_HALF_ACCURACY;
     Sint32 ny1 = fpdiv(y1,w1)>>SP_HALF_ACCURACY;
     mesh->point[i].px = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
     mesh->point[i].py = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
-    mesh->point[i].pz = tz1;    
+    mesh->point[i].pz = mesh->point[i].tz;    
   }
   for (i = 0; i < mesh->texPointCount; i++)
   {
-    Sint32 tx1,ty1,tz1,tw1;
-    spMulModellView(mesh->texPoint[i].x,mesh->texPoint[i].y,mesh->texPoint[i].z,&tx1,&ty1,&tz1,&tw1);
-    Sint32 x1 = fimul(spProjection[ 0],tx1);
-    Sint32 y1 = fimul(spProjection[ 5],ty1);
-    Sint32 w1 = fimul(spProjection[11],tz1);
+    Sint32 tw;
+    spMulModellView(mesh->texPoint[i].x,mesh->texPoint[i].y,mesh->texPoint[i].z,&(mesh->texPoint[i].tx),&(mesh->texPoint[i].ty),&(mesh->texPoint[i].tz),&tw);
+    Sint32 x1 = fimul(spProjection[ 0],mesh->texPoint[i].tx);
+    Sint32 y1 = fimul(spProjection[ 5],mesh->texPoint[i].ty);
+    Sint32 w1 = fimul(spProjection[11],mesh->texPoint[i].tz);
     if (w1 == 0)
       w1 = 1;  
     Sint32 nx1 = fpdiv(x1,w1)>>SP_HALF_ACCURACY;
     Sint32 ny1 = fpdiv(y1,w1)>>SP_HALF_ACCURACY;
     mesh->texPoint[i].px = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
     mesh->texPoint[i].py = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
-    mesh->texPoint[i].pz = tz1;    
+    mesh->texPoint[i].pz = mesh->texPoint[i].tz;    
   }
   //Draw Faces, if seeable
   for (i = 0; i < mesh->triangleCount; i++)
@@ -680,7 +761,17 @@ PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList)
                mesh->point[mesh->triangle[i].point[1]].pz,
                mesh->point[mesh->triangle[i].point[2]].px,
                mesh->point[mesh->triangle[i].point[2]].py,
-               mesh->point[mesh->triangle[i].point[2]].pz,mesh->color);
+               mesh->point[mesh->triangle[i].point[2]].pz,
+               rendererLightCalculation(mesh->color,
+                 mesh->point[mesh->triangle[i].point[0]].tx,
+                 mesh->point[mesh->triangle[i].point[0]].ty,
+                 mesh->point[mesh->triangle[i].point[0]].tz,
+                 mesh->point[mesh->triangle[i].point[1]].tx,
+                 mesh->point[mesh->triangle[i].point[1]].ty,
+                 mesh->point[mesh->triangle[i].point[1]].tz,
+                 mesh->point[mesh->triangle[i].point[2]].tx,
+                 mesh->point[mesh->triangle[i].point[2]].ty,
+                 mesh->point[mesh->triangle[i].point[2]].tz));
   }
   for (i = 0; i < mesh->quadCount; i++)
   {
@@ -696,7 +787,17 @@ PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList)
            mesh->point[mesh->quad[i].point[2]].pz,
            mesh->point[mesh->quad[i].point[3]].px,
            mesh->point[mesh->quad[i].point[3]].py,
-           mesh->point[mesh->quad[i].point[3]].pz,mesh->color);    
+           mesh->point[mesh->quad[i].point[3]].pz,
+           rendererLightCalculation(mesh->color,
+             mesh->point[mesh->quad[i].point[0]].tx,
+             mesh->point[mesh->quad[i].point[0]].ty,
+             mesh->point[mesh->quad[i].point[0]].tz,
+             mesh->point[mesh->quad[i].point[1]].tx,
+             mesh->point[mesh->quad[i].point[1]].ty,
+             mesh->point[mesh->quad[i].point[1]].tz,
+             mesh->point[mesh->quad[i].point[2]].tx,
+             mesh->point[mesh->quad[i].point[2]].ty,
+             mesh->point[mesh->quad[i].point[2]].tz));    
   }
   if (mesh->texQuadCount + mesh->texTriangleCount > 0)
     spBindTexture(mesh->texture);
@@ -717,7 +818,17 @@ PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList)
                    mesh->texPoint[mesh->texTriangle[i].point[2]].py,
                    mesh->texPoint[mesh->texTriangle[i].point[2]].pz,
                    mesh->texPoint[mesh->texTriangle[i].point[2]].u,
-                   mesh->texPoint[mesh->texTriangle[i].point[2]].v,mesh->color);
+                   mesh->texPoint[mesh->texTriangle[i].point[2]].v,
+                   rendererLightCalculation(mesh->color,
+                     mesh->texPoint[mesh->texTriangle[i].point[0]].tx,
+                     mesh->texPoint[mesh->texTriangle[i].point[0]].ty,
+                     mesh->texPoint[mesh->texTriangle[i].point[0]].tz,
+                     mesh->texPoint[mesh->texTriangle[i].point[1]].tx,
+                     mesh->texPoint[mesh->texTriangle[i].point[1]].ty,
+                     mesh->texPoint[mesh->texTriangle[i].point[1]].tz,
+                     mesh->texPoint[mesh->texTriangle[i].point[2]].tx,
+                     mesh->texPoint[mesh->texTriangle[i].point[2]].ty,
+                     mesh->texPoint[mesh->texTriangle[i].point[2]].tz));
   }
   for (i = 0; i < mesh->texQuadCount; i++)
   {
@@ -741,7 +852,17 @@ PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList)
                mesh->texPoint[mesh->texQuad[i].point[3]].py,
                mesh->texPoint[mesh->texQuad[i].point[3]].pz,
                mesh->texPoint[mesh->texQuad[i].point[3]].u,
-               mesh->texPoint[mesh->texQuad[i].point[3]].v,mesh->color);
+               mesh->texPoint[mesh->texQuad[i].point[3]].v,
+               rendererLightCalculation(mesh->color,
+                 mesh->texPoint[mesh->texQuad[i].point[0]].tx,
+                 mesh->texPoint[mesh->texQuad[i].point[0]].ty,
+                 mesh->texPoint[mesh->texQuad[i].point[0]].tz,
+                 mesh->texPoint[mesh->texQuad[i].point[1]].tx,
+                 mesh->texPoint[mesh->texQuad[i].point[1]].ty,
+                 mesh->texPoint[mesh->texQuad[i].point[1]].tz,
+                 mesh->texPoint[mesh->texQuad[i].point[2]].tx,
+                 mesh->texPoint[mesh->texQuad[i].point[2]].ty,
+                 mesh->texPoint[mesh->texQuad[i].point[2]].tz));
   }
   if (updateEdgeList)
   {
@@ -815,3 +936,52 @@ PREFIX void spLine3D(Sint32 x1,Sint32 y1,Sint32 z1,
          viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
          viewPortY-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,color);
 }
+
+PREFIX void spSetLight(int value)
+{
+  if (spLightOn == -1)
+  {
+    //One default light is on
+    spLightDiffuse[0].active = 1;
+    spLightDiffuse[0].r = 7 << SP_ACCURACY-3;
+    spLightDiffuse[0].g = 7 << SP_ACCURACY-3;
+    spLightDiffuse[0].b = 7 << SP_ACCURACY-3;
+    spLightDiffuse[0].x = 0 << SP_ACCURACY;
+    spLightDiffuse[0].y = 0 << SP_ACCURACY;
+    spLightDiffuse[0].z = 0 << SP_ACCURACY;
+    memset(&(spLightDiffuse[1]),0,sizeof(spLight)*(SP_MAX_LIGHTS-1));
+  }
+  spLightOn = value;
+}
+
+PREFIX void spEnableLight(int number,Sint32 active)
+{
+  if (number < 0 || number >= SP_MAX_LIGHTS)
+    return;
+  spLightDiffuse[number].active = active;
+}
+
+PREFIX void spSetLightColor(int number,Uint32 r,Uint32 g,Uint32 b)
+{
+  if (number < 0 || number >= SP_MAX_LIGHTS)
+    return;
+  spLightDiffuse[number].r = r;
+  spLightDiffuse[number].g = g;
+  spLightDiffuse[number].b = b;
+}
+
+PREFIX void spSetLightPosition(int number,Sint32 x,Sint32 y,Sint32 z)
+{
+  if (number < 0 || number >= SP_MAX_LIGHTS)
+    return;
+  spLightDiffuse[number].x = x;
+  spLightDiffuse[number].y = y;
+  spLightDiffuse[number].z = z;  
+}
+
+PREFIX void spGlobalAmbientLight(Uint32 r,Uint32 g,Uint32 b)
+{
+  spLightAmbient[0] = r;
+  spLightAmbient[1] = g;
+  spLightAmbient[2] = b;
+}  

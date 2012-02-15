@@ -23,10 +23,13 @@
 #include "sparrowDefines.h"
 #include <SDL.h>
 
+#define SP_MAX_LIGHTS 8
+
 //A point with the projected coordinates, but without uv-coordinates
 typedef struct spPointStruct *spPointPointer;
 typedef struct spPointStruct {
   Sint32 x,y,z;
+  Sint32 tx,ty,tz; //multiplied with modelview
   Sint32 px,py,pz; //projected
 } spPoint;
 
@@ -34,6 +37,7 @@ typedef struct spPointStruct {
 typedef struct spTexPointStruct *spTexPointPointer;
 typedef struct spTexPointStruct {
   Sint32 x,y,z;
+  Sint32 tx,ty,tz; //multiplied with modelview
   Sint32 px,py,pz; //projected
   Sint32 u,v;
 } spTexPoint;
@@ -74,6 +78,13 @@ typedef struct spModelStruct {
   spEdgePointer edge,texEdge;
   Uint16 color;
 } spModel;
+
+typedef struct spLightStruct *spLightPointer;
+typedef struct spLightStruct {
+  Uint32 r,g,b; //fix point number! (1,1,1) is "normal"
+  Sint32 x,y,z;
+  Sint32 active;
+} spLight;
 
 
 PREFIX void spSetPerspective(float fovyInDegrees, float aspectRatio,
@@ -133,5 +144,20 @@ PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList);
 PREFIX void spLine3D(Sint32 x1,Sint32 y1,Sint32 z1,
                      Sint32 x2,Sint32 y2,Sint32 z2,Uint16 color);
 
+/* Sets Light Calculation on or off. Default off (0) */
+PREFIX void spSetLight(int value);
 
+/* Specifies, whether the light number is used or not (default: just
+ * number 0 is enabled)*/
+PREFIX void spEnableLight(int number,Sint32 active);
+
+/* Sets the Light Values */
+PREFIX void spSetLightColor(int number,Uint32 r,Uint32 g,Uint32 b);
+
+/* Sets the Light Values */
+PREFIX void spSetLightPosition(int number,Sint32 x,Sint32 y,Sint32 z);
+
+/* Sets the global ambient light value used be every 3D quad or triangle
+ * Default: 0.25, 0.25, 0.25*/
+PREFIX void spGlobalAmbientLight(Uint32 r,Uint32 g,Uint32 b);
 #endif

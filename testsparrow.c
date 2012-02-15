@@ -26,7 +26,7 @@ SDL_Surface* pepper;
 spModelPointer mesh;
 Sint32 rotation = 0;
 spFontPointer font = NULL;
-int quality=1;
+int quality=0;
 Uint32 fpssum = 0;
 Sint32 divisor = -5000;
 int test = 0;
@@ -45,7 +45,7 @@ void draw_test(void)
   count = 0;
   
   spBindTexture(garfield);
-  spSetAffineTextureHack(quality);
+  spSetLight(quality);
   spSetCulling(1);
   spSetZSet(zSet);
   spSetZTest(zTest);
@@ -88,7 +88,7 @@ void draw_test(void)
       spRotateY(rotation);
       spRotateZ(rotation);
       count = spMesh3D(mesh,1);
-      spSetZTest(0);
+      /*spSetZTest(0);
       for (i = 0;i < mesh->edgeCount; i++)
         if (mesh->edge[i].status == 0)
           spLine3D(mesh->point[mesh->edge[i].point[0]].x,
@@ -104,7 +104,7 @@ void draw_test(void)
                    mesh->texPoint[mesh->texEdge[i].point[0]].z,
                    mesh->texPoint[mesh->texEdge[i].point[1]].x,
                    mesh->texPoint[mesh->texEdge[i].point[1]].y,
-                   mesh->texPoint[mesh->texEdge[i].point[1]].z,0);
+                   mesh->texPoint[mesh->texEdge[i].point[1]].z,0);*/
       break;
     case 2:
       spSetAlphaTest(1);
@@ -258,9 +258,9 @@ void draw_test(void)
   spSetZTest(0);
   spSetAlphaTest(1);
   if (quality)
-    spFontDraw(0,screen->h-font->maxheight,-1,"Affine Hack",font);
+    spFontDraw(0,screen->h-font->maxheight,-1,"Light",font);
   else
-    spFontDraw(0,screen->h-font->maxheight,-1,"Bad Affine",font);
+    spFontDraw(0,screen->h-font->maxheight,-1,"No Light",font);
   if (clear)
     spFontDraw(0,2,-1,"Do clear",font);
   else
@@ -354,9 +354,9 @@ int main(int argc, char **argv)
   spBindTexture(garfield);
   
   //Mesh loading
-  mesh = spMeshLoadObj("./data/testmeshuv_tri.obj",garfield,65535);
+  //mesh = spMeshLoadObj("./data/testmeshuv_tri.obj",garfield,65535);
   //mesh = spMeshLoadObj("./data/bamuv.obj",garfield,65535);
-  //mesh = spMeshLoadObj("./data/foobar.obj",garfield,65535);
+  mesh = spMeshLoadObj("./data/foobar.obj",garfield,65535);
   
   //All glory the main loop
   spLoop(draw_test,calc_test,10,resize);
