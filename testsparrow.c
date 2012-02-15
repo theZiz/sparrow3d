@@ -354,9 +354,9 @@ int main(int argc, char **argv)
   spBindTexture(garfield);
   
   //Mesh loading
-  //mesh = spMeshLoadObj("./data/testmeshuv_tri.obj",garfield,65535);
+  mesh = spMeshLoadObj("./data/testmeshuv_tri.obj",garfield,65535);
   //mesh = spMeshLoadObj("./data/bamuv.obj",garfield,65535);
-  mesh = spMeshLoadObj("./data/foobar.obj",garfield,65535);
+  //mesh = spMeshLoadObj("./data/foobar.obj",garfield,65535);
   
   //All glory the main loop
   spLoop(draw_test,calc_test,10,resize);
