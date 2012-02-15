@@ -5,7 +5,6 @@ Roadmap:
   - up to 8 lights (openGL like)
     - using in the spRender in all Render-functions
   - one white default light at (0,0,0)
-- Edgelist
 - Sound API. Bitches LOVE Sound.
 - Sprites
 

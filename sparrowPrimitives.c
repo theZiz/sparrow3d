@@ -3704,11 +3704,6 @@ PREFIX void spBlitSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Si
   }
 }
 
-void spCircleBillboard(Sint32 x1, Sint32 y1, Sint32 z1, Uint32 color)
-{
-  
-}
-
 PREFIX void spSetZBufferCache(Uint32 value)
 {
   if (spZBufferCache)

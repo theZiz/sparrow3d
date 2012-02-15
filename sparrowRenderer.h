@@ -70,8 +70,8 @@ typedef struct spModelStruct {
   spTrianglePointer triangle,texTriangle; //the triangles of the modell
   int quadCount,texQuadCount;
   spQuadPointer quad,texQuad; //the quads of the modell
-  int edgeCount,texEdgeCount; //TODO! Don't use it. Will be implemented soon™
-  spEdgePointer edge,texEdges; //the edges of the modell //TODO! Don't use it. Will be implemented soon™
+  int edgeCount,texEdgeCount;
+  spEdgePointer edge,texEdge;
   Uint16 color;
 } spModel;
 
@@ -103,19 +103,23 @@ PREFIX Sint32* spGetMatrix();
 
 PREFIX void spSetMatrix(Sint32* matrix);
 
+/* Returns 1 if drawn (Culling) */
 PREFIX int spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 x2,Sint32 y2,Sint32 z2,
   Sint32 x3,Sint32 y3,Sint32 z3,Uint16 color);
 
+/* Returns 1 if drawn (Culling) */
 PREFIX int spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 x2,Sint32 y2,Sint32 z2,
   Sint32 x3,Sint32 y3,Sint32 z3,
   Sint32 x4,Sint32 y4,Sint32 z4,Uint16 color);
 
+/* Returns 1 if drawn (Culling) */
 PREFIX int spTriangleTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 x2,Sint32 y2,Sint32 z2,Sint32 u2,Sint32 v2,
   Sint32 x3,Sint32 y3,Sint32 z3,Sint32 u3,Sint32 v3,Uint16 color);
 
+/* Returns 1 if drawn (Culling) */
 PREFIX int spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 x2,Sint32 y2,Sint32 z2,Sint32 u2,Sint32 v2,
   Sint32 x3,Sint32 y3,Sint32 z3,Sint32 u3,Sint32 v3,
@@ -125,5 +129,9 @@ PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface);
 
 /* Returns the number of drawn Faces */
 PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList);
+
+PREFIX void spLine3D(Sint32 x1,Sint32 y1,Sint32 z1,
+                     Sint32 x2,Sint32 y2,Sint32 z2,Uint16 color);
+
 
 #endif

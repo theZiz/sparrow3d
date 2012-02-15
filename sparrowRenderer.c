@@ -392,13 +392,13 @@ PREFIX int spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 ny3 = fpdiv(y3,w3)>>SP_HALF_ACCURACY;
 //  Sint32 nz3 = fpdiv(z3,w3)>>SP_HALF_ACCURACY;
 
+  return
   spTriangle(viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
              viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,
              viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
              viewPortY-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,
              viewPortX+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
              viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,color);
-  return 1;
 }
 
 PREFIX int spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
@@ -461,7 +461,8 @@ PREFIX int spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 nx4 = fpdiv(x4,w4)>>SP_HALF_ACCURACY;
   Sint32 ny4 = fpdiv(y4,w4)>>SP_HALF_ACCURACY;
 //  Sint32 nz4 = fpdiv(z4,w4)>>SP_HALF_ACCURACY;
-  
+
+  return  
   spQuad(viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
          viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,
          viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
@@ -470,7 +471,6 @@ PREFIX int spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
          viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,
          viewPortX+((nx4*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
          viewPortY-((ny4*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz4,color);
-  return 1;
 }
 
 PREFIX int spTriangleTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
@@ -519,14 +519,13 @@ PREFIX int spTriangleTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 nx3 = fpdiv(x3,w3)>>SP_HALF_ACCURACY;
   Sint32 ny3 = fpdiv(y3,w3)>>SP_HALF_ACCURACY;
 //  Sint32 nz3 = fpdiv(z3,w3)>>SP_HALF_ACCURACY;
-  
+  return
   spTriangle_tex(viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
                  viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,u1,v1,
                  viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
                  viewPortY-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,u2,v2,
                  viewPortX+((nx3*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
                  viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,u3,v3,color);
-  return 1;
 }
 
 
@@ -592,6 +591,7 @@ PREFIX int spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 ny4 = fpdiv(y4,w4)>>SP_HALF_ACCURACY;
 //  Sint32 nz4 = fpdiv(z4,w4)>>SP_HALF_ACCURACY;
   
+  return
   spQuad_tex(viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
              viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,u1,v1,
              viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
@@ -600,7 +600,6 @@ PREFIX int spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
              viewPortY-((ny3*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz3,u3,v3,
              viewPortX+((nx4*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
              viewPortY-((ny4*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz4,u4,v4,color);
-  return 1;
 }
 
 PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface)
@@ -682,7 +681,6 @@ PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList)
                mesh->point[mesh->triangle[i].point[2]].px,
                mesh->point[mesh->triangle[i].point[2]].py,
                mesh->point[mesh->triangle[i].point[2]].pz,mesh->color);
-    
   }
   for (i = 0; i < mesh->quadCount; i++)
   {
@@ -745,5 +743,75 @@ PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList)
                mesh->texPoint[mesh->texQuad[i].point[3]].u,
                mesh->texPoint[mesh->texQuad[i].point[3]].v,mesh->color);
   }
+  if (updateEdgeList)
+  {
+    for (i = 0; i < mesh->edgeCount; i++)
+      mesh->edge[i].status = -1;
+    for (i = 0; i < mesh->texEdgeCount; i++)
+      mesh->texEdge[i].status = -1;
+    for (i = 0; i < mesh->triangleCount; i++)
+    {
+      mesh->edge[mesh->triangle[i].edge[0]].status += mesh->triangle[i].was_drawn;
+      mesh->edge[mesh->triangle[i].edge[1]].status += mesh->triangle[i].was_drawn;
+      mesh->edge[mesh->triangle[i].edge[2]].status += mesh->triangle[i].was_drawn;
+    }
+    for (i = 0; i < mesh->texTriangleCount; i++)
+    {
+      mesh->texEdge[mesh->texTriangle[i].edge[0]].status += mesh->texTriangle[i].was_drawn;
+      mesh->texEdge[mesh->texTriangle[i].edge[1]].status += mesh->texTriangle[i].was_drawn;
+      mesh->texEdge[mesh->texTriangle[i].edge[2]].status += mesh->texTriangle[i].was_drawn;
+    }
+    for (i = 0; i < mesh->quadCount; i++)
+    {
+      mesh->edge[mesh->quad[i].edge[0]].status += mesh->quad[i].was_drawn;
+      mesh->edge[mesh->quad[i].edge[1]].status += mesh->quad[i].was_drawn;
+      mesh->edge[mesh->quad[i].edge[2]].status += mesh->quad[i].was_drawn;
+      mesh->edge[mesh->quad[i].edge[3]].status += mesh->quad[i].was_drawn;
+    }
+    for (i = 0; i < mesh->texQuadCount; i++)
+    {
+      mesh->texEdge[mesh->texQuad[i].edge[0]].status += mesh->texQuad[i].was_drawn;
+      mesh->texEdge[mesh->texQuad[i].edge[1]].status += mesh->texQuad[i].was_drawn;
+      mesh->texEdge[mesh->texQuad[i].edge[2]].status += mesh->texQuad[i].was_drawn;
+      mesh->texEdge[mesh->texQuad[i].edge[3]].status += mesh->texQuad[i].was_drawn;
+    }
+  }  
   return count;
+}
+
+PREFIX void spLine3D(Sint32 x1,Sint32 y1,Sint32 z1,
+                     Sint32 x2,Sint32 y2,Sint32 z2,Uint16 color)
+{
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
+
+  Sint32 tx1,ty1,tz1,tw1;
+  Sint32 tx2,ty2,tz2,tw2;
+  spMulModellView(x1,y1,z1,&tx1,&ty1,&tz1,&tw1);
+  spMulModellView(x2,y2,z2,&tx2,&ty2,&tz2,&tw2);
+ 
+         x1 = fimul(spProjection[ 0],tx1);
+         y1 = fimul(spProjection[ 5],ty1);
+  Sint32 w1 = fimul(spProjection[11],tz1);
+  if (w1 == 0)
+    w1 = 1;  
+
+  Sint32 nx1 = fpdiv(x1,w1)>>SP_HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y1,w1)>>SP_HALF_ACCURACY;
+
+         x2 = fimul(spProjection[ 0],tx2);
+         y2 = fimul(spProjection[ 5],ty2);
+  Sint32 w2 = fimul(spProjection[11],tz2);
+  if (w2 == 0)
+    w2 = 1;
+
+  Sint32 nx2 = fpdiv(x2,w2)>>SP_HALF_ACCURACY;
+  Sint32 ny2 = fpdiv(y2,w2)>>SP_HALF_ACCURACY;
+  
+  spLine(viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+         viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz1,
+         viewPortX+((nx2*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),
+         viewPortY-((ny2*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY),tz2,color);
 }

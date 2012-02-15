@@ -87,7 +87,24 @@ void draw_test(void)
       spRotateX(rotation);
       spRotateY(rotation);
       spRotateZ(rotation);
-      count = spMesh3D(mesh,0);
+      count = spMesh3D(mesh,1);
+      spSetZTest(0);
+      for (i = 0;i < mesh->edgeCount; i++)
+        if (mesh->edge[i].status == 0)
+          spLine3D(mesh->point[mesh->edge[i].point[0]].x,
+                   mesh->point[mesh->edge[i].point[0]].y,
+                   mesh->point[mesh->edge[i].point[0]].z,
+                   mesh->point[mesh->edge[i].point[1]].x,
+                   mesh->point[mesh->edge[i].point[1]].y,
+                   mesh->point[mesh->edge[i].point[1]].z,0);
+      for (i = 0;i < mesh->texEdgeCount; i++)
+        if (mesh->texEdge[i].status == 0)
+          spLine3D(mesh->texPoint[mesh->texEdge[i].point[0]].x,
+                   mesh->texPoint[mesh->texEdge[i].point[0]].y,
+                   mesh->texPoint[mesh->texEdge[i].point[0]].z,
+                   mesh->texPoint[mesh->texEdge[i].point[1]].x,
+                   mesh->texPoint[mesh->texEdge[i].point[1]].y,
+                   mesh->texPoint[mesh->texEdge[i].point[1]].z,0);
       break;
     case 2:
       spSetAlphaTest(1);

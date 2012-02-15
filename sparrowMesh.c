@@ -70,6 +70,35 @@ Uint32 meshGetNumber(spMeshTempPointer* first,Uint32 point,Uint32 uv)
   return mom->nr;
 }
 
+Uint32 meshGetNumberEdge(spMeshTempPointer* first,Uint32 point,Uint32 uv)
+{
+  spMeshTempPointer mom = *first;
+  Uint32 nr = -1;
+  while (mom != NULL)
+  {
+    if ((mom->point == point && mom->uv == uv) ||
+        (mom->point == uv && mom->uv == point))
+        
+      return mom->nr; //found!
+    mom = mom->next;
+  }
+  //not forund:
+  mom = (spMeshTempPointer)malloc(sizeof(spMeshTemp));
+  mom->point = point;
+  mom->uv = uv;
+  if (*first)
+  {
+    mom->nr = (*first)->nr+1;
+    mom->next = (*first);
+    (*first) = mom;
+    return mom->nr;
+  }
+  (*first) = mom;
+  mom->next = NULL;
+  mom->nr = 0;
+  return mom->nr;
+}
+
 float meshatof(char* buffer)
 {
   double number = 0.0f;
@@ -452,6 +481,70 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture,Uint16 color
     free(rawPoints);
     free(rawUV);
     
+    //Creating Edgelist
+    tempPointer = NULL;
+    texTempPointer = NULL;
+    int i;
+    for (i = 0;i < triCount;i++)
+    {
+      triangles[i].edge[0]=meshGetNumberEdge(&tempPointer,triangles[i].point[0],triangles[i].point[1]);
+      triangles[i].edge[1]=meshGetNumberEdge(&tempPointer,triangles[i].point[1],triangles[i].point[2]);
+      triangles[i].edge[2]=meshGetNumberEdge(&tempPointer,triangles[i].point[2],triangles[i].point[0]);
+    }
+    for (i = 0;i < triTexCount;i++)
+    {
+      texTriangles[i].edge[0]=meshGetNumberEdge(&texTempPointer,texTriangles[i].point[0],texTriangles[i].point[1]);
+      texTriangles[i].edge[1]=meshGetNumberEdge(&texTempPointer,texTriangles[i].point[1],texTriangles[i].point[2]);
+      texTriangles[i].edge[2]=meshGetNumberEdge(&texTempPointer,texTriangles[i].point[2],texTriangles[i].point[0]);
+    }
+    for (i = 0;i < quadCount;i++)
+    {
+      quads[i].edge[0]=meshGetNumberEdge(&tempPointer,quads[i].point[0],quads[i].point[1]);
+      quads[i].edge[1]=meshGetNumberEdge(&tempPointer,quads[i].point[1],quads[i].point[2]);
+      quads[i].edge[2]=meshGetNumberEdge(&tempPointer,quads[i].point[2],quads[i].point[3]);
+      quads[i].edge[3]=meshGetNumberEdge(&tempPointer,quads[i].point[3],quads[i].point[0]);
+    }
+    for (i = 0;i < quadTexCount;i++)
+    {
+      texQuads[i].edge[0]=meshGetNumberEdge(&texTempPointer,texQuads[i].point[0],texQuads[i].point[1]);
+      texQuads[i].edge[1]=meshGetNumberEdge(&texTempPointer,texQuads[i].point[1],texQuads[i].point[2]);
+      texQuads[i].edge[2]=meshGetNumberEdge(&texTempPointer,texQuads[i].point[2],texQuads[i].point[3]);
+      texQuads[i].edge[3]=meshGetNumberEdge(&texTempPointer,texQuads[i].point[3],texQuads[i].point[0]);
+    }
+    int edgeCount = 0;
+    spEdge* edges = NULL;
+    if (tempPointer)
+    {
+      edgeCount = tempPointer->nr+1;
+      edges = (spEdge*)malloc(sizeof(spEdge)*edgeCount);
+    }
+    while (tempPointer)
+    {
+      edges[tempPointer->nr].point[0] = tempPointer->point;
+      edges[tempPointer->nr].point[1] = tempPointer->uv;
+      spMeshTempPointer next = tempPointer->next;
+      free(tempPointer);
+      tempPointer = next;
+    }
+    printf("  %i Edges\n",edgeCount);
+    
+    int texEdgeCount = 0;
+    spEdge* texEdges = NULL;
+    if (texTempPointer)
+    {
+      texEdgeCount = texTempPointer->nr+1;
+      texEdges = (spEdge*)malloc(sizeof(spEdge)*texEdgeCount);
+    }
+    while (texTempPointer)
+    {
+      texEdges[texTempPointer->nr].point[0] = texTempPointer->point;
+      texEdges[texTempPointer->nr].point[1] = texTempPointer->uv;
+      spMeshTempPointer next = texTempPointer->next;
+      free(texTempPointer);
+      texTempPointer = next;
+    }
+    printf("  %i uv Edges\n",texEdgeCount);
+    
     spModelPointer model = (spModelPointer)malloc(sizeof(spModel));
     model->texture = texture;
     model->pointCount = vertexCount;
@@ -466,10 +559,10 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture,Uint16 color
     model->texQuadCount = quadTexCount;
     model->quad = quads;
     model->texQuad = texQuads;
-    model->edgeCount = 0;
-    model->texEdgeCount = 0;
-    model->edge = NULL;
-    model->texEdges = NULL;
+    model->edgeCount = edgeCount;
+    model->edge = edges;
+    model->texEdgeCount = texEdgeCount;
+    model->texEdge = texEdges;
     model->color = color;
     SDL_RWclose(file);
     return model;
@@ -483,5 +576,7 @@ PREFIX void spMeshDelete(spModelPointer mesh)
   free(mesh->texTriangle);
   free(mesh->quad);
   free(mesh->texQuad);
+  free(mesh->edge);
+  free(mesh->texEdge);
   free(mesh);
 }
