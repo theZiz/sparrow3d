@@ -4180,8 +4180,8 @@ PREFIX void spRectangleBorder(Sint32 x1,Sint32 y1,Sint32 x2,Sint32 y2,Sint32 z,S
 {
   if (spAlphaTest && color==SP_ALPHA_COLOR)
     return;
-  int y = y1;
-  int x = x1;
+  int y;
+  int x;
   if (spZSet)
   {
     if (spZTest)
@@ -4568,4 +4568,125 @@ PREFIX void spRectangleBorder(Sint32 x1,Sint32 y1,Sint32 x2,Sint32 y2,Sint32 z,S
       }      
     }
   }
+}
+
+PREFIX void spEllipse(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 rx,Sint32 ry, Uint32 color)
+{
+  if (spAlphaTest && color==SP_ALPHA_COLOR)
+    return;
+  if (x1-rx >= spTargetX) return;
+  if (y1-ry >= spTargetY) return;
+  if (x1+rx < 0)          return;
+  if (y1+ry < 0)          return;
+  Sint32 rxl = -rx;
+  Sint32 rxr = +rx;
+  Sint32 ryl = -ry;
+  Sint32 ryr = +ry;
+  Sint32 RX = rx*rx;
+  Sint32 RY = ry*ry;
+  Sint32 RR = RX*RY;
+  if (x1+rx >= spTargetX) rxr = spTargetX-1-x1;
+  if (y1+ry >= spTargetY) ryr = spTargetY-1-y1;
+  if (x1-rx < 0)          rxl = -x1;
+  if (y1-ry < 0)          ryl = -y1;
+  int x;
+  int y;
+  if (spZSet)
+  {
+    if (spZTest)
+    {
+      for (x = rxl;x<=rxr;x++)
+        for (y = ryl;y<=ryr;y++)
+          if (x*x*RY+y*y*RX <= RR)
+            draw_pixel_ztest_zset(x1+x,y1+y,z1,color);
+    }
+    else
+      for (x = rxl;x<=rxr;x++)
+        for (y = ryl;y<=ryr;y++)
+          if (x*x*RY+y*y*RX <= RR)
+            draw_pixel_zset(x1+x,y1+y,z1,color);
+  }
+  else
+  {
+    if (spZTest)
+    {
+      for (x = rxl;x<=rxr;x++)
+        for (y = ryl;y<=ryr;y++)
+          if (x*x*RY+y*y*RX <= RR)
+            draw_pixel_ztest(x1+x,y1+y,z1,color);
+    }
+    else
+      for (x = rxl;x<=rxr;x++)
+        for (y = ryl;y<=ryr;y++)
+          if (x*x*RY+y*y*RX <= RR)
+            draw_pixel(x1+x,y1+y,color);
+  }  
+}
+
+PREFIX void spEllipseBorder(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 rx,Sint32 ry,Sint32 bx,Sint32 by,Uint32 color)
+{
+  if (spAlphaTest && color==SP_ALPHA_COLOR)
+    return;
+  if (x1-rx >= spTargetX) return;
+  if (y1-ry >= spTargetY) return;
+  if (x1+rx < 0)          return;
+  if (y1+ry < 0)          return;
+  Sint32 rxl = -rx;
+  Sint32 rxr = +rx;
+  Sint32 ryl = -ry;
+  Sint32 ryr = +ry;
+  Sint32 rxlb = -rx+bx;
+  Sint32 rxrb = +rx-bx;
+  Sint32 rylb = -ry+by;
+  Sint32 ryrb = +ry-by;
+  Sint32 RX = rx*rx;
+  Sint32 RY = ry*ry;
+  Sint32 RR = RX*RY;
+  Sint32 RXB = (rx-bx)*(rx-bx);
+  Sint32 RYB = (ry-by)*(ry-by);
+  Sint32 RRB = RXB*RYB;
+  if (x1+rxr >= spTargetX) rxr = spTargetX-1-x1;
+  if (y1+ryr >= spTargetY) ryr = spTargetY-1-y1;
+  if (x1+rxl < 0)          rxl = -x1;
+  if (y1+ryl < 0)          ryl = -y1;
+  if (x1+rxrb >= spTargetX) rxrb = spTargetX-1-x1;
+  if (y1+ryrb >= spTargetY) ryrb = spTargetY-1-y1;
+  if (x1+rxlb < 0)          rxlb = -x1;
+  if (y1+rylb < 0)          rylb = -y1;
+  int x;
+  int y;
+  if (spZSet)
+  {
+    if (spZTest)
+    {
+      for (x = rxl;x<=rxr;x++)
+        for (y = ryl;y<=ryr;y++)
+          if (x*x*RY+y*y*RX <= RR &&
+              x*x*RYB+y*y*RXB >= RRB)
+            draw_pixel_ztest_zset(x1+x,y1+y,z1,color);
+    }
+    else
+      for (x = rxl;x<=rxr;x++)
+        for (y = ryl;y<=ryr;y++)
+          if (x*x*RY+y*y*RX <= RR &&
+              x*x*RYB+y*y*RXB >= RRB)
+            draw_pixel_zset(x1+x,y1+y,z1,color);
+  }
+  else
+  {
+    if (spZTest)
+    {
+      for (x = rxl;x<=rxr;x++)
+        for (y = ryl;y<=ryr;y++)
+          if (x*x*RY+y*y*RX <= RR &&
+              x*x*RYB+y*y*RXB >= RRB)
+            draw_pixel_ztest(x1+x,y1+y,z1,color);
+    }
+    else
+      for (x = rxl;x<=rxr;x++)
+        for (y = ryl;y<=ryr;y++)
+          if (x*x*RY+y*y*RX <= RR &&
+              x*x*RYB+y*y*RXB >= RRB)
+            draw_pixel(x1+x,y1+y,color);
+  }  
 }

@@ -1,6 +1,4 @@
 Roadmap:
-- functions for lines, circles, rectangles
-  - filled and unfilled
 - reimplementation of light
   - spSetLight(value) in spRender like z-stuff
   - global Light as one function
