@@ -4175,3 +4175,397 @@ PREFIX void spRectangle(Sint32 x1,Sint32 y1,Sint32 x2,Sint32 y2,Sint32 z, Uint32
     }
   }
 }
+
+PREFIX void spRectangleBorder(Sint32 x1,Sint32 y1,Sint32 x2,Sint32 y2,Sint32 z,Sint32 borderX,Sint32 borderY, Uint32 color)
+{
+  if (spAlphaTest && color==SP_ALPHA_COLOR)
+    return;
+  int y = y1;
+  int x = x1;
+  if (spZSet)
+  {
+    if (spZTest)
+    {
+      if (x1<=x2)
+      {
+        if (y1<=y2)
+        {
+          if (x1 >= spTargetX) return;
+          if (y1 >= spTargetY) return;
+          if (x2 < 0)          return;
+          if (y2 < 0)          return;
+          if (x2 >= spTargetX) x2 = spTargetX-1;
+          if (y2 >= spTargetY) y2 = spTargetY-1;
+          if (x1 < 0)          x1 = 0;
+          if (y1 < 0)          y1 = 0;
+          for (x=x1;x<=x2;x++)
+          {
+            for (y=y1;y<=y2;y++)
+            {
+              if (y==y1+borderY && x>=x1+borderX && x<=x2-borderX)
+              {
+                y=y2-borderY;
+                continue;
+              }
+              draw_pixel_ztest_zset(x,y,z,color);
+            }
+          }
+        }
+        else
+        {
+          if (x1 >= spTargetX) return;
+          if (y2 >= spTargetY) return;
+          if (x2 < 0)          return;
+          if (y1 < 0)          return;
+          if (x2 >= spTargetX) x2 = spTargetX-1;
+          if (y1 >= spTargetY) y1 = spTargetY-1;
+          if (x1 < 0)          x1 = 0;
+          if (y2 < 0)          y2 = 0;
+          for (x=x1;x<=x2;x++)
+            for (y=y1;y>=y2;y--)
+            {
+              if (y==y1-borderY && x>=x1+borderX && x<=x2-borderX)
+              {
+                y=y2+borderY;
+                continue;
+              }
+              draw_pixel_ztest_zset(x,y,z,color);
+            }
+        }
+      }
+      else
+      {
+        if (y1<=y2)
+        {
+          if (x2 >= spTargetX) return;
+          if (y1 >= spTargetY) return;
+          if (x1 < 0)          return;
+          if (y2 < 0)          return;
+          if (x1 >= spTargetX) x1 = spTargetX-1;
+          if (y2 >= spTargetY) y2 = spTargetY-1;
+          if (x2 < 0)          x2 = 0;
+          if (y1 < 0)          y1 = 0;
+          for (x=x1;x>=x2;x--)
+            for (y=y1;y<=y2;y++)
+            {
+              if (y==y1+borderY && x>=x2+borderX && x<=x1-borderX)
+              {
+                y=y2-borderY;
+                continue;
+              }
+              draw_pixel_ztest_zset(x,y,z,color);
+            }
+        }
+        else
+        {
+          if (x2 >= spTargetX) return;
+          if (y2 >= spTargetY) return;
+          if (x1 < 0)          return;
+          if (y1 < 0)          return;
+          if (x1 >= spTargetX) x1 = spTargetX-1;
+          if (y1 >= spTargetY) y1 = spTargetY-1;
+          if (x2 < 0)          x2 = 0;
+          if (y2 < 0)          y2 = 0;          
+          for (x=x1;x>=x2;x--)
+            for (y=y1;y>=y2;y--)
+            {
+              if (y==y1-borderY && x>=x2+borderX && x<=x1-borderX)
+              {
+                y=y2+borderY;
+                continue;
+              }
+              draw_pixel_ztest_zset(x,y,z,color);
+            }
+        }
+      }      
+    }
+    else
+    {
+      if (x1<=x2)
+      {
+        if (y1<=y2)
+        {
+          if (x1 >= spTargetX) return;
+          if (y1 >= spTargetY) return;
+          if (x2 < 0)          return;
+          if (y2 < 0)          return;
+          if (x2 >= spTargetX) x2 = spTargetX-1;
+          if (y2 >= spTargetY) y2 = spTargetY-1;
+          if (x1 < 0)          x1 = 0;
+          if (y1 < 0)          y1 = 0;
+          for (x=x1;x<=x2;x++)
+          {
+            for (y=y1;y<=y2;y++)
+            {
+              if (y==y1+borderY && x>=x1+borderX && x<=x2-borderX)
+              {
+                y=y2-borderY;
+                continue;
+              }
+              draw_pixel_zset(x,y,z,color);
+            }
+          }
+        }
+        else
+        {
+          if (x1 >= spTargetX) return;
+          if (y2 >= spTargetY) return;
+          if (x2 < 0)          return;
+          if (y1 < 0)          return;
+          if (x2 >= spTargetX) x2 = spTargetX-1;
+          if (y1 >= spTargetY) y1 = spTargetY-1;
+          if (x1 < 0)          x1 = 0;
+          if (y2 < 0)          y2 = 0;
+          for (x=x1;x<=x2;x++)
+            for (y=y1;y>=y2;y--)
+            {
+              if (y==y1-borderY && x>=x1+borderX && x<=x2-borderX)
+              {
+                y=y2+borderY;
+                continue;
+              }
+              draw_pixel_zset(x,y,z,color);
+            }
+        }
+      }
+      else
+      {
+        if (y1<=y2)
+        {
+          if (x2 >= spTargetX) return;
+          if (y1 >= spTargetY) return;
+          if (x1 < 0)          return;
+          if (y2 < 0)          return;
+          if (x1 >= spTargetX) x1 = spTargetX-1;
+          if (y2 >= spTargetY) y2 = spTargetY-1;
+          if (x2 < 0)          x2 = 0;
+          if (y1 < 0)          y1 = 0;
+          for (x=x1;x>=x2;x--)
+            for (y=y1;y<=y2;y++)
+            {
+              if (y==y1+borderY && x>=x2+borderX && x<=x1-borderX)
+              {
+                y=y2-borderY;
+                continue;
+              }
+              draw_pixel_zset(x,y,z,color);
+            }
+        }
+        else
+        {
+          if (x2 >= spTargetX) return;
+          if (y2 >= spTargetY) return;
+          if (x1 < 0)          return;
+          if (y1 < 0)          return;
+          if (x1 >= spTargetX) x1 = spTargetX-1;
+          if (y1 >= spTargetY) y1 = spTargetY-1;
+          if (x2 < 0)          x2 = 0;
+          if (y2 < 0)          y2 = 0;          
+          for (x=x1;x>=x2;x--)
+            for (y=y1;y>=y2;y--)
+            {
+              if (y==y1-borderY && x>=x2+borderX && x<=x1-borderX)
+              {
+                y=y2+borderY;
+                continue;
+              }
+              draw_pixel_zset(x,y,z,color);
+            }
+        }
+      }      
+    }
+  }
+  else
+  {
+    if (spZTest)
+    {
+      if (x1<=x2)
+      {
+        if (y1<=y2)
+        {
+          if (x1 >= spTargetX) return;
+          if (y1 >= spTargetY) return;
+          if (x2 < 0)          return;
+          if (y2 < 0)          return;
+          if (x2 >= spTargetX) x2 = spTargetX-1;
+          if (y2 >= spTargetY) y2 = spTargetY-1;
+          if (x1 < 0)          x1 = 0;
+          if (y1 < 0)          y1 = 0;
+          for (x=x1;x<=x2;x++)
+          {
+            for (y=y1;y<=y2;y++)
+            {
+              if (y==y1+borderY && x>=x1+borderX && x<=x2-borderX)
+              {
+                y=y2-borderY;
+                continue;
+              }
+              draw_pixel_ztest(x,y,z,color);
+            }
+          }
+        }
+        else
+        {
+          if (x1 >= spTargetX) return;
+          if (y2 >= spTargetY) return;
+          if (x2 < 0)          return;
+          if (y1 < 0)          return;
+          if (x2 >= spTargetX) x2 = spTargetX-1;
+          if (y1 >= spTargetY) y1 = spTargetY-1;
+          if (x1 < 0)          x1 = 0;
+          if (y2 < 0)          y2 = 0;
+          for (x=x1;x<=x2;x++)
+            for (y=y1;y>=y2;y--)
+            {
+              if (y==y1-borderY && x>=x1+borderX && x<=x2-borderX)
+              {
+                y=y2+borderY;
+                continue;
+              }
+              draw_pixel_ztest(x,y,z,color);
+            }
+        }
+      }
+      else
+      {
+        if (y1<=y2)
+        {
+          if (x2 >= spTargetX) return;
+          if (y1 >= spTargetY) return;
+          if (x1 < 0)          return;
+          if (y2 < 0)          return;
+          if (x1 >= spTargetX) x1 = spTargetX-1;
+          if (y2 >= spTargetY) y2 = spTargetY-1;
+          if (x2 < 0)          x2 = 0;
+          if (y1 < 0)          y1 = 0;
+          for (x=x1;x>=x2;x--)
+            for (y=y1;y<=y2;y++)
+            {
+              if (y==y1+borderY && x>=x2+borderX && x<=x1-borderX)
+              {
+                y=y2-borderY;
+                continue;
+              }
+              draw_pixel_ztest(x,y,z,color);
+            }
+        }
+        else
+        {
+          if (x2 >= spTargetX) return;
+          if (y2 >= spTargetY) return;
+          if (x1 < 0)          return;
+          if (y1 < 0)          return;
+          if (x1 >= spTargetX) x1 = spTargetX-1;
+          if (y1 >= spTargetY) y1 = spTargetY-1;
+          if (x2 < 0)          x2 = 0;
+          if (y2 < 0)          y2 = 0;          
+          for (x=x1;x>=x2;x--)
+            for (y=y1;y>=y2;y--)
+            {
+              if (y==y1-borderY && x>=x2+borderX && x<=x1-borderX)
+              {
+                y=y2+borderY;
+                continue;
+              }
+              draw_pixel_ztest(x,y,z,color);
+            }
+        }
+      }      
+    }
+    else
+    {
+      if (x1<=x2)
+      {
+        if (y1<=y2)
+        {
+          if (x1 >= spTargetX) return;
+          if (y1 >= spTargetY) return;
+          if (x2 < 0)          return;
+          if (y2 < 0)          return;
+          if (x2 >= spTargetX) x2 = spTargetX-1;
+          if (y2 >= spTargetY) y2 = spTargetY-1;
+          if (x1 < 0)          x1 = 0;
+          if (y1 < 0)          y1 = 0;
+          for (x=x1;x<=x2;x++)
+          {
+            for (y=y1;y<=y2;y++)
+            {
+              if (y==y1+borderY && x>=x1+borderX && x<=x2-borderX)
+              {
+                y=y2-borderY;
+                continue;
+              }
+              draw_pixel(x,y,color);
+            }
+          }
+        }
+        else
+        {
+          if (x1 >= spTargetX) return;
+          if (y2 >= spTargetY) return;
+          if (x2 < 0)          return;
+          if (y1 < 0)          return;
+          if (x2 >= spTargetX) x2 = spTargetX-1;
+          if (y1 >= spTargetY) y1 = spTargetY-1;
+          if (x1 < 0)          x1 = 0;
+          if (y2 < 0)          y2 = 0;
+          for (x=x1;x<=x2;x++)
+            for (y=y1;y>=y2;y--)
+            {
+              if (y==y1-borderY && x>=x1+borderX && x<=x2-borderX)
+              {
+                y=y2+borderY;
+                continue;
+              }
+              draw_pixel(x,y,color);
+            }
+        }
+      }
+      else
+      {
+        if (y1<=y2)
+        {
+          if (x2 >= spTargetX) return;
+          if (y1 >= spTargetY) return;
+          if (x1 < 0)          return;
+          if (y2 < 0)          return;
+          if (x1 >= spTargetX) x1 = spTargetX-1;
+          if (y2 >= spTargetY) y2 = spTargetY-1;
+          if (x2 < 0)          x2 = 0;
+          if (y1 < 0)          y1 = 0;
+          for (x=x1;x>=x2;x--)
+            for (y=y1;y<=y2;y++)
+            {
+              if (y==y1+borderY && x>=x2+borderX && x<=x1-borderX)
+              {
+                y=y2-borderY;
+                continue;
+              }
+              draw_pixel(x,y,color);
+            }
+        }
+        else
+        {
+          if (x2 >= spTargetX) return;
+          if (y2 >= spTargetY) return;
+          if (x1 < 0)          return;
+          if (y1 < 0)          return;
+          if (x1 >= spTargetX) x1 = spTargetX-1;
+          if (y1 >= spTargetY) y1 = spTargetY-1;
+          if (x2 < 0)          x2 = 0;
+          if (y2 < 0)          y2 = 0;          
+          for (x=x1;x>=x2;x--)
+            for (y=y1;y>=y2;y--)
+            {
+              if (y==y1-borderY && x>=x2+borderX && x<=x1-borderX)
+              {
+                y=y2+borderY;
+                continue;
+              }
+              draw_pixel(x,y,color);
+            }
+        }
+      }      
+    }
+  }
+}

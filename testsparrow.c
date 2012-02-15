@@ -53,6 +53,12 @@ void draw_test(void)
 
   switch (test)
   {
+    case 6:
+      srand(0);
+      for (i = 0;i<20;i++)
+        spRectangleBorder(rand()%screen->w,rand()%screen->h,
+                          rand()%screen->w,rand()%screen->h,-1,12,6,rand()%65536);
+      break;
     case 5:
       srand(0);
       for (i = 0;i<20;i++)
@@ -275,7 +281,7 @@ int calc_test(Uint32 steps)
   if (spGetInput()->button[SP_BUTTON_B])
   {
     spGetInput()->button[SP_BUTTON_B] = 0;
-    test = (test+1)%6;
+    test = (test+1)%7;
   }
   if (spGetInput()->button[SP_BUTTON_Y])
   {

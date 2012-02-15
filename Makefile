@@ -19,7 +19,7 @@ GENERAL_TWEAKS = -ffast-math -DFAST_BUT_UGLY_2 -fgcse-sm -fsched-spec-load -fmod
 #-ftracer avg 47.2 peak 46.1
 # all avg 46.7 peak 47.8
 #==PC==
-CPP = gcc -g -march=native -DX86CPU $(GENERAL_TWEAKS)
+CPP = gcc -march=native -DX86CPU $(GENERAL_TWEAKS)
 SDL = `sdl-config --cflags`
 #==Consoles==
 #==GP2X/WIZ==
