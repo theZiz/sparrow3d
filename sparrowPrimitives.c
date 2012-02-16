@@ -42,7 +42,6 @@ SDL_Surface** spTargetCache = NULL;
 Uint32* spSizeCache = NULL;
 char spCulling = 1;
 
-
 PREFIX Sint32* spGetOne_over_x_pointer()
 {
   return spOne_over_x_look_up;
@@ -937,6 +936,9 @@ PREFIX int spTriangle(Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, S
     z2 = z3;
     z3 = temp;
   }
+  int result = spGetPixelPosition(x1,y1) | spGetPixelPosition(x2,y2) | spGetPixelPosition(x3,y3);
+  if (!result)
+    return 0;
   if (spZSet)
   {
     if (spZTest)
@@ -951,7 +953,7 @@ PREFIX int spTriangle(Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, S
     else
       sp_intern_Triangle           (x1,y1,z1,x2,y2,z2,x3,y3,z3,color);
   }
-  return 1;
+  return result;
 }
 
 inline void draw_pixel_tex_ztest_zset(Sint32 x,Sint32 y,Sint32 z,Sint32 u,Sint32 v,Uint32 color)
@@ -2844,6 +2846,9 @@ PREFIX int spTriangle_tex(Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
     v2 = v3;
     v3 = temp;
   }
+  int result = spGetPixelPosition(x1,y1) | spGetPixelPosition(x2,y2) | spGetPixelPosition(x3,y3);
+  if (!result)
+    return 0;
   if (spAlphaTest)
   {
     if (spZSet)
@@ -2878,14 +2883,14 @@ PREFIX int spTriangle_tex(Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
         sp_intern_Triangle_tex           (x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,color);
     }
   }
-  return 1;
+  return result;
 }
-
 
 PREFIX int spQuad(Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 x4,Sint32 y4, Sint32 z4, Uint32 color)
 {
-  if (spTriangle(x1,y1,z1,x2,y2,z2,x3,y3,z3,color))
-    return spTriangle(x1,y1,z1,x3,y3,z3,x4,y4,z4,color);
+  int result = 0;
+  if (result = spTriangle(x1,y1,z1,x2,y2,z2,x3,y3,z3,color))
+    return result | spTriangle(x1,y1,z1,x3,y3,z3,x4,y4,z4,color);
   return 0;
 }
 
@@ -3144,6 +3149,7 @@ inline void sp_intern_Quad_tex_ztest_zset(Sint32 x1, Sint32 y1, Sint32 z1, Sint3
 
 PREFIX int spQuad_tex(Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 x4, Sint32 y4, Sint32 z4, Sint32 u4, Sint32 v4, Uint32 color)
 {
+  int result = 0;
   if (spQuadQuali)
   {
     Sint32 mx = x1+x2+x3+x4>>2;
@@ -3151,20 +3157,20 @@ PREFIX int spQuad_tex(Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sin
     Sint32 mu = u1+u2+u3+u4>>2;
     Sint32 mv = v1+v2+v3+v4>>2;
     Sint32 mz = (z1>>2)+(z2>>2)+(z3>>2)+(z4>>2);
-    if (spTriangle_tex(mx,my,mz,mu,mv,x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,color))
+    if (result = spTriangle_tex(mx,my,mz,mu,mv,x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,color))
     {
-      spTriangle_tex(mx,my,mz,mu,mv,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,color);
-      spTriangle_tex(mx,my,mz,mu,mv,x3,y3,z3,u3,v3,x4,y4,z4,u4,v4,color);
-      return spTriangle_tex(mx,my,mz,mu,mv,x4,y4,z4,u4,v4,x1,y1,z1,u1,v1,color);
+      result |= spTriangle_tex(mx,my,mz,mu,mv,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,color);
+      result |= spTriangle_tex(mx,my,mz,mu,mv,x3,y3,z3,u3,v3,x4,y4,z4,u4,v4,color);
+      return result | spTriangle_tex(mx,my,mz,mu,mv,x4,y4,z4,u4,v4,x1,y1,z1,u1,v1,color);
     }
     return 0;
   }
-  if (spTriangle_tex(x1,y1,z1,u1,v1,
-                     x2,y2,z2,u2,v2,
-                     x3,y3,z3,u3,v3,color))
+  if (result = spTriangle_tex(x1,y1,z1,u1,v1,
+                              x2,y2,z2,u2,v2,
+                              x3,y3,z3,u3,v3,color))
     return spTriangle_tex(x1,y1,z1,u1,v1,
                           x3,y3,z3,u3,v3,
-                          x4,y4,z4,u4,v4,color);
+                          x4,y4,z4,u4,v4,color) | result;
   return 0;
 }
 
@@ -3783,6 +3789,31 @@ PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,U
     for (i = y1;i<=y2;i++)
       spHorizentalLine(spTargetPixel,x1,i,x2-x1,color,0,spTargetX,spTargetY);
     return;
-  }
-    
+  }    
 }
+
+PREFIX int spGetPixelPosition(Sint32 x,Sint32 y)
+{
+  if (x < 0)
+  {
+    if (y < 0)
+      return 4;
+    if (y >= spTargetY)
+      return 256;
+    return 2;
+  }
+  if (x >= spTargetX)
+  {
+    if (y < 0)
+      return 16;
+    if (y >= spTargetY)
+      return 64;
+    return 32;
+  }
+  if (y < 0)
+    return 8;
+  if (y >= spTargetY)
+    return 128;
+  return 1;  
+}
+

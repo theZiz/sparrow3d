@@ -48,14 +48,19 @@ typedef struct spEdgeStruct {
 typedef struct spTriangleStruct *spTrianglePointer;
 typedef struct spTriangleStruct {
   int point[3];
-  int was_drawn; //shows (always), whether the triangle was drawn the last time
+  int was_drawn; //shows (always), whether the quad was drawn the last time
+                 //0 = not drawn, else:
+                 //1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right, 64 rightbottom, 128 bottom, 256 leftbottom
   int edge[3]; //the update of the Edges status flag is optional!
+  Sint32 position; //1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right, 64 rightbottom, 128 bottom, 256 leftbottom
 } spTriangleS;
 
 typedef struct spQuadStruct *spQuadPointer;
 typedef struct spQuadStruct {
   int point[4];
   int was_drawn; //shows (always), whether the quad was drawn the last time
+                 //0 = not drawn, else:
+                 //1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right, 64 rightbottom, 128 bottom, 256 leftbottom
   int edge[4]; //the update of the Edges status flag is optional!
 } spQuadS;
 

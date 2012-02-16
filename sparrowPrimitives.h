@@ -129,5 +129,6 @@ PREFIX void spSetCulling(char value);
  * linewidth (in pixel) */
 PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,Uint32 linewidth, Uint32 color);
 
+PREFIX int spGetPixelPosition(Sint32 x,Sint32 y);
 
 #endif
