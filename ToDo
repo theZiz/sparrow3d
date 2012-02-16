@@ -1,14 +1,4 @@
 Roadmap:
-- functions for lines, circles, rectangles -> with linewidth!
-  - filled and unfilled
-- reimplementation of light
-  - spSetLight(value) in spRender like z-stuff
-  - global Light as one function
-  - up to 8 lights (openGL like)
-    - using in the spRender in all Render-functions
-  - one white default light at (0,0,0)
-- Edgelist
-- Sound API. Bitches LOVE Sound.
 - Sprites
 
 

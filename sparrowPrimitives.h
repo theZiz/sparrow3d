@@ -125,10 +125,21 @@ PREFIX void spBlitSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Si
  * of an object. So why drawing it? */
 PREFIX void spSetCulling(char value);
 
-/* Draws a line from (x1,y1,z1) to (x2,y2,z2) with the specified color and
- * linewidth (in pixel) */
-PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,Uint32 linewidth, Uint32 color);
+/* Draws a line from (x1,y1,z1) to (x2,y2,z2) with the specified color*/
+PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2, Uint32 color);
 
 PREFIX int spGetPixelPosition(Sint32 x,Sint32 y);
+
+/* Draws a filled Rectangle */
+PREFIX void spRectangle(Sint32 x1,Sint32 y1,Sint32 x2,Sint32 y2,Sint32 z, Uint32 color);
+
+/* Draws a filled RectangleBorder with the specified BorderSizes*/
+PREFIX void spRectangleBorder(Sint32 x1,Sint32 y1,Sint32 x2,Sint32 y2,Sint32 z,Sint32 borderX,Sint32 borderY, Uint32 color);
+
+/* Draws a filled Ellipse. Doesn't work for huge ellipses at the moment...*/
+PREFIX void spEllipse(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 rx,Sint32 ry, Uint32 color);
+
+/* Draws a filled EllipseBorder. Doesn't work for huge ellipses at the moment...*/
+PREFIX void spEllipseBorder(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 rx,Sint32 ry,Sint32 bx,Sint32 by,Uint32 color);
 
 #endif

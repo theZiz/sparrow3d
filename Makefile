@@ -6,8 +6,7 @@ DYNAMIC = -lSDL_ttf -lSDL_image -lSDL -lm
 #==global Flags. Even on the gp2x with 16 kb Cache, -O3 is much better then -Os
 CFLAGS = -O3 -fsingle-precision-constant -fPIC 
 CFLAGS_ASM = -O2 -fsingle-precision-constant -fPIC
-# Testtweaks: -fgcse-lm -fgcse-sm -fsched-spec-load -fmodulo-sched -funsafe-loop-optimizations -Wunsafe-loop-optimizations -fgcse-las -fvariable-expansion-in-unroller -ftracer -fbranch-target-load-optimize
-GENERAL_TWEAKS = -ffast-math -DFAST_BUT_UGLY_2 -fgcse-sm -fsched-spec-load -fmodulo-sched -funsafe-loop-optimizations -Wunsafe-loop-optimizations -fgcse-las -fvariable-expansion-in-unroller -ftracer
+GENERAL_TWEAKS = -ffast-math -DFAST_BUT_UGLY_2 -fgcse-sm -fsched-spec-load -fmodulo-sched -fgcse-las -ftracer -funsafe-loop-optimizations -Wunsafe-loop-optimizations -fvariable-expansion-in-unroller
 # some FPS values from my netbook @ 360 Mhz
 # nothing special avg 46.0 peak 46.9
 #-fgcse-las avg 46.0 peak 46.7
@@ -19,7 +18,7 @@ GENERAL_TWEAKS = -ffast-math -DFAST_BUT_UGLY_2 -fgcse-sm -fsched-spec-load -fmod
 #-ftracer avg 47.2 peak 46.1
 # all avg 46.7 peak 47.8
 #==PC==
-CPP = gcc -g -march=native -DX86CPU $(GENERAL_TWEAKS)
+CPP = gcc -march=native -DX86CPU $(GENERAL_TWEAKS)
 SDL = `sdl-config --cflags`
 #==Consoles==
 #==GP2X/WIZ==

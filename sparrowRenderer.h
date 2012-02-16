@@ -23,10 +23,13 @@
 #include "sparrowDefines.h"
 #include <SDL.h>
 
+#define SP_MAX_LIGHTS 8
+
 //A point with the projected coordinates, but without uv-coordinates
 typedef struct spPointStruct *spPointPointer;
 typedef struct spPointStruct {
   Sint32 x,y,z;
+  Sint32 tx,ty,tz; //multiplied with modelview
   Sint32 px,py,pz; //projected
 } spPoint;
 
@@ -34,6 +37,7 @@ typedef struct spPointStruct {
 typedef struct spTexPointStruct *spTexPointPointer;
 typedef struct spTexPointStruct {
   Sint32 x,y,z;
+  Sint32 tx,ty,tz; //multiplied with modelview
   Sint32 px,py,pz; //projected
   Sint32 u,v;
 } spTexPoint;
@@ -75,10 +79,17 @@ typedef struct spModelStruct {
   spTrianglePointer triangle,texTriangle; //the triangles of the modell
   int quadCount,texQuadCount;
   spQuadPointer quad,texQuad; //the quads of the modell
-  int edgeCount,texEdgeCount; //TODO! Don't use it. Will be implemented soon™
-  spEdgePointer edge,texEdges; //the edges of the modell //TODO! Don't use it. Will be implemented soon™
+  int edgeCount,texEdgeCount;
+  spEdgePointer edge,texEdge;
   Uint16 color;
 } spModel;
+
+typedef struct spLightStruct *spLightPointer;
+typedef struct spLightStruct {
+  Uint32 r,g,b; //fix point number! (1,1,1) is "normal"
+  Sint32 x,y,z;
+  Sint32 active;
+} spLight;
 
 
 PREFIX void spSetPerspective(float fovyInDegrees, float aspectRatio,
@@ -108,19 +119,23 @@ PREFIX Sint32* spGetMatrix();
 
 PREFIX void spSetMatrix(Sint32* matrix);
 
+/* Returns 1 if drawn (Culling) */
 PREFIX int spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 x2,Sint32 y2,Sint32 z2,
   Sint32 x3,Sint32 y3,Sint32 z3,Uint16 color);
 
+/* Returns 1 if drawn (Culling) */
 PREFIX int spQuad3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 x2,Sint32 y2,Sint32 z2,
   Sint32 x3,Sint32 y3,Sint32 z3,
   Sint32 x4,Sint32 y4,Sint32 z4,Uint16 color);
 
+/* Returns 1 if drawn (Culling) */
 PREFIX int spTriangleTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 x2,Sint32 y2,Sint32 z2,Sint32 u2,Sint32 v2,
   Sint32 x3,Sint32 y3,Sint32 z3,Sint32 u3,Sint32 v3,Uint16 color);
 
+/* Returns 1 if drawn (Culling) */
 PREFIX int spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 x2,Sint32 y2,Sint32 z2,Sint32 u2,Sint32 v2,
   Sint32 x3,Sint32 y3,Sint32 z3,Sint32 u3,Sint32 v3,
@@ -131,4 +146,23 @@ PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface);
 /* Returns the number of drawn Faces */
 PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList);
 
+PREFIX void spLine3D(Sint32 x1,Sint32 y1,Sint32 z1,
+                     Sint32 x2,Sint32 y2,Sint32 z2,Uint16 color);
+
+/* Sets Light Calculation on or off. Default off (0) */
+PREFIX void spSetLight(int value);
+
+/* Specifies, whether the light number is used or not (default: just
+ * number 0 is enabled)*/
+PREFIX void spEnableLight(int number,Sint32 active);
+
+/* Sets the Light Values */
+PREFIX void spSetLightColor(int number,Uint32 r,Uint32 g,Uint32 b);
+
+/* Sets the Light Values */
+PREFIX void spSetLightPosition(int number,Sint32 x,Sint32 y,Sint32 z);
+
+/* Sets the global ambient light value used be every 3D quad or triangle
+ * Default: 0.25, 0.25, 0.25*/
+PREFIX void spGlobalAmbientLight(Uint32 r,Uint32 g,Uint32 b);
 #endif

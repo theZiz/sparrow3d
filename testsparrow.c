@@ -26,12 +26,14 @@ SDL_Surface* pepper;
 spModelPointer mesh;
 Sint32 rotation = 0;
 spFontPointer font = NULL;
-int quality=1;
+int quality=0;
 Uint32 fpssum = 0;
 Sint32 divisor = -5000;
 int test = 0;
 int clear = 1;
 int count;
+int zTest = 1;
+int zSet = 1;
 
 void draw_test(void)
 {
@@ -43,16 +45,41 @@ void draw_test(void)
   count = 0;
   
   spBindTexture(garfield);
-  spSetAffineTextureHack(quality);
+  spSetLight(quality);
   spSetCulling(1);
-  spSetZSet(1);
-  spSetZTest(1);
-  
+  spSetZSet(zSet);
+  spSetZTest(zTest);
+  int i;
+
   switch (test)
   {
+    case 8:
+      srand(0);
+      for (i = 0;i<20;i++)
+        spEllipseBorder(rand()%screen->w,rand()%screen->h,-1,rand()%(screen->w>>1),rand()%(screen->h>>1),10,20,rand()%65536);
+      break;
+    case 7:
+      srand(0);
+      for (i = 0;i<20;i++)
+        spEllipse(rand()%screen->w,rand()%screen->h,-1,rand()%(screen->w>>1),rand()%(screen->h>>1),rand()%65536);
+      break;
+    case 6:
+      srand(0);
+      for (i = 0;i<20;i++)
+        spRectangleBorder(rand()%screen->w,rand()%screen->h,
+                          rand()%screen->w,rand()%screen->h,-1,12,6,rand()%65536);
+      break;
+    case 5:
+      srand(0);
+      for (i = 0;i<20;i++)
+        spRectangle(rand()%screen->w,rand()%screen->h,
+                    rand()%screen->w,rand()%screen->h,-1,rand()%65536);
+      break;
     case 4:
-      spLine(rand()%screen->w,rand()%screen->h,-1,
-             rand()%screen->w,rand()%screen->h,-1,1,rand()%65536);
+      srand(0);
+      for (i = 0;i<1000;i++)
+        spLine(rand()%screen->w,rand()%screen->h,-1,
+               rand()%screen->w,rand()%screen->h,-1,rand()%65536);
       break;
     case 3:
       spSetAlphaTest(0);
@@ -60,7 +87,24 @@ void draw_test(void)
       spRotateX(rotation);
       spRotateY(rotation);
       spRotateZ(rotation);
-      count = spMesh3D(mesh,0);
+      count = spMesh3D(mesh,1);
+      /*spSetZTest(0);
+      for (i = 0;i < mesh->edgeCount; i++)
+        if (mesh->edge[i].status == 0)
+          spLine3D(mesh->point[mesh->edge[i].point[0]].x,
+                   mesh->point[mesh->edge[i].point[0]].y,
+                   mesh->point[mesh->edge[i].point[0]].z,
+                   mesh->point[mesh->edge[i].point[1]].x,
+                   mesh->point[mesh->edge[i].point[1]].y,
+                   mesh->point[mesh->edge[i].point[1]].z,0);
+      for (i = 0;i < mesh->texEdgeCount; i++)
+        if (mesh->texEdge[i].status == 0)
+          spLine3D(mesh->texPoint[mesh->texEdge[i].point[0]].x,
+                   mesh->texPoint[mesh->texEdge[i].point[0]].y,
+                   mesh->texPoint[mesh->texEdge[i].point[0]].z,
+                   mesh->texPoint[mesh->texEdge[i].point[1]].x,
+                   mesh->texPoint[mesh->texEdge[i].point[1]].y,
+                   mesh->texPoint[mesh->texEdge[i].point[1]].z,0);*/
       break;
     case 2:
       spSetAlphaTest(1);
@@ -214,14 +258,18 @@ void draw_test(void)
   spSetZTest(0);
   spSetAlphaTest(1);
   if (quality)
-    spFontDraw(0,screen->h-font->maxheight,-1,"Affine Hack",font);
+    spFontDraw(0,screen->h-font->maxheight,-1,"Light",font);
   else
-    spFontDraw(0,screen->h-font->maxheight,-1,"Bad Affine",font);
+    spFontDraw(0,screen->h-font->maxheight,-1,"No Light",font);
   if (clear)
     spFontDraw(0,2,-1,"Do clear",font);
   else
     spFontDraw(0,2,-1,"Do not clear",font);
   char buffer[256];
+  sprintf(buffer,"Z-Test %i",zTest);
+  spFontDraw(0,2+font->maxheight,-1,buffer,font);
+  sprintf(buffer,"Z-Set %i",zSet);
+  spFontDraw(0,2+font->maxheight*2,-1,buffer,font);
   sprintf(buffer,"%i Faces",mesh->quadCount+mesh->triangleCount+mesh->texQuadCount+mesh->texTriangleCount);
   spFontDrawRight(screen->w-2,2,-1,buffer,font);
   sprintf(buffer,"%i Drawn",count);
@@ -260,7 +308,15 @@ int calc_test(Uint32 steps)
   if (spGetInput()->button[SP_BUTTON_B])
   {
     spGetInput()->button[SP_BUTTON_B] = 0;
-    test = (test+1)%5;
+    test = (test+1)%9;
+  }
+  if (spGetInput()->button[SP_BUTTON_Y])
+  {
+    spGetInput()->button[SP_BUTTON_Y] = 0;
+    int meow = zTest + 2*zSet;
+    meow = (meow+1)%4;
+    zTest = meow%2;
+    zSet = meow/2;
   }
   if (spGetInput()->button[SP_BUTTON_START])
     return 1;
