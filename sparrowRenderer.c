@@ -984,3 +984,8 @@ PREFIX void spGlobalAmbientLight(Uint32 r,Uint32 g,Uint32 b)
   spLightAmbient[1] = g;
   spLightAmbient[2] = b;
 }  
+
+PREFIX void spRectangle3D(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Uint16 color)
+{
+  //TODO Implement
+}

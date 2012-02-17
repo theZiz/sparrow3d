@@ -165,4 +165,8 @@ PREFIX void spSetLightPosition(int number,Sint32 x,Sint32 y,Sint32 z);
 /* Sets the global ambient light value used be every 3D quad or triangle
  * Default: 0.25, 0.25, 0.25*/
 PREFIX void spGlobalAmbientLight(Uint32 r,Uint32 g,Uint32 b);
+
+PREFIX void spRectangle3D(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Uint16 color);
+
+
 #endif

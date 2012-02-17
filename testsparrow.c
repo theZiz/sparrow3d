@@ -56,24 +56,24 @@ void draw_test(void)
     case 8:
       srand(0);
       for (i = 0;i<20;i++)
-        spEllipseBorder(rand()%screen->w,rand()%screen->h,-1,rand()%(screen->w>>1),rand()%(screen->h>>1),10,20,rand()%65536);
+        spEllipseBorder(rand()%screen->w,rand()%screen->h,-1,rand()%screen->w/4,rand()%screen->h/4,10,20,rand()%65536);
       break;
     case 7:
       srand(0);
       for (i = 0;i<20;i++)
-        spEllipse(rand()%screen->w,rand()%screen->h,-1,rand()%(screen->w>>1),rand()%(screen->h>>1),rand()%65536);
+        spEllipse(rand()%screen->w,rand()%screen->h,-1,rand()%screen->w/4,rand()%screen->h/4,rand()%65536);
       break;
     case 6:
       srand(0);
       for (i = 0;i<20;i++)
         spRectangleBorder(rand()%screen->w,rand()%screen->h,
-                          rand()%screen->w,rand()%screen->h,-1,12,6,rand()%65536);
+                          rand()%screen->w/2,rand()%screen->h/2,SP_MAX_NEGATIVE+1,12,6,rand()%65536);
       break;
     case 5:
       srand(0);
       for (i = 0;i<20;i++)
         spRectangle(rand()%screen->w,rand()%screen->h,
-                    rand()%screen->w,rand()%screen->h,-1,rand()%65536);
+                    rand()%screen->w/2,rand()%screen->h/2,SP_MAX_NEGATIVE+1,rand()%65536);
       break;
     case 4:
       srand(0);

@@ -3906,329 +3906,199 @@ PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2, 
   }  
 }
 
-PREFIX void spRectangle(Sint32 x1,Sint32 y1,Sint32 x2,Sint32 y2,Sint32 z, Uint32 color)
+PREFIX void spRectangle(Sint32 x,Sint32 y,Sint32 w,Sint32 h,Sint32 z, Uint32 color)
 {
   if (spAlphaTest && color==SP_ALPHA_COLOR)
     return;
-  Sint32 y = y1;
+  Sint32 x1 = x-w/2;
+  Sint32 x2 = x+(w-1)/2;
+  Sint32 y1 = y-h/2;
+  Sint32 y2 = y+(h-1)/2;
+  y = y1;
   if (spZSet)
   {
     if (spZTest)
     {
-      if (x1<=x2)
-      {
-        if (y1<=y2)
-        {
-          if (x1 >= spTargetX) return;
-          if (y1 >= spTargetY) return;
-          if (x2 < 0)          return;
-          if (y2 < 0)          return;
-          if (x2 >= spTargetX) x2 = spTargetX-1;
-          if (y2 >= spTargetY) y2 = spTargetY-1;
-          if (x1 < 0)          x1 = 0;
-          if (y1 < 0)          y1 = 0;
-          SDL_LockSurface(spTarget);
-          for (;x1<=x2;x1++)
-            for (y=y1;y<=y2;y++)
-              draw_pixel_ztest_zset(x1,y,z,color);
-        }
-        else
-        {
-          if (x1 >= spTargetX) return;
-          if (y2 >= spTargetY) return;
-          if (x2 < 0)          return;
-          if (y1 < 0)          return;
-          if (x2 >= spTargetX) x2 = spTargetX-1;
-          if (y1 >= spTargetY) y1 = spTargetY-1;
-          if (x1 < 0)          x1 = 0;
-          if (y2 < 0)          y2 = 0;
-          SDL_LockSurface(spTarget);
-          for (;x1<=x2;x1++)
-            for (y=y1;y>=y2;y--)
-              draw_pixel_ztest_zset(x1,y,z,color);
-        }
-      }
-      else
-      {
-        if (y1<=y2)
-        {
-          if (x2 >= spTargetX) return;
-          if (y1 >= spTargetY) return;
-          if (x1 < 0)          return;
-          if (y2 < 0)          return;
-          if (x1 >= spTargetX) x1 = spTargetX-1;
-          if (y2 >= spTargetY) y2 = spTargetY-1;
-          if (x2 < 0)          x2 = 0;
-          if (y1 < 0)          y1 = 0;
-          SDL_LockSurface(spTarget);
-          for (;x1>=x2;x1--)
-            for (y=y1;y<=y2;y++)
-              draw_pixel_ztest_zset(x1,y,z,color);
-        }
-        else
-        {
-          if (x2 >= spTargetX) return;
-          if (y2 >= spTargetY) return;
-          if (x1 < 0)          return;
-          if (y1 < 0)          return;
-          if (x1 >= spTargetX) x1 = spTargetX-1;
-          if (y1 >= spTargetY) y1 = spTargetY-1;
-          if (x2 < 0)          x2 = 0;
-          if (y2 < 0)          y2 = 0;          
-          SDL_LockSurface(spTarget);
-          for (;x1>=x2;x1--)
-            for (y=y1;y>=y2;y--)
-              draw_pixel_ztest_zset(x1,y,z,color);
-        }
-      }      
+      if (x1 >= spTargetX) return;
+      if (y1 >= spTargetY) return;
+      if (x2 < 0)          return;
+      if (y2 < 0)          return;
+      if (x2 >= spTargetX) x2 = spTargetX-1;
+      if (y2 >= spTargetY) y2 = spTargetY-1;
+      if (x1 < 0)          x1 = 0;
+      if (y1 < 0)          y1 = 0;
+      SDL_LockSurface(spTarget);
+      for (;x1<=x2;x1++)
+        for (y=y1;y<=y2;y++)
+          draw_pixel_ztest_zset(x1,y,z,color);
     }
     else
     {
-      if (x1<=x2)
-      {
-        if (y1<=y2)
-        {
-          if (x1 >= spTargetX) return;
-          if (y1 >= spTargetY) return;
-          if (x2 < 0)          return;
-          if (y2 < 0)          return;
-          if (x2 >= spTargetX) x2 = spTargetX-1;
-          if (y2 >= spTargetY) y2 = spTargetY-1;
-          if (x1 < 0)          x1 = 0;
-          if (y1 < 0)          y1 = 0;
-          SDL_LockSurface(spTarget);
-          for (;x1<=x2;x1++)
-            for (y=y1;y<=y2;y++)
-              draw_pixel_zset(x1,y,z,color);
-        }
-        else
-        {
-          if (x1 >= spTargetX) return;
-          if (y2 >= spTargetY) return;
-          if (x2 < 0)          return;
-          if (y1 < 0)          return;
-          if (x2 >= spTargetX) x2 = spTargetX-1;
-          if (y1 >= spTargetY) y1 = spTargetY-1;
-          if (x1 < 0)          x1 = 0;
-          if (y2 < 0)          y2 = 0;
-          SDL_LockSurface(spTarget);
-          for (;x1<=x2;x1++)
-            for (y=y1;y>=y2;y--)
-              draw_pixel_zset(x1,y,z,color);
-        }
-      }
-      else
-      {
-        if (y1<=y2)
-        {
-          if (x2 >= spTargetX) return;
-          if (y1 >= spTargetY) return;
-          if (x1 < 0)          return;
-          if (y2 < 0)          return;
-          if (x1 >= spTargetX) x1 = spTargetX-1;
-          if (y2 >= spTargetY) y2 = spTargetY-1;
-          if (x2 < 0)          x2 = 0;
-          if (y1 < 0)          y1 = 0;
-          SDL_LockSurface(spTarget);
-          for (;x1>=x2;x1--)
-            for (y=y1;y<=y2;y++)
-              draw_pixel_zset(x1,y,z,color);
-        }
-        else
-        {
-          if (x2 >= spTargetX) return;
-          if (y2 >= spTargetY) return;
-          if (x1 < 0)          return;
-          if (y1 < 0)          return;
-          if (x1 >= spTargetX) x1 = spTargetX-1;
-          if (y1 >= spTargetY) y1 = spTargetY-1;
-          if (x2 < 0)          x2 = 0;
-          if (y2 < 0)          y2 = 0;          
-          SDL_LockSurface(spTarget);
-          for (;x1>=x2;x1--)
-            for (y=y1;y>=y2;y--)
-              draw_pixel_zset(x1,y,z,color);
-        }
-      }      
+      if (x1 >= spTargetX) return;
+      if (y1 >= spTargetY) return;
+      if (x2 < 0)          return;
+      if (y2 < 0)          return;
+      if (x2 >= spTargetX) x2 = spTargetX-1;
+      if (y2 >= spTargetY) y2 = spTargetY-1;
+      if (x1 < 0)          x1 = 0;
+      if (y1 < 0)          y1 = 0;
+      SDL_LockSurface(spTarget);
+      for (;x1<=x2;x1++)
+        for (y=y1;y<=y2;y++)
+          draw_pixel_zset(x1,y,z,color);
     }
   }
   else
   {
     if (spZTest)
     {
-      if (x1<=x2)
-      {
-        if (y1<=y2)
-        {
-          if (x1 >= spTargetX) return;
-          if (y1 >= spTargetY) return;
-          if (x2 < 0)          return;
-          if (y2 < 0)          return;
-          if (x2 >= spTargetX) x2 = spTargetX-1;
-          if (y2 >= spTargetY) y2 = spTargetY-1;
-          if (x1 < 0)          x1 = 0;
-          if (y1 < 0)          y1 = 0;
-          SDL_LockSurface(spTarget);
-          for (;x1<=x2;x1++)
-            for (y=y1;y<=y2;y++)
-              draw_pixel_ztest(x1,y,z,color);
-        }
-        else
-        {
-          if (x1 >= spTargetX) return;
-          if (y2 >= spTargetY) return;
-          if (x2 < 0)          return;
-          if (y1 < 0)          return;
-          if (x2 >= spTargetX) x2 = spTargetX-1;
-          if (y1 >= spTargetY) y1 = spTargetY-1;
-          if (x1 < 0)          x1 = 0;
-          if (y2 < 0)          y2 = 0;
-          SDL_LockSurface(spTarget);
-          for (;x1<=x2;x1++)
-            for (y=y1;y>=y2;y--)
-              draw_pixel_ztest(x1,y,z,color);
-        }
-      }
-      else
-      {
-        if (y1<=y2)
-        {
-          if (x2 >= spTargetX) return;
-          if (y1 >= spTargetY) return;
-          if (x1 < 0)          return;
-          if (y2 < 0)          return;
-          if (x1 >= spTargetX) x1 = spTargetX-1;
-          if (y2 >= spTargetY) y2 = spTargetY-1;
-          if (x2 < 0)          x2 = 0;
-          if (y1 < 0)          y1 = 0;
-          SDL_LockSurface(spTarget);
-          for (;x1>=x2;x1--)
-            for (y=y1;y<=y2;y++)
-              draw_pixel_ztest(x1,y,z,color);
-        }
-        else
-        {
-          if (x2 >= spTargetX) return;
-          if (y2 >= spTargetY) return;
-          if (x1 < 0)          return;
-          if (y1 < 0)          return;
-          if (x1 >= spTargetX) x1 = spTargetX-1;
-          if (y1 >= spTargetY) y1 = spTargetY-1;
-          if (x2 < 0)          x2 = 0;
-          if (y2 < 0)          y2 = 0;          
-          SDL_LockSurface(spTarget);
-          for (;x1>=x2;x1--)
-            for (y=y1;y>=y2;y--)
-              draw_pixel_ztest(x1,y,z,color);
-        }
-      }      
+      if (x1 >= spTargetX) return;
+      if (y1 >= spTargetY) return;
+      if (x2 < 0)          return;
+      if (y2 < 0)          return;
+      if (x2 >= spTargetX) x2 = spTargetX-1;
+      if (y2 >= spTargetY) y2 = spTargetY-1;
+      if (x1 < 0)          x1 = 0;
+      if (y1 < 0)          y1 = 0;
+      SDL_LockSurface(spTarget);
+      for (;x1<=x2;x1++)
+        for (y=y1;y<=y2;y++)
+          draw_pixel_ztest(x1,y,z,color);
     }
     else
     {
-      if (x1<=x2)
-      {
-        if (y1<=y2)
-        {
-          if (x1 >= spTargetX) return;
-          if (y1 >= spTargetY) return;
-          if (x2 < 0)          return;
-          if (y2 < 0)          return;
-          if (x2 >= spTargetX) x2 = spTargetX-1;
-          if (y2 >= spTargetY) y2 = spTargetY-1;
-          if (x1 < 0)          x1 = 0;
-          if (y1 < 0)          y1 = 0;
-          SDL_LockSurface(spTarget);
-          for (;x1<=x2;x1++)
-            for (y=y1;y<=y2;y++)
-              draw_pixel(x1,y,color);
-        }
-        else
-        {
-          if (x1 >= spTargetX) return;
-          if (y2 >= spTargetY) return;
-          if (x2 < 0)          return;
-          if (y1 < 0)          return;
-          if (x2 >= spTargetX) x2 = spTargetX-1;
-          if (y1 >= spTargetY) y1 = spTargetY-1;
-          if (x1 < 0)          x1 = 0;
-          if (y2 < 0)          y2 = 0;
-          SDL_LockSurface(spTarget);
-          for (;x1<=x2;x1++)
-            for (y=y1;y>=y2;y--)
-              draw_pixel(x1,y,color);
-        }
-      }
-      else
-      {
-        if (y1<=y2)
-        {
-          if (x2 >= spTargetX) return;
-          if (y1 >= spTargetY) return;
-          if (x1 < 0)          return;
-          if (y2 < 0)          return;
-          if (x1 >= spTargetX) x1 = spTargetX-1;
-          if (y2 >= spTargetY) y2 = spTargetY-1;
-          if (x2 < 0)          x2 = 0;
-          if (y1 < 0)          y1 = 0;
-          SDL_LockSurface(spTarget);
-          for (;x1>=x2;x1--)
-            for (y=y1;y<=y2;y++)
-              draw_pixel(x1,y,color);
-        }
-        else
-        {
-          if (x2 >= spTargetX) return;
-          if (y2 >= spTargetY) return;
-          if (x1 < 0)          return;
-          if (y1 < 0)          return;
-          if (x1 >= spTargetX) x1 = spTargetX-1;
-          if (y1 >= spTargetY) y1 = spTargetY-1;
-          if (x2 < 0)          x2 = 0;
-          if (y2 < 0)          y2 = 0;          
-          SDL_LockSurface(spTarget);
-          for (;x1>=x2;x1--)
-            for (y=y1;y>=y2;y--)
-              draw_pixel(x1,y,color);
-        }
-      }      
+      if (x1 >= spTargetX) return;
+      if (y1 >= spTargetY) return;
+      if (x2 < 0)          return;
+      if (y2 < 0)          return;
+      if (x2 >= spTargetX) x2 = spTargetX-1;
+      if (y2 >= spTargetY) y2 = spTargetY-1;
+      if (x1 < 0)          x1 = 0;
+      if (y1 < 0)          y1 = 0;
+      SDL_LockSurface(spTarget);
+      for (;x1<=x2;x1++)
+        for (y=y1;y<=y2;y++)
+          draw_pixel(x1,y,color);
     }
   }
   SDL_UnlockSurface(spTarget);  
 }
 
-PREFIX void spRectangleBorder(Sint32 x1,Sint32 y1,Sint32 x2,Sint32 y2,Sint32 z,Sint32 borderX,Sint32 borderY, Uint32 color)
-{
-  if (x2<x1)
-  {
-    Sint32 temp = x1;
-    x1 = x2;
-    x2 = temp;
-  }
-  if (y2<y1)
-  {
-    Sint32 temp = y1;
-    y1 = y2;
-    y2 = temp;
-  }
-  if (x2-x1 < 2*borderX || y2-y1 < 2*borderY)
-    spRectangle(x1,y1,x2,y2,z,color);
-  else
-  {
-    spRectangle(x1,y1,x2,y1+borderY,z,color);
-    spRectangle(x1,y2-borderY,x2,y2,z,color);
-    spRectangle(x1,y1+borderY+1,x1+borderX,y2-borderY-1,z,color);
-    spRectangle(x2-borderX,y1+borderY+1,x2,y2-borderY-1,z,color);
-  }
-}
-
-PREFIX void spEllipse(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 rx,Sint32 ry, Uint32 color)
+PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 w,Sint32 h,Sint32 z,Sint32 borderX,Sint32 borderY, Uint32 color)
 {
   if (spAlphaTest && color==SP_ALPHA_COLOR)
     return;
-  if (x1-rx >= spTargetX) return;
-  if (y1-ry >= spTargetY) return;
-  if (x1+rx < 0)          return;
-  if (y1+ry < 0)          return;
+  Sint32 x1 = x-w/2;
+  Sint32 x2 = x+(w-1)/2;
+  Sint32 y1 = y-h/2;
+  Sint32 y2 = y+(h-1)/2;
+  y = y1;
+  x = x1;
+  if (spZSet)
+  {
+    if (spZTest)
+    {
+      if (x1 >= spTargetX) return;
+      if (y1 >= spTargetY) return;
+      if (x2 < 0)          return;
+      if (y2 < 0)          return;
+      if (x2 >= spTargetX) x2 = spTargetX-1;
+      if (y2 >= spTargetY) y2 = spTargetY-1;
+      if (x1 < 0)          x1 = 0;
+      if (y1 < 0)          y1 = 0;
+      SDL_LockSurface(spTarget);
+      for (;x<=x2;x++)
+        for (y=y1;y<=y2;y++)
+        {
+          if (y == y1+borderY && x >= x1+borderX && x <= x2-borderX)
+          {
+            y = y2-borderY;
+            continue;
+          }
+          draw_pixel_ztest_zset(x,y,z,color);
+        }
+    }
+    else
+    {
+      if (x1 >= spTargetX) return;
+      if (y1 >= spTargetY) return;
+      if (x2 < 0)          return;
+      if (y2 < 0)          return;
+      if (x2 >= spTargetX) x2 = spTargetX-1;
+      if (y2 >= spTargetY) y2 = spTargetY-1;
+      if (x1 < 0)          x1 = 0;
+      if (y1 < 0)          y1 = 0;
+      SDL_LockSurface(spTarget);
+      for (;x<=x2;x++)
+        for (y=y1;y<=y2;y++)
+        {
+          if (y == y1+borderY && x >= x1+borderX && x <= x2-borderX)
+          {
+            y = y2-borderY;
+            continue;
+          }
+          draw_pixel_zset(x,y,z,color);
+        }
+    }
+  }
+  else
+  {
+    if (spZTest)
+    {
+      if (x1 >= spTargetX) return;
+      if (y1 >= spTargetY) return;
+      if (x2 < 0)          return;
+      if (y2 < 0)          return;
+      if (x2 >= spTargetX) x2 = spTargetX-1;
+      if (y2 >= spTargetY) y2 = spTargetY-1;
+      if (x1 < 0)          x1 = 0;
+      if (y1 < 0)          y1 = 0;
+      SDL_LockSurface(spTarget);
+      for (;x<=x2;x++)
+        for (y=y1;y<=y2;y++)
+        {
+          if (y == y1+borderY && x >= x1+borderX && x <= x2-borderX)
+          {
+            y = y2-borderY;
+            continue;
+          }
+          draw_pixel_ztest(x,y,z,color);
+        }
+    }
+    else
+    {
+      if (x1 >= spTargetX) return;
+      if (y1 >= spTargetY) return;
+      if (x2 < 0)          return;
+      if (y2 < 0)          return;
+      if (x2 >= spTargetX) x2 = spTargetX-1;
+      if (y2 >= spTargetY) y2 = spTargetY-1;
+      if (x1 < 0)          x1 = 0;
+      if (y1 < 0)          y1 = 0;
+      SDL_LockSurface(spTarget);
+      for (;x<=x2;x++)
+        for (y=y1;y<=y2;y++)
+        {
+          if (y == y1+borderY && x >= x1+borderX && x <= x2-borderX)
+          {
+            y = y2-borderY;
+            continue;
+          }
+          draw_pixel(x,y,color);
+        }
+    }
+  }
+  SDL_UnlockSurface(spTarget);  
+}
+
+PREFIX void spEllipse(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry, Uint32 color)
+{
+  if (spAlphaTest && color==SP_ALPHA_COLOR)
+    return;
+  if (x-rx >= spTargetX) return;
+  if (y-ry >= spTargetY) return;
+  if (x+rx < 0)          return;
+  if (y+ry < 0)          return;
   Sint32 rxl = -rx;
   Sint32 rxr = +rx;
   Sint32 ryl = -ry;
@@ -4236,12 +4106,12 @@ PREFIX void spEllipse(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 rx,Sint32 ry, Uint32 
   Sint32 RX = rx*rx;
   Sint32 RY = ry*ry;
   Sint32 RR = RX*RY;
-  if (x1+rx >= spTargetX) rxr = spTargetX-1-x1;
-  if (y1+ry >= spTargetY) ryr = spTargetY-1-y1;
-  if (x1-rx < 0)          rxl = -x1;
-  if (y1-ry < 0)          ryl = -y1;
-  int x;
-  int y;
+  if (x+rx >= spTargetX) rxr = spTargetX-1-x;
+  if (y+ry >= spTargetY) ryr = spTargetY-1-y;
+  if (x-rx < 0)          rxl = -x;
+  if (y-ry < 0)          ryl = -y;
+  Sint32 x1 = x;
+  Sint32 y1 = y;
   SDL_LockSurface(spTarget);
   if (spZSet)
   {
@@ -4252,11 +4122,11 @@ PREFIX void spEllipse(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 rx,Sint32 ry, Uint32 
           if ((rx+ry >> 8))
           {
             if ((x*x >> 4)*(RY >> 4)+(y*y >> 4)*(RX >> 4) <= (RX >> 4)*(RY >> 4))
-              draw_pixel_ztest_zset(x1+x,y1+y,z1,color);
+              draw_pixel_ztest_zset(x1+x,y1+y,z,color);
           }
           else
             if (x*x*RY+y*y*RX <= RR)
-              draw_pixel_ztest_zset(x1+x,y1+y,z1,color);
+              draw_pixel_ztest_zset(x1+x,y1+y,z,color);
     }
     else
       for (x = rxl;x<=rxr;x++)
@@ -4264,11 +4134,11 @@ PREFIX void spEllipse(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 rx,Sint32 ry, Uint32 
           if ((rx+ry >> 8))
           {
             if ((x*x >> 4)*(RY >> 4)+(y*y >> 4)*(RX >> 4) <= (RX >> 4)*(RY >> 4))
-              draw_pixel_zset(x1+x,y1+y,z1,color);
+              draw_pixel_zset(x1+x,y1+y,z,color);
           }
           else
             if (x*x*RY+y*y*RX <= RR)
-              draw_pixel_zset(x1+x,y1+y,z1,color);
+              draw_pixel_zset(x1+x,y1+y,z,color);
   }
   else
   {
@@ -4279,11 +4149,11 @@ PREFIX void spEllipse(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 rx,Sint32 ry, Uint32 
           if ((rx+ry >> 8))
           {
             if ((x*x >> 4)*(RY >> 4)+(y*y >> 4)*(RX >> 4) <= (RX >> 4)*(RY >> 4))
-              draw_pixel_ztest(x1+x,y1+y,z1,color);
+              draw_pixel_ztest(x1+x,y1+y,z,color);
           }
           else
             if (x*x*RY+y*y*RX <= RR)
-              draw_pixel_ztest(x1+x,y1+y,z1,color);
+              draw_pixel_ztest(x1+x,y1+y,z,color);
     }
     else
       for (x = rxl;x<=rxr;x++)
@@ -4296,6 +4166,77 @@ PREFIX void spEllipse(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 rx,Sint32 ry, Uint32 
           else
             if (x*x*RY+y*y*RX <= RR)
               draw_pixel(x1+x,y1+y,color);
+  }
+  SDL_UnlockSurface(spTarget);
+}
+
+PREFIX void spEllipseBorder(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry,Sint32 bx,Sint32 by,Uint32 color)
+{
+  if (spAlphaTest && color==SP_ALPHA_COLOR)
+    return;
+
+  if (x-rx >= spTargetX) return;
+  if (y-ry >= spTargetY) return;
+  if (x+rx < 0)          return;
+  if (y+ry < 0)          return;
+  Sint32 rxl = -rx;
+  Sint32 rxr = +rx;
+  Sint32 ryl = -ry;
+  Sint32 ryr = +ry;
+  Sint32 rxlb = -rx+bx;
+  Sint32 rxrb = +rx-bx;
+  Sint32 rylb = -ry+by;
+  Sint32 ryrb = +ry-by;
+  Sint32 RX = rx*rx;
+  Sint32 RY = ry*ry;
+  Sint32 RR = RX*RY;
+  Sint32 RXB = (rx-bx)*(rx-bx);
+  Sint32 RYB = (ry-by)*(ry-by);
+  Sint32 RRB = RXB*RYB;
+  if (x+rxr >= spTargetX) rxr = spTargetX-1-x;
+  if (y+ryr >= spTargetY) ryr = spTargetY-1-y;
+  if (x+rxl < 0)          rxl = -x;
+  if (y+ryl < 0)          ryl = -y;
+  if (x+rxrb >= spTargetX) rxrb = spTargetX-1-x;
+  if (y+ryrb >= spTargetY) ryrb = spTargetY-1-y;
+  if (x+rxlb < 0)          rxlb = -x;
+  if (y+rylb < 0)          rylb = -y;
+  Sint32 x1 = x;
+  Sint32 y1 = y;
+  SDL_LockSurface(spTarget);
+  if (spZSet)
+  {
+    if (spZTest)
+    {
+      for (x = rxl;x<=rxr;x++)
+        for (y = ryl;y<=ryr;y++)
+          if (x*x*RY+y*y*RX <= RR &&
+              x*x*RYB+y*y*RXB >= RRB)
+            draw_pixel_ztest_zset(x1+x,y1+y,z,color);
+    }
+    else
+      for (x = rxl;x<=rxr;x++)
+        for (y = ryl;y<=ryr;y++)
+          if (x*x*RY+y*y*RX <= RR &&
+              x*x*RYB+y*y*RXB >= RRB)
+            draw_pixel_zset(x1+x,y1+y,z,color);
+  }
+  else
+  {
+    if (spZTest)
+    {
+      for (x = rxl;x<=rxr;x++)
+        for (y = ryl;y<=ryr;y++)
+          if (x*x*RY+y*y*RX <= RR &&
+              x*x*RYB+y*y*RXB >= RRB)
+            draw_pixel_ztest(x1+x,y1+y,z,color);
+    }
+    else
+      for (x = rxl;x<=rxr;x++)
+        for (y = ryl;y<=ryr;y++)
+          if (x*x*RY+y*y*RX <= RR &&
+              x*x*RYB+y*y*RXB >= RRB)
+            draw_pixel(x1+x,y1+y,color);
   }
   SDL_UnlockSurface(spTarget);
 }
@@ -4324,75 +4265,3 @@ PREFIX int spGetPixelPosition(Sint32 x,Sint32 y)
     return 128;
   return 1;  
 }
-
-PREFIX void spEllipseBorder(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 rx,Sint32 ry,Sint32 bx,Sint32 by,Uint32 color)
-{
-  if (spAlphaTest && color==SP_ALPHA_COLOR)
-    return;
-
-  if (x1-rx >= spTargetX) return;
-  if (y1-ry >= spTargetY) return;
-  if (x1+rx < 0)          return;
-  if (y1+ry < 0)          return;
-  Sint32 rxl = -rx;
-  Sint32 rxr = +rx;
-  Sint32 ryl = -ry;
-  Sint32 ryr = +ry;
-  Sint32 rxlb = -rx+bx;
-  Sint32 rxrb = +rx-bx;
-  Sint32 rylb = -ry+by;
-  Sint32 ryrb = +ry-by;
-  Sint32 RX = rx*rx;
-  Sint32 RY = ry*ry;
-  Sint32 RR = RX*RY;
-  Sint32 RXB = (rx-bx)*(rx-bx);
-  Sint32 RYB = (ry-by)*(ry-by);
-  Sint32 RRB = RXB*RYB;
-  if (x1+rxr >= spTargetX) rxr = spTargetX-1-x1;
-  if (y1+ryr >= spTargetY) ryr = spTargetY-1-y1;
-  if (x1+rxl < 0)          rxl = -x1;
-  if (y1+ryl < 0)          ryl = -y1;
-  if (x1+rxrb >= spTargetX) rxrb = spTargetX-1-x1;
-  if (y1+ryrb >= spTargetY) ryrb = spTargetY-1-y1;
-  if (x1+rxlb < 0)          rxlb = -x1;
-  if (y1+rylb < 0)          rylb = -y1;
-  int x;
-  int y;
-  SDL_LockSurface(spTarget);
-  if (spZSet)
-  {
-    if (spZTest)
-    {
-      for (x = rxl;x<=rxr;x++)
-        for (y = ryl;y<=ryr;y++)
-          if (x*x*RY+y*y*RX <= RR &&
-              x*x*RYB+y*y*RXB >= RRB)
-            draw_pixel_ztest_zset(x1+x,y1+y,z1,color);
-    }
-    else
-      for (x = rxl;x<=rxr;x++)
-        for (y = ryl;y<=ryr;y++)
-          if (x*x*RY+y*y*RX <= RR &&
-              x*x*RYB+y*y*RXB >= RRB)
-            draw_pixel_zset(x1+x,y1+y,z1,color);
-  }
-  else
-  {
-    if (spZTest)
-    {
-      for (x = rxl;x<=rxr;x++)
-        for (y = ryl;y<=ryr;y++)
-          if (x*x*RY+y*y*RX <= RR &&
-              x*x*RYB+y*y*RXB >= RRB)
-            draw_pixel_ztest(x1+x,y1+y,z1,color);
-    }
-    else
-      for (x = rxl;x<=rxr;x++)
-        for (y = ryl;y<=ryr;y++)
-          if (x*x*RY+y*y*RX <= RR &&
-              x*x*RYB+y*y*RXB >= RRB)
-            draw_pixel(x1+x,y1+y,color);
-  }
-  SDL_UnlockSurface(spTarget);
-}
-
