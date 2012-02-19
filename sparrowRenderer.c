@@ -17,8 +17,8 @@
  For feedback and questions about my Files and Projects please mail me,     
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com                         
 */
-#include "sparrowRenderer.h"
 #include "sparrowCore.h"
+#include "sparrowRenderer.h"
 #include "sparrowPrimitives.h"
 #include "sparrowMath.h"
 #define M_PI 3.14159265358979323846

@@ -4266,3 +4266,8 @@ PREFIX int spGetPixelPosition(Sint32 x,Sint32 y)
     return 128;
   return 1;  
 }
+
+PREFIX void spSurface(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 zoomX,Sint32 zoomY,Sint32 angle)
+{
+  //TODO: Implement
+}

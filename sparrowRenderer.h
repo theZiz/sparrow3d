@@ -169,8 +169,8 @@ PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList);
 
 PREFIX void spLine3D(Sint32 x1,Sint32 y1,Sint32 z1,
                      Sint32 x2,Sint32 y2,Sint32 z2,Uint16 color);
-  
-//--- "Billboard" 3D Functions. The position and size are projected, but the rotation is always, that you see the front ---
+
+//--- "Billboard" 3D Functions. The position and size are projected, but the rotation is always, that you see the front. No light! ---
   
 PREFIX void spRectangle3D(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Uint16 color);
 
@@ -180,8 +180,9 @@ PREFIX void spRectangleBorder3D(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Sin
 
 PREFIX void spEllipseBorder3D(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry,Sint32 bx,Sint32 by,Uint16 color);
 
-//--- "Blitting" 3D Functions. Very much like the "Billboard" 3D Functions, but the size is fix!
+//--- "Blitting" 3D Functions. Very much like the "Billboard" 3D Functions, but the size and rotation is fix!
 
+/* Blits a Surface. very fast! */
 PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface);
 
 

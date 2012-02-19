@@ -118,6 +118,11 @@ PREFIX void spBlitSurface(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface);
 /* Draws a part of a Surface on the target */
 PREFIX void spBlitSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 sx,Sint32 sy,Sint32 w,Sint32 h);
 
+/* Draws a surface with rotozoom. Blitting is much faster ;-) zoomX, zoomY and
+ * angle are fixed point values! 1<<SP_ACCURACY is default zoom and the
+ * angle goes from 0 to 2*SP_PI. */
+PREFIX void spSurface(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 zoomX,Sint32 zoomY,Sint32 angle);
+
 /* Sets Culling on or off. Culling means, that depending on the order of the
  * edges, the primitive is drawn - or not. Default is on. That means: Every
  * primitive defined counterclockwise will be drawn. That's very important for
