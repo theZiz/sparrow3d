@@ -987,5 +987,128 @@ PREFIX void spGlobalAmbientLight(Uint32 r,Uint32 g,Uint32 b)
 
 PREFIX void spRectangle3D(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Uint16 color)
 {
-  //TODO Implement
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
+  
+  Sint32 tx1,ty1,tz1,tw1;
+  spMulModellView(x,y,z,&tx1,&ty1,&tz1,&tw1);
+         x = fimul(spProjection[ 0],tx1);
+         y = fimul(spProjection[ 5],ty1);
+         w = fimul(spProjection[ 0],w);
+         h = fimul(spProjection[ 5],h);
+  Sint32 w1 = fimul(spProjection[11],tz1);
+  if (w1 == 0)
+    w1 = 1;  
+  Sint32 nx1 = fpdiv(x,w1)>>SP_HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y,w1)>>SP_HALF_ACCURACY;
+  Sint32 nw1 = fpdiv(w,w1)>>SP_HALF_ACCURACY;
+  Sint32 nh1 = fpdiv(h,w1)>>SP_HALF_ACCURACY;
+
+  x = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  y = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  w = (nw1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY;
+  h = (nh1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY;
+
+  spRectangle(x,y,tz1,w,h,color);
+}
+
+PREFIX void spEllipse3D(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry,Uint16 color)
+{
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
+  
+  Sint32 tx1,ty1,tz1,tw1;
+  spMulModellView(x,y,z,&tx1,&ty1,&tz1,&tw1);
+         x = fimul(spProjection[ 0],tx1);
+         y = fimul(spProjection[ 5],ty1);
+         rx = fimul(spProjection[ 0],rx);
+         ry = fimul(spProjection[ 5],ry);
+  Sint32 w1 = fimul(spProjection[11],tz1);
+  if (w1 == 0)
+    w1 = 1;  
+  Sint32 nx1 = fpdiv(x,w1)>>SP_HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y,w1)>>SP_HALF_ACCURACY;
+  Sint32 nrx1 = fpdiv(rx,w1)>>SP_HALF_ACCURACY;
+  Sint32 nry1 = fpdiv(ry,w1)>>SP_HALF_ACCURACY;
+
+  x = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  y = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  rx = (nrx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY;
+  ry = (nry1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY;
+
+  spEllipse(x,y,tz1,rx,ry,color);
+}
+
+PREFIX void spRectangleBorder3D(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Sint32 bx,Sint32 by,Uint16 color)
+{
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
+  
+  Sint32 tx1,ty1,tz1,tw1;
+  spMulModellView(x,y,z,&tx1,&ty1,&tz1,&tw1);
+         x = fimul(spProjection[ 0],tx1);
+         y = fimul(spProjection[ 5],ty1);
+         w = fimul(spProjection[ 0],w);
+         h = fimul(spProjection[ 5],h);
+         bx = fimul(spProjection[ 0],bx);
+         by = fimul(spProjection[ 5],by);
+  Sint32 w1 = fimul(spProjection[11],tz1);
+  if (w1 == 0)
+    w1 = 1;  
+  Sint32 nx1 = fpdiv(x,w1)>>SP_HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y,w1)>>SP_HALF_ACCURACY;
+  Sint32 nw1 = fpdiv(w,w1)>>SP_HALF_ACCURACY;
+  Sint32 nh1 = fpdiv(h,w1)>>SP_HALF_ACCURACY;
+  Sint32 nbx1 = fpdiv(bx,w1)>>SP_HALF_ACCURACY;
+  Sint32 nby1 = fpdiv(by,w1)>>SP_HALF_ACCURACY;
+
+  x = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  y = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  w = (nw1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY;
+  h = (nh1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY;
+  bx = (nbx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY;
+  by = (nby1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY;
+
+  spRectangleBorder(x,y,tz1,w,h,bx,by,color);
+}
+
+PREFIX void spEllipseBorder3D(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry,Sint32 bx,Sint32 by,Uint16 color)
+{
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
+  
+  Sint32 tx1,ty1,tz1,tw1;
+  spMulModellView(x,y,z,&tx1,&ty1,&tz1,&tw1);
+         x = fimul(spProjection[ 0],tx1);
+         y = fimul(spProjection[ 5],ty1);
+         rx = fimul(spProjection[ 0],rx);
+         ry = fimul(spProjection[ 5],ry);
+         bx = fimul(spProjection[ 0],bx);
+         by = fimul(spProjection[ 5],by);
+  Sint32 w1 = fimul(spProjection[11],tz1);
+  if (w1 == 0)
+    w1 = 1;  
+  Sint32 nx1 = fpdiv(x,w1)>>SP_HALF_ACCURACY;
+  Sint32 ny1 = fpdiv(y,w1)>>SP_HALF_ACCURACY;
+  Sint32 nrx1 = fpdiv(rx,w1)>>SP_HALF_ACCURACY;
+  Sint32 nry1 = fpdiv(ry,w1)>>SP_HALF_ACCURACY;
+  Sint32 nbx1 = fpdiv(bx,w1)>>SP_HALF_ACCURACY;
+  Sint32 nby1 = fpdiv(by,w1)>>SP_HALF_ACCURACY;
+
+  x = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  y = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  rx = (nrx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY;
+  ry = (nry1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY;
+  bx = (nbx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY;
+  by = (nby1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY;
+
+  spEllipseBorder(x,y,tz1,rx,ry,bx,by,color);
 }

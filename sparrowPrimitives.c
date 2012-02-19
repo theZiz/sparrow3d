@@ -3906,7 +3906,7 @@ PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2, 
   }  
 }
 
-PREFIX void spRectangle(Sint32 x,Sint32 y,Sint32 w,Sint32 h,Sint32 z, Uint32 color)
+PREFIX void spRectangle(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h, Uint32 color)
 {
   if (spAlphaTest && color==SP_ALPHA_COLOR)
     return;
@@ -3984,7 +3984,7 @@ PREFIX void spRectangle(Sint32 x,Sint32 y,Sint32 w,Sint32 h,Sint32 z, Uint32 col
   SDL_UnlockSurface(spTarget);  
 }
 
-PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 w,Sint32 h,Sint32 z,Sint32 borderX,Sint32 borderY, Uint32 color)
+PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Sint32 bx,Sint32 by, Uint32 color)
 {
   if (spAlphaTest && color==SP_ALPHA_COLOR)
     return;
@@ -4010,9 +4010,9 @@ PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 w,Sint32 h,Sint32 z,Sint3
       for (;x<=x2;x++)
         for (y=y1;y<=y2;y++)
         {
-          if (y == y1+borderY && x >= x1+borderX && x <= x2-borderX)
+          if (y == y1+bx && x >= x1+bx && x <= x2-bx)
           {
-            y = y2-borderY;
+            y = y2-by;
             continue;
           }
           draw_pixel_ztest_zset(x,y,z,color);
@@ -4032,9 +4032,9 @@ PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 w,Sint32 h,Sint32 z,Sint3
       for (;x<=x2;x++)
         for (y=y1;y<=y2;y++)
         {
-          if (y == y1+borderY && x >= x1+borderX && x <= x2-borderX)
+          if (y == y1+by && x >= x1+bx && x <= x2-bx)
           {
-            y = y2-borderY;
+            y = y2-by;
             continue;
           }
           draw_pixel_zset(x,y,z,color);
@@ -4057,9 +4057,9 @@ PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 w,Sint32 h,Sint32 z,Sint3
       for (;x<=x2;x++)
         for (y=y1;y<=y2;y++)
         {
-          if (y == y1+borderY && x >= x1+borderX && x <= x2-borderX)
+          if (y == y1+by && x >= x1+bx && x <= x2-bx)
           {
-            y = y2-borderY;
+            y = y2-by;
             continue;
           }
           draw_pixel_ztest(x,y,z,color);
@@ -4079,9 +4079,9 @@ PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 w,Sint32 h,Sint32 z,Sint3
       for (;x<=x2;x++)
         for (y=y1;y<=y2;y++)
         {
-          if (y == y1+borderY && x >= x1+borderX && x <= x2-borderX)
+          if (y == y1+by && x >= x1+bx && x <= x2-bx)
           {
-            y = y2-borderY;
+            y = y2-by;
             continue;
           }
           draw_pixel(x,y,color);
@@ -4092,6 +4092,7 @@ PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 w,Sint32 h,Sint32 z,Sint3
 }
 
 PREFIX void spEllipse(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry, Uint32 color)
+
 {
   if (spAlphaTest && color==SP_ALPHA_COLOR)
     return;

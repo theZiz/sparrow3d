@@ -92,6 +92,8 @@ typedef struct spLightStruct {
 } spLight;
 
 
+//--- Operations for the Matrizes ---
+
 PREFIX void spSetPerspective(float fovyInDegrees, float aspectRatio,
                              float znear, float zfar);
 
@@ -119,6 +121,27 @@ PREFIX Sint32* spGetMatrix();
 
 PREFIX void spSetMatrix(Sint32* matrix);
 
+//--- Light functions. Only "real" 3D functions (except spLine3D) are enlighted ---
+
+/* Sets Light Calculation on or off. Default off (0) */
+PREFIX void spSetLight(int value);
+
+/* Specifies, whether the light number is used or not (default: just
+ * number 0 is enabled)*/
+PREFIX void spEnableLight(int number,Sint32 active);
+
+/* Sets the Light Values */
+PREFIX void spSetLightColor(int number,Uint32 r,Uint32 g,Uint32 b);
+
+/* Sets the Light Values */
+PREFIX void spSetLightPosition(int number,Sint32 x,Sint32 y,Sint32 z);
+
+/* Sets the global ambient light value used be every 3D quad or triangle
+ * Default: 0.25, 0.25, 0.25*/
+PREFIX void spGlobalAmbientLight(Uint32 r,Uint32 g,Uint32 b);
+
+//--- "Real" 3D functions, where the primitives is correct rotated ---
+
 /* Returns 1 if drawn (Culling) */
 PREFIX int spTriangle3D(Sint32 x1,Sint32 y1,Sint32 z1,
   Sint32 x2,Sint32 y2,Sint32 z2,
@@ -140,33 +163,26 @@ PREFIX int spQuadTex3D(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 u1,Sint32 v1,
   Sint32 x2,Sint32 y2,Sint32 z2,Sint32 u2,Sint32 v2,
   Sint32 x3,Sint32 y3,Sint32 z3,Sint32 u3,Sint32 v3,
   Sint32 x4,Sint32 y4,Sint32 z4,Sint32 u4,Sint32 v4,Uint16 color);
-  
-PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface);
 
 /* Returns the number of drawn Faces */
 PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList);
 
 PREFIX void spLine3D(Sint32 x1,Sint32 y1,Sint32 z1,
                      Sint32 x2,Sint32 y2,Sint32 z2,Uint16 color);
-
-/* Sets Light Calculation on or off. Default off (0) */
-PREFIX void spSetLight(int value);
-
-/* Specifies, whether the light number is used or not (default: just
- * number 0 is enabled)*/
-PREFIX void spEnableLight(int number,Sint32 active);
-
-/* Sets the Light Values */
-PREFIX void spSetLightColor(int number,Uint32 r,Uint32 g,Uint32 b);
-
-/* Sets the Light Values */
-PREFIX void spSetLightPosition(int number,Sint32 x,Sint32 y,Sint32 z);
-
-/* Sets the global ambient light value used be every 3D quad or triangle
- * Default: 0.25, 0.25, 0.25*/
-PREFIX void spGlobalAmbientLight(Uint32 r,Uint32 g,Uint32 b);
-
+  
+//--- "Billboard" 3D Functions. The position and size are projected, but the rotation is always, that you see the front ---
+  
 PREFIX void spRectangle3D(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Uint16 color);
+
+PREFIX void spEllipse3D(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry,Uint16 color);
+
+PREFIX void spRectangleBorder3D(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Sint32 bx,Sint32 by,Uint16 color);
+
+PREFIX void spEllipseBorder3D(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry,Sint32 bx,Sint32 by,Uint16 color);
+
+//--- "Blitting" 3D Functions. Very much like the "Billboard" 3D Functions, but the size is fix!
+
+PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface);
 
 
 #endif

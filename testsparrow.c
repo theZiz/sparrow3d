@@ -163,7 +163,7 @@ void draw_test(void)
       break;
     case 1:
       spSetAlphaTest(1);
-      spTranslate(0,0,-20<<SP_ACCURACY);  
+      spTranslate(0,0,-15<<SP_ACCURACY);  
       spRotateY(rotation);
       int a;
       for (a = 0; a<16; a++)
@@ -173,19 +173,32 @@ void draw_test(void)
         Uint16 color = ((brightness>>SP_ACCURACY-4)<<11)+((brightness>>SP_ACCURACY-5)<<5)+(brightness>>SP_ACCURACY-4);
         for (y = -21; y<=21; y+=7)
         {
-          //if ((y*a) & 3)
+          if ((y+a) & 8)
             spQuadTex3D(-3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,SP_FONT_EXTRASPACE,SP_FONT_EXTRASPACE,
                         -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,1,garfield->h-SP_FONT_EXTRASPACE-1,
                          3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-SP_FONT_EXTRASPACE-1,garfield->h-SP_FONT_EXTRASPACE-1,
                          3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,garfield->w-SP_FONT_EXTRASPACE-1,SP_FONT_EXTRASPACE,color);
-          //else
-          //if ((y*a) & 4)
-          //  spBlit3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,pepper);
-          //else
-          //  spQuad3D(-3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
-          //           -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
-          //            3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
-          //            3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,color);
+          
+          else
+          if ((y+a+1) & 8)
+            spRectangle3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,3<<SP_ACCURACY-1,3<<SP_ACCURACY-1,SDL_GetTicks()/128);
+          else
+          if ((y+a+2) & 8)
+            spEllipse3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,3<<SP_ACCURACY-2,3<<SP_ACCURACY-2,-SDL_GetTicks()/128);
+          else
+          if ((y+a+3) & 8)
+            spRectangleBorder3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,3<<SP_ACCURACY-1,3<<SP_ACCURACY-1,1<<SP_ACCURACY-2,1<<SP_ACCURACY-2,SDL_GetTicks()/64);
+          else
+          if ((y+a+4) & 8)
+            spEllipseBorder3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,3<<SP_ACCURACY-2,3<<SP_ACCURACY-2,1<<SP_ACCURACY-2,1<<SP_ACCURACY-2,-SDL_GetTicks()/64);
+          else
+          if ((y+a+5) & 8)
+            spBlit3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,pepper);
+          else
+            spQuad3D(-3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
+                     -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
+                      3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
+                      3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,color);
           
         }
       }
