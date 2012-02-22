@@ -1,7 +1,7 @@
 Roadmap:
 - Surfaces
   - 2D function for rotozoom (+part)
-  - 3D function for rotozoom (+part)
+  - 3D function for rotozoom (+part) (parameter for zoom)
 - Function for just projection a point
 - Sprites
 
