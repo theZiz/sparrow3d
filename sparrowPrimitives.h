@@ -123,7 +123,7 @@ PREFIX void spBlitSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Si
  * angle goes from 0 to 2*SP_PI. */
 PREFIX void spRotozoomSurface(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 zoomX,Sint32 zoomY,Sint32 angle);
 
-PREFIX void spRotozoomSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 zoomX,Sint32 zoomY,Sint32 angle);
+PREFIX void spRotozoomSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 sx,Sint32 sy,Sint32 w,Sint32 h,Sint32 zoomX,Sint32 zoomY,Sint32 angle);
 
 /* Sets Culling on or off. Culling means, that depending on the order of the
  * edges, the primitive is drawn - or not. Default is on. That means: Every

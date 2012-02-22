@@ -53,6 +53,10 @@ void draw_test(void)
 
   switch (test)
   {
+    case 9:
+        //spRotozoomSurface(screen->w/2,screen->h/2,-1,garfield,spSin(rotation*4)+(3<<SP_ACCURACY-1),spCos(rotation*8)+(3<<SP_ACCURACY-1),rotation);
+        spRotozoomSurface(screen->w/2,screen->h/2,-1,garfield,1<<SP_ACCURACY-1,1<<SP_ACCURACY-1,rotation);
+      break;
     case 8:
       srand(0);
       for (i = 0;i<20;i++)
@@ -66,14 +70,14 @@ void draw_test(void)
     case 6:
       srand(0);
       for (i = 0;i<20;i++)
-        spRectangleBorder(rand()%screen->w,rand()%screen->h,
-                          rand()%screen->w/2,rand()%screen->h/2,SP_MAX_NEGATIVE+1,12,6,rand()%65536);
+        spRectangleBorder(rand()%screen->w,rand()%screen->h,-1,
+                          rand()%screen->w/2,rand()%screen->h/2,12,6,rand()%65536);
       break;
     case 5:
       srand(0);
       for (i = 0;i<20;i++)
-        spRectangle(rand()%screen->w,rand()%screen->h,
-                    rand()%screen->w/2,rand()%screen->h/2,SP_MAX_NEGATIVE+1,rand()%65536);
+        spRectangle(rand()%screen->w,rand()%screen->h,-1,
+                    rand()%screen->w/2,rand()%screen->h/2,rand()%65536);
       break;
     case 4:
       srand(0);
@@ -321,7 +325,7 @@ int calc_test(Uint32 steps)
   if (spGetInput()->button[SP_BUTTON_B])
   {
     spGetInput()->button[SP_BUTTON_B] = 0;
-    test = (test+1)%9;
+    test = (test+1)%10;
   }
   if (spGetInput()->button[SP_BUTTON_Y])
   {

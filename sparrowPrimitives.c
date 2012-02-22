@@ -4265,7 +4265,36 @@ PREFIX int spGetPixelPosition(Sint32 x,Sint32 y)
   return 1;  
 }
 
-PREFIX void spSurface(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 zoomX,Sint32 zoomY,Sint32 angle)
+PREFIX void spRotozoomSurface(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 zoomX,Sint32 zoomY,Sint32 angle)
 {
-  //TODO: Implement
+  spRotozoomSurfacePart(x,y,z,surface,0,0,surface->w,surface->h,zoomX,zoomY,angle);
+}
+
+PREFIX void spRotozoomSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 sx,Sint32 sy,Sint32 w,Sint32 h,Sint32 zoomX,Sint32 zoomY,Sint32 angle)
+{
+  Sint32 x1 = -(w*zoomX >> SP_ACCURACY+1);
+  Sint32 y1 = -(h*zoomY >> SP_ACCURACY+1);
+  Sint32 x2 = -(w*zoomX >> SP_ACCURACY+1);
+  Sint32 y2 = +(h*zoomY >> SP_ACCURACY+1);
+  Sint32 x3 = +(w*zoomX >> SP_ACCURACY+1);
+  Sint32 y3 = +(h*zoomY >> SP_ACCURACY+1);
+  Sint32 x4 = +(w*zoomX >> SP_ACCURACY+1);
+  Sint32 y4 = -(h*zoomY >> SP_ACCURACY+1);
+  
+  Sint32 nx1 = x + (x1 * spCos(angle) - y1 * spSin(angle) >> SP_ACCURACY);
+  Sint32 ny1 = y + (y1 * spCos(angle) + x1 * spSin(angle) >> SP_ACCURACY);
+  Sint32 nx2 = x + (x2 * spCos(angle) - y2 * spSin(angle) >> SP_ACCURACY);
+  Sint32 ny2 = y + (y2 * spCos(angle) + x2 * spSin(angle) >> SP_ACCURACY);
+  Sint32 nx3 = x + (x3 * spCos(angle) - y3 * spSin(angle) >> SP_ACCURACY);
+  Sint32 ny3 = y + (y3 * spCos(angle) + x3 * spSin(angle) >> SP_ACCURACY);
+  Sint32 nx4 = x + (x4 * spCos(angle) - y4 * spSin(angle) >> SP_ACCURACY);
+  Sint32 ny4 = y + (y4 * spCos(angle) + x4 * spSin(angle) >> SP_ACCURACY);
+  
+  SDL_Surface* oldTexture = spTexture;
+  spBindTexture(surface);
+  spQuad_tex(nx1,ny1,z,sx  ,sy  ,
+             nx2,ny2,z,sx  ,sy+h,
+             nx3,ny3,z,sx+w,sy+h,
+             nx4,ny4,z,sx+w,sy  ,65535);
+  spBindTexture(oldTexture);
 }
