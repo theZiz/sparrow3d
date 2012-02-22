@@ -55,7 +55,8 @@ void draw_test(void)
   {
     case 9:
         //spRotozoomSurface(screen->w/2,screen->h/2,-1,garfield,spSin(rotation*4)+(3<<SP_ACCURACY-1),spCos(rotation*8)+(3<<SP_ACCURACY-1),rotation);
-        spRotozoomSurface(screen->w/2,screen->h/2,-1,garfield,1<<SP_ACCURACY-1,1<<SP_ACCURACY-1,rotation);
+        spRotozoomSurface(screen->w/4,screen->h/2,-1,garfield,spSin(rotation*4)+(3<<SP_ACCURACY-1)>>2,spCos(rotation*8)+(3<<SP_ACCURACY-1)>>2,rotation);
+        spRotozoomSurfacePart(3*screen->w/4,screen->h/2,-1,garfield,garfield->w/4,garfield->h/4,garfield->w/2,garfield->w/2,spSin(rotation*4)+(3<<SP_ACCURACY-1)>>1,spCos(rotation*8)+(3<<SP_ACCURACY-1)>>1,rotation);
       break;
     case 8:
       srand(0);
