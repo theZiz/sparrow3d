@@ -42,8 +42,6 @@ SDL_Surface** spTargetCache = NULL;
 Uint32* spSizeCache = NULL;
 char spCulling = 1;
 
-#define fimul(a,b) ((a>>SP_HALF_ACCURACY)*(b>>SP_HALF_ACCURACY))
-
 PREFIX Sint32* spGetOne_over_x_pointer()
 {
   return spOne_over_x_look_up;

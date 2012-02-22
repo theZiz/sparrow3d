@@ -355,7 +355,6 @@ int main(int argc, char **argv)
 {
   //sparrow3D Init
   spInitCore();
-  spInitMath();
   
   //Setup
   screen = spCreateWindow();

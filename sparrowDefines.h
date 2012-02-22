@@ -48,6 +48,21 @@
 #define SP_JOYSTICK_MIN -16384
 #define SP_JOYSTICK_MAX  16383
 
+#define spMul(a,b) ((a>>SP_HALF_ACCURACY)*(b>>SP_HALF_ACCURACY))
+
+#ifdef FAST_BUT_UGLY_2
+  #define spDiv(a,b) ((b>=0 && b<(1<<SP_PRIM_ACCURACY))? \
+                       (a*spGetOne_over_x_pointer()[b]>>SP_PRIM_ACCURACY-SP_ACCURACY): \
+                       ( \
+                         (b <0 && b>(-1<<SP_PRIM_ACCURACY))? \
+                         (-a*spGetOne_over_x_pointer()[-b]>>SP_PRIM_ACCURACY-SP_ACCURACY): \
+                         (((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY) \
+                       ))
+#else
+  #define spDiv(a,b) (((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY)
+#endif
+
+
 #ifdef GP2X
   #define SP_AXIS_UP 0
   #define SP_AXIS_LEFTUP 1

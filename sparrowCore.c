@@ -77,6 +77,7 @@ PREFIX void spInitCore(void)
   spInput.axis[0]=0;
   spInput.axis[1]=0;
   spInitPrimitives();
+  spInitMath();
 }
 
 PREFIX void spPrintDebug(char* text)
