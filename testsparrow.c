@@ -198,7 +198,8 @@ void draw_test(void)
             spEllipseBorder3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,3<<SP_ACCURACY-2,3<<SP_ACCURACY-2,1<<SP_ACCURACY-2,1<<SP_ACCURACY-2,-SDL_GetTicks()/64);
           else
           if ((y+a+5) & 8)
-            spBlit3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,pepper);
+            //spBlit3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,pepper);
+            spRotozoomSurface3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,pepper,spSin(rotation*4)+(3<<SP_ACCURACY-1),spCos(rotation*8)+(3<<SP_ACCURACY-1),rotation);
           else
             spQuad3D(-3<<SP_ACCURACY-2,y+3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,
                      -3<<SP_ACCURACY-2,y-3<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,

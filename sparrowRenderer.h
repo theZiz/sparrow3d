@@ -171,6 +171,10 @@ PREFIX void spLine3D(Sint32 x1,Sint32 y1,Sint32 z1,
                      Sint32 x2,Sint32 y2,Sint32 z2,Uint16 color);
 
 //--- "Billboard" 3D Functions. The position and size are projected, but the rotation is always, that you see the front. No light! ---
+
+PREFIX void spRotozoomSurface3D(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 zoomX,Sint32 zoomY,Sint32 angle);
+
+PREFIX void spRotozoomSurfacePart3D(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 sx,Sint32 sy,Sint32 w,Sint32 h,Sint32 zoomX,Sint32 zoomY,Sint32 angle);
   
 PREFIX void spRectangle3D(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Uint16 color);
 
@@ -184,6 +188,13 @@ PREFIX void spEllipseBorder3D(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry,Sin
 
 /* Blits a Surface. very fast! */
 PREFIX void spBlit3D(Sint32 x1,Sint32 y1,Sint32 z1,SDL_Surface* surface);
+
+/* Projects a point in the 3D scene. Usefull if you will draw your own
+ * stuff in the 3D world. "withModelview" says, whether the rotation in
+ * the ModelViewMatrix should be involved. E.g. if you want to get a
+ * perspective correct width, you don't want the rotation. In this case
+ * set it to 0. Most of the time you should be fine with 1. */
+PREFIX void spProjectPoint3D(Sint32 x,Sint32 y,Sint32 z,Sint32 *px,Sint32 *py,Sint32 withModelview);
 
 
 #endif

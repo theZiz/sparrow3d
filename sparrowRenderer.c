@@ -1098,3 +1098,99 @@ PREFIX void spEllipseBorder3D(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry,Sin
 
   spEllipseBorder(x,y,tz1,rx,ry,bx,by,color);
 }
+
+
+
+PREFIX void spProjectPoint3D(Sint32 x,Sint32 y,Sint32 z,Sint32 *px,Sint32 *py,Sint32 withModelview)
+{
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
+  
+  Sint32 tx1,ty1,tz1,tw1;
+  spMulModellView(x,y,z,&tx1,&ty1,&tz1,&tw1);
+  if (withModelview)
+  {
+    x = spMul(spProjection[ 0],tx1);
+    y = spMul(spProjection[ 5],ty1);
+  }
+  else
+  {
+    x = spMul(spProjection[ 0],x);
+    y = spMul(spProjection[ 5],y);
+  }
+  Sint32 w1 = spMul(spProjection[11],tz1);
+  if (w1 == 0)
+    w1 = 1;  
+  Sint32 nx1 = spDiv(x,w1)>>SP_HALF_ACCURACY;
+  Sint32 ny1 = spDiv(y,w1)>>SP_HALF_ACCURACY;
+
+
+  if (withModelview)
+  {
+    *px = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+    *py = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  }
+  else
+  {
+    *px = ((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+    *py = ((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  }  
+}
+
+PREFIX void spRotozoomSurface3D(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 zoomX,Sint32 zoomY,Sint32 angle)
+{
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
+  
+  Sint32 tx1,ty1,tz1,tw1;
+  spMulModellView(x,y,z,&tx1,&ty1,&tz1,&tw1);
+         x = spMul(spProjection[ 0],tx1);
+         y = spMul(spProjection[ 5],ty1);
+         zoomX = spMul(spProjection[ 0],zoomX);
+         zoomY = spMul(spProjection[ 5],zoomY);
+  Sint32 w1 = spMul(spProjection[11],tz1);
+  if (w1 == 0)
+    w1 = 1;  
+  Sint32 nx1 = spDiv(x,w1)>>SP_HALF_ACCURACY;
+  Sint32 ny1 = spDiv(y,w1)>>SP_HALF_ACCURACY;
+  Sint32 nzoomX1 = spDiv(zoomX,w1);
+  Sint32 nzoomY1 = spDiv(zoomY,w1);
+
+  x = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  y = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  zoomX = nzoomX1*(windowX>>1)/surface->w;
+  zoomY = nzoomY1*(windowY>>1)/surface->h;
+  spRotozoomSurface(x,y,tz1,surface,zoomX,zoomY,angle);
+}
+
+PREFIX void spRotozoomSurfacePart3D(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 sx,Sint32 sy,Sint32 w,Sint32 h,Sint32 zoomX,Sint32 zoomY,Sint32 angle)
+{
+  int windowX = spGetWindowSurface()->w;
+  int windowY = spGetWindowSurface()->h;
+  int viewPortX = (windowX >> 1);
+  int viewPortY = (windowY >> 1);
+  
+  Sint32 tx1,ty1,tz1,tw1;
+  spMulModellView(x,y,z,&tx1,&ty1,&tz1,&tw1);
+         x = spMul(spProjection[ 0],tx1);
+         y = spMul(spProjection[ 5],ty1);
+         zoomX = spMul(spProjection[ 0],zoomX);
+         zoomY = spMul(spProjection[ 5],zoomY);
+  Sint32 w1 = spMul(spProjection[11],tz1);
+  if (w1 == 0)
+    w1 = 1;  
+  Sint32 nx1 = spDiv(x,w1)>>SP_HALF_ACCURACY;
+  Sint32 ny1 = spDiv(y,w1)>>SP_HALF_ACCURACY;
+  Sint32 nzoomX1 = spDiv(zoomX,w1);
+  Sint32 nzoomY1 = spDiv(zoomY,w1);
+
+  x = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  y = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+  zoomX = nzoomX1*(windowX>>1)/surface->w;
+  zoomY = nzoomY1*(windowY>>1)/surface->h;
+  spRotozoomSurfacePart(x,y,tz1,surface,sx,sy,w,h,zoomX,zoomY,angle);  
+}

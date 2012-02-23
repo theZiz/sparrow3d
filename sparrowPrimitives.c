@@ -3984,14 +3984,19 @@ PREFIX void spRectangle(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h, Uint32 col
 
 PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Sint32 bx,Sint32 by, Uint32 color)
 {
+  if ((bx*2 >= w) || (by*2 >= h))
+  {
+    spRectangle(x,y,z,w,h,color);
+    return;
+  }
   if (spAlphaTest && color==SP_ALPHA_COLOR)
     return;
   Sint32 x1 = x-w/2;
   Sint32 x2 = x+(w-1)/2;
   Sint32 y1 = y-h/2;
   Sint32 y2 = y+(h-1)/2;
-  y = y1;
-  x = x1;
+  Sint32 cy;
+  Sint32 cx;
   if (spZSet)
   {
     if (spZTest)
@@ -4005,15 +4010,15 @@ PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Sint3
       if (x1 < 0)          x1 = 0;
       if (y1 < 0)          y1 = 0;
       SDL_LockSurface(spTarget);
-      for (;x<=x2;x++)
-        for (y=y1;y<=y2;y++)
+      for (cx=x1;cx<=x2;cx++)
+        for (cy=y1;cy<=y2;cy++)
         {
-          if (y == y1+bx && x >= x1+bx && x <= x2-bx)
+          if ((cy == y-h/2+by || (cy==y1 && cy >= y-h/2+by)) && cx >= x-w/2+bx && cx <= x+(w-1)/2-bx)
           {
-            y = y2-by;
+            cy = y+(h-1)/2-by;
             continue;
           }
-          draw_pixel_ztest_zset(x,y,z,color);
+          draw_pixel_ztest_zset(cx,cy,z,color);
         }
     }
     else
@@ -4027,15 +4032,15 @@ PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Sint3
       if (x1 < 0)          x1 = 0;
       if (y1 < 0)          y1 = 0;
       SDL_LockSurface(spTarget);
-      for (;x<=x2;x++)
-        for (y=y1;y<=y2;y++)
+      for (cx=x1;cx<=x2;cx++)
+        for (cy=y1;cy<=y2;cy++)
         {
-          if (y == y1+by && x >= x1+bx && x <= x2-bx)
+          if ((cy == y-h/2+by || (cy==y1 && cy >= y-h/2+by)) && cx >= x-w/2+bx && cx <= x+(w-1)/2-bx)
           {
-            y = y2-by;
+            cy = y+(h-1)/2-by;
             continue;
           }
-          draw_pixel_zset(x,y,z,color);
+          draw_pixel_zset(cx,cy,z,color);
         }
     }
   }
@@ -4052,15 +4057,15 @@ PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Sint3
       if (x1 < 0)          x1 = 0;
       if (y1 < 0)          y1 = 0;
       SDL_LockSurface(spTarget);
-      for (;x<=x2;x++)
-        for (y=y1;y<=y2;y++)
+      for (cx=x1;cx<=x2;cx++)
+        for (cy=y1;cy<=y2;cy++)
         {
-          if (y == y1+by && x >= x1+bx && x <= x2-bx)
+          if ((cy == y-h/2+by || (cy==y1 && cy >= y-h/2+by)) && cx >= x-w/2+bx && cx <= x+(w-1)/2-bx)
           {
-            y = y2-by;
+            cy = y+(h-1)/2-by;
             continue;
           }
-          draw_pixel_ztest(x,y,z,color);
+          draw_pixel_zset(cx,cy,z,color);
         }
     }
     else
@@ -4074,15 +4079,15 @@ PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Sint3
       if (x1 < 0)          x1 = 0;
       if (y1 < 0)          y1 = 0;
       SDL_LockSurface(spTarget);
-      for (;x<=x2;x++)
-        for (y=y1;y<=y2;y++)
+      for (cx=x1;cx<=x2;cx++)
+        for (cy=y1;cy<=y2;cy++)
         {
-          if (y == y1+by && x >= x1+bx && x <= x2-bx)
+          if ((cy == y-h/2+by || (cy==y1 && cy >= y-h/2+by)) && cx >= x-w/2+bx && cx <= x+(w-1)/2-bx)
           {
-            y = y2-by;
+            cy = y+(h-1)/2-by;
             continue;
           }
-          draw_pixel(x,y,color);
+          draw_pixel(cx,cy,color);
         }
     }
   }
@@ -4270,6 +4275,97 @@ PREFIX void spRotozoomSurface(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Si
   spRotozoomSurfacePart(x,y,z,surface,0,0,surface->w,surface->h,zoomX,zoomY,angle);
 }
 
+inline sp_intern_Triangle_tex_inter(Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3)
+{
+  if (y1 > y2)
+  {
+    Sint32 temp = x1;
+    x1 = x2;
+    x2 = temp;
+    temp = y1;
+    y1 = y2;
+    y2 = temp;
+    temp = z1;
+    z1 = z2;
+    z2 = temp;
+    temp = u1;
+    u1 = u2;
+    u2 = temp;
+    temp = v1;
+    v1 = v2;
+    v2 = temp;
+  }
+  if (y1 > y3)
+  {
+    Sint32 temp = x1;
+    x1 = x3;
+    x3 = temp;
+    temp = y1;
+    y1 = y3;
+    y3 = temp;
+    temp = z1;
+    z1 = z3;
+    z3 = temp;
+    temp = u1;
+    u1 = u3;
+    u3 = temp;
+    temp = v1;
+    v1 = v3;
+    v3 = temp;
+  }
+  if (y2 < y3)
+  {
+    Sint32 temp = x2;
+    x2 = x3;
+    x3 = temp;
+    temp = y2;
+    y2 = y3;
+    y3 = temp;
+    temp = z2;
+    z2 = z3;
+    z3 = temp;
+    temp = u2;
+    u2 = u3;
+    u3 = temp;
+    temp = v2;
+    v2 = v3;
+    v3 = temp;
+  }
+  if (spAlphaTest)
+  {
+    if (spZSet)
+    {
+      if (spZTest)
+        sp_intern_Triangle_tex_ztest_zset_alpha(x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,65535);
+      else
+        sp_intern_Triangle_tex_zset_alpha      (x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,65535);
+    }
+    else
+    {
+      if (spZTest)
+        sp_intern_Triangle_tex_ztest_alpha     (x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,65535);
+      else
+        sp_intern_Triangle_tex_alpha           (x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,65535);
+    }
+  }
+  else
+  {
+    if (spZSet)
+    {
+      if (spZTest)
+        sp_intern_Triangle_tex_ztest_zset(x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,65535);
+      else
+        sp_intern_Triangle_tex_zset      (x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,65535);
+    }
+    else
+    {
+      if (spZTest)
+        sp_intern_Triangle_tex_ztest     (x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,65535);
+      else
+        sp_intern_Triangle_tex           (x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,65535);
+    }
+  }
+}
 PREFIX void spRotozoomSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 sx,Sint32 sy,Sint32 w,Sint32 h,Sint32 zoomX,Sint32 zoomY,Sint32 angle)
 {
   Sint32 x1 = -(w*zoomX >> SP_ACCURACY+1);
@@ -4292,9 +4388,11 @@ PREFIX void spRotozoomSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surfac
   
   SDL_Surface* oldTexture = spTexture;
   spBindTexture(surface);
-  spQuad_tex(nx1,ny1,z,sx  ,sy  ,
-             nx2,ny2,z,sx  ,sy+h,
-             nx3,ny3,z,sx+w,sy+h,
-             nx4,ny4,z,sx+w,sy  ,65535);
+  sp_intern_Triangle_tex_inter(nx1,ny1,z,sx  ,sy  ,
+                 nx2,ny2,z,sx  ,sy+h,
+                 nx3,ny3,z,sx+w,sy+h);
+  sp_intern_Triangle_tex_inter(nx1,ny1,z,sx  ,sy  ,
+                 nx3,ny3,z,sx+w,sy+h,
+                 nx4,ny4,z,sx+h,sy  );
   spBindTexture(oldTexture);
 }
