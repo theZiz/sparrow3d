@@ -30,45 +30,113 @@ PREFIX spSpritePointer spNewSprite()
   sprite->zoomX = 1<<SP_ACCURACY;
   sprite->zoomY = 1<<SP_ACCURACY;
   sprite->firstSub = NULL;
-  
+  sprite->momSub = NULL;  
+  return sprite;
 }
 
 PREFIX void spDeleteSprite(spSpritePointer sprite)
 {
-  //TODO: Implement
+  if (sprite->firstSub == NULL)
+    return;
+  spSubSpritePointer momSub = sprite->firstSub;
+  do 
+  {
+    spSubSpritePointer next = momSub->next;
+    free(momSub);
+    momSub = next;
+  }
+  while (momSub != sprite->firstSub);
+  free(sprite);
 }
 
 PREFIX spSubSpritePointer spNewSubSpriteNoTiling(spSpritePointer sprite,SDL_Surface* surface,Sint32 duration)
 {
-  spNewSubSpriteWithTiling(sprite,surface,-1,-1,-1,-1,duration);
+  spNewSubSpriteWithTiling(sprite,surface,-1,-1,surface->w,surface->h,duration);
 }
 
 PREFIX spSubSpritePointer spNewSubSpriteWithTiling(spSpritePointer sprite,SDL_Surface* surface,Sint32 sx,Sint32 sy,Sint32 sw,Sint32 sh,Sint32 duration)
 {
   spSubSpritePointer sub = (spSubSpritePointer)malloc(sizeof(spSubSprite));
+  sub->surface = surface;
+  sub->sx = sx;
+  sub->sy = sy;
+  sub->sw = sw;
+  sub->sh = sh;
+  sub->duration = duration;
+  sub->age = 0;
+  
+  sprite->wholeDuration += duration;
+  if (sw > sprite->maxWidth)
+    sprite->maxWidth = sw;
+  if (sh > sprite->maxHeight)
+    sprite->maxHeight = sh;
+  
+  if (sprite->firstSub)
+  {
+    sub->next = sprite->firstSub;
+    sub->before = sprite->firstSub->before;
+    sprite->firstSub->before->next = sub;
+    sprite->firstSub->before = sub;
+  }
+  else
+  {
+    sub->next = sub;
+    sub->before = sub;
+    sprite->firstSub = sub;
+    sprite->momSub = sub;
+  }
 }
 
 PREFIX void spUpdateSprite(spSpritePointer sprite,Sint32 time)
 {
-  //TODO: Implement
+  if (sprite->momSub == NULL)
+    return;
+  while (time > sprite->wholeDuration)
+    time -= sprite->wholeDuration;
+  while (time > sprite->momSub->duration-sprite->momSub->age)
+  {
+    time -= sprite->momSub->duration - sprite->momSub->age;
+    sprite->momSub->age = 0;
+    sprite->momSub = sprite->momSub->next;
+  }
+  sprite->momSub->age += time;
 }
 
 PREFIX void spSetSpriteRotation(spSpritePointer sprite,Sint32 rotation)
 {
-  //TODO: Implement
+  sprite->rotation = rotation;
 }
 
 PREFIX void spSetSpriteZoom(spSpritePointer sprite,Sint32 zoomX,Sint32 zoomY)
 {
-  //TODO: Implement
+  sprite->zoomX = zoomX;
+  sprite->zoomY = zoomY;
 }
 
 PREFIX void spDrawSprite(Sint32 x,Sint32 y,Sint32 z,spSpritePointer sprite)
 {
-  //TODO: Implement
+  if (sprite->rotation == 0 &&
+      sprite->zoomX == (1 << SP_ACCURACY) &&
+      sprite->zoomY == (1 << SP_ACCURACY))
+  {
+    if (sprite->momSub->sx < 0)
+      spBlitSurface(x,y,z,sprite->momSub->surface);
+    else
+      spBlitSurfacePart(x,y,z,sprite->momSub->surface,sprite->momSub->sx,sprite->momSub->sy,sprite->momSub->sw,sprite->momSub->sh);
+  }
+  else
+  {
+    if (sprite->momSub->sx < 0)
+      spRotozoomSurface(x,y,z,sprite->momSub->surface,sprite->zoomX,sprite->zoomY,sprite->rotation);
+    else
+      spRotozoomSurfacePart(x,y,z,sprite->momSub->surface,sprite->momSub->sx,sprite->momSub->sy,sprite->momSub->sw,sprite->momSub->sh,sprite->zoomX,sprite->zoomY,sprite->rotation);
+  }  
 }
 
 PREFIX void spDrawSprite3D(Sint32 x,Sint32 y,Sint32 z,spSpritePointer sprite)
 {
-  //TODO: Implement
+  if (sprite->momSub->sx < 0)
+    spRotozoomSurface3D(x,y,z,sprite->momSub->surface,sprite->zoomX,sprite->zoomY,sprite->rotation);
+  else
+    spRotozoomSurfacePart3D(x,y,z,sprite->momSub->surface,sprite->momSub->sx,sprite->momSub->sy,sprite->momSub->sw,sprite->momSub->sh,sprite->zoomX,sprite->zoomY,sprite->rotation);
 }

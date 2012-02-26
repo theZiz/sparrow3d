@@ -12,22 +12,24 @@
 SDL_Surface* screen;
 SDL_Surface* garfield;
 SDL_Surface* pepper;
+SDL_Surface* scientist;
 spModelPointer mesh;
+spSpritePointer sprite;
 Sint32 rotation = 0;
 spFontPointer font = NULL;
-int quality=0;
+int quality=1;
 Uint32 fpssum = 0;
 Sint32 divisor = -5000;
 int test = 0;
-int clear = 1;
 int count;
-int zTest = 1;
-int zSet = 1;
+int zStuff = 1;
 
 void draw_test(void)
 {
   spResetZBuffer();
-  if (clear)
+  if (test == 5)
+    spClearTarget((spSin(rotation*8)>>SP_ACCURACY-4)+16);
+  else
     spClearTarget(0);
   spIdentity();
   
@@ -36,42 +38,39 @@ void draw_test(void)
   spBindTexture(garfield);
   spSetLight(quality);
   spSetCulling(1);
-  spSetZSet(zSet);
-  spSetZTest(zTest);
+  spSetZSet(zStuff);
+  spSetZTest(zStuff);
   int i;
 
   switch (test)
   {
-    case 9:
-        //spRotozoomSurface(screen->w/2,screen->h/2,-1,garfield,spSin(rotation*4)+(3<<SP_ACCURACY-1),spCos(rotation*8)+(3<<SP_ACCURACY-1),rotation);
-        spRotozoomSurface(screen->w/4,screen->h/2,-1,garfield,spSin(rotation*4)+(3<<SP_ACCURACY-1)>>2,spCos(rotation*8)+(3<<SP_ACCURACY-1)>>2,rotation);
-        spRotozoomSurfacePart(3*screen->w/4,screen->h/2,-1,garfield,garfield->w/4,garfield->h/4,garfield->w/2,garfield->w/2,spSin(rotation*4)+(3<<SP_ACCURACY-1)>>1,spCos(rotation*8)+(3<<SP_ACCURACY-1)>>1,rotation);
-      break;
-    case 8:
-      srand(0);
-      for (i = 0;i<20;i++)
-        spEllipseBorder(rand()%screen->w,rand()%screen->h,-1,rand()%screen->w/4,rand()%screen->h/4,10,20,rand()%65536);
-      break;
-    case 7:
-      srand(0);
-      for (i = 0;i<20;i++)
-        spEllipse(rand()%screen->w,rand()%screen->h,-1,rand()%screen->w/4,rand()%screen->h/4,rand()%65536);
-      break;
-    case 6:
-      srand(0);
-      for (i = 0;i<20;i++)
-        spRectangleBorder(rand()%screen->w,rand()%screen->h,-1,
-                          rand()%screen->w/2,rand()%screen->h/2,12,6,rand()%65536);
-      break;
     case 5:
-      srand(0);
-      for (i = 0;i<20;i++)
-        spRectangle(rand()%screen->w,rand()%screen->h,-1,
-                    rand()%screen->w/2,rand()%screen->h/2,rand()%65536);
+        spRotozoomSurface(screen->w/4,screen->h/4,-1,garfield,spSin(rotation*4)+(3<<SP_ACCURACY-1)>>2,spCos(rotation*8)+(3<<SP_ACCURACY-1)>>2,rotation);
+        spRotozoomSurfacePart(3*screen->w/4,screen->h/4,-1,garfield,garfield->w/4,garfield->h/4,garfield->w/2,garfield->w/2,spSin(rotation*4)+(3<<SP_ACCURACY-1)>>1,spCos(rotation*8)+(3<<SP_ACCURACY-1)>>1,rotation);
+        sprite->rotation = 0;
+        spDrawSprite(screen->w/5,5*screen->h/8,-1,sprite);
+        sprite->zoomX = spSin(rotation*8)+(3<<SP_ACCURACY-1);
+        sprite->zoomY = spCos(rotation*6)+(3<<SP_ACCURACY-1);
+        spDrawSprite(2*screen->w/5,5*screen->h/8,-1,sprite);
+        sprite->rotation = rotation*4;
+        spDrawSprite(3*screen->w/5,5*screen->h/8,-1,sprite);
+        sprite->zoomX = 1<<SP_ACCURACY;
+        sprite->zoomY = 1<<SP_ACCURACY;
+        spDrawSprite(4*screen->w/5,5*screen->h/8,-1,sprite);
       break;
     case 4:
       srand(0);
-      for (i = 0;i<1000;i++)
+      for (i = 0;i<5;i++)
+        spEllipseBorder(rand()%screen->w,rand()%screen->h,-1,rand()%screen->w/4,rand()%screen->h/4,10,20,rand()%65536);
+      for (i = 0;i<5;i++)
+        spEllipse(rand()%screen->w,rand()%screen->h,-1,rand()%screen->w/4,rand()%screen->h/4,rand()%65536);
+      for (i = 0;i<5;i++)
+        spRectangleBorder(rand()%screen->w,rand()%screen->h,-1,
+                          rand()%screen->w/2,rand()%screen->h/2,12,6,rand()%65536);
+      for (i = 0;i<5;i++)
+        spRectangle(rand()%screen->w,rand()%screen->h,-1,
+                    rand()%screen->w/2,rand()%screen->h/2,rand()%65536);
+      for (i = 0;i<100;i++)
         spLine(rand()%screen->w,rand()%screen->h,-1,
                rand()%screen->w,rand()%screen->h,-1,rand()%65536);
       break;
@@ -82,30 +81,16 @@ void draw_test(void)
       spRotateY(rotation);
       spRotateZ(rotation);
       count = spMesh3D(mesh,1);
-      /*spSetZTest(0);
-      for (i = 0;i < mesh->edgeCount; i++)
-        if (mesh->edge[i].status == 0)
-          spLine3D(mesh->point[mesh->edge[i].point[0]].x,
-                   mesh->point[mesh->edge[i].point[0]].y,
-                   mesh->point[mesh->edge[i].point[0]].z,
-                   mesh->point[mesh->edge[i].point[1]].x,
-                   mesh->point[mesh->edge[i].point[1]].y,
-                   mesh->point[mesh->edge[i].point[1]].z,0);
-      for (i = 0;i < mesh->texEdgeCount; i++)
-        if (mesh->texEdge[i].status == 0)
-          spLine3D(mesh->texPoint[mesh->texEdge[i].point[0]].x,
-                   mesh->texPoint[mesh->texEdge[i].point[0]].y,
-                   mesh->texPoint[mesh->texEdge[i].point[0]].z,
-                   mesh->texPoint[mesh->texEdge[i].point[1]].x,
-                   mesh->texPoint[mesh->texEdge[i].point[1]].y,
-                   mesh->texPoint[mesh->texEdge[i].point[1]].z,0);*/
       break;
     case 2:
       spSetAlphaTest(1);
-      spTranslate(0,0,(-10<<SP_ACCURACY)+spSin(rotation*4)*4);  
+      spTranslate(0,0,(-11<<SP_ACCURACY)+spSin(rotation*4)*3);  
+      spRotateZ(rotation);
+      spRotateX(spSin(rotation)>>2);
+      spRotateY(spCos(rotation*2)>>2);
       int x,y;
-      for (x = -5; x <= 5; x++)
-        for (y = -3; y<= 3; y++)
+      for (x = -6; x <= 6; x++)
+        for (y = -6; y<= 6; y++)
         {
           Sint32 matrix[16];
           memcpy(matrix,spGetMatrix(),16*sizeof(Sint32));
@@ -128,29 +113,29 @@ void draw_test(void)
                       1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,
                       1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,65535);
             //top
-            if (y<0)
+            //if (y<0)
             spQuad3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,
                       1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,
                       1<<SP_ACCURACY, 1<<SP_ACCURACY, 0<<SP_ACCURACY,
-                     -1<<SP_ACCURACY, 1<<SP_ACCURACY, 0<<SP_ACCURACY,12345);
+                     -1<<SP_ACCURACY, 1<<SP_ACCURACY, 0<<SP_ACCURACY,65535);
             //bottom
-            if (y>0)
+            //if (y>0)
             spQuad3D(-1<<SP_ACCURACY,-1<<SP_ACCURACY, 0<<SP_ACCURACY,
                       1<<SP_ACCURACY,-1<<SP_ACCURACY, 0<<SP_ACCURACY,
                       1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,
-                     -1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,23456);
+                     -1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,65535);
             //left
-            if (x>0)
+            //if (x>0)
             spQuad3D(-1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,
                      -1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,
                      -1<<SP_ACCURACY, 1<<SP_ACCURACY, 0<<SP_ACCURACY,
-                     -1<<SP_ACCURACY,-1<<SP_ACCURACY, 0<<SP_ACCURACY,34567);
+                     -1<<SP_ACCURACY,-1<<SP_ACCURACY, 0<<SP_ACCURACY,65535);
             //right
-            if (x<0)
+            //if (x<0)
             spQuad3D( 1<<SP_ACCURACY,-1<<SP_ACCURACY, 0<<SP_ACCURACY,
                       1<<SP_ACCURACY, 1<<SP_ACCURACY, 0<<SP_ACCURACY,
                       1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,
-                      1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,45678);
+                      1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,65535);
           }
           memcpy(spGetMatrix(),matrix,16*sizeof(Sint32));      
         }
@@ -265,25 +250,40 @@ void draw_test(void)
   spSetZSet(0);
   spSetZTest(0);
   spSetAlphaTest(1);
+  spFontDraw(0,2,-1,"Before ("SP_BUTTON_L_NAME")",font);
+  spFontDrawRight(screen->w-2,2,-1,"("SP_BUTTON_R_NAME") Next",font);
+  switch (test)
+  {
+    case 0:
+      spFontDrawMiddle(screen->w/2,font->maxheight+2,-1,"Test 1: Rotating Cube",font);
+      break;
+    case 1:
+      spFontDrawMiddle(screen->w/2,font->maxheight+2,-1,"Test 2: 3D Tube",font);
+      break;
+    case 2:
+      spFontDrawMiddle(screen->w/2,font->maxheight+2,-1,"Test 3: Fulfilling",font);
+      break;
+    case 3:
+      spFontDrawMiddle(screen->w/2,font->maxheight+2,-1,"Test 4: Mesh Loading",font);
+      break;
+    case 4:
+      spFontDrawMiddle(screen->w/2,font->maxheight+2,-1,"Test 5: Primitives",font);
+      break;
+    case 5:
+      spFontDrawMiddle(screen->w/2,font->maxheight+2,-1,"Test 6: Sprites & Rotozoom",font);
+      break;
+  }
   if (quality)
-    spFontDraw(0,screen->h-font->maxheight,-1,"Light",font);
+    spFontDraw(0,screen->h-font->maxheight,-1,"Light On ("SP_BUTTON_A_NAME")",font);
   else
-    spFontDraw(0,screen->h-font->maxheight,-1,"No Light",font);
-  if (clear)
-    spFontDraw(0,2,-1,"Do clear",font);
-  else
-    spFontDraw(0,2,-1,"Do not clear",font);
+    spFontDraw(0,screen->h-font->maxheight,-1,"Light Off ("SP_BUTTON_A_NAME")",font);
   char buffer[256];
-  sprintf(buffer,"Z-Test %i",zTest);
-  spFontDraw(0,2+font->maxheight,-1,buffer,font);
-  sprintf(buffer,"Z-Set %i",zSet);
-  spFontDraw(0,2+font->maxheight*2,-1,buffer,font);
-  sprintf(buffer,"%i Faces",mesh->quadCount+mesh->triangleCount+mesh->texQuadCount+mesh->texTriangleCount);
-  spFontDrawRight(screen->w-2,2,-1,buffer,font);
-  sprintf(buffer,"%i Drawn",count);
-  spFontDrawRight(screen->w-2,2+font->maxheight,-1,buffer,font);
+  if (zStuff)
+    spFontDraw(0,screen->h-font->maxheight*2,-1,"Z Test/Set On ("SP_BUTTON_Y_NAME")",font);
+  else
+    spFontDraw(0,screen->h-font->maxheight*2,-1,"Z Test/Set Off ("SP_BUTTON_Y_NAME")",font);
   sprintf(buffer,"%02i:%02i",divisor/60000,(divisor/1000)%60);
-  spFontDrawMiddle(screen->w/2,screen->h-font->maxheight,-1,buffer,font);
+  spFontDrawRight(screen->w-2,screen->h-font->maxheight*2,-1,buffer,font);
   sprintf(buffer,"fps: %i",spGetFPS());
   spFontDrawRight(screen->w-2,screen->h-font->maxheight,-1,buffer,font);
   
@@ -293,6 +293,7 @@ void draw_test(void)
 
 int calc_test(Uint32 steps)
 {
+  spUpdateSprite(sprite,steps);
   int i;
   for (i = 0;i<steps;i++)
   {
@@ -308,23 +309,20 @@ int calc_test(Uint32 steps)
     spGetInput()->button[SP_BUTTON_A] = 0;
     quality = 1-quality;
   }
-  if (spGetInput()->button[SP_BUTTON_X])
+  if (spGetInput()->button[SP_BUTTON_R])
   {
-    spGetInput()->button[SP_BUTTON_X] = 0;
-    clear = 1-clear;
+    spGetInput()->button[SP_BUTTON_R] = 0;
+    test = (test+1)%6;
   }
-  if (spGetInput()->button[SP_BUTTON_B])
+  if (spGetInput()->button[SP_BUTTON_L])
   {
-    spGetInput()->button[SP_BUTTON_B] = 0;
-    test = (test+1)%10;
+    spGetInput()->button[SP_BUTTON_L] = 0;
+    test = (test+5)%6;
   }
   if (spGetInput()->button[SP_BUTTON_Y])
   {
     spGetInput()->button[SP_BUTTON_Y] = 0;
-    int meow = zTest + 2*zSet;
-    meow = (meow+1)%4;
-    zTest = meow%2;
-    zSet = meow/2;
+    zStuff = 1-zStuff;
   }
   if (spGetInput()->button[SP_BUTTON_START])
     return 1;
@@ -358,12 +356,20 @@ int main(int argc, char **argv)
   //Textures loading
   garfield = spLoadSurface("./data/garfield.png");
   pepper = spLoadSurface("./data/pepper.png");
+  scientist = spLoadSurface("./data/science_guy_frames01.png");
   spBindTexture(garfield);
   
   //Mesh loading
-  mesh = spMeshLoadObj("./data/testmeshuv_tri.obj",garfield,65535);
-  //mesh = spMeshLoadObj("./data/bamuv.obj",garfield,65535);
+  //mesh = spMeshLoadObj("./data/testmeshuv_tri.obj",garfield,65535);
+  mesh = spMeshLoadObj("./data/bamuv.obj",garfield,65535);
   //mesh = spMeshLoadObj("./data/foobar.obj",garfield,65535);
+  
+  //Sprite Creating
+  sprite = spNewSprite();
+  int i;
+  for (i = 0;i<9;i++)
+    spNewSubSpriteWithTiling(sprite,scientist,i*24+1,1,22,46,100);
+  //spNewSubSpriteWithTiling(sprite,scientist,0,0,32,48,100);
   
   //All glory the main loop
   spLoop(draw_test,calc_test,10,resize);
@@ -371,8 +377,10 @@ int main(int argc, char **argv)
   //Winter Wrap up, Winter Wrap up …
   spFontDelete(font);
   spMeshDelete(mesh);
+  spDeleteSprite(sprite);
   SDL_FreeSurface(garfield);
   SDL_FreeSurface(pepper);
+  SDL_FreeSurface(scientist);
   spQuitCore();
   printf("Average fps: %.1f\n",(float)fpssum/(float)divisor);
   return 0;

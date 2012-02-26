@@ -118,6 +118,8 @@
 #ifdef F100
   #define SP_BUTTON_START_NAME "Start"
   #define SP_BUTTON_SELECT_NAME "Select"
+  #define SP_BUTTON_L_NAME "L"
+  #define SP_BUTTON_R_NAME "R"
   #define SP_BUTTON_A_NAME "A"
   #define SP_BUTTON_B_NAME "B"
   #define SP_BUTTON_X_NAME "X"
@@ -127,6 +129,8 @@
 #elif defined WIZ
   #define SP_BUTTON_START_NAME "Menu"
   #define SP_BUTTON_SELECT_NAME "Select"
+  #define SP_BUTTON_L_NAME "L"
+  #define SP_BUTTON_R_NAME "R"
   #define SP_BUTTON_A_NAME "A"
   #define SP_BUTTON_B_NAME "B"
   #define SP_BUTTON_X_NAME "X"
@@ -136,6 +140,8 @@
 #elif defined CAANOO
   #define SP_BUTTON_START_NAME "Home"
   #define SP_BUTTON_SELECT_NAME "Help I"
+  #define SP_BUTTON_L_NAME "L"
+  #define SP_BUTTON_R_NAME "R"
   #define SP_BUTTON_A_NAME "A"
   #define SP_BUTTON_B_NAME "B"
   #define SP_BUTTON_X_NAME "X"
@@ -145,6 +151,8 @@
 #elif defined DINGUX
   #define SP_BUTTON_START_NAME "Start"
   #define SP_BUTTON_SELECT_NAME "Select"
+  #define SP_BUTTON_L_NAME "L"
+  #define SP_BUTTON_R_NAME "R"
   #define SP_BUTTON_A_NAME "A"
   #define SP_BUTTON_B_NAME "B"
   #define SP_BUTTON_X_NAME "X"
@@ -154,6 +162,8 @@
 #elif defined PANDORA
   #define SP_BUTTON_START_NAME "Start"
   #define SP_BUTTON_SELECT_NAME "Select"
+  #define SP_BUTTON_L_NAME "L"
+  #define SP_BUTTON_R_NAME "R"
   #define SP_BUTTON_A_NAME "A"
   #define SP_BUTTON_B_NAME "B"
   #define SP_BUTTON_X_NAME "X"
@@ -163,6 +173,8 @@
 #else
   #define SP_BUTTON_START_NAME "Return"
   #define SP_BUTTON_SELECT_NAME "Backspace"
+  #define SP_BUTTON_L_NAME "q"
+  #define SP_BUTTON_R_NAME "e"
   #define SP_BUTTON_A_NAME "a"
   #define SP_BUTTON_B_NAME "d"
   #define SP_BUTTON_X_NAME "s"

@@ -41,6 +41,7 @@ typedef struct spSpriteStruct {
   Sint32 rotation;
   Sint32 zoomX,zoomY;
   spSubSpritePointer firstSub; //double linked list of subsprites
+  spSubSpritePointer momSub; //for drawing and update. Don't touch it.
 } spSprite;
 
 PREFIX spSpritePointer spNewSprite();
