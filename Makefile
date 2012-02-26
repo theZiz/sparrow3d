@@ -87,8 +87,8 @@ targets:
 testsparrow: testsparrow.c sparrow3d
 	$(CPP) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) -L. $(LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testsparrow
 
-sparrow3d: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o
-	$(CPP) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -o libsparrow3d.so sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowPrimitivesAsm.o sparrowRenderer.o $(SDL) $(INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
+sparrow3d: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o
+	$(CPP) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -o libsparrow3d.so sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowPrimitivesAsm.o sparrowRenderer.o $(SDL) $(INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
 sparrowCore.o: sparrowCore.c sparrowCore.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE)
@@ -110,6 +110,9 @@ sparrowFont.o: sparrowFont.c sparrowFont.h
 
 sparrowMesh.o: sparrowMesh.c sparrowMesh.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowMesh.c $(SDL) $(INCLUDE)
+
+sparrowSprite.o: sparrowSprite.c sparrowSprite.h
+	$(CPP) $(CFLAGS) -fPIC -c sparrowSprite.c $(SDL) $(INCLUDE)
 
 clean:
 	rm *.o
