@@ -91,12 +91,11 @@ void draw_test(void)
       int x,y;
       for (x = -6; x <= 6; x++)
         for (y = -6; y<= 6; y++)
-        {
-          Sint32 matrix[16];
-          memcpy(matrix,spGetMatrix(),16*sizeof(Sint32));
-          spTranslate(x<<SP_ACCURACY+1,y<<SP_ACCURACY+1,0);
           if (x+y & 1)
           {
+            Sint32 matrix[16];
+            memcpy(matrix,spGetMatrix(),16*sizeof(Sint32));
+            spTranslate(x<<SP_ACCURACY+1,y<<SP_ACCURACY+1,0);
             spQuad3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY, 0,
                      -1<<SP_ACCURACY,-1<<SP_ACCURACY, 0,
                       1<<SP_ACCURACY,-1<<SP_ACCURACY, 0,
@@ -105,9 +104,15 @@ void draw_test(void)
             //            -1<<SP_ACCURACY,-1<<SP_ACCURACY, 0,1,garfield->h-SP_FONT_EXTRASPACE-1,
             //             1<<SP_ACCURACY,-1<<SP_ACCURACY, 0,garfield->w-SP_FONT_EXTRASPACE-1,garfield->h-SP_FONT_EXTRASPACE-1,
             //             1<<SP_ACCURACY, 1<<SP_ACCURACY, 0,garfield->w-SP_FONT_EXTRASPACE-1,SP_FONT_EXTRASPACE,65535);        
+            memcpy(spGetMatrix(),matrix,16*sizeof(Sint32));      
           }
-          else
+      for (x = -6; x <= 6; x++)
+        for (y = -6; y<= 6; y++)
+          if (!(x+y & 1))
           {
+            Sint32 matrix[16];
+            memcpy(matrix,spGetMatrix(),16*sizeof(Sint32));
+            spTranslate(x<<SP_ACCURACY+1,y<<SP_ACCURACY+1,0);
             spQuad3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,
                      -1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,
                       1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,
@@ -136,9 +141,8 @@ void draw_test(void)
                       1<<SP_ACCURACY, 1<<SP_ACCURACY, 0<<SP_ACCURACY,
                       1<<SP_ACCURACY, 1<<SP_ACCURACY, 2<<SP_ACCURACY,
                       1<<SP_ACCURACY,-1<<SP_ACCURACY, 2<<SP_ACCURACY,65535);
+            memcpy(spGetMatrix(),matrix,16*sizeof(Sint32));      
           }
-          memcpy(spGetMatrix(),matrix,16*sizeof(Sint32));      
-        }
       break;
     case 1:
       spSetAlphaTest(1);
