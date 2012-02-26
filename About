@@ -1,0 +1,211 @@
++-----------+
+|+---------+|
+||sparrow3D||
+|+---------+|
++-----------+
+
+This Document is for the illustration of the cohenceres and logics of
+the functions from sparrow3D. I hope it makes sense for you and helps
+you to come in sparrow3d.
+
++------------+
+|Introduction|
++------------+
+
+Sparrow3D is a software renderer and a (gaming) engine. It affords the
+possibilities for event handling, 2D and 3D graphic functions, plotting
+of meshs, a simple sprite engine and drawing font.
+
+It totally bases on SDL (with SDL-image and SDL-Font). No other
+dependencies. Thus sparrow3D runs on this systems (yet):
+- GP2X
+- WIZ
+- Dingoo
+- Cannoo
+- Pandora
+- PC (Linux and Windows)
+
+It improves SDL on another abstraction layer. That means, that you
+don't need to know the name of buttons or which kind of axis (d-pad or
+analog stick e.g.) is avaible. You just develop for a generic device.
+
+Advantages / Features of sparrow3D (crudely):
+- fast, because written in C
+- abstraction of the hardware
+- abstracted functions for blitting of surfaces
+- faster rotozoom then SDL-gfx e.g.
+- primitives like rectangles or ellipses
+- 3D Software Renderer, which runs on GP2X and Dingoo, too
+- Sprite Engine
+- Loading of Meshs
+- Drawing of Fonts from ttf-files (so scaleable) 
+
+Next up a small introduction of the parts of sparrow3D. You can, but
+may not use all of it. E.g. it is possible very easy just to use the 3D 
+Software Renderer in an existing SDL application.
+
++-----------+
+|sparrowCore|
++-----------+
+
+Although the name supposes it, you don't have to use this part. If you
+just want the sprite or 3D handling, you can ignore it.
+
+The core offers you a window, event handling - accompanied by the
+abstraction of the different targets - and loading of optimal surfaces
+for the system (faster).
+
+Furthermore you have a feedback function if the screen resizes.
+
++-----------+
+|sparrowMath|
++-----------+
+
+Many parts, but at least _all_ 3D functions, base on fixed point
+numbers. For people never using them: Fix point numbers are very much
+like normal integers. But sparrow3D's fixed point numbers are divided
+by 65536. That means the integer number 65536 is as fixed point number
+65536/65536 = 1.0 or 128 is 128/65536 = 0.001953125.
+
+Fixed point numbers are (much) more inaccurate then classic floating
+point numbers, but on ARM systems without FPU MUCH faster.
+
+For addition or subtraction nothing changes. Only the multiplication
+and division needs extra function, which sparrowMath defines. Cosinus
+and Sinus are very slow. So sparrow3D has faster (lool up table based)
+functions for them, too.
+
+Furthermore sparrowMath has other simplifications like converting a
+HSV-Color to a 16-Bit color.
+
++-----------------+
+|sparrowPrimitives|
++-----------------+
+
+For most of you sparrowPrimitives will be the most importent part of
+sparrow3D. It is responsible for the drawing of different primitives in
+2D. One importent aspect of sparrow3D is, that it depends on SDL, it
+improves and extends. First of all you have to choose a render target.
+That can be the screen surface, but every other 16 bit Surface is
+possible. It is VERY important (really VERY VERY important) to know,
+that every render target MUST be a 16 bit surface! If you want to draw
+to a 32 bit surface, you have to draw in a 16 bit dummy surface and this
+surface you can blit (with SDL methods) to a 32 bit surface. That was
+necessary for simplicity and optimization reasons.
+
+Furthermore you have no "real" alpha blending with sparrow3D. If
+acitivated, there is just an alpha test. The Color pink (defined as
+SP_ALPHA_COLOR) will not be drawn then.
+
+There is no default target. At begin you have to choose one. After this
+every drawing operation will work with it. Moreover a z-Buffer is created
+for the surface, which minds the z values of the target pixels. Both the
+z test and the setting of the z values are adjustable. Drawing with
+z-Buffer is always slower, but for 3D essential.
+
+There are (crudely) these parts, which sparrowPrimitives handles:
+- Dawing triangles and quads with or without texture
+- Rotozoom Drawing of surfaces or surface parts (Tiling)
+- Bliting of surfaces (without rotation and zoom, but faster) or
+  surface parts (Tiling)
+- Drawing of random colored lines, rectangles, ellipses, rectangle
+  borders or ellipse borders
+
+All these function are able to write to the zBuffer. That is the reason,
+why you should reset the z-Buffer at start like the whole screen.
+
+Another possibility is culling. The triangle and quad functions (NOT the
+rectangle functions!) use culling if you want. That means, the primitive
+is NOT drawn, if you define it clockwise. So for correction results you
+have to define it COUNTER clockwise! That is very important for closed
+meshs, because you don't want the back be drawn.
+
++-------------+
+|sparrowRender|
++-------------+
+
+This very important part it the giver of the engine's name: It is for
+the three-dimensionality. Based on sparrowPrimitive there are different
+functions. Like OpenGL sparrow3D uses matrices for the orientation. A
+short OpenGL should give you enough view to use sparrow3D. But
+nevertheless sparrow3D is not compatible to openGL because of speed
+reasons.
+
+Like OpenGL sparrow3D uses two matrizes for orientation (model view
+matrix) and projection (projection matrix). The easist way to understand
+the model view matrix is to imagine it as an "invisible roboter arm",
+which you can move and rotate however you want. Objects you draw will be
+drawn, where the "roboter arm" points to. Keep in mind, that these "arm"
+instructions are relative. That means two times moving to (0,0,-2) sets
+the "arm" to (0,0,-4). But the best way to get it, is learning by doing!
+
+You are able the reset, translate, rotate or scale the model view
+matrix. Furthermore you can manual edit the matrix or save (and reload)
+it like glPush or glPop from OpenGL. I do this in testsparrow.c, too.
+
+With the projection matrix sparrow3D "transforms" the space coordinates
+to screen/surface coordinates. This happens obserbing the z value. An
+object, which is far away (more negative z value), is smaller.
+
+In addition sparrow3D has some very basic light functionalities with
+lights you can place whereever you want in the space.
+
+There are 3 kinds of 3D graphic functions:
+- "real" 3D functions, where a triangle or quad (with or without
+  texture) is placed random in space. These objects consider light.
+  Furthermore functions, where you can draw whole face-bunches (meshs)
+  in one step, which is much faster because most points are used be many
+  faces.
+- "Billboard" 3D functions, which point always to the screen/surface,
+  but in the xy plain still are rotated and scaled. Here you have
+  rectangles, ellipses and border functions again like in
+  sparrowPrimitves.
+- "Blit" 3D functions, which use a correct calculated position and
+  z value, but the size and rotation is ignored. Very fast. You could
+  use it e.g. for particles, where the size is not necessary.
+
++-----------+
+|sparrowMesh|
++-----------+
+
+sparrowMesh is used for loading mesh structures from obj-files and
+deleting them.
+
++-----------+
+|sparrowFont|
++-----------+
+
+No game without font. These part takes sparrowFont. It is able to open
+ttf-files with the aid of SDL-ttf and caches particular letters (e.g.
+the alphabet, numbers and punctuation characters) in SDL-Surfaces, so
+that you just have to blit them (which is very fast). It uses a very
+fast (and cached) binarytree internal.
+
+At the moment (with default sparrow3D stuff) you are not able to draw
+text in the 3D space or to rototate or zoom it.
+
++-------------+
+|sparrowSprite|
++-------------+
+
+For most games sprites are essential. If you have a classic 2D Jump and
+Run it is obvious, but even a 3D game can use them e.g. for
+Head-up-Displays (HUDs).
+
+A sprite from sparrow3D is basically just a a bunch of SDL surfaces or
+parts of it (Tiling). Each of these sub units have a time, which shows
+how long this surface will be shown before the next surface (or surface
+part) will be seeable. If a sprite is shown complete, it starts from the
+start again. With this methode very simple animations are possible
+
+Also sprites can be rotated or scaled. This is slower, but skilful and
+particular used it is an easy method to get more dynamic in the game. A
+good example is worms. Most parts of the game are 2D and not scaled, but
+e.g. the projectile is rotated.
+
++------+
+|Finish|
++------+
+
+sparrow3D is advanced constantly. If you have questions, suggestions or
+feature request, feel free to ask!

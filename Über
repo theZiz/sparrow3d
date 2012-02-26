@@ -45,7 +45,7 @@ Die Vorteile/Features von sparrow3D sind im Groben:
 
 Es folgt eine kurze Vorstellung der einzelnen Teile von sparrow3D. Man
 kann, muss jedoch nicht alle nutzen. Es ist ohne weiteres möglich nur
-den 3D  Software Renderer in ein bestehendes SDL Programm einzubinden.
+den 3D Software Renderer in ein bestehendes SDL Programm einzubinden.
 
 +-----------+
 |sparrowCore|
@@ -67,7 +67,7 @@ größere oder kleinen Surfaces laden oder erstellen möchte.
 |sparrowMath|
 +-----------+
 
-Viele Teile, mindestens jedoch _alle_ 3D Funktionalitäten basieren auf
+Viele Teile, mindestens jedoch _alle_ 3D Funktionalitäten, basieren auf
 Festkommazahlen. Für Leute, die noch nie damit gearbeitet haben: Vom
 Prinzip her sind Festkommazahlen wie normale Integer. Nur wird im Falle
 von Festkommazahlen die Zahl noch durch 65536 geteilt. Das bedeutet
@@ -76,6 +76,7 @@ von Festkommazahlen die Zahl noch durch 65536 geteilt. Das bedeutet
 
 Festkommazahlen sind (wesentlich) ungenauer als die klassichen Fließ-
 kommazahlen, aber auf ARM-Systemen ohne FPU um _Längen_ schneller.
+
 Für Addition und Subtraktion ändert sich hierbei nichts. Nur die
 Multiplikation und Division braucht extra Funktionen, die sparrowMath
 definiert. Auch Kosinus und Sinus sind langsam. Deshalb gibt einem
@@ -99,11 +100,11 @@ WICHTIG zu beachten, dass ALLE Ziele 16 Bit Surfaces sein müssen!
 Solltest du z.B. in ein 32 Bit Surface rendern wollen, musst du ein 16
 Bit Surface erstellen, dort rein rendern und dieses dann auf das 32 Bit
 Surface blitten (mit SDL Mitteln). Das war aus Vereinfachungs-, aber
-vor allem auch Optimierungsgründen notwendig. Außerdem gibt es bei
-sparrow3D kein "echtes" Alphablending. Per Definition ist die Farbe Rosa
-(definiert als SP_ALPHA_COLOR) komplett durchsichtig, der Rest komplett
-sichtbar. Bei Bedarf kann der Alphatest jedoch auch ausgeschaltet
-werden.
+vor allem auch Optimierungsgründen notwendig.
+Außerdem gibt es bei sparrow3D kein "echtes" Alphablending. Per
+Definition ist die Farbe Rosa (definiert als SP_ALPHA_COLOR) komplett
+durchsichtig, der Rest komplett sichtbar. Bei Bedarf kann der Alphatest
+jedoch auch ausgeschaltet werden.
 
 Es gibt kein Standardziel. Am Anfang MUSS eines gewählt werden! Danach
 arbeiten alle Zeichenoperationen in dieses Surface. Weiterhin wird für
@@ -154,21 +155,21 @@ arm vor, den man beliebig bewegen kann. Dieses Beispiel ist wichtig zu
 verinnerlichen, weil alle Positions-, Rotations- und Skalierungsangaben
 relativ zueinander sind. D.h. wenn du den "Roboterarm" um 2 auf der
 z-Achse bewegst und den Befehl noch einmal aufrufst, ist er nun bei z=4.
-Das gilt auch für die Rotation. Hier gilt: Learning bei Doing!
+Das gilt auch für die Rotation. Hier gilt: Learning by Doing!
 
 Man kann die ModelViewMatrix resetten, Translatieren, Rotieren und
 Skalieren. Außerdem kann man die Matrix auch von Hand bearbeiten, wenn
 es einem beliebt oder durch auslesen (und sichern!) der Matrix glPush
 bzw. glPop nachbilden (siehe auch die Beispielanwendung testsparrow.c).
 
-Mithilfe Projektionsmatrix wandelt sparrow3D die Raumkoordinaten in
+Mithilfe der Projektionsmatrix wandelt sparrow3D die Raumkoordinaten in
 Bildschirmkoordinaten um. Das geschieht unter Beachtung des z-Wertes.
 Ein Objekt, was weiter weg ist, erscheint auch kleiner.
 
 Desweiteren bietet einem sparrow3D auch sehr einfache, farbige
 Lichtquellen, die man beliebig im Raum setzen kann.
 
-Es gibt grob drei Arten von Grafikfunktionen:
+Es gibt grob drei Arten von 3D Grafikfunktionen:
 - "echte" 3D Funktionen, wo man ein Dreieck oder Viereck (mit oder ohne
   Textur beliebig im Raum positionieren kann. Auf diese Objekte wirkt
   auch Licht. Außerdem Funktionen, um komplette Flächengebilde (Meshs
