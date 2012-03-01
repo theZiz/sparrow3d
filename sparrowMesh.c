@@ -240,7 +240,7 @@ void meshParseUV(char* buffer,spTexPointPointer point,int max,int texw,int texh)
   oldc = buffer[right];
   buffer[right] = 0;
   number = meshatof(&(buffer[left]));
-  point->v = (int)(number*(float)texh);
+  point->v = texh-1-(int)(number*(float)(texh-1));
   buffer[right]=oldc;
 }
 
