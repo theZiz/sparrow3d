@@ -11,10 +11,56 @@ void draw_function(void)
   //Cleaning the target (in this case the screen surface) with 0 (black).
   //In this case I don't clean the zBuffer, because I don't use it. ;-)
   //But you ARE able to use it, if you want!
-  spClearTarget(0);
+  spResetZBuffer();
+  spClearTarget(34567);
+  
+  //Set the origin:
+  switch ((rotation/16384)%9)
+  {
+    case 0:
+      spSetHorizontalOrigin(SP_CENTER);
+      spSetVerticalOrigin(SP_CENTER);
+      break;
+    case 1:
+      spSetHorizontalOrigin(SP_LEFT);
+      spSetVerticalOrigin(SP_CENTER);
+      break;
+    case 2:
+      spSetHorizontalOrigin(SP_LEFT);
+      spSetVerticalOrigin(SP_TOP);
+      break;
+    case 3:
+      spSetHorizontalOrigin(SP_CENTER);
+      spSetVerticalOrigin(SP_TOP);
+      break;
+    case 4:
+      spSetHorizontalOrigin(SP_RIGHT);
+      spSetVerticalOrigin(SP_TOP);
+      break;
+    case 5:
+      spSetHorizontalOrigin(SP_RIGHT);
+      spSetVerticalOrigin(SP_CENTER);
+      break;
+    case 6:
+      spSetHorizontalOrigin(SP_RIGHT);
+      spSetVerticalOrigin(SP_BOTTOM);
+      break;
+    case 7:
+      spSetHorizontalOrigin(SP_CENTER);
+      spSetVerticalOrigin(SP_BOTTOM);
+      break;
+    case 8:
+      spSetHorizontalOrigin(SP_LEFT);
+      spSetVerticalOrigin(SP_BOTTOM);
+      break;      
+  }
   
   //Drawing the sprite in the middle of the screen
   spDrawSprite(screen->w/2,screen->h/2,-1,sprite);
+  spDrawSprite(screen->w-1,screen->h-1,-1,sprite);
+  spDrawSprite(screen->w-1,0,-1,sprite);
+  spDrawSprite(0,screen->h-1,-1,sprite);
+  spDrawSprite(0,0,-1,sprite);
 
   //Show it!
   spFlip();
@@ -33,9 +79,9 @@ int calc_function(Uint32 steps)
   //Update the sprite (next picture)
   spUpdateSprite(sprite,steps);
   //rotozoom the sprite (without rotozoom it's faster):
-  sprite->zoomX = spSin(rotation*8)+(3<<SP_ACCURACY-1);
+  /*sprite->zoomX = spSin(rotation*8)+(3<<SP_ACCURACY-1);
   sprite->zoomY = spCos(rotation*6)+(3<<SP_ACCURACY-1);
-  sprite->rotation = rotation*4;
+  sprite->rotation = rotation*4;*/
   
   return 0; 
 }
@@ -66,8 +112,9 @@ int main(int argc, char **argv)
     spNewSubSpriteWithTiling(sprite,tile_map,i*24+1,1,22,46,100);
 
   //We don't want to use the zBuffer in any way
-  spSetZSet(0);
-  spSetZTest(0);
+  spSetZSet(1);
+  spSetZTest(1);
+  spSetAlphaTest(0);
   
   //All glory the main loop
   //every frame the draw_function is called

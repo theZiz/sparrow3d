@@ -149,4 +149,12 @@ PREFIX void spEllipse(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry, Uint32 col
 /* Draws a filled EllipseBorder. Doesn't work for huge ellipses at the moment...*/
 PREFIX void spEllipseBorder(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry,Sint32 bx,Sint32 by,Uint32 color);
 
+/* Sets the horizontal origin of the Surface, Rectangle and Ellipse functions.
+ * Possible is: SP_LEFT, SP_RIGHT and SP_CENTER. SP_CENTER is default*/
+PREFIX void spSetHorizontalOrigin(Sint32 origin);
+
+/* Sets the vertical origin of the Surface, Rectangle and Ellipse functions.
+ * Possible is: SP_TOP, SP_BOTTOM and SP_CENTER. SP_CENTER is default*/
+PREFIX void spSetVerticalOrigin(Sint32 origin);
+
 #endif
