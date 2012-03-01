@@ -48,6 +48,12 @@
 #define SP_JOYSTICK_MIN -16384
 #define SP_JOYSTICK_MAX  16383
 
+#define SP_CENTER 0
+#define SP_LEFT 1
+#define SP_TOP 2
+#define SP_RIGHT 3
+#define SP_BOTTOM 4
+
 #define spMul(a,b) ((a>>SP_HALF_ACCURACY)*(b>>SP_HALF_ACCURACY))
 
 #ifdef FAST_BUT_UGLY_2
