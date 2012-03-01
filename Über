@@ -15,7 +15,7 @@ erscheinen zu lassen.
 
 Sparrow3D ist ein Software Renderer und eine (Spiele)Engine. Sie bietet
 dir Möglichkeiten für das Eventhandling, 2D und 3D Funktionen, Anzeige
-von Mehs, eine simple Spritesteuerung und Darstellung von Schrift.
+von Meshs, eine simple Spritesteuerung und Darstellung von Schrift.
 
 Dabei basiert es komplett auf SDL - welches neben SDL-Image und SDL-Font
 die einzige Abhängigkeit von sparrow3D ist. So läuft sparrow3D (bisher)
