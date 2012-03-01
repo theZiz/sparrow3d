@@ -4228,10 +4228,20 @@ PREFIX void spRectangle(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h, Uint32 col
 {
   if (spAlphaTest && color==SP_ALPHA_COLOR)
     return;
-  Sint32 x1 = x-w/2;
-  Sint32 x2 = x+(w-1)/2;
-  Sint32 y1 = y-h/2;
-  Sint32 y2 = y+(h-1)/2;
+  int addu = w/2;
+  if (spHorizontalOrigin == SP_LEFT)
+    addu = 0;
+  if (spHorizontalOrigin == SP_RIGHT)
+    addu = w-1;
+  int addv = h/2;
+  if (spVerticalOrigin == SP_TOP)
+    addv = 0;
+  if (spVerticalOrigin == SP_BOTTOM)
+    addv = h-1;
+  Sint32 x1 = x-addu;
+  Sint32 x2 = x1+w;
+  Sint32 y1 = y-addv;
+  Sint32 y2 = y1+h;
   y = y1;
   if (spZSet)
   {
@@ -4311,10 +4321,20 @@ PREFIX void spRectangleBorder(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Sint3
   }
   if (spAlphaTest && color==SP_ALPHA_COLOR)
     return;
-  Sint32 x1 = x-w/2;
-  Sint32 x2 = x+(w-1)/2;
-  Sint32 y1 = y-h/2;
-  Sint32 y2 = y+(h-1)/2;
+  int addu = w/2;
+  if (spHorizontalOrigin == SP_LEFT)
+    addu = 0;
+  if (spHorizontalOrigin == SP_RIGHT)
+    addu = w-1;
+  int addv = h/2;
+  if (spVerticalOrigin == SP_TOP)
+    addv = 0;
+  if (spVerticalOrigin == SP_BOTTOM)
+    addv = h-1;
+  Sint32 x1 = x-addu;
+  Sint32 x2 = x1+w;
+  Sint32 y1 = y-addv;
+  Sint32 y2 = y1+h;
   Sint32 cy;
   Sint32 cx;
   if (spZSet)
@@ -4688,14 +4708,57 @@ inline sp_intern_Triangle_tex_inter(Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, 
 }
 PREFIX void spRotozoomSurfacePart(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 sx,Sint32 sy,Sint32 w,Sint32 h,Sint32 zoomX,Sint32 zoomY,Sint32 angle)
 {
-  Sint32 x1 = -(w*zoomX >> SP_ACCURACY+1);
-  Sint32 y1 = -(h*zoomY >> SP_ACCURACY+1);
-  Sint32 x2 = -(w*zoomX >> SP_ACCURACY+1);
-  Sint32 y2 = +(h*zoomY >> SP_ACCURACY+1);
-  Sint32 x3 = +(w*zoomX >> SP_ACCURACY+1);
-  Sint32 y3 = +(h*zoomY >> SP_ACCURACY+1);
-  Sint32 x4 = +(w*zoomX >> SP_ACCURACY+1);
-  Sint32 y4 = -(h*zoomY >> SP_ACCURACY+1);
+  Sint32 x1;
+  Sint32 x2;
+  Sint32 x3;
+  Sint32 x4;
+  Sint32 y1;
+  Sint32 y2;
+  Sint32 y3;
+  Sint32 y4;
+  
+  switch (spHorizontalOrigin)
+  {
+    case SP_CENTER:
+      x1 = -(w*zoomX >> SP_ACCURACY+1);
+      x2 = -(w*zoomX >> SP_ACCURACY+1);
+      x3 = +(w*zoomX >> SP_ACCURACY+1);
+      x4 = +(w*zoomX >> SP_ACCURACY+1);
+      break;
+    case SP_LEFT:
+      x1 = -0;
+      x2 = -0;
+      x3 = +(w*zoomX >> SP_ACCURACY);
+      x4 = +(w*zoomX >> SP_ACCURACY);
+      break;
+    case SP_RIGHT:
+      x1 = -(w*zoomX >> SP_ACCURACY);
+      x2 = -(w*zoomX >> SP_ACCURACY);
+      x3 = +0;
+      x4 = +0;
+      break;
+  }
+  switch (spVerticalOrigin)
+  {
+    case SP_CENTER:
+      y1 = -(h*zoomY >> SP_ACCURACY+1);
+      y2 = +(h*zoomY >> SP_ACCURACY+1);
+      y3 = +(h*zoomY >> SP_ACCURACY+1);
+      y4 = -(h*zoomY >> SP_ACCURACY+1);
+      break;
+    case SP_TOP:
+      y1 = -0;
+      y2 = +(h*zoomY >> SP_ACCURACY);
+      y3 = +(h*zoomY >> SP_ACCURACY);
+      y4 = -0;
+      break;
+    case SP_BOTTOM:
+      y1 = -(h*zoomY >> SP_ACCURACY);
+      y2 = +0;
+      y3 = +0;
+      y4 = -(h*zoomY >> SP_ACCURACY);
+      break;
+  }
   
   Sint32 nx1 = x + (x1 * spCos(angle) - y1 * spSin(angle) >> SP_ACCURACY);
   Sint32 ny1 = y + (y1 * spCos(angle) + x1 * spSin(angle) >> SP_ACCURACY);

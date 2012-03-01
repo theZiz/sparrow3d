@@ -14,8 +14,11 @@ void draw_function(void)
   spResetZBuffer();
   spClearTarget(34567);
   
+  //mark the center
+  spEllipseBorder(screen->w/2,screen->h/2,-100,6,6,2,2,0);
+  
   //Set the origin:
-  switch ((rotation/16384)%9)
+  switch ((rotation>>17)%9)
   {
     case 0:
       spSetHorizontalOrigin(SP_CENTER);
@@ -79,9 +82,9 @@ int calc_function(Uint32 steps)
   //Update the sprite (next picture)
   spUpdateSprite(sprite,steps);
   //rotozoom the sprite (without rotozoom it's faster):
-  /*sprite->zoomX = spSin(rotation*8)+(3<<SP_ACCURACY-1);
-  sprite->zoomY = spCos(rotation*6)+(3<<SP_ACCURACY-1);
-  sprite->rotation = rotation*4;*/
+  sprite->zoomX = spSin(rotation*8)/2+(3<<SP_ACCURACY-1);
+  sprite->zoomY = spCos(rotation*6)/2+(3<<SP_ACCURACY-1);
+  sprite->rotation = rotation*4;
   
   return 0; 
 }
@@ -112,9 +115,6 @@ int main(int argc, char **argv)
     spNewSubSpriteWithTiling(sprite,tile_map,i*24+1,1,22,46,100);
 
   //We don't want to use the zBuffer in any way
-  spSetZSet(1);
-  spSetZTest(1);
-  spSetAlphaTest(0);
   
   //All glory the main loop
   //every frame the draw_function is called
