@@ -81,6 +81,8 @@ PREFIX void spSelectRenderTarget(SDL_Surface* target)
 
 PREFIX void spBindTexture(SDL_Surface* texture)
 {
+  if (texture == NULL)
+    return;
   spTexture = texture;
   spTextureX = texture->w;
   spTextureY = texture->h;
