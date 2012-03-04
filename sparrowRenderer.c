@@ -32,16 +32,6 @@ int spLightOn = -1;
 spLight spLightDiffuse[SP_MAX_LIGHTS];
 Uint32 spLightAmbient[3] = {1<<SP_ACCURACY-2,1<<SP_ACCURACY-2,1<<SP_ACCURACY-2};
 
-/*inline Sint32 spDiv(Sint32 a,Sint32 b)
-{
-  #ifdef FAST_BUT_UGLY_2
-  if (b>=0 && b<(1<<SP_PRIM_ACCURACY))
-    return a*spGetOne_over_x_pointer()[b]>>SP_PRIM_ACCURACY-SP_ACCURACY;
-  if (b <0 && b>(-1<<SP_PRIM_ACCURACY))
-    return -a*spGetOne_over_x_pointer()[-b]>>SP_PRIM_ACCURACY-SP_ACCURACY;
-  #endif
-  return ((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY;
-}*/
 
 inline void spSetFrustumf2(Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
                            Sint32 znear, Sint32 zfar)
@@ -65,7 +55,7 @@ inline void spSetFrustumf2(Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bot
     matrix[11] = -1<<SP_ACCURACY;
     matrix[12] = 0<<SP_ACCURACY;
     matrix[13] = 0<<SP_ACCURACY;
-    matrix[14] = spDiv((-temp >> SP_HALF_ACCURACY) * (zfar >> SP_HALF_ACCURACY),temp4);
+    matrix[14] = spDiv(spMul(-temp,zfar),temp4);
     matrix[15] = 0<<SP_ACCURACY;
 }
 
@@ -109,24 +99,19 @@ PREFIX void spIdentity()
 
 PREFIX void spScale(Sint32 x,Sint32 y,Sint32 z)
 {
-  spModelView[ 0]=(spModelView[ 0]>>SP_HALF_ACCURACY)*(x>>SP_HALF_ACCURACY);
-	spModelView[ 5]=(spModelView[ 5]>>SP_HALF_ACCURACY)*(y>>SP_HALF_ACCURACY);
-	spModelView[10]=(spModelView[10]>>SP_HALF_ACCURACY)*(z>>SP_HALF_ACCURACY);
+  spModelView[ 0]=spMul(spModelView[ 0],x);
+	spModelView[ 5]=spMul(spModelView[ 5],y);
+	spModelView[10]=spMul(spModelView[10],z);
 }  
-
-/*inline Sint32 spMul(Sint32 a,Sint32 b)
-{
-  return (a>>SP_HALF_ACCURACY)*(b>>SP_HALF_ACCURACY);
-}*/
 
 PREFIX void spRotate(Sint32 x,Sint32 y,Sint32 z,Sint32 rad)
 {
 	//Rotation matrix:
 	Sint32 s=spSin(rad);
 	Sint32 c=spCos(rad);
-  Sint32 l = spSqrt((x>>SP_HALF_ACCURACY)*(x>>SP_HALF_ACCURACY)
-                   +(y>>SP_HALF_ACCURACY)*(y>>SP_HALF_ACCURACY)
-                   +(z>>SP_HALF_ACCURACY)*(z>>SP_HALF_ACCURACY));
+  Sint32 l = spSqrt(spMul(x,x)
+                   +spMul(y,y)
+                   +spMul(z,z));
 	if (l==0)
 	  return;
   x = spDiv(x,l);
@@ -195,15 +180,15 @@ PREFIX void spRotateX(Sint32 rad)
 
 	Sint32 result[8];
   //+4
-	result[ 0]=(spModelView[ 4]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY)+(spModelView[ 8]>>SP_HALF_ACCURACY)*(rotate[ 6]>>SP_HALF_ACCURACY);
-	result[ 1]=(spModelView[ 5]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY)+(spModelView[ 9]>>SP_HALF_ACCURACY)*(rotate[ 6]>>SP_HALF_ACCURACY);
-	result[ 2]=(spModelView[ 6]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY)+(spModelView[10]>>SP_HALF_ACCURACY)*(rotate[ 6]>>SP_HALF_ACCURACY);
-	result[ 3]=(spModelView[ 7]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY)+(spModelView[11]>>SP_HALF_ACCURACY)*(rotate[ 6]>>SP_HALF_ACCURACY);
+	result[ 0]=spMul(spModelView[ 4],rotate[ 5])+spMul(spModelView[ 8],rotate[ 6]);
+	result[ 1]=spMul(spModelView[ 5],rotate[ 5])+spMul(spModelView[ 9],rotate[ 6]);
+	result[ 2]=spMul(spModelView[ 6],rotate[ 5])+spMul(spModelView[10],rotate[ 6]);
+	result[ 3]=spMul(spModelView[ 7],rotate[ 5])+spMul(spModelView[11],rotate[ 6]);
 
-	result[ 4]=(spModelView[ 4]>>SP_HALF_ACCURACY)*(rotate[ 9]>>SP_HALF_ACCURACY)+(spModelView[ 8]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
-	result[ 5]=(spModelView[ 5]>>SP_HALF_ACCURACY)*(rotate[ 9]>>SP_HALF_ACCURACY)+(spModelView[ 9]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
-	result[ 6]=(spModelView[ 6]>>SP_HALF_ACCURACY)*(rotate[ 9]>>SP_HALF_ACCURACY)+(spModelView[10]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
-	result[ 7]=(spModelView[ 7]>>SP_HALF_ACCURACY)*(rotate[ 9]>>SP_HALF_ACCURACY)+(spModelView[11]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
+	result[ 4]=spMul(spModelView[ 4],rotate[ 9])+spMul(spModelView[ 8],rotate[10]);
+	result[ 5]=spMul(spModelView[ 5],rotate[ 9])+spMul(spModelView[ 9],rotate[10]);
+	result[ 6]=spMul(spModelView[ 6],rotate[ 9])+spMul(spModelView[10],rotate[10]);
+	result[ 7]=spMul(spModelView[ 7],rotate[ 9])+spMul(spModelView[11],rotate[10]);
 
 	memcpy(&(spModelView[4]),result,sizeof(Sint32)*8);
 }
@@ -234,15 +219,15 @@ PREFIX void spRotateY(Sint32 rad)
 
 	Sint32 result[4];
 	Sint32 result_8[4];
-	result[ 0]=(spModelView[ 0]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 8]>>SP_HALF_ACCURACY)*(rotate[ 2]>>SP_HALF_ACCURACY);
-	result[ 1]=(spModelView[ 1]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 9]>>SP_HALF_ACCURACY)*(rotate[ 2]>>SP_HALF_ACCURACY);
-	result[ 2]=(spModelView[ 2]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[10]>>SP_HALF_ACCURACY)*(rotate[ 2]>>SP_HALF_ACCURACY);
-	result[ 3]=(spModelView[ 3]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[11]>>SP_HALF_ACCURACY)*(rotate[ 2]>>SP_HALF_ACCURACY);
+	result[ 0]=spMul(spModelView[ 0],rotate[ 0])+spMul(spModelView[ 8],rotate[ 2]);
+	result[ 1]=spMul(spModelView[ 1],rotate[ 0])+spMul(spModelView[ 9],rotate[ 2]);
+	result[ 2]=spMul(spModelView[ 2],rotate[ 0])+spMul(spModelView[10],rotate[ 2]);
+	result[ 3]=spMul(spModelView[ 3],rotate[ 0])+spMul(spModelView[11],rotate[ 2]);
   //+8!
-	result_8[ 0]=(spModelView[ 0]>>SP_HALF_ACCURACY)*(rotate[ 8]>>SP_HALF_ACCURACY)+(spModelView[ 8]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
-	result_8[ 1]=(spModelView[ 1]>>SP_HALF_ACCURACY)*(rotate[ 8]>>SP_HALF_ACCURACY)+(spModelView[ 9]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
-	result_8[ 2]=(spModelView[ 2]>>SP_HALF_ACCURACY)*(rotate[ 8]>>SP_HALF_ACCURACY)+(spModelView[10]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
-	result_8[ 3]=(spModelView[ 3]>>SP_HALF_ACCURACY)*(rotate[ 8]>>SP_HALF_ACCURACY)+(spModelView[11]>>SP_HALF_ACCURACY)*(rotate[10]>>SP_HALF_ACCURACY);
+	result_8[ 0]=spMul(spModelView[ 0],rotate[ 8])+spMul(spModelView[ 8],rotate[10]);
+	result_8[ 1]=spMul(spModelView[ 1],rotate[ 8])+spMul(spModelView[ 9],rotate[10]);
+	result_8[ 2]=spMul(spModelView[ 2],rotate[ 8])+spMul(spModelView[10],rotate[10]);
+	result_8[ 3]=spMul(spModelView[ 3],rotate[ 8])+spMul(spModelView[11],rotate[10]);
 	memcpy(spModelView,result,sizeof(Sint32)*4);
 	memcpy(&(spModelView[8]),result_8,sizeof(Sint32)*4);
 }
@@ -272,25 +257,25 @@ PREFIX void spRotateZ(Sint32 rad)
   rotate[15]= 1<<SP_ACCURACY;
 
 	Sint32 result[8];
-	result[ 0]=(spModelView[ 0]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 4]>>SP_HALF_ACCURACY)*(rotate[ 1]>>SP_HALF_ACCURACY);
-	result[ 1]=(spModelView[ 1]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 5]>>SP_HALF_ACCURACY)*(rotate[ 1]>>SP_HALF_ACCURACY);
-	result[ 2]=(spModelView[ 2]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 6]>>SP_HALF_ACCURACY)*(rotate[ 1]>>SP_HALF_ACCURACY);
-	result[ 3]=(spModelView[ 3]>>SP_HALF_ACCURACY)*(rotate[ 0]>>SP_HALF_ACCURACY)+(spModelView[ 7]>>SP_HALF_ACCURACY)*(rotate[ 1]>>SP_HALF_ACCURACY);
+	result[ 0]=spMul(spModelView[ 0],rotate[ 0])+spMul(spModelView[ 4],rotate[ 1]);
+	result[ 1]=spMul(spModelView[ 1],rotate[ 0])+spMul(spModelView[ 5],rotate[ 1]);
+	result[ 2]=spMul(spModelView[ 2],rotate[ 0])+spMul(spModelView[ 6],rotate[ 1]);
+	result[ 3]=spMul(spModelView[ 3],rotate[ 0])+spMul(spModelView[ 7],rotate[ 1]);
 
-	result[ 4]=(spModelView[ 0]>>SP_HALF_ACCURACY)*(rotate[ 4]>>SP_HALF_ACCURACY)+(spModelView[ 4]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY);
-	result[ 5]=(spModelView[ 1]>>SP_HALF_ACCURACY)*(rotate[ 4]>>SP_HALF_ACCURACY)+(spModelView[ 5]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY);
-	result[ 6]=(spModelView[ 2]>>SP_HALF_ACCURACY)*(rotate[ 4]>>SP_HALF_ACCURACY)+(spModelView[ 6]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY);
-	result[ 7]=(spModelView[ 3]>>SP_HALF_ACCURACY)*(rotate[ 4]>>SP_HALF_ACCURACY)+(spModelView[ 7]>>SP_HALF_ACCURACY)*(rotate[ 5]>>SP_HALF_ACCURACY);
+	result[ 4]=spMul(spModelView[ 0],rotate[ 4])+spMul(spModelView[ 4],rotate[ 5]);
+	result[ 5]=spMul(spModelView[ 1],rotate[ 4])+spMul(spModelView[ 5],rotate[ 5]);
+	result[ 6]=spMul(spModelView[ 2],rotate[ 4])+spMul(spModelView[ 6],rotate[ 5]);
+	result[ 7]=spMul(spModelView[ 3],rotate[ 4])+spMul(spModelView[ 7],rotate[ 5]);
 
 	memcpy(spModelView,result,sizeof(Sint32)*8);
 }
 
 PREFIX void spTranslate(Sint32 x,Sint32 y,Sint32 z)
 {
-  spModelView[12]=(spModelView[ 0]>>SP_HALF_ACCURACY)*(x>>SP_HALF_ACCURACY)+(spModelView[ 4]>>SP_HALF_ACCURACY)*(y>>SP_HALF_ACCURACY)+(spModelView[ 8]>>SP_HALF_ACCURACY)*(z>>SP_HALF_ACCURACY)+spModelView[12];
-	spModelView[13]=(spModelView[ 1]>>SP_HALF_ACCURACY)*(x>>SP_HALF_ACCURACY)+(spModelView[ 5]>>SP_HALF_ACCURACY)*(y>>SP_HALF_ACCURACY)+(spModelView[ 9]>>SP_HALF_ACCURACY)*(z>>SP_HALF_ACCURACY)+spModelView[13];
-	spModelView[14]=(spModelView[ 2]>>SP_HALF_ACCURACY)*(x>>SP_HALF_ACCURACY)+(spModelView[ 6]>>SP_HALF_ACCURACY)*(y>>SP_HALF_ACCURACY)+(spModelView[10]>>SP_HALF_ACCURACY)*(z>>SP_HALF_ACCURACY)+spModelView[14];
-	spModelView[15]=(spModelView[ 3]>>SP_HALF_ACCURACY)*(x>>SP_HALF_ACCURACY)+(spModelView[ 7]>>SP_HALF_ACCURACY)*(y>>SP_HALF_ACCURACY)+(spModelView[11]>>SP_HALF_ACCURACY)*(z>>SP_HALF_ACCURACY)+spModelView[15];
+  spModelView[12]=spMul(spModelView[ 0],x)+spMul(spModelView[ 4],y)+spMul(spModelView[ 8],z)+spModelView[12];
+	spModelView[13]=spMul(spModelView[ 1],x)+spMul(spModelView[ 5],y)+spMul(spModelView[ 9],z)+spModelView[13];
+	spModelView[14]=spMul(spModelView[ 2],x)+spMul(spModelView[ 6],y)+spMul(spModelView[10],z)+spModelView[14];
+	spModelView[15]=spMul(spModelView[ 3],x)+spMul(spModelView[ 7],y)+spMul(spModelView[11],z)+spModelView[15];
 }
 
 PREFIX Sint32* spGetMatrix()
@@ -306,32 +291,32 @@ PREFIX void spSetMatrix(Sint32* matrix)
 inline void spCalcNormal(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,
                          Sint32 x3,Sint32 y3,Sint32 z3,Sint32* normale)
 {
-  normale[0]=((y1-y2)>>SP_HALF_ACCURACY)*((z2-z3)>>SP_HALF_ACCURACY)
-            -((z1-z2)>>SP_HALF_ACCURACY)*((y2-y3)>>SP_HALF_ACCURACY);
-  normale[1]=((z1-z2)>>SP_HALF_ACCURACY)*((x2-x3)>>SP_HALF_ACCURACY)
-            -((x1-x2)>>SP_HALF_ACCURACY)*((z2-z3)>>SP_HALF_ACCURACY);
-  normale[2]=((x1-x2)>>SP_HALF_ACCURACY)*((y2-y3)>>SP_HALF_ACCURACY)
-            -((y1-y2)>>SP_HALF_ACCURACY)*((x2-x3)>>SP_HALF_ACCURACY);
+  normale[0]=spMul(y1-y2,z2-z3)
+            -spMul(z1-z2,y2-y3);
+  normale[1]=spMul(z1-z2,x2-x3)
+            -spMul(x1-x2,z2-z3);
+  normale[2]=spMul(x1-x2,y2-y3)
+            -spMul(y1-y2,x2-x3);
 }
 
 inline void spMulModellView(Sint32 x,Sint32 y,Sint32 z,Sint32 *tx,Sint32 *ty,Sint32 *tz,Sint32 *tw)
 {
-  (*tx) = (spModelView[ 0] >> SP_HALF_ACCURACY)*(x >> SP_HALF_ACCURACY)
-        + (spModelView[ 4] >> SP_HALF_ACCURACY)*(y >> SP_HALF_ACCURACY)
-        + (spModelView[ 8] >> SP_HALF_ACCURACY)*(z >> SP_HALF_ACCURACY)
-        + (spModelView[12]);// >> SP_HALF_ACCURACY)*( 1 << SP_HALF_ACCURACY);
-  (*ty) = (spModelView[ 1] >> SP_HALF_ACCURACY)*(x >> SP_HALF_ACCURACY)
-        + (spModelView[ 5] >> SP_HALF_ACCURACY)*(y >> SP_HALF_ACCURACY)
-        + (spModelView[ 9] >> SP_HALF_ACCURACY)*(z >> SP_HALF_ACCURACY)
-        + (spModelView[13]);// >> SP_HALF_ACCURACY)*( 1 << SP_HALF_ACCURACY);
-  (*tz) = (spModelView[ 2] >> SP_HALF_ACCURACY)*(x >> SP_HALF_ACCURACY)
-        + (spModelView[ 6] >> SP_HALF_ACCURACY)*(y >> SP_HALF_ACCURACY)
-        + (spModelView[10] >> SP_HALF_ACCURACY)*(z >> SP_HALF_ACCURACY)
-        + (spModelView[14]);// >> SP_HALF_ACCURACY)*( 1 << SP_HALF_ACCURACY);
-  (*tw) = (spModelView[ 3] >> SP_HALF_ACCURACY)*(x >> SP_HALF_ACCURACY)
-        + (spModelView[ 7] >> SP_HALF_ACCURACY)*(y >> SP_HALF_ACCURACY)
-        + (spModelView[11] >> SP_HALF_ACCURACY)*(z >> SP_HALF_ACCURACY)
-        + (spModelView[15]);// >> SP_HALF_ACCURACY)*( 1 << SP_HALF_ACCURACY);
+  (*tx) = spMul(spModelView[ 0],x)
+        + spMul(spModelView[ 4],y)
+        + spMul(spModelView[ 8],z)
+        + spModelView[12];
+  (*ty) = spMul(spModelView[ 1],x)
+        + spMul(spModelView[ 5],y)
+        + spMul(spModelView[ 9],z)
+        + spModelView[13];
+  (*tz) = spMul(spModelView[ 2],x)
+        + spMul(spModelView[ 6],y)
+        + spMul(spModelView[10],z)
+        + spModelView[14];
+  (*tw) = spMul(spModelView[ 3],x)
+        + spMul(spModelView[ 7],y)
+        + spMul(spModelView[11],z)
+        + spModelView[15];
 }
 
 //senquack - credit for this fast sqrt goes to Wilco Dijkstra http://www.finesse.demon.co.uk/steven/sqrt.html

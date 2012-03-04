@@ -54,9 +54,14 @@
 #define SP_RIGHT 3
 #define SP_BOTTOM 4
 
-#define spMul(a,b) ((a>>SP_HALF_ACCURACY)*(b>>SP_HALF_ACCURACY))
+#ifdef FAST_MULTIPLICATION
+  #define spMul(a,b) (((a)>>SP_HALF_ACCURACY)*((b)>>SP_HALF_ACCURACY))
+#else
+  #define spMul(a,b) ((Sint64)(a)*(Sint64)(b)>>SP_ACCURACY)
+#endif
 
-#ifdef FAST_BUT_UGLY_2
+
+#ifdef FAST_DIVISION
   #define spDiv(a,b) ((b>=0 && b<(1<<SP_PRIM_ACCURACY))? \
                        (a*spGetOne_over_x_pointer()[b]>>SP_PRIM_ACCURACY-SP_ACCURACY): \
                        ( \
@@ -65,7 +70,8 @@
                          (((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY) \
                        ))
 #else
-  #define spDiv(a,b) (((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY)
+  //#define spDiv(a,b) ((((a)<<SP_HALF_ACCURACY)/(b))<<SP_HALF_ACCURACY)
+  #define spDiv(a,b) (((Sint64)(a)<<SP_ACCURACY)/(Sint64)(b))
 #endif
 
 

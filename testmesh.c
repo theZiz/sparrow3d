@@ -21,9 +21,10 @@ void draw_function(void)
   //Going to the "position" -8.0f
   spTranslate(0,0,-8<<SP_ACCURACY);
   //rotation aorund every axis
-  spRotateX(rotation);
-  spRotateY(rotation);
-  spRotateZ(rotation);
+  //spRotateX(rotation);
+  //spRotateY(rotation);
+  //spRotateZ(rotation);
+  spRotateX(SP_PI/8);
   //Drawing the mesh and no update of the edgelist 
   spMesh3D(mesh,0);
   //Show it!
@@ -61,11 +62,11 @@ int main(int argc, char **argv)
   resize(screen->w,screen->h);
   
   //Textures loading
-  texture = spLoadSurface("./data/garfield.png");
+  texture = spLoadSurface("./data/scrooge.png");
   //Setting alpha test to 0, because the texture has pink parts
   spSetAlphaTest(0);
   //Mesh loading
-  mesh = spMeshLoadObj("./data/bamuv.obj",texture,65535);
+  mesh = spMeshLoadObj("./data/scrooge.obj",texture,65535);
     
   //Light on! There is one "default" light at 0,0,0 with color white. We just use it.
   spSetLight(1);

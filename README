@@ -49,10 +49,6 @@ First have a look in the Makefile. Some platforms are comment out. Just comment
 out the first PC-Variables and comment in your favourate platform. Keep in mind
 to change to location of the toolchain tools and include directories ;-)
 
-There are some not in the Makefile mentioned defines like FAST_BUT_UGLY and
-FAST_BUT_UGLY_2. If your system seems to be to slow, just add -DFAST_BUT_UGLY
-and/or -DFAST_BUT_UGLY_2 to your CC-Definition.
-
 If everything fine with your Makefile, just type
 make
 Thats all. Their is not possibility to install or such a thing ^^
