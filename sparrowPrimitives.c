@@ -4057,6 +4057,119 @@ PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2, 
 {
   if (spAlphaTest && color==SP_ALPHA_COLOR)
     return;
+  //Dirty bugfix...
+  if (x1 == x2)
+  {
+    if (y1 == y2)
+    {
+      if (spZSet)
+      {
+        if (spZTest)
+          draw_pixel_ztest_zset(x1,y1,z1,color);
+        else
+          draw_pixel_zset(x1,y1,z1,color);
+      }
+      else
+      {
+        if (spZTest)
+          draw_pixel_ztest(x1,y1,z1,color);
+        else
+          draw_pixel(x1,y1,color);
+      }
+    }
+    else
+    if (y1 < y2)
+    {
+      if (spZSet)
+      {
+        if (spZTest)
+        {
+          Sint32 dz = spDiv(z1-z2,y1-y2);
+          for (;y1<=y2;y1++)
+          {
+            draw_pixel_ztest_zset(x1,y1,z1,color);
+            z1+=dz;
+          }
+        }
+        else
+        {
+          Sint32 dz = spDiv(z1-z2,y1-y2);
+          for (;y1<=y2;y1++)
+          {
+            draw_pixel_zset(x1,y1,z1,color);
+            z1+=dz;
+          }
+        }
+      }
+      else
+      {
+        if (spZTest)
+        {
+          Sint32 dz = spDiv(z1-z2,y1-y2);
+          for (;y1<=y2;y1++)
+          {
+            draw_pixel_ztest(x1,y1,z1,color);
+            z1+=dz;
+          }
+        }
+        else
+          for (;y1<=y2;y1++)
+            draw_pixel(x1,y1,color);
+      }      
+    }
+    else
+    {
+      if (spZSet)
+      {
+        if (spZTest)
+        {
+          Sint32 dz = spDiv(z1-z2,y1-y2);
+          for (;y2<=y1;y2++)
+          {
+            draw_pixel_ztest_zset(x1,y2,z2,color);
+            z2+=dz;
+          }
+        }
+        else
+        {
+          Sint32 dz = spDiv(z1-z2,y1-y2);
+          for (;y2<=y1;y2++)
+          {
+            draw_pixel_zset(x1,y2,z2,color);
+            z2+=dz;
+          }
+        }
+      }
+      else
+      {
+        if (spZTest)
+        {
+          Sint32 dz = spDiv(z1-z2,y1-y2);
+          for (;y2<=y1;y2++)
+          {
+            draw_pixel_ztest(x1,y2,z2,color);
+            z2+=dz;
+          }
+        }
+        else
+          for (;y2<=y1;y2++)
+            draw_pixel(x1,y2,color);
+      }      
+    }    
+    return;
+  }
+  if (x1 > x2)
+  {
+    Sint32 t = x1;
+    x1 = x2;
+    x2 = t;
+    t = y1;
+    y1 = y2;
+    y2 = t;
+    t = z1;
+    z1 = z2;
+    z2 = t;
+  }
   if (spZSet)
   {
     if (spZTest)

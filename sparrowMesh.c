@@ -568,6 +568,25 @@ PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture,Uint16 color
     return model;
 }
 
+PREFIX spModelPointer spMeshLoadObjSize(char* name,SDL_Surface* texture,Uint16 color,Sint32 size)
+{
+  spModelPointer mesh = spMeshLoadObj(name,texture,color);
+  int i;
+  for (i = 0; i < mesh->pointCount; i++)
+  {
+    mesh->point[i].x = spMul(mesh->point[i].x,size);
+    mesh->point[i].y = spMul(mesh->point[i].y,size);
+    mesh->point[i].z = spMul(mesh->point[i].z,size);
+  }
+  for (i = 0; i < mesh->texPointCount; i++)
+  {
+    mesh->texPoint[i].x = spMul(mesh->texPoint[i].x,size);
+    mesh->texPoint[i].y = spMul(mesh->texPoint[i].y,size);
+    mesh->texPoint[i].z = spMul(mesh->texPoint[i].z,size);
+  }
+  return mesh;
+}
+
 PREFIX void spMeshDelete(spModelPointer mesh)
 {
   free(mesh->point);

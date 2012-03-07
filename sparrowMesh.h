@@ -25,6 +25,8 @@
 
 PREFIX spModelPointer spMeshLoadObj(char* name,SDL_Surface* texture,Uint16 color);
 
+PREFIX spModelPointer spMeshLoadObjSize(char* name,SDL_Surface* texture,Uint16 color,Sint32 size);
+
 PREFIX void spMeshDelete(spModelPointer mesh);
 
 #endif

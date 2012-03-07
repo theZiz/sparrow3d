@@ -126,3 +126,5 @@ clean:
 	rm *.o
 	rm libsparrow3d.so
 	rm testsparrow
+	rm testsprite
+	rm testmesh
