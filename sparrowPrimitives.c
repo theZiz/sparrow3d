@@ -4060,8 +4060,12 @@ PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2, 
   //Dirty bugfix...
   if (x1 == x2)
   {
+    if (x1 < 0 || x1 >=spTargetX)
+      return;
     if (y1 == y2)
     {
+      if (y1 < 0 || y1 >=spTargetY)
+        return;
       if (spZSet)
       {
         if (spZTest)
@@ -4080,6 +4084,15 @@ PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2, 
     else
     if (y1 < y2)
     {
+      if (y2 < 0 || y1 >=spTargetY)
+        return;
+      if (y1 < 0)
+      {
+        z1 += spDiv(z1-z2,y2-y1)*y1;
+        y1 = 0;
+      }
+      if (y2 >= spTargetY)
+        y2 = spTargetY-1;
       if (spZSet)
       {
         if (spZTest)
@@ -4119,6 +4132,15 @@ PREFIX void spLine(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2, 
     }
     else
     {
+      if (y1 < 0 || y2 >=spTargetY)
+        return;
+      if (y2 < 0)
+      {
+        z2 += spDiv(z2-z1,y1-y2)*y2;
+        y2 = 0;
+      }
+      if (y1 >= spTargetY)
+        y1 = spTargetY-1;
       if (spZSet)
       {
         if (spZTest)
