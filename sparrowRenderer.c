@@ -338,6 +338,8 @@ inline void spMulModellView(Sint32 x,Sint32 y,Sint32 z,Sint32 *tx,Sint32 *ty,Sin
  }
 
 
+
+
 inline Uint16 rendererLightCalculation(Uint16 color,Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,Sint32 x3,Sint32 y3,Sint32 z3)
 {
   if (!spLightOn)

@@ -50,20 +50,20 @@
 #define SP_PI 3294199
 #define SP_COS_ACCURACY 8
 */
-
+/*
 #define SP_ACCURACY 18
 #define SP_HALF_ACCURACY 9
 #define SP_ACCURACY_FACTOR 262144.0f
 #define SP_PI 823550
 #define SP_COS_ACCURACY 6
+*/
 
-/*
 #define SP_ACCURACY 16
 #define SP_HALF_ACCURACY 8
 #define SP_ACCURACY_FACTOR 65536.0f
 #define SP_PI 205888
 #define SP_COS_ACCURACY 4
-*/
+
 #define SP_JOYSTICK_MIN -16384
 #define SP_JOYSTICK_MAX  16383
 
