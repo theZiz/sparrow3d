@@ -370,11 +370,13 @@ inline Uint16 rendererLightCalculation(Uint16 color,Sint32 x1,Sint32 y1,Sint32 z
     Sint32 direction_length = fpsqrt(spMul(direction[0],direction[0]) +
                                      spMul(direction[1],direction[1]) +
                                      spMul(direction[2],direction[2]));
-                                  
+    Sint32 div = spMul(direction_length,normale_length);
+    if (div == 0)
+      div = 1;           
     Sint32 ac = spDiv(spMul(direction[0],normale[0])+
                       spMul(direction[1],normale[1])+
                       spMul(direction[2],normale[2]),
-                      spMul(direction_length,normale_length));
+                      div);
     if (ac < 0)
       ac = 0;
     if (ac > (1 << SP_ACCURACY))
@@ -698,10 +700,10 @@ PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList)
     Sint32 w1 = spMul(spProjection[11],mesh->point[i].tz);
     if (w1 == 0)
       w1 = 1;  
-    Sint32 nx1 = spDiv(x1,w1)>>SP_HALF_ACCURACY;
-    Sint32 ny1 = spDiv(y1,w1)>>SP_HALF_ACCURACY;
-    mesh->point[i].px = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
-    mesh->point[i].py = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+    Sint32 nx1 = spDiv(x1,w1);
+    Sint32 ny1 = spDiv(y1,w1);
+    mesh->point[i].px = viewPortX+((nx1*windowX) >> SP_ACCURACY+1);
+    mesh->point[i].py = viewPortY-((ny1*windowY) >> SP_ACCURACY+1);
     mesh->point[i].pz = mesh->point[i].tz;    
   }
   for (i = 0; i < mesh->texPointCount; i++)
@@ -713,10 +715,10 @@ PREFIX int spMesh3D(spModelPointer mesh,int updateEdgeList)
     Sint32 w1 = spMul(spProjection[11],mesh->texPoint[i].tz);
     if (w1 == 0)
       w1 = 1;  
-    Sint32 nx1 = spDiv(x1,w1)>>SP_HALF_ACCURACY;
-    Sint32 ny1 = spDiv(y1,w1)>>SP_HALF_ACCURACY;
-    mesh->texPoint[i].px = viewPortX+((nx1*(windowX<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
-    mesh->texPoint[i].py = viewPortY-((ny1*(windowY<<SP_HALF_ACCURACY-1)) >> SP_ACCURACY);
+    Sint32 nx1 = spDiv(x1,w1);
+    Sint32 ny1 = spDiv(y1,w1);
+    mesh->texPoint[i].px = viewPortX+((nx1*windowX) >> SP_ACCURACY+1);
+    mesh->texPoint[i].py = viewPortY-((ny1*windowY) >> SP_ACCURACY+1);
     mesh->texPoint[i].pz = mesh->texPoint[i].tz;    
   }
   //Draw Faces, if seeable

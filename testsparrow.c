@@ -307,7 +307,7 @@ int calc_test(Uint32 steps)
     //if (divisor == 60000)
       //return 1;
   }
-  rotation+=steps*32;
+  rotation+=steps<<SP_ACCURACY-11;
   if (spGetInput()->button[SP_BUTTON_A])
   {
     spGetInput()->button[SP_BUTTON_A] = 0;

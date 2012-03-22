@@ -574,15 +574,15 @@ PREFIX spModelPointer spMeshLoadObjSize(char* name,SDL_Surface* texture,Uint16 c
   int i;
   for (i = 0; i < mesh->pointCount; i++)
   {
-    mesh->point[i].x = spMul(mesh->point[i].x,size);
-    mesh->point[i].y = spMul(mesh->point[i].y,size);
-    mesh->point[i].z = spMul(mesh->point[i].z,size);
+    mesh->point[i].x = spMulHigh(mesh->point[i].x,size);
+    mesh->point[i].y = spMulHigh(mesh->point[i].y,size);
+    mesh->point[i].z = spMulHigh(mesh->point[i].z,size);
   }
   for (i = 0; i < mesh->texPointCount; i++)
   {
-    mesh->texPoint[i].x = spMul(mesh->texPoint[i].x,size);
-    mesh->texPoint[i].y = spMul(mesh->texPoint[i].y,size);
-    mesh->texPoint[i].z = spMul(mesh->texPoint[i].z,size);
+    mesh->texPoint[i].x = spMulHigh(mesh->texPoint[i].x,size);
+    mesh->texPoint[i].y = spMulHigh(mesh->texPoint[i].y,size);
+    mesh->texPoint[i].z = spMulHigh(mesh->texPoint[i].z,size);
   }
   return mesh;
 }

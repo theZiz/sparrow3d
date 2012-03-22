@@ -40,11 +40,30 @@
   #endif
 #endif
 
+//If your application is "flickering" set the ACCURACY to a higher value, but
+//keep in mind, that e.g. SP_ACCURACY 20 means, that you have only 12 bits
+//(2048) before the comma! And you have to change every of the following values
+/*
+#define SP_ACCURACY 20
+#define SP_HALF_ACCURACY 10
+#define SP_ACCURACY_FACTOR 1048576.0f
+#define SP_PI 3294199
+#define SP_COS_ACCURACY 8
+*/
+
+#define SP_ACCURACY 18
+#define SP_HALF_ACCURACY 9
+#define SP_ACCURACY_FACTOR 262144.0f
+#define SP_PI 823550
+#define SP_COS_ACCURACY 6
+
+/*
 #define SP_ACCURACY 16
 #define SP_HALF_ACCURACY 8
 #define SP_ACCURACY_FACTOR 65536.0f
 #define SP_PI 205888
 #define SP_COS_ACCURACY 4
+*/
 #define SP_JOYSTICK_MIN -16384
 #define SP_JOYSTICK_MAX  16383
 
@@ -59,6 +78,7 @@
 #else
   #define spMul(a,b) ((Sint64)(a)*(Sint64)(b)>>SP_ACCURACY)
 #endif
+#define spMulHigh(a,b) ((Sint64)(a)*(Sint64)(b)>>SP_ACCURACY)
 
 
 #ifdef FAST_DIVISION
@@ -73,6 +93,7 @@
   //#define spDiv(a,b) ((((a)<<SP_HALF_ACCURACY)/(b))<<SP_HALF_ACCURACY)
   #define spDiv(a,b) (((Sint64)(a)<<SP_ACCURACY)/(Sint64)(b))
 #endif
+#define spDivHigh(a,b) (((Sint64)(a)<<SP_ACCURACY)/(Sint64)(b))
 
 
 #ifdef GP2X
