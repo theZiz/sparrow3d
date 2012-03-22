@@ -299,6 +299,7 @@ inline void spCalcNormal(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint3
             -spMul(y1-y2,x2-x3);
 }
 
+
 inline void spMulModellView(Sint32 x,Sint32 y,Sint32 z,Sint32 *tx,Sint32 *ty,Sint32 *tz,Sint32 *tw)
 {
   (*tx) = spMul(spModelView[ 0],x)
@@ -327,18 +328,31 @@ inline void spMulModellView(Sint32 x,Sint32 y,Sint32 z,Sint32 *tx,Sint32 *ty,Sin
     root |= 2 << (N); \
 }
    
- Sint32 fpsqrt (Sint32 n)
+ Sint32 lightSqrt (Sint32 n)
  {
    Sint32 root = 0, try;
    iter1 (15);    iter1 (14);    iter1 (13);    iter1 (12);
    iter1 (11);    iter1 (10);    iter1 ( 9);    iter1 ( 8);
    iter1 ( 7);    iter1 ( 6);    iter1 ( 5);    iter1 ( 4);
    iter1 ( 3);    iter1 ( 2);    iter1 ( 1);    iter1 ( 0);
-   return root << (SP_HALF_ACCURACY-1);
+   return root << (SP_LIGHT_HALF_ACCURACY-1);
  }
+ 
+//#define lightSqrt(n) (Sint32)(sqrt((float)(n)/SP_LIGHT_ACCURACY_FACTOR)*SP_LIGHT_ACCURACY_FACTOR)
 
+#define spLightMul(a,b) ((Sint64)(a)*(Sint64)(b)>>SP_LIGHT_ACCURACY)
+#define spLightDiv(a,b) (((Sint64)(a)<<SP_LIGHT_ACCURACY)/(Sint64)(b))
 
-
+inline void spCalcLightNormal(Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,
+                         Sint32 x3,Sint32 y3,Sint32 z3,Sint32* normale)
+{
+  normale[0]=spLightMul(y1-y2,z2-z3)
+            -spLightMul(z1-z2,y2-y3);
+  normale[1]=spLightMul(z1-z2,x2-x3)
+            -spLightMul(x1-x2,z2-z3);
+  normale[2]=spLightMul(x1-x2,y2-y3)
+            -spLightMul(y1-y2,x2-x3);
+}
 
 inline Uint16 rendererLightCalculation(Uint16 color,Sint32 x1,Sint32 y1,Sint32 z1,Sint32 x2,Sint32 y2,Sint32 z2,Sint32 x3,Sint32 y3,Sint32 z3)
 {
@@ -349,9 +363,9 @@ inline Uint16 rendererLightCalculation(Uint16 color,Sint32 x1,Sint32 y1,Sint32 z
   Uint32 ob = (color & 31); //0..31
   //globale light:
   
-  Uint32 r = spLightAmbient[0] * or;
-  Uint32 g = spLightAmbient[1] * og;
-  Uint32 b = spLightAmbient[2] * ob;
+  Uint32 r = spLightAmbient[0] * or << SP_LIGHT_ACCURACY-SP_ACCURACY;
+  Uint32 g = spLightAmbient[1] * og << SP_LIGHT_ACCURACY-SP_ACCURACY;
+  Uint32 b = spLightAmbient[2] * ob << SP_LIGHT_ACCURACY-SP_ACCURACY;
   
   //the other lights
   int i;
@@ -360,41 +374,43 @@ inline Uint16 rendererLightCalculation(Uint16 color,Sint32 x1,Sint32 y1,Sint32 z
     if (!spLightDiffuse[i].active)
       continue;
     Sint32 normale[3];
-    spCalcNormal(x1,y1,z1,x2,y2,z2,x3,y3,z3,normale);
-    Sint32 normale_length = fpsqrt(spMul(normale[0],normale[0]) +
-                                   spMul(normale[1],normale[1]) +
-                                   spMul(normale[2],normale[2]));
+    spCalcLightNormal(x1 << SP_LIGHT_ACCURACY-SP_ACCURACY,y1 << SP_LIGHT_ACCURACY-SP_ACCURACY,z1 << SP_LIGHT_ACCURACY-SP_ACCURACY,
+                      x2 << SP_LIGHT_ACCURACY-SP_ACCURACY,y2 << SP_LIGHT_ACCURACY-SP_ACCURACY,z2 << SP_LIGHT_ACCURACY-SP_ACCURACY,
+                      x3 << SP_LIGHT_ACCURACY-SP_ACCURACY,y3 << SP_LIGHT_ACCURACY-SP_ACCURACY,z3 << SP_LIGHT_ACCURACY-SP_ACCURACY,normale);
+    Sint32 normale_length = lightSqrt(spLightMul(normale[0],normale[0]) +
+                                   spLightMul(normale[1],normale[1]) +
+                                   spLightMul(normale[2],normale[2]));
                                    
     Sint32 direction[3];
     direction[0] = spLightDiffuse[i].x-(x1+x2 >> 1);
     direction[1] = spLightDiffuse[i].y-(y1+y2 >> 1);
     direction[2] = spLightDiffuse[i].z-(z1+z2 >> 1);
-    Sint32 direction_length = fpsqrt(spMul(direction[0],direction[0]) +
-                                     spMul(direction[1],direction[1]) +
-                                     spMul(direction[2],direction[2]));
-    Sint32 div = spMul(direction_length,normale_length);
+    Sint32 direction_length = lightSqrt(spLightMul(direction[0],direction[0]) +
+                                     spLightMul(direction[1],direction[1]) +
+                                     spLightMul(direction[2],direction[2]));
+    Sint32 div = spLightMul(direction_length,normale_length);
     if (div == 0)
       div = 1;           
-    Sint32 ac = spDiv(spMul(direction[0],normale[0])+
-                      spMul(direction[1],normale[1])+
-                      spMul(direction[2],normale[2]),
-                      div);
+    Sint32 ac = spLightDiv(spLightMul(direction[0],normale[0])+
+                           spLightMul(direction[1],normale[1])+
+                           spLightMul(direction[2],normale[2]),
+                           div);
     if (ac < 0)
       ac = 0;
-    if (ac > (1 << SP_ACCURACY))
-      ac = 1 << SP_ACCURACY;
-    r += spMul(ac,spLightDiffuse[i].r) * or;
-    g += spMul(ac,spLightDiffuse[i].g) * og;
-    b += spMul(ac,spLightDiffuse[i].b) * ob;
+    if (ac > (1 << SP_LIGHT_ACCURACY))
+      ac = 1 << SP_LIGHT_ACCURACY;
+    r += spLightMul(ac,spLightDiffuse[i].r<<SP_LIGHT_ACCURACY-SP_ACCURACY) * or;
+    g += spLightMul(ac,spLightDiffuse[i].g<<SP_LIGHT_ACCURACY-SP_ACCURACY) * og;
+    b += spLightMul(ac,spLightDiffuse[i].b<<SP_LIGHT_ACCURACY-SP_ACCURACY) * ob;
   }
   
-  r = r >> SP_ACCURACY;
+  r = r >> SP_LIGHT_ACCURACY;
   if (r > 31)
     r = 31;
-  g = g >> SP_ACCURACY;
+  g = g >> SP_LIGHT_ACCURACY;
   if (g > 63)
     g = 63;
-  b = b >> SP_ACCURACY;
+  b = b >> SP_LIGHT_ACCURACY;
   if (b > 31)
     b = 31;
   color = (r << 11) + (g << 5) + b;
