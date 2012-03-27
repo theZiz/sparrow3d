@@ -207,6 +207,31 @@ PREFIX void spFontAddBorder(spFontPointer font,Uint16 bordercolor)
   spLetterAddBorder(font->root,bordercolor);
 }
 
+void spLetterReplaceColor(spLetterPointer letter,Uint16 oldcolor,Uint16 newcolor)
+{
+  if (letter == NULL)
+    return;
+  spLetterReplaceColor(letter->left,oldcolor,newcolor);
+  spLetterReplaceColor(letter->right,oldcolor,newcolor);
+  SDL_LockSurface(letter->surface);
+  //create copy of the pixel data
+  Uint16* inputpixel = (Uint16*)malloc(sizeof(Uint16)*letter->surface->w*letter->surface->h);
+  Uint16* pixel = (Uint16*)(letter->surface->pixels);
+  memcpy(inputpixel,pixel,sizeof(Uint16)*letter->surface->w*letter->surface->h);
+  int x,y;
+  for (x = 0; x < letter->surface->w; x++)
+    for (y = 0; y < letter->surface->h; y++)
+      if (inputpixel[x+y*letter->surface->w] == oldcolor)
+        pixel[x+y*letter->surface->w] = newcolor;
+  free(inputpixel);
+  SDL_UnlockSurface(letter->surface);
+}
+
+PREFIX void spFontReplaceColor(spFontPointer font,Uint16 oldcolor,Uint16 newcolor)
+{
+  spLetterReplaceColor(font->root,oldcolor,newcolor);
+}
+
 void spLetterMulWidth(spLetterPointer letter,Sint32 factor)
 {
   if (letter == NULL)
@@ -346,6 +371,19 @@ PREFIX void spFontDrawMiddle(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer
   }
 }
 
+PREFIX int spFontWidth(char* text,spFontPointer font)
+{
+  int width = 0;
+  int l = 0;
+  while (text[l]!=0)
+  {
+    spLetterPointer letter = spFontGetLetter(font,text[l]); //TODO utf8
+    if (letter)
+      width += letter->width;
+    l++;
+  }    
+  return width;
+}
 
 void spLetterDelete(spLetterPointer letter)
 {

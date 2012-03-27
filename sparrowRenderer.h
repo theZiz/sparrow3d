@@ -24,9 +24,9 @@
 #include <SDL.h>
 
 #define SP_MAX_LIGHTS 8
-#define SP_LIGHT_ACCURACY 20
-#define SP_LIGHT_HALF_ACCURACY 10
-#define SP_LIGHT_ACCURACY_FACTOR 1048576.0f
+#define SP_LIGHT_ACCURACY 22
+#define SP_LIGHT_HALF_ACCURACY 11
+//#define SP_LIGHT_ACCURACY_FACTOR 1048576.0f
 
 //A point with the projected coordinates, but without uv-coordinates
 typedef struct spPointStruct *spPointPointer;

@@ -75,6 +75,8 @@ PREFIX void spFontAddRange(spFontPointer font,Uint32 from,Uint32 to,Uint16 color
 
 PREFIX void spFontAddBorder(spFontPointer font,Uint16 bordercolor);
 
+PREFIX void spFontReplaceColor(spFontPointer font,Uint16 oldcolor,Uint16 newcolor);
+
 PREFIX void spFontMulWidth(spFontPointer font,Sint32 factor);
 
 PREFIX void spFontChangeLetter(spFontPointer font,spLetterPointer letter,Uint32 character,Uint16 color);
@@ -86,6 +88,8 @@ PREFIX void spFontDraw(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font)
 PREFIX void spFontDrawRight(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font);
 
 PREFIX void spFontDrawMiddle(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font);
+
+PREFIX int spFontWidth(char* text,spFontPointer font);
 
 PREFIX void spFontDelete(spFontPointer font);
 

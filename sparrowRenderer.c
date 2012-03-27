@@ -77,6 +77,11 @@ PREFIX void spSetPerspective(float fovyInDegrees, float aspectRatio,
     spX_to_Y = (spGetWindowSurface()->w<<SP_ACCURACY)/spGetWindowSurface()->h;
 }
 
+PREFIX Sint32* spGetProjectionMatrix()
+{
+  return spProjection;
+}
+
 PREFIX void spIdentity()
 {
   spModelView[ 0] = 1<<SP_ACCURACY;
