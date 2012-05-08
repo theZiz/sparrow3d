@@ -17,6 +17,7 @@
  For feedback and questions about my Files and Projects please mail me,     
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com                         
 */
+
 #include "sparrowCore.h"
 #include "sparrowMath.h"
 #include "sparrowPrimitives.h"
@@ -37,6 +38,8 @@ int debug_time;
 
 PREFIX void spInitCore(void)
 {
+	int i;
+
   debug_time = 0;
   TTF_Init();
   #ifdef PANDORA
@@ -53,8 +56,7 @@ PREFIX void spInitCore(void)
     spWindowY = 240;
   #endif 
   spZoom=1<<SP_ACCURACY;
-  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO/* | SDL_INIT_NOPARACHUTE*/); 
-  int i;
+  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO); 
   spJoy = NULL;
   //#ifdef MOBILE_DEVICE
   printf("Found %i Joysticks\n", SDL_NumJoysticks());
@@ -76,6 +78,21 @@ PREFIX void spInitCore(void)
     spInput.button[i]=0;
   spInput.axis[0]=0;
   spInput.axis[1]=0;
+	
+  #ifdef GP2X
+    spInput.supports_keyboard = 0;
+  #elif defined CAANOO
+    spInput.supports_keyboard = 0;
+  #elif defined F100
+    spInput.supports_keyboard = 0;
+  #elif defined WIZ
+    spInput.supports_keyboard = 0;
+  #elif defined DINGUX
+    spInput.supports_keyboard = 0;
+  #else // PANDORA and PCs
+    spInput.supports_keyboard = 1;
+  #endif
+	
   spInitPrimitives();
   spInitMath();
 }
@@ -91,7 +108,7 @@ PREFIX void spPrintDebug(char* text)
   debug_time = time;
 }
 
-inline void spResizeWindow(int x,int y)
+PREFIX void spResizeWindow(int x, int y, int fullscreen, int allowresize)
 {
    #ifdef GP2X
     spScreen=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE);
@@ -118,7 +135,7 @@ inline void spResizeWindow(int x,int y)
     /*x=800;
     y=480;*/
     spScreen=NULL;
-    spWindow=SDL_SetVideoMode(x,y,16,SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_VIDEORESIZE);
+		spWindow=SDL_SetVideoMode(x,y,16,SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | (allowresize ? SDL_VIDEORESIZE : 0) | (fullscreen ? SDL_FULLSCREEN : 0) );
     //spWindow=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_NOFRAME);
   #endif  
   if (x % 2 != 0)
@@ -130,9 +147,9 @@ inline void spResizeWindow(int x,int y)
   SDL_ShowCursor(SDL_DISABLE);
 }
 
-PREFIX SDL_Surface* spCreateWindow(void)
+PREFIX SDL_Surface* spCreateWindow(int width, int height, int fullscreen, int allowresize)
 {
-  spResizeWindow(spWindowX,spWindowY);
+	spResizeWindow((!width ? spWindowX : width), (!height ? spWindowY : height), fullscreen, allowresize);
   return spWindow;
 }
 
@@ -141,7 +158,7 @@ PREFIX SDL_Surface* spGetWindowSurface(void)
   return spWindow;
 }
 
-inline int spHandleEvent(void)
+__inline int spHandleEvent(void (*spEvent)(SDL_Event *e))
 {
   int result = 0;
   #ifdef PANDORA
@@ -419,10 +436,11 @@ inline int spHandleEvent(void)
         spDone=1;
         break;
       case SDL_VIDEORESIZE:
-        spResizeWindow(event.resize.w,event.resize.h);
+        spResizeWindow(event.resize.w,event.resize.h,0,1);
         result = 1;
         break;
     }
+		spEvent( &event );
   }
   #ifdef CAANOO
     spInput.button[SP_BUTTON_VOLPLUS] = 0;
@@ -525,7 +543,7 @@ inline int spHandleEvent(void)
   #endif
 }*/
 
-inline void spUpdateAxis(int axis)
+__inline void spUpdateAxis(int axis)
 {
   #ifdef GP2X
     if (axis==0)
@@ -559,7 +577,7 @@ Uint32 oldticks;
 Uint32 olderticks;
 Uint32 newticks;
 
-PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwait,void (*spResize)(Uint16 w,Uint16 h))
+PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwait,void (*spResize)(Uint16 w,Uint16 h), void (*spEvent)(SDL_Event *e))
 {
   Uint32 bigsteps=0;
   Uint32 frames=0;
@@ -573,7 +591,7 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
         spPrintDebug("Start mainloop");
       #endif
       newticks=SDL_GetTicks();
-      if (spHandleEvent() && spResize)
+      if (spHandleEvent(spEvent) && spResize)
       {
         spResize(spWindowX,spWindowY);
         #ifdef CORE_DEBUG
