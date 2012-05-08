@@ -134,6 +134,8 @@
   #define SP_BUTTON_VOLMINUS 19
   #define SP_PRACTICE_OK SP_BUTTON_B
 #else //PC and DINGUX and PANDORA
+	#define SP_AXIS_LEFTRIGHT 0
+	#define SP_AXIS_UPDOWN 1
   #define SP_BUTTON_START 8
   #define SP_BUTTON_SELECT 9
   #define SP_BUTTON_L 10

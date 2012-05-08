@@ -27,6 +27,7 @@ typedef struct SspInput *PspInput;
 typedef struct SspInput {
   signed char axis[2];
   char button[20];
+  char supports_keyboard;
 } TspInput;
 
 
@@ -38,14 +39,14 @@ PREFIX void spPrintDebug(char* text);
 
 /* spCreateWindow creates the Window in the plattform depended resolution.
  * You will get the created SDL_Surface to render to, whoever you want. */
-PREFIX SDL_Surface* spCreateWindow(void);
+PREFIX SDL_Surface* spCreateWindow(int width, int height, int fullscreen, int allowresize);
 
 /* spGetWindowSurface returns the window Surface. */
 PREFIX SDL_Surface* spGetWindowSurface(void);
 
 /* spLoop starts a loop with spDraw as draw function and spCalc as calculation
  * function. If spCalc returns a value != 0, the loop breaks */
-PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwait,void (*spResize)(Uint16 w,Uint16 h));
+PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwait,void (*spResize)(Uint16 w,Uint16 h), void (*spEvent)(SDL_Event *e));
 
 /* spFlip draws the changes in the window Surface on the screen. */
 PREFIX void spFlip(void);
