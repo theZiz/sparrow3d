@@ -4592,9 +4592,14 @@ PREFIX void spEllipse(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry, Uint32 col
   if (spZSet)
   {
     if (spZTest)
-    {
-      for (x = rxl;x<=rxr;x++)
-        for (y = ryl;y<=ryr;y++)
+    { //x*x*ry*ry+y*y*rx*rx = rx*rx*ry*ry
+      for (y = ryl;y<=ryr;y++)
+      {
+        Sint32 XX = rx*rx-(y*y*rx*rx)/(ry*ry);
+        for (x = rxl;x*x>=XX && x<=rxr;x++);
+        for (;x*x<=XX && x<=rxr;x++)
+          draw_pixel_ztest_zset(x1+x,y1+y,z,color);
+        /*for (x = rxl;x<=rxr;x++)
           if ((rx+ry >> 8))
           {
             if ((x*x >> 4)*(RY >> 4)+(y*y >> 4)*(RX >> 4) <= (RX >> 4)*(RY >> 4))
@@ -4602,7 +4607,8 @@ PREFIX void spEllipse(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry, Uint32 col
           }
           else
             if (x*x*RY+y*y*RX <= RR)
-              draw_pixel_ztest_zset(x1+x,y1+y,z,color);
+              draw_pixel_ztest_zset(x1+x,y1+y,z,color);*/
+      }
     }
     else
       for (x = rxl;x<=rxr;x++)
@@ -4648,6 +4654,11 @@ PREFIX void spEllipse(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry, Uint32 col
 
 PREFIX void spEllipseBorder(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry,Sint32 bx,Sint32 by,Uint32 color)
 {
+  if ((bx >= rx) || (by >= ry))
+  {
+    spEllipse(x,y,z,rx,ry,color);
+    return;
+  }
   if (spAlphaTest && color==SP_ALPHA_COLOR)
     return;
 
@@ -4684,11 +4695,13 @@ PREFIX void spEllipseBorder(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry,Sint3
   {
     if (spZTest)
     {
-      for (x = rxl;x<=rxr;x++)
-        for (y = ryl;y<=ryr;y++)
+      for (y = ryl;y<=ryr;y++)
+      {
+        for (x = rxl;x<=rxr;x++)
           if (x*x*RY+y*y*RX <= RR &&
               x*x*RYB+y*y*RXB >= RRB)
             draw_pixel_ztest_zset(x1+x,y1+y,z,color);
+      }
     }
     else
       for (x = rxl;x<=rxr;x++)

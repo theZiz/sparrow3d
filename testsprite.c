@@ -98,10 +98,11 @@ void resize(Uint16 w,Uint16 h)
 int main(int argc, char **argv)
 {
   //sparrow3D Init
+  spSetDefaultWindowSize(640,480); //Creates a 640x480 window at PC instead of 320x240
   spInitCore();
   
   //Setup
-  screen = spCreateWindow();
+  screen = spCreateDefaultWindow();
   resize(screen->w,screen->h);
   
   //Tile map loading
@@ -121,7 +122,7 @@ int main(int argc, char **argv)
   //every frame the calc_function is called with the past time as argument
   //at least 10 ms have to be between to frames (max 100 fps)
   //if the window is resized, the resize feedback-function is called (again)
-  spLoop(draw_function,calc_function,10,resize);
+  spLoop(draw_function,calc_function,10,resize,NULL);
   
   //Winter Wrap up, Winter Wrap up
   spDeleteSprite(sprite);

@@ -25,8 +25,8 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-int spWindowX;
-int spWindowY;
+int spWindowX = 0;
+int spWindowY = 0;
 int spZoom;
 SDL_Surface* spScreen; //the real screen
 SDL_Surface* spWindow; //the thing we draw to
@@ -35,6 +35,12 @@ char spDone;
 int spFPS;
 TspInput spInput;
 int debug_time;
+
+PREFIX void spSetDefaultWindowSize(int w,int h)
+{
+  spWindowX = w;
+  spWindowY = h;
+}
 
 PREFIX void spInitCore(void)
 {
@@ -51,9 +57,22 @@ PREFIX void spInitCore(void)
   #elif defined MAEMO6
     spWindowX = 854;
     spWindowY = 480;
-  #else
+  #elif defined GP2X
+  //F100, F200, Open2x and WIZ
     spWindowX = 320;
     spWindowY = 240;
+  #elif defined CAANOO
+    spWindowX = 320;
+    spWindowY = 240;
+  #elif defined DINGUX
+    spWindowX = 320;
+    spWindowY = 240;
+  #else
+  //only setting, if now default value set!
+    if (!spWindowX)
+      spWindowX = 320;
+    if (!spWindowY)
+      spWindowY = 240;
   #endif 
   spZoom=1<<SP_ACCURACY;
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO); 
@@ -143,7 +162,7 @@ PREFIX void spResizeWindow(int x, int y, int fullscreen, int allowresize)
   else
     spWindowX = x ;
   spWindowY = y;
-  spZoom=spMin((spWindowX<<SP_ACCURACY)/320,(spWindowY<<SP_ACCURACY)/240);  //Bei 320x240 == 1
+  spZoom=spMin((spWindowX<<SP_ACCURACY)/320,(spWindowY<<SP_ACCURACY)/240);  //at 320x240 == 1.0
   SDL_ShowCursor(SDL_DISABLE);
 }
 
@@ -151,6 +170,11 @@ PREFIX SDL_Surface* spCreateWindow(int width, int height, int fullscreen, int al
 {
 	spResizeWindow((!width ? spWindowX : width), (!height ? spWindowY : height), fullscreen, allowresize);
   return spWindow;
+}
+
+PREFIX SDL_Surface* spCreateDefaultWindow(void)
+{
+  spCreateWindow(0,0,0,1);
 }
 
 PREFIX SDL_Surface* spGetWindowSurface(void)
@@ -440,7 +464,8 @@ __inline int spHandleEvent(void (*spEvent)(SDL_Event *e))
         result = 1;
         break;
     }
-		spEvent( &event );
+    if (spEvent)
+      spEvent( &event );
   }
   #ifdef CAANOO
     spInput.button[SP_BUTTON_VOLPLUS] = 0;
@@ -609,7 +634,8 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
       #endif
       if (newticks-oldticks > 0)
       {
-        back = spCalc(newticks-oldticks);
+        if (spCalc)
+          back = spCalc(newticks-oldticks);
         #ifdef CORE_DEBUG
           spPrintDebug("  Did calc");
         #endif
@@ -618,7 +644,8 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
       steps+=newticks-olderticks;
       if (steps>=minwait)
       {
-        spDraw();
+        if (spDraw)
+          spDraw();
         #ifdef CORE_DEBUG
           spPrintDebug("  Did draw");
         #endif

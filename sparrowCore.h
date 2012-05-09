@@ -31,6 +31,11 @@ typedef struct SspInput {
 } TspInput;
 
 
+/* Sets defaults values for the window. ONLY for PC (not handhelds!) and ONLY
+ * useable BEFORE the spInitCore-function */
+ 
+PREFIX void spSetDefaultWindowSize(int w,int h);
+
 /* spInitCore initializes SDL, SDL_TTF and other stuff. */
 PREFIX void spInitCore(void);
 
@@ -38,8 +43,15 @@ PREFIX void spInitCore(void);
 PREFIX void spPrintDebug(char* text);
 
 /* spCreateWindow creates the Window in the plattform depended resolution.
- * You will get the created SDL_Surface to render to, whoever you want. */
+ * You will get the created SDL_Surface to render to, whoever you want. 
+ * "fullscreen" and "allowresize" set up, whether the window is resizeable
+ * and/or fullscreen. Theses values are ignored for most (all?) handhelds
+ * because of just one resolution ;-)*/
 PREFIX SDL_Surface* spCreateWindow(int width, int height, int fullscreen, int allowresize);
+
+/* spCreateDefaultWindow creates a default window with no fullscreen for PC, but
+ * resizeable for PC */
+PREFIX SDL_Surface* spCreateDefaultWindow(void);
 
 /* spGetWindowSurface returns the window Surface. */
 PREFIX SDL_Surface* spGetWindowSurface(void);

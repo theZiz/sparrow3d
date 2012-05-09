@@ -351,10 +351,11 @@ void resize(Uint16 w,Uint16 h)
 int main(int argc, char **argv)
 {
   //sparrow3D Init
+  spSetDefaultWindowSize(640,480); //Creates a 640x480 window at PC instead of 320x240
   spInitCore();
   
   //Setup
-  screen = spCreateWindow();
+  screen = spCreateDefaultWindow();
   resize(screen->w,screen->h);
   
   //Textures loading
@@ -376,7 +377,7 @@ int main(int argc, char **argv)
   //spNewSubSpriteWithTiling(sprite,scientist,0,0,32,48,100);
   
   //All glory the main loop
-  spLoop(draw_test,calc_test,10,resize);
+  spLoop(draw_test,calc_test,10,resize,NULL);
   
   //Winter Wrap up, Winter Wrap up …
   spFontDelete(font);
