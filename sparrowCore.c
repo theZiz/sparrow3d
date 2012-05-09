@@ -99,12 +99,9 @@ PREFIX void spInitCore(void)
   spInput.axis[1]=0;
 	
   #ifdef GP2X
+  //f100, f200, open2x and wiz
     spInput.supports_keyboard = 0;
   #elif defined CAANOO
-    spInput.supports_keyboard = 0;
-  #elif defined F100
-    spInput.supports_keyboard = 0;
-  #elif defined WIZ
     spInput.supports_keyboard = 0;
   #elif defined DINGUX
     spInput.supports_keyboard = 0;
