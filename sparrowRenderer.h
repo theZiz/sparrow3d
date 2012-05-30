@@ -1,27 +1,31 @@
 /*
- The contents of this file are subject to the Mozilla Public License        
- Version 1.1 (the "License"); you may not use this file except in           
- compliance with the License. You may obtain a copy of the License at       
- http://www.mozilla.org/MPL/                                                
-                                                                            
- Software distributed under the License is distributed on an "AS IS"        
- basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the    
- License for the specific language governing rights and limitations         
- under the License.                                                         
-                                                                            
- Alternatively, the contents of this file may be used under the terms       
- of the GNU Lesser General Public license (the  "LGPL License"), in which case the  
- provisions of LGPL License are applicable instead of those                  
- above.                                                                     
-                                                                            
- For feedback and questions about my Files and Projects please mail me,     
- Alexander Matthes (Ziz) , zizsdl_at_googlemail.com                         
+ The contents of this file are subject to the Mozilla Public License
+ Version 1.1 (the "License"); you may not use this file except in
+ compliance with the License. You may obtain a copy of the License at
+ http://www.mozilla.org/MPL/
+
+ Software distributed under the License is distributed on an "AS IS"
+ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ License for the specific language governing rights and limitations
+ under the License.
+
+ Alternatively, the contents of this file may be used under the terms
+ of the GNU Lesser General Public license (the  "LGPL License"), in which case the
+ provisions of LGPL License are applicable instead of those
+ above.
+
+ For feedback and questions about my Files and Projects please mail me,
+ Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 #ifndef _SPARROW_RENDERER_H
 #define _SPARROW_RENDERER_H
 
 #include "sparrowDefines.h"
+#ifdef SDL_INCLUDE_SUBDIR
+#include <SDL/SDL.h>
+#else
 #include <SDL.h>
+#endif
 
 #define SP_MAX_LIGHTS 8
 #define SP_LIGHT_ACCURACY 22
@@ -178,7 +182,7 @@ PREFIX void spLine3D(Sint32 x1,Sint32 y1,Sint32 z1,
 PREFIX void spRotozoomSurface3D(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 zoomX,Sint32 zoomY,Sint32 angle);
 
 PREFIX void spRotozoomSurfacePart3D(Sint32 x,Sint32 y,Sint32 z,SDL_Surface* surface,Sint32 sx,Sint32 sy,Sint32 w,Sint32 h,Sint32 zoomX,Sint32 zoomY,Sint32 angle);
-  
+
 PREFIX void spRectangle3D(Sint32 x,Sint32 y,Sint32 z,Sint32 w,Sint32 h,Uint16 color);
 
 PREFIX void spEllipse3D(Sint32 x,Sint32 y,Sint32 z,Sint32 rx,Sint32 ry,Uint16 color);

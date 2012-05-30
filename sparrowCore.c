@@ -1,29 +1,35 @@
 /*
- The contents of this file are subject to the Mozilla Public License        
- Version 1.1 (the "License"); you may not use this file except in           
- compliance with the License. You may obtain a copy of the License at       
- http://www.mozilla.org/MPL/                                                
-                                                                            
- Software distributed under the License is distributed on an "AS IS"        
- basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the    
- License for the specific language governing rights and limitations         
- under the License.                                                         
-                                                                            
- Alternatively, the contents of this file may be used under the terms       
- of the GNU Lesser General Public license (the  "LGPL License"), in which case the  
- provisions of LGPL License are applicable instead of those                  
- above.                                                                     
-                                                                            
- For feedback and questions about my Files and Projects please mail me,     
- Alexander Matthes (Ziz) , zizsdl_at_googlemail.com                         
+ The contents of this file are subject to the Mozilla Public License
+ Version 1.1 (the "License"); you may not use this file except in
+ compliance with the License. You may obtain a copy of the License at
+ http://www.mozilla.org/MPL/
+
+ Software distributed under the License is distributed on an "AS IS"
+ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ License for the specific language governing rights and limitations
+ under the License.
+
+ Alternatively, the contents of this file may be used under the terms
+ of the GNU Lesser General Public license (the  "LGPL License"), in which case the
+ provisions of LGPL License are applicable instead of those
+ above.
+
+ For feedback and questions about my Files and Projects please mail me,
+ Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 
 #include "sparrowCore.h"
 #include "sparrowMath.h"
 #include "sparrowPrimitives.h"
+#ifdef SDL_INCLUDE_SUBDIR
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_ttf.h>
+#else
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#endif
 
 int spWindowX = 0;
 int spWindowY = 0;
@@ -73,9 +79,9 @@ PREFIX void spInitCore(void)
       spWindowX = 320;
     if (!spWindowY)
       spWindowY = 240;
-  #endif 
+  #endif
   spZoom=1<<SP_ACCURACY;
-  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO); 
+  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO);
   spJoy = NULL;
   //#ifdef MOBILE_DEVICE
   printf("Found %i Joysticks\n", SDL_NumJoysticks());
@@ -97,7 +103,7 @@ PREFIX void spInitCore(void)
     spInput.button[i]=0;
   spInput.axis[0]=0;
   spInput.axis[1]=0;
-	
+
   #ifdef GP2X
   //f100, f200, open2x and wiz
     spInput.supports_keyboard = 0;
@@ -108,7 +114,7 @@ PREFIX void spInitCore(void)
   #else // PANDORA and PCs
     spInput.supports_keyboard = 1;
   #endif
-	
+
   spInitPrimitives();
   spInitMath();
 }
@@ -153,7 +159,7 @@ PREFIX void spResizeWindow(int x, int y, int fullscreen, int allowresize)
     spScreen=NULL;
 		spWindow=SDL_SetVideoMode(x,y,16,SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | (allowresize ? SDL_VIDEORESIZE : 0) | (fullscreen ? SDL_FULLSCREEN : 0) );
     //spWindow=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_NOFRAME);
-  #endif  
+  #endif
   if (x % 2 != 0)
     spWindowX = x+1;
   else
@@ -191,7 +197,7 @@ inline int spHandleEvent(void (*spEvent)(SDL_Event *e))
   #ifdef CORE_DEBUG
     int counter = 0;
   #endif
-  SDL_Event event; 
+  SDL_Event event;
   while (SDL_PollEvent(&event)==1)
   {
     #ifdef CORE_DEBUG
@@ -452,7 +458,7 @@ inline int spHandleEvent(void (*spEvent)(SDL_Event *e))
           else
             spInput.axis[event.jaxis.axis]= 0;
         }
-        break;  
+        break;
       case SDL_QUIT:
         spDone=1;
         break;
@@ -661,7 +667,7 @@ PREFIX int spLoop(void (*spDraw)(void),int (*spCalc)(Uint32 steps),Uint32 minwai
         olderticks = newticks;
       }
   }
-  return back;  
+  return back;
 }
 
 PREFIX void spFlip(void)
@@ -676,7 +682,7 @@ PREFIX void spFlip(void)
     SDL_BlitSurface(spWindow, NULL, spScreen, NULL);
   #elif defined PANDORA
     /*int arg = 0;
-    ioctl(fbdev, FBIO_WAITFORVSYNC, &arg);*/    
+    ioctl(fbdev, FBIO_WAITFORVSYNC, &arg);*/
     SDL_Flip(spWindow);
   #elif defined DINGUX
     SDL_BlitSurface(spWindow, NULL, spScreen, NULL);
@@ -749,9 +755,9 @@ PREFIX SDL_Surface* spLoadSurface(char* name)
           pixel[(x+y*surface->w)*4+1] = 0;
           pixel[(x+y*surface->w)*4+2] = 255;
           pixel[(x+y*surface->w)*4+3] = 255;
-        }       
+        }
       }
-    
+
     SDL_UnlockSurface(surface);
   }*/
   SDL_Surface* result = SDL_DisplayFormat(surface);

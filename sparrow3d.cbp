@@ -17,7 +17,6 @@
 					<Add option="-DX86CPU" />
 					<Add option="-DBUILDING_DLL" />
 					<Add directory="$(#mingw.include)" />
-					<Add directory="$(#mingw.include)\SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -40,7 +39,6 @@
 					<Add option="-DARMCPU" />
 					<Add option="-DPANDORA" />
 					<Add directory="$(#pandora_sdk.include)" />
-					<Add directory="$(#pandora_sdk.include)\SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -66,6 +64,7 @@
 			<Add option="-funsafe-loop-optimizations" />
 			<Add option="-Wunsafe-loop-optimizations" />
 			<Add option="-fvariable-expansion-in-unroller" />
+			<Add option="-DSDL_INCLUDE_SUBDIR" />
 		</Compiler>
 		<Unit filename="Makefile" />
 		<Unit filename="sparrowCore.c">
