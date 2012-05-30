@@ -36,72 +36,72 @@
 typedef struct spLetterStruct_ *spLetterPointer;
 typedef struct spLetterStruct_
 {
-  Uint32 character; //later it could be utf8 characters
-  SDL_Surface* surface; //the character's surface
-  Sint32 width; //the character's length
-  Sint32 height; //the character's height
-  Sint32 binary_height; //NOT the height of the letter! just for the binary tree
-  Uint16 color;
-  spLetterPointer left,right; //smaller and bigger character
-  spLetterPointer next; //For the Drawing functions
+	Uint32 character; //later it could be utf8 characters
+	SDL_Surface* surface; //the character's surface
+	Sint32 width; //the character's length
+	Sint32 height; //the character's height
+	Sint32 binary_height; //NOT the height of the letter! just for the binary tree
+	Uint16 color;
+	spLetterPointer left, right; //smaller and bigger character
+	spLetterPointer next; //For the Drawing functions
 } spLetterStruct;
 
 typedef struct spLetterIterStruct_ *spLetterIterPointer;
 typedef struct spLetterIterStruct_
 {
-  spLetterPointer letter;
-  spLetterIterPointer next; //For the Drawing functions
+	spLetterPointer letter;
+	spLetterIterPointer next; //For the Drawing functions
 } spLetterIterStruct;
 
 typedef struct spFontCacheStruct *spFontCachePointer;
 typedef struct spFontCacheStruct
 {
-  Uint32 size;
-  spLetterPointer *cache;
+	Uint32 size;
+	spLetterPointer *cache;
 } spFontCacheStruct;
 
 /*root of a binary tree of all letters in this font*/
 typedef struct spFontStruct_ *spFontPointer;
 typedef struct spFontStruct_
 {
-  TTF_Font* font;
-  Sint32 maxheight;
-  spLetterPointer root; //the root of the binary letter tree
-  Uint32 cacheOffset;
-  spFontCacheStruct cache;
-  Uint32 size;
+	TTF_Font* font;
+	Sint32 maxheight;
+	spLetterPointer root; //the root of the binary letter tree
+	Uint32 cacheOffset;
+	spFontCacheStruct cache;
+	Uint32 size;
 } spFontStruct;
 
-PREFIX spFontPointer spFontLoad(char* fontname,Uint32 size);
+PREFIX spFontPointer spFontLoad( char* fontname, Uint32 size );
 
-PREFIX void spFontAdd(spFontPointer font,Uint32 character,Uint16 color);
+PREFIX void spFontAdd( spFontPointer font, Uint32 character, Uint16 color );
 
-PREFIX void spFontAddRange(spFontPointer font,Uint32 from,Uint32 to,Uint16 color);
+PREFIX void spFontAddRange( spFontPointer font, Uint32 from, Uint32 to, Uint16 color );
 
-PREFIX void spFontAddBorder(spFontPointer font,Uint16 bordercolor);
+PREFIX void spFontAddBorder( spFontPointer font, Uint16 bordercolor );
 
-PREFIX void spFontReplaceColor(spFontPointer font,Uint16 oldcolor,Uint16 newcolor);
+PREFIX void spFontReplaceColor( spFontPointer font, Uint16 oldcolor, Uint16 newcolor );
 
-PREFIX void spFontMulWidth(spFontPointer font,Sint32 factor);
+PREFIX void spFontMulWidth( spFontPointer font, Sint32 factor );
 
-PREFIX void spFontChangeLetter(spFontPointer font,spLetterPointer letter,Uint32 character,Uint16 color);
+PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint32 character, Uint16 color );
 
-PREFIX spLetterPointer spFontGetLetter(spFontPointer font,Uint32 character);
+PREFIX spLetterPointer spFontGetLetter( spFontPointer font, Uint32 character );
 
-PREFIX void spFontDraw(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font);
+PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, char* text, spFontPointer font );
 
-PREFIX void spFontDrawRight(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font);
+PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, char* text, spFontPointer font );
 
-PREFIX void spFontDrawMiddle(Sint32 x,Sint32 y,Sint32 z,char* text,spFontPointer font);
+PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, char* text, spFontPointer font );
 
-PREFIX int spFontWidth(char* text,spFontPointer font);
+PREFIX int spFontWidth( char* text, spFontPointer font );
 
-PREFIX void spFontDelete(spFontPointer font);
+PREFIX void spFontDelete( spFontPointer font );
 
-PREFIX void spFontChangeCacheSize(spFontPointer font, Sint32 size);
+PREFIX void spFontChangeCacheSize( spFontPointer font, Sint32 size );
 
-PREFIX void spFontSetCacheStart(spFontPointer font, Sint32 letter);
+PREFIX void spFontSetCacheStart( spFontPointer font, Sint32 letter );
 
-PREFIX Sint32 spFontGetCacheStart(spFontPointer font);
+PREFIX Sint32 spFontGetCacheStart( spFontPointer font );
 
 #endif

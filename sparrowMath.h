@@ -28,22 +28,22 @@
 #endif
 
 /* spInitMath initializes the fixed point look up tables for sin, cos, etc. */
-PREFIX void spInitMath(void);
+PREFIX void spInitMath( void );
 
 /* spSin calculates the sin of value*/
-PREFIX Sint32 spSin(Sint32 value);
+PREFIX Sint32 spSin( Sint32 value );
 
 /* spCos calculates the cos of value*/
-PREFIX Sint32 spCos(Sint32 value);
+PREFIX Sint32 spCos( Sint32 value );
 
 /* spSqrt fast square root*/
-PREFIX Sint32 spSqrt (Sint32 n);
+PREFIX Sint32 spSqrt ( Sint32 n );
 
 /* spMin return the smallest of 2 numbers */
-PREFIX Sint32 spMin(Sint32 a,Sint32 b);
+PREFIX Sint32 spMin( Sint32 a, Sint32 b );
 
 /* spMax return the biggest of 2 numbers */
-PREFIX Sint32 spMax(Sint32 a,Sint32 b);
+PREFIX Sint32 spMax( Sint32 a, Sint32 b );
 
-PREFIX Uint16 spGetHSV(Sint32 h,Uint8 s,Uint8 v);
+PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
 #endif

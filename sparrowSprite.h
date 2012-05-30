@@ -28,42 +28,44 @@
 #endif
 
 typedef struct spSubSpriteStruct *spSubSpritePointer;
-typedef struct spSubSpriteStruct {
-  SDL_Surface* surface;
-  Sint32 sx,sy,sw,sh; //for Tiling. If sx<0 no tiling will be done
-  Sint32 duration; //how long will this surface be seeable
-  Sint32 age; //how long was it seeable yet
-  spSubSpritePointer before;
-  spSubSpritePointer next;
+typedef struct spSubSpriteStruct
+{
+	SDL_Surface* surface;
+	Sint32 sx, sy, sw, sh; //for Tiling. If sx<0 no tiling will be done
+	Sint32 duration; //how long will this surface be seeable
+	Sint32 age; //how long was it seeable yet
+	spSubSpritePointer before;
+	spSubSpritePointer next;
 } spSubSprite;
 
 typedef struct spSpriteStruct *spSpritePointer;
-typedef struct spSpriteStruct {
-  Sint32 wholeDuration; //the duration of all subSprites.
-  Sint32 wholeAge;
-  Sint32 maxWidth,maxHeight; //the max high and weight the whole sprite will have (unrotated)
-  Sint32 rotation;
-  Sint32 zoomX,zoomY;
-  spSubSpritePointer firstSub; //double linked list of subsprites
-  spSubSpritePointer momSub; //for drawing and update. Don't touch it.
+typedef struct spSpriteStruct
+{
+	Sint32 wholeDuration; //the duration of all subSprites.
+	Sint32 wholeAge;
+	Sint32 maxWidth, maxHeight; //the max high and weight the whole sprite will have (unrotated)
+	Sint32 rotation;
+	Sint32 zoomX, zoomY;
+	spSubSpritePointer firstSub; //double linked list of subsprites
+	spSubSpritePointer momSub; //for drawing and update. Don't touch it.
 } spSprite;
 
 PREFIX spSpritePointer spNewSprite();
 
-PREFIX void spDeleteSprite(spSpritePointer sprite);
+PREFIX void spDeleteSprite( spSpritePointer sprite );
 
-PREFIX spSubSpritePointer spNewSubSpriteNoTiling(spSpritePointer sprite,SDL_Surface* surface,Sint32 duration);
+PREFIX spSubSpritePointer spNewSubSpriteNoTiling( spSpritePointer sprite, SDL_Surface* surface, Sint32 duration );
 
-PREFIX spSubSpritePointer spNewSubSpriteWithTiling(spSpritePointer sprite,SDL_Surface* surface,Sint32 sx,Sint32 sy,Sint32 sw,Sint32 sh,Sint32 duration);
+PREFIX spSubSpritePointer spNewSubSpriteWithTiling( spSpritePointer sprite, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 sw, Sint32 sh, Sint32 duration );
 
-PREFIX void spUpdateSprite(spSpritePointer sprite,Sint32 time);
+PREFIX void spUpdateSprite( spSpritePointer sprite, Sint32 time );
 
-PREFIX void spSetSpriteRotation(spSpritePointer sprite,Sint32 rotation);
+PREFIX void spSetSpriteRotation( spSpritePointer sprite, Sint32 rotation );
 
-PREFIX void spSetSpriteZoom(spSpritePointer sprite,Sint32 zoomX,Sint32 zoomY);
+PREFIX void spSetSpriteZoom( spSpritePointer sprite, Sint32 zoomX, Sint32 zoomY );
 
-PREFIX void spDrawSprite(Sint32 x,Sint32 y,Sint32 z,spSpritePointer sprite);
+PREFIX void spDrawSprite( Sint32 x, Sint32 y, Sint32 z, spSpritePointer sprite );
 
-PREFIX void spDrawSprite3D(Sint32 x,Sint32 y,Sint32 z,spSpritePointer sprite);
+PREFIX void spDrawSprite3D( Sint32 x, Sint32 y, Sint32 z, spSpritePointer sprite );
 
 #endif
