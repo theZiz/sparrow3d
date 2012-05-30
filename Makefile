@@ -123,8 +123,8 @@ sparrowSprite.o: sparrowSprite.c sparrowSprite.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowSprite.c $(SDL) $(INCLUDE)
 
 clean:
-	rm *.o
-	rm libsparrow3d.so
-	rm testsparrow
-	rm testsprite
-	rm testmesh
+	rm -f *.o
+	rm -f libsparrow3d.so
+	rm -f testsparrow
+	rm -f testsprite
+	rm -f testmesh
