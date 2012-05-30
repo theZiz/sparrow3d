@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="sparrow3d" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Windows x86">
+				<Option output="bin\W32\libsparrow3d" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\W32\" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DX86CPU" />
+					<Add option="-DBUILDING_DLL" />
+					<Add directory="$(#mingw.include)" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lSDLmain" />
+					<Add option="-lSDL" />
+					<Add option="-lSDL_image" />
+					<Add option="-lSDL_ttf" />
+					<Add directory="$(#mingw.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Pandora">
+				<Option output="bin\Pandora\libsparrow3d" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Pandora\" />
+				<Option type="3" />
+				<Option compiler="pandora" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DMOBILE_DEVICE" />
+					<Add option="-DARMCPU" />
+					<Add option="-DPANDORA" />
+					<Add directory="$(#pandora_sdk.include)" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-ldl" />
+					<Add option="-lpthread" />
+					<Add option="-lSDL_ttf" />
+					<Add option="-lfreetype" />
+					<Add option="-lSDL_image" />
+					<Add option="-lSDL" />
+					<Add option="-lpng" />
+					<Add option="-lz" />
+					<Add directory="$(#pandora_sdk.lib)" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-ffast-math" />
+			<Add option="-fgcse-sm" />
+			<Add option="-fsched-spec-load" />
+			<Add option="-fmodulo-sched" />
+			<Add option="-fgcse-las" />
+			<Add option="-ftracer" />
+			<Add option="-funsafe-loop-optimizations" />
+			<Add option="-Wunsafe-loop-optimizations" />
+			<Add option="-fvariable-expansion-in-unroller" />
+			<Add option="-DSDL_INCLUDE_SUBDIR" />
+		</Compiler>
+		<Unit filename="Makefile" />
+		<Unit filename="sparrowCore.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sparrowCore.h" />
+		<Unit filename="sparrowDefines.h" />
+		<Unit filename="sparrowFont.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sparrowFont.h" />
+		<Unit filename="sparrowMath.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sparrowMath.h" />
+		<Unit filename="sparrowMesh.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sparrowMesh.h" />
+		<Unit filename="sparrowPrimitives.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sparrowPrimitives.h" />
+		<Unit filename="sparrowPrimitivesAsm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sparrowRenderer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sparrowRenderer.h" />
+		<Unit filename="sparrowSprite.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sparrowSprite.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

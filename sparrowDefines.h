@@ -1,21 +1,21 @@
 /*
- The contents of this file are subject to the Mozilla Public License				
- Version 1.1 (the "License"); you may not use this file except in					 
- compliance with the License. You may obtain a copy of the License at			 
- http://www.mozilla.org/MPL/																								
-																																						
- Software distributed under the License is distributed on an "AS IS"				
- basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the		
- License for the specific language governing rights and limitations				 
- under the License.																												 
-																																						
- Alternatively, the contents of this file may be used under the terms			 
- of the GNU Lesser General Public license (the	"LGPL License"), in which case the	
- provisions of LGPL License are applicable instead of those									
- above.																																		 
-																																						
- For feedback and questions about my Files and Projects please mail me,		 
- Alexander Matthes (Ziz) , zizsdl_at_googlemail.com												 
+ The contents of this file are subject to the Mozilla Public License
+ Version 1.1 (the "License"); you may not use this file except in
+ compliance with the License. You may obtain a copy of the License at
+ http://www.mozilla.org/MPL/
+
+ Software distributed under the License is distributed on an "AS IS"
+ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ License for the specific language governing rights and limitations
+ under the License.
+
+ Alternatively, the contents of this file may be used under the terms
+ of the GNU Lesser General Public license (the	"LGPL License"), in which case the
+ provisions of LGPL License are applicable instead of those
+ above.
+
+ For feedback and questions about my Files and Projects please mail me,
+ Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 #ifndef _SPARROW_DEFINES_H
 #define _SPARROW_DEFINES_H
@@ -36,7 +36,7 @@
 	#ifdef __cplusplus
 		#define PREFIX extern "C"
 	#else
-		#define PREFIX	
+		#define PREFIX
 	#endif
 #endif
 
@@ -193,7 +193,7 @@
 	#define SP_BUTTON_X_NAME "X"
 	#define SP_BUTTON_Y_NAME "Y"
 	#define SP_PAD_NAME "D-Pad"
-	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME	
+	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
 #elif defined PANDORA
 	#define SP_BUTTON_START_NAME "Start"
 	#define SP_BUTTON_SELECT_NAME "Select"
@@ -204,7 +204,7 @@
 	#define SP_BUTTON_X_NAME "X"
 	#define SP_BUTTON_Y_NAME "Y"
 	#define SP_PAD_NAME "D-Pad"
-	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME	
+	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
 #else
 	#define SP_BUTTON_START_NAME "Return"
 	#define SP_BUTTON_SELECT_NAME "Backspace"
@@ -215,7 +215,7 @@
 	#define SP_BUTTON_X_NAME "s"
 	#define SP_BUTTON_Y_NAME "w"
 	#define SP_PAD_NAME "Arrow Keys"
-	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME	
+	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
 #endif
 
 #endif
