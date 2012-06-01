@@ -21,7 +21,7 @@
 #include "sparrowPrimitives.h"
 #include <stdlib.h>
 
-PREFIX spFontPointer spFontLoad( char* fontname, Uint32 size )
+PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size )
 {
 	TTF_Font* ttf = TTF_OpenFont( fontname, size );
 	if ( !ttf )
@@ -272,7 +272,7 @@ PREFIX spLetterPointer spFontGetLetter( spFontPointer font, Uint32 character )
 	return spLetterFind( font->root, character );
 }
 
-PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, char* text, spFontPointer font )
+PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPointer font )
 {
 	int l = 0;
 	int pos = x;
@@ -289,7 +289,7 @@ PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, char* text, spFontPointer 
 	}
 }
 
-PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, char* text, spFontPointer font )
+PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font )
 {
 	int l = 0;
 	int width = 0;
@@ -329,7 +329,7 @@ PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, char* text, spFontPoi
 	}
 }
 
-PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, char* text, spFontPointer font )
+PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font )
 {
 	int l = 0;
 	int width = 0;
@@ -369,7 +369,7 @@ PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, char* text, spFontPo
 	}
 }
 
-PREFIX int spFontWidth( char* text, spFontPointer font )
+PREFIX int spFontWidth(const char* text, spFontPointer font )
 {
 	int width = 0;
 	int l = 0;

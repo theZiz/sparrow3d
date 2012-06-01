@@ -72,7 +72,7 @@ typedef struct spFontStruct_
 	Uint32 size;
 } spFontStruct;
 
-PREFIX spFontPointer spFontLoad( char* fontname, Uint32 size );
+PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size );
 
 PREFIX void spFontAdd( spFontPointer font, Uint32 character, Uint16 color );
 
@@ -88,13 +88,13 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 
 PREFIX spLetterPointer spFontGetLetter( spFontPointer font, Uint32 character );
 
-PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, char* text, spFontPointer font );
+PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPointer font );
 
-PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, char* text, spFontPointer font );
+PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font );
 
-PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, char* text, spFontPointer font );
+PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font );
 
-PREFIX int spFontWidth( char* text, spFontPointer font );
+PREFIX int spFontWidth(const char* text, spFontPointer font );
 
 PREFIX void spFontDelete( spFontPointer font );
 

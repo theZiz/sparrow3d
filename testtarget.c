@@ -120,7 +120,7 @@ int main( int argc, char **argv )
 	int i;
 	for ( i = 0; i < 9; i++ )
 		spNewSubSpriteWithTiling( sprite, scientist, i * 24 + 1, 1, 22, 46, 100 );
-
+		
   spSetLight( 1 );
 
 	//All glory the main loop
