@@ -93,12 +93,6 @@ int calc_function( Uint32 steps )
 	return 0;
 }
 
-void resize( Uint16 w, Uint16 h )
-{
-	//Selecting the renderTarget. It could be every surface
-	spSelectRenderTarget( spGetWindowSurface() );
-}
-
 int main( int argc, char **argv )
 {
 	//sparrow3D Init
@@ -107,7 +101,7 @@ int main( int argc, char **argv )
 
 	//Setup
 	screen = spCreateDefaultWindow();
-	resize( screen->w, screen->h );
+	spSelectRenderTarget(screen);
 
 	//Tile map loading
 	tile_map = spLoadSurface( "./data/science_guy_frames01.png" );
@@ -126,11 +120,11 @@ int main( int argc, char **argv )
 	//every frame the calc_function is called with the past time as argument
 	//at least 10 ms have to be between to frames (max 100 fps)
 	//if the window is resized, the resize feedback-function is called (again)
-	spLoop( draw_function, calc_function, 10, resize, NULL );
+	spLoop( draw_function, calc_function, 10, NULL, NULL );
 
 	//Winter Wrap up, Winter Wrap up
 	spDeleteSprite( sprite );
-	SDL_FreeSurface( tile_map );
+	spDeleteSurface( tile_map );
 	spQuitCore();
 	return 0;
 }

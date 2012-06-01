@@ -1,4 +1,8 @@
+README:
+- -1 near stuff
+- Difference spScreen, spWindow, spRenderTarget
 Roadmap:
+- asin, acos, tan, atan
 - Network
 - Mouse
 - fixing system surface stuff

@@ -45,8 +45,6 @@ int calc_function(Uint32 steps)
 
 void resize(Uint16 w,Uint16 h)
 {
-	//Selecting the renderTarget. It could be every surface
-	spSelectRenderTarget(spGetWindowSurface());
 	//Setup of the new/resized window
 	spSetPerspective(50.0,(float)spGetWindowSurface()->w/(float)spGetWindowSurface()->h,0.1,100);
 }
@@ -60,6 +58,8 @@ int main(int argc, char **argv)
 	
 	//Setup
 	screen = spCreateDefaultWindow();
+	//Selecting the renderTarget. It could be every surface
+	spSelectRenderTarget(screen);
 	resize(screen->w,screen->h);
 	
 	//Textures loading
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	
 	//Winter Wrap up, Winter Wrap up
 	spMeshDelete(mesh);
-	SDL_FreeSurface(texture);
+	spDeleteSurface(texture);
 	spQuitCore();
 	return 0;
 }

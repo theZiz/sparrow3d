@@ -132,6 +132,11 @@ PREFIX void spPrintDebug( char* text )
 
 PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 {
+	//if the renderTarget is the screen and the screen is recreated, the pointer
+	//will be invalid. We have to check for that:
+	int recallSelectRenderTarget = 0;
+	if (spWindow == spGetRenderTarget())
+		recallSelectRenderTarget = 1;
 #ifdef GP2X
 	spScreen = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE );
 	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
@@ -167,6 +172,8 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	spWindowY = y;
 	spZoom = spMin( ( spWindowX << SP_ACCURACY ) / 320, ( spWindowY << SP_ACCURACY ) / 240 ); //at 320x240 == 1.0
 	SDL_ShowCursor( SDL_DISABLE );
+	if (recallSelectRenderTarget)
+	  spSelectRenderTarget(spGetWindowSurface());
 }
 
 PREFIX SDL_Surface* spCreateWindow( int width, int height, int fullscreen, int allowresize )
@@ -615,15 +622,6 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 	oldticks = olderticks;
 	newticks = olderticks;
 
-	if ( !spResize && spWindow && spWindow->flags & SDL_RESIZABLE )
-	{
-		printf( "You made the video surface resizable, but did not pass a resize function to spLoop!\n" );
-		printf( "This would cause the application to crash on resize, but I am in a good mood today,\n" );
-		printf( "so I am going to make the window non-resizable and your app not crash instead, m'kay...\n" );
-		spResizeWindow( spWindow->w, spWindow->h, 0, 0 );
-		spSelectRenderTarget( spGetWindowSurface() );
-	}
-
 	while( back == 0 && !spDone )
 	{
 #ifdef CORE_DEBUG
@@ -780,4 +778,17 @@ PREFIX SDL_Surface* spLoadSurface( char* name )
 	SDL_Surface* result = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
 	return result;
+}
+
+PREFIX SDL_Surface* spCreateSurface(int width,int height)
+{
+	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
+	SDL_Surface* result = SDL_DisplayFormat( surface );
+	SDL_FreeSurface( surface );
+	return result;
+}
+	
+PREFIX void spDeleteSurface( SDL_Surface* surface )
+{
+	SDL_FreeSurface(surface);
 }

@@ -335,7 +335,6 @@ int calc_test( Uint32 steps )
 void resize( Uint16 w, Uint16 h )
 {
 	//Setup of the new/resized window
-	spSelectRenderTarget( spGetWindowSurface() );
 	spSetPerspective( 50.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 0.1, 100 );
 
 	//Font Loading
@@ -350,11 +349,12 @@ void resize( Uint16 w, Uint16 h )
 int main( int argc, char **argv )
 {
 	//sparrow3D Init
-	spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
+	//spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
 	spInitCore();
 
 	//Setup
 	screen = spCreateDefaultWindow();
+	spSelectRenderTarget(screen);
 	resize( screen->w, screen->h );
 
 	//Textures loading
@@ -382,9 +382,9 @@ int main( int argc, char **argv )
 	spFontDelete( font );
 	spMeshDelete( mesh );
 	spDeleteSprite( sprite );
-	SDL_FreeSurface( garfield );
-	SDL_FreeSurface( pepper );
-	SDL_FreeSurface( scientist );
+	spDeleteSurface( garfield );
+	spDeleteSurface( pepper );
+	spDeleteSurface( scientist );
 	spQuitCore();
 	printf( "Average fps: %.1f\n", ( float )fpssum / ( float )divisor );
 	return 0;

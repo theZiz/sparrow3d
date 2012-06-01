@@ -82,4 +82,12 @@ PREFIX Sint32 spGetSizeFactor( void );
 
 /* spLoadSurface loads a 16 Surface needed by the engine */
 PREFIX SDL_Surface* spLoadSurface( char* name );
+
+/* spCreateSurface creates a 16 Surface 100% compatible to the engine,
+ * widht should be even.*/
+PREFIX SDL_Surface* spCreateSurface(int width,int height);
+
+/* spDeleteSurface does the same as SDL_FreeSurface: just deleting the surface*/
+PREFIX void spDeleteSurface( SDL_Surface* surface );
+
 #endif

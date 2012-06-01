@@ -81,6 +81,11 @@ PREFIX void spSelectRenderTarget( SDL_Surface* target )
 	spReAllocateZBuffer();
 }
 
+PREFIX SDL_Surface* spGetRenderTarget()
+{
+	return spTarget;
+}
+
 PREFIX void spBindTexture( SDL_Surface* texture )
 {
 	if ( texture == NULL )

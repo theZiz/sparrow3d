@@ -56,6 +56,9 @@ PREFIX Sint32* spGetOne_over_x_pointer();
  * Z Buffer will be cleaned! */
 PREFIX void spSelectRenderTarget( SDL_Surface* target );
 
+/* Returns the Rendertarget */
+PREFIX SDL_Surface* spGetRenderTarget();
+
 /* This texture will be used for all following draw operations with textures */
 PREFIX void spBindTexture( SDL_Surface* texture );
 
