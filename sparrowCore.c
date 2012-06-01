@@ -157,7 +157,7 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	/*x=800;
 	y=480;*/
 	spScreen = NULL;
-	spWindow = SDL_SetVideoMode( x, y, 16, SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | ( allowresize ? SDL_VIDEORESIZE : 0 ) | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
+	spWindow = SDL_SetVideoMode( x, y, 16, SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | ( allowresize ? SDL_RESIZABLE : 0 ) | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
 	//spWindow=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_NOFRAME);
 #endif
 	if ( x % 2 != 0 )
@@ -463,7 +463,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 			spDone = 1;
 			break;
 		case SDL_VIDEORESIZE:
-			spResizeWindow( event.resize.w, event.resize.h, 0, 1 );
+			spResizeWindow( event.resize.w, event.resize.h, 0, (spWindow->flags & SDL_RESIZABLE ? 1 : 0) );
 			result = 1;
 			break;
 		}
@@ -614,6 +614,16 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 	olderticks = SDL_GetTicks();
 	oldticks = olderticks;
 	newticks = olderticks;
+
+	if ( !spResize && spWindow && spWindow->flags & SDL_RESIZABLE )
+	{
+		printf( "You made the video surface resizable, but did not pass a resize function to spLoop!\n" );
+		printf( "This would cause the application to crash on resize, but I am in a good mood today,\n" );
+		printf( "so I am going to make the window non-resizable and your app not crash instead, m'kay...\n" );
+		spResizeWindow( spWindow->w, spWindow->h, 0, 0 );
+		spSelectRenderTarget( spGetWindowSurface() );
+	}
+
 	while( back == 0 && !spDone )
 	{
 #ifdef CORE_DEBUG
