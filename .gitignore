@@ -2,3 +2,6 @@
 testengine
 testsparrow
 libsparrow3d.so
+bin/*
+sparrow3d.depend
+sparrow3d.layout
