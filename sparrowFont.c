@@ -278,6 +278,13 @@ PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPo
 	int pos = x;
 	while ( text[l] != 0 )
 	{
+		if (text[l] == '\n')
+		{
+			pos = x;
+			y+=font->maxheight;
+			l++;
+			continue;
+		}
 		spLetterPointer letter = spFontGetLetter( font, text[l] ); //TODO utf8
 		if ( letter )
 		{

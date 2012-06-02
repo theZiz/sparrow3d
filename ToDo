@@ -2,6 +2,19 @@ README:
 - -1 near stuff
 - Difference spScreen, spWindow, spRenderTarget
 Roadmap:
+- spFont additionals:
+	- support for managing different texts in different languages
+		- spFontText* text = spFontCreateText()
+		- spFontAddTranslation(text,language,translation)
+			- text is a created text
+			- language is an int, where only the first 16 bit are used
+			- translation is a const char* with the translation of the text.
+		- spFontText* spFontCreateTextWithAdd(language,tranlation)
+		  - creates a text with a first translation
+		- spFontSetLanguage(language)
+		  - sets the language of the program. This language will be searched in every
+		    text. If the language is not found, the FIRST added language will be
+		    used, so it makes sense to create English first.
 - asin, acos, tan, atan
 - Network
 - Mouse
