@@ -254,26 +254,26 @@ void draw_test( void )
 	spSetZTest( 0 );
 	spSetAlphaTest( 1 );
 	spFontDraw( 0, 2, -1, "Previous ("SP_BUTTON_L_NAME")", font );
-	spFontDrawRight( screen->w - 2, 2, -1, "("SP_BUTTON_R_NAME")\nNext", font );
+	spFontDrawRight( screen->w - 2, 2, -1, "("SP_BUTTON_R_NAME") Next", font );
 	switch ( test )
 	{
 	case 0:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 1: Rotating Cube", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 1:\nRotating Cube", font );
 		break;
 	case 1:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 2: 3D Tube", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 2:\n3D Tube", font );
 		break;
 	case 2:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 3: Fulfilling", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 3:\nFulfilling", font );
 		break;
 	case 3:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 4: Mesh Loading", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 4:\nMesh Loading", font );
 		break;
 	case 4:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 5: Primitives", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 5:\nPrimitives", font );
 		break;
 	case 5:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 6: Sprites & Rotozoom", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 6:\nSprites & Rotozoom", font );
 		break;
 	}
 	if ( quality )

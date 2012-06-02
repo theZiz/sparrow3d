@@ -299,11 +299,21 @@ PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPo
 PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font )
 {
 	int l = 0;
-	int width = 0;
+	int width;
 	spLetterIterPointer first = NULL;
 	spLetterIterPointer last = NULL;
+	int again;
+drawRightLabel:
+  width = 0;
+	again = 0;
 	while ( text[l] != 0 )
 	{
+		if (text[l] == '\n')
+		{
+			again = 1;
+			l++;
+			break;
+		}
 		spLetterPointer letter = spFontGetLetter( font, text[l] ); //TODO utf8
 		if ( letter )
 		{
@@ -334,16 +344,31 @@ PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFo
 		first = first->next;
 		free( mom );
 	}
+	if (again)
+	{
+		y+=font->maxheight;
+	  goto drawRightLabel;
+	}
 }
 
 PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font )
 {
 	int l = 0;
-	int width = 0;
+	int width;
 	spLetterIterPointer first = NULL;
 	spLetterIterPointer last = NULL;
+	int again;
+drawRightLabel:
+  width = 0;
+	again = 0;
 	while ( text[l] != 0 )
 	{
+		if (text[l] == '\n')
+		{
+			again = 1;
+			l++;
+			break;
+		}
 		spLetterPointer letter = spFontGetLetter( font, text[l] ); //TODO utf8
 		if ( letter )
 		{
@@ -373,6 +398,11 @@ PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spF
 		spLetterIterPointer mom = first;
 		first = first->next;
 		free( mom );
+	}
+	if (again)
+	{
+		y+=font->maxheight;
+	  goto drawRightLabel;
 	}
 }
 
