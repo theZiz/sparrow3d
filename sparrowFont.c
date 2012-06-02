@@ -302,52 +302,51 @@ PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFo
 	int width;
 	spLetterIterPointer first = NULL;
 	spLetterIterPointer last = NULL;
-	int again;
-drawRightLabel:
-  width = 0;
-	again = 0;
-	while ( text[l] != 0 )
-	{
-		if (text[l] == '\n')
+	int again = 1;
+  while (again)
+  {
+		width = 0;
+		again = 0;
+		while ( text[l] != 0 )
 		{
-			again = 1;
+			if (text[l] == '\n')
+			{
+				again = 1;
+				l++;
+				break;
+			}
+			spLetterPointer letter = spFontGetLetter( font, text[l] ); //TODO utf8
+			if ( letter )
+			{
+				spLetterIterPointer iter = ( spLetterIterPointer )malloc( sizeof( spLetterIterStruct ) );
+				iter->letter = letter;
+				if ( first == NULL )
+				{
+					first = iter;
+					last = iter;
+				}
+				else
+				{
+					last->next = iter;
+					last = iter;
+				}
+				width += letter->width;
+				iter->next = NULL;
+			}
 			l++;
-			break;
 		}
-		spLetterPointer letter = spFontGetLetter( font, text[l] ); //TODO utf8
-		if ( letter )
+		int pos = x - width;
+		while ( first != NULL )
 		{
-			spLetterIterPointer iter = ( spLetterIterPointer )malloc( sizeof( spLetterIterStruct ) );
-			iter->letter = letter;
-			if ( first == NULL )
-			{
-				first = iter;
-				last = iter;
-			}
-			else
-			{
-				last->next = iter;
-				last = iter;
-			}
-			width += letter->width;
-			iter->next = NULL;
+			pos += first->letter->width >> 1;
+			spBlitSurface( pos, y + first->letter->height / 2, z, first->letter->surface );
+			pos += first->letter->width - ( first->letter->width >> 1 );
+			spLetterIterPointer mom = first;
+			first = first->next;
+			free( mom );
 		}
-		l++;
-	}
-	int pos = x - width;
-	while ( first != NULL )
-	{
-		pos += first->letter->width >> 1;
-		spBlitSurface( pos, y + first->letter->height / 2, z, first->letter->surface );
-		pos += first->letter->width - ( first->letter->width >> 1 );
-		spLetterIterPointer mom = first;
-		first = first->next;
-		free( mom );
-	}
-	if (again)
-	{
-		y+=font->maxheight;
-	  goto drawRightLabel;
+		if (again)
+			y+=font->maxheight;
 	}
 }
 
@@ -357,52 +356,51 @@ PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spF
 	int width;
 	spLetterIterPointer first = NULL;
 	spLetterIterPointer last = NULL;
-	int again;
-drawRightLabel:
-  width = 0;
-	again = 0;
-	while ( text[l] != 0 )
-	{
-		if (text[l] == '\n')
+	int again = 1;
+  while (again)
+  {
+		width = 0;
+		again = 0;
+		while ( text[l] != 0 )
 		{
-			again = 1;
+			if (text[l] == '\n')
+			{
+				again = 1;
+				l++;
+				break;
+			}
+			spLetterPointer letter = spFontGetLetter( font, text[l] ); //TODO utf8
+			if ( letter )
+			{
+				spLetterIterPointer iter = ( spLetterIterPointer )malloc( sizeof( spLetterIterStruct ) );
+				iter->letter = letter;
+				if ( first == NULL )
+				{
+					first = iter;
+					last = iter;
+				}
+				else
+				{
+					last->next = iter;
+					last = iter;
+				}
+				width += letter->width;
+				iter->next = NULL;
+			}
 			l++;
-			break;
 		}
-		spLetterPointer letter = spFontGetLetter( font, text[l] ); //TODO utf8
-		if ( letter )
+		int pos = x - width / 2;
+		while ( first != NULL )
 		{
-			spLetterIterPointer iter = ( spLetterIterPointer )malloc( sizeof( spLetterIterStruct ) );
-			iter->letter = letter;
-			if ( first == NULL )
-			{
-				first = iter;
-				last = iter;
-			}
-			else
-			{
-				last->next = iter;
-				last = iter;
-			}
-			width += letter->width;
-			iter->next = NULL;
+			pos += first->letter->width >> 1;
+			spBlitSurface( pos, y + first->letter->height / 2, z, first->letter->surface );
+			pos += first->letter->width - ( first->letter->width >> 1 );
+			spLetterIterPointer mom = first;
+			first = first->next;
+			free( mom );
 		}
-		l++;
-	}
-	int pos = x - width / 2;
-	while ( first != NULL )
-	{
-		pos += first->letter->width >> 1;
-		spBlitSurface( pos, y + first->letter->height / 2, z, first->letter->surface );
-		pos += first->letter->width - ( first->letter->width >> 1 );
-		spLetterIterPointer mom = first;
-		first = first->next;
-		free( mom );
-	}
-	if (again)
-	{
-		y+=font->maxheight;
-	  goto drawRightLabel;
+		if (again)
+		  y+=font->maxheight;
 	}
 }
 

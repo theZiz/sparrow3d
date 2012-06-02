@@ -254,7 +254,7 @@ void draw_test( void )
 	spSetZTest( 0 );
 	spSetAlphaTest( 1 );
 	spFontDraw( 0, 2, -1, "Previous ("SP_BUTTON_L_NAME")", font );
-	spFontDrawRight( screen->w - 2, 2, -1, "("SP_BUTTON_R_NAME") Next", font );
+	spFontDrawRight( screen->w - 2, 2, -1, "("SP_BUTTON_R_NAME") nenxt", font );
 	switch ( test )
 	{
 	case 0:
