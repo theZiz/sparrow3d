@@ -15,7 +15,6 @@ Roadmap:
 		  - sets the language of the program. This language will be searched in every
 		    text. If the language is not found, the FIRST added language will be
 		    used, so it makes sense to create English first.
-- asin, acos, tan, atan
 - Network
 - Mouse
 - fixing system surface stuff
