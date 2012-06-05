@@ -373,7 +373,7 @@ inline void spCalcLightNormal( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint3
 
 inline Uint16 rendererLightCalculation( Uint16 color, Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3 )
 {
-	if ( !spLightOn )
+	if ( spLightOn <= 0)
 		return color;
 	Uint32 or = ( color >> 11 ); //0..31
 	Uint32 og = ( ( color & 2047 ) >> 5 ); //0..63
