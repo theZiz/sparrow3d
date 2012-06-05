@@ -254,7 +254,7 @@ void draw_test( void )
 	spSetZTest( 0 );
 	spSetAlphaTest( 1 );
 	spFontDraw( 0, 2, -1, "Previous ("SP_BUTTON_L_NAME")", font );
-	spFontDrawRight( screen->w - 2, 2, -1, "("SP_BUTTON_R_NAME") nenxt", font );
+	spFontDrawRight( screen->w - 2, 2, -1, "("SP_BUTTON_R_NAME") next", font );
 	switch ( test )
 	{
 	case 0:
@@ -349,7 +349,7 @@ void resize( Uint16 w, Uint16 h )
 int main( int argc, char **argv )
 {
 	//sparrow3D Init
-	//spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
+	spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
 	spInitCore();
 
 	//Setup
