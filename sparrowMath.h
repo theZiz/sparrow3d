@@ -36,6 +36,17 @@ PREFIX Sint32 spSin( Sint32 value );
 /* spCos calculates the cos of value*/
 PREFIX Sint32 spCos( Sint32 value );
 
+/* spTan calculates the cos of value*/
+PREFIX Sint32 spTan( Sint32 value );
+
+/* spAcos calculates the acos of value. For values smaller than -1 and bigger
+ * than 1, it returns 0. */
+PREFIX Sint32 spAcos(Sint32 value);
+
+/* spAcos calculates the asin of value. For values smaller than -1 and bigger
+ * than 1, it returns 0. */
+PREFIX Sint32 spAsin(Sint32 value);
+
 /* spSqrt fast square root*/
 PREFIX Sint32 spSqrt ( Sint32 n );
 

@@ -59,6 +59,17 @@ PREFIX void spSelectRenderTarget( SDL_Surface* target );
 /* Returns the Rendertarget */
 PREFIX SDL_Surface* spGetRenderTarget();
 
+/* Locks the RenderTarget and returns a pointer to the raw 16 bit pixel data.
+ * Keep in mind to change the zBuffer too, if you need it and to unlock at
+ * the end!*/
+PREFIX Uint16* spLockRenderTarget();
+
+/* Unlocks the RenderTarget*/
+PREFIX void spUnlockRenderTarget();
+
+/* Returns a pointer to the zBuffer of the render target */
+PREFIX Sint32* spGetRenderTargetZBuffer();
+
 /* This texture will be used for all following draw operations with textures */
 PREFIX void spBindTexture( SDL_Surface* texture );
 

@@ -62,7 +62,8 @@
 #define SP_HALF_ACCURACY 8
 #define SP_ACCURACY_FACTOR 65536.0f
 #define SP_PI 205888
-#define SP_COS_ACCURACY 4
+//This is not really accuracy... More inaccuracy ^^
+#define SP_MATH_ACCURACY 4
 
 #define SP_JOYSTICK_MIN -16384
 #define SP_JOYSTICK_MAX	16383

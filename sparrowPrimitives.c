@@ -86,6 +86,22 @@ PREFIX SDL_Surface* spGetRenderTarget()
 	return spTarget;
 }
 
+PREFIX Uint16* spLockRenderTarget()
+{
+	SDL_LockSurface( spTarget );
+	return spTarget->pixels;
+}
+
+PREFIX void spUnlockRenderTarget()
+{
+	SDL_UnlockSurface( spTarget );
+}
+
+PREFIX Sint32* spGetRenderTargetZBuffer()
+{
+	return spZBuffer;
+}
+
 PREFIX void spBindTexture( SDL_Surface* texture )
 {
 	if ( texture == NULL )
