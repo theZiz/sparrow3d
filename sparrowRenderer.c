@@ -327,15 +327,15 @@ inline void spMulModellView( Sint32 x, Sint32 y, Sint32 z, Sint32 *tx, Sint32 *t
 
 //senquack - credit for this fast sqrt goes to Wilco Dijkstra http://www.finesse.demon.co.uk/steven/sqrt.html
 #define iter1(N) \
-  try = root + (1 << (N)); \
-  if (n >= try << (N))   \
-    {   n -= try << (N);   \
+  tryv = root + (1 << (N)); \
+  if (n >= tryv << (N))   \
+    {   n -= tryv << (N);   \
     root |= 2 << (N); \
 }
 
 Sint32 lightSqrt ( Sint32 n )
 {
-	Sint32 root = 0, try;
+	Sint32 root = 0, tryv;
 	iter1 ( 15 );
 	iter1 ( 14 );
 	iter1 ( 13 );
