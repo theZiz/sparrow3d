@@ -51,7 +51,7 @@ PREFIX void spDeleteSprite( spSpritePointer sprite )
 
 PREFIX spSubSpritePointer spNewSubSpriteNoTiling( spSpritePointer sprite, SDL_Surface* surface, Sint32 duration )
 {
-	spNewSubSpriteWithTiling( sprite, surface, -1, -1, surface->w, surface->h, duration );
+	return spNewSubSpriteWithTiling( sprite, surface, -1, -1, surface->w, surface->h, duration );
 }
 
 PREFIX spSubSpritePointer spNewSubSpriteWithTiling( spSpritePointer sprite, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 sw, Sint32 sh, Sint32 duration )
@@ -85,6 +85,7 @@ PREFIX spSubSpritePointer spNewSubSpriteWithTiling( spSpritePointer sprite, SDL_
 		sprite->firstSub = sub;
 		sprite->momSub = sub;
 	}
+  return sub;
 }
 
 PREFIX void spUpdateSprite( spSpritePointer sprite, Sint32 time )

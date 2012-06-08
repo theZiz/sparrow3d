@@ -184,7 +184,7 @@ PREFIX SDL_Surface* spCreateWindow( int width, int height, int fullscreen, int a
 
 PREFIX SDL_Surface* spCreateDefaultWindow( void )
 {
-	spCreateWindow( 0, 0, 0, 1 );
+	return spCreateWindow( 0, 0, 0, 1 );
 }
 
 PREFIX SDL_Surface* spGetWindowSurface( void )
