@@ -89,7 +89,7 @@ PREFIX SDL_Surface* spGetRenderTarget()
 PREFIX Uint16* spLockRenderTarget()
 {
 	SDL_LockSurface( spTarget );
-	return spTarget->pixels;
+	return (Uint16*)(spTarget->pixels);
 }
 
 PREFIX void spUnlockRenderTarget()
