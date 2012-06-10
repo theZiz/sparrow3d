@@ -358,7 +358,7 @@ int main( int argc, char **argv )
 	resize( screen->w, screen->h );
 
 	//Textures loading
-	garfield = spLoadSurface( "./data/garfield.png" );
+	garfield = spLoadSurface( "./data/garfield-odd.png" );
 	pepper = spLoadSurface( "./data/pepper.png" );
 	scientist = spLoadSurface( "./data/science_guy_frames01.png" );
 	spBindTexture( garfield );
