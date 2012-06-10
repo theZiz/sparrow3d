@@ -20,7 +20,7 @@
 #ifndef _SPARROW_SPRITE_H
 #define _SPARROW_SPRITE_H
 
-#include "sparrowDefines.h"
+#include "sparrow3d.h"
 #ifdef SDL_INCLUDE_SUBDIR
 #include <SDL/SDL.h>
 #else
