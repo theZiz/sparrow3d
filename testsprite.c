@@ -18,8 +18,6 @@ void draw_function( void )
 	spResetZBuffer();
 	spClearTarget( 34567 );
 
-	//mark the center
-	spEllipseBorder( screen->w / 2, screen->h / 2, -100, 60+spSin(rotation/2)/1000, 60+spCos(rotation/3)/1000, 20+spCos(rotation/7)/10000, 20+spSin(rotation/5)/10000, 0 );
 
 	//Set the origin:
 	switch ( ( rotation >> 17 ) % 9 )
@@ -68,6 +66,10 @@ void draw_function( void )
 	spDrawSprite( screen->w - 1, 0, -1, sprite );
 	spDrawSprite( 0, screen->h - 1, -1, sprite );
 	spDrawSprite( 0, 0, -1, sprite );
+
+	//mark the center
+	//spEllipseBorder( screen->w / 2, screen->h / 2, -100, 60+spSin(rotation/2)/1000, 60+spCos(rotation/3)/1000, 20+spCos(rotation/7)/10000, 20+spSin(rotation/5)/10000, 0 );
+	spEllipseBorder( screen->w / 2, screen->h / 2, -100, 6, 6, 2, 2, 0 );
 
 	//Show it!
 	spFlip();
