@@ -4592,6 +4592,10 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint32 color )
 
 {
+	if (rx <= 0)
+	  return;
+	if (ry <= 0)
+	  return;
 	if ( spAlphaTest && color == SP_ALPHA_COLOR )
 		return;
 	if ( x - rx >= spTargetX ) return;
@@ -4668,11 +4672,19 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 
 PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Sint32 bx, Sint32 by, Uint32 color )
 {
+	if (bx <= 0)
+	  return;
+	if (by <= 0)
+	  return;
 	if ( ( bx >= rx ) || ( by >= ry ) )
 	{
 		spEllipse( x, y, z, rx, ry, color );
 		return;
 	}
+	if (rx <= 0)
+	  return;
+	if (ry <= 0)
+	  return;
 	if ( spAlphaTest && color == SP_ALPHA_COLOR )
 		return;
 
@@ -4721,7 +4733,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 					draw_pixel_ztest_zset( x1 + x, y1 + y, z, color );
 			}
 			//middle
-			for ( ; y <= ry - by && y <= ryr; y++ )
+			for ( ; y < ry - by && y <= ryr; y++ )
 			{
 				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
 				Sint32 XXB = ( rx - bx ) * ( rx - bx ) - spMul( y * y, XXB_mul );
@@ -4753,7 +4765,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 					draw_pixel_zset( x1 + x, y1 + y, z, color );
 			}
 			//middle
-			for ( ; y <= ry - by && y <= ryr; y++ )
+			for ( ; y < ry - by && y <= ryr; y++ )
 			{
 				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
 				Sint32 XXB = ( rx - bx ) * ( rx - bx ) - spMul( y * y, XXB_mul );
@@ -4788,7 +4800,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 					draw_pixel_ztest( x1 + x, y1 + y, z, color );
 			}
 			//middle
-			for ( ; y <= ry - by && y <= ryr; y++ )
+			for ( ; y < ry - by && y <= ryr; y++ )
 			{
 				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
 				Sint32 XXB = ( rx - bx ) * ( rx - bx ) - spMul( y * y, XXB_mul );
@@ -4820,7 +4832,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 					draw_pixel( x1 + x, y1 + y, color );
 			}
 			//middle
-			for ( ; y <= ry - by && y <= ryr; y++ )
+			for ( ; y < ry - by && y <= ryr; y++ )
 			{
 				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
 				Sint32 XXB = ( rx - bx ) * ( rx - bx ) - spMul( y * y, XXB_mul );

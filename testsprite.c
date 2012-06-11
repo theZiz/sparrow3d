@@ -19,7 +19,7 @@ void draw_function( void )
 	spClearTarget( 34567 );
 
 	//mark the center
-	spEllipseBorder( screen->w / 2, screen->h / 2, -100, 6, 6, 2, 2, 0 );
+	spEllipseBorder( screen->w / 2, screen->h / 2, -100, 60+spSin(rotation/2)/1000, 60+spCos(rotation/3)/1000, 20+spCos(rotation/7)/10000, 20+spSin(rotation/5)/10000, 0 );
 
 	//Set the origin:
 	switch ( ( rotation >> 17 ) % 9 )
@@ -114,6 +114,8 @@ int main( int argc, char **argv )
 		spNewSubSpriteWithTiling( sprite, tile_map, i * 24 + 1, 1, 22, 46, 100 );
 
 	//We don't want to use the zBuffer in any way
+	spSetZSet(0);
+	spSetZTest(0);
 
 	//All glory the main loop
 	//every frame the draw_function is called
