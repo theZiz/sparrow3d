@@ -33,6 +33,7 @@ typedef struct SspInput
 	signed char axis[2];
 	char button[20];
 	char supports_keyboard;
+	struct {int pressed,x,y;} touchscreen; //important: x and y are ONLY valid, if the touchscreen is pressed!
 } TspInput;
 
 

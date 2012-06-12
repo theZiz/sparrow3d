@@ -103,6 +103,9 @@ PREFIX void spInitCore( void )
 		spInput.button[i] = 0;
 	spInput.axis[0] = 0;
 	spInput.axis[1] = 0;
+	spInput.touchscreen.pressed = 0;
+	spInput.touchscreen.x = -1;
+	spInput.touchscreen.y = -1;
 
 #ifdef GP2X
 	//f100, f200, open2x and wiz
@@ -215,264 +218,281 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 #endif
 		switch ( event.type )
 		{
-		case SDL_JOYBUTTONDOWN:
-			spInput.button[event.jbutton.button] = 1;
-			break;
-		case SDL_JOYBUTTONUP:
-			spInput.button[event.jbutton.button] = 0;
-			break;
-		case SDL_KEYDOWN:
-			switch ( event.key.keysym.sym )
-			{
-			case SDLK_LEFT:
-				spInput.axis[0] = -1;
+			case SDL_MOUSEBUTTONDOWN:
+			  spInput.touchscreen.pressed = 1;			
+			  spInput.touchscreen.x = event.button.x;
+			  spInput.touchscreen.y = event.button.y;
+			  break;
+			case SDL_MOUSEBUTTONUP:
+			  spInput.touchscreen.pressed = 0;			
+			  spInput.touchscreen.x = -1;
+			  spInput.touchscreen.y = -1;
+			  break;
+			case SDL_MOUSEMOTION:
+				if (spInput.touchscreen.pressed)
+				{
+					spInput.touchscreen.x = event.motion.x;
+					spInput.touchscreen.y = event.motion.y;
+				}
+				break;
+			case SDL_JOYBUTTONDOWN:
+				spInput.button[event.jbutton.button] = 1;
+				break;
+			case SDL_JOYBUTTONUP:
+				spInput.button[event.jbutton.button] = 0;
+				break;
+			case SDL_KEYDOWN:
+				switch ( event.key.keysym.sym )
+				{
+				case SDLK_LEFT:
+					spInput.axis[0] = -1;
+					break;
+				case SDLK_RIGHT:
+					spInput.axis[0] = 1;
+					break;
+				case SDLK_UP:
+					spInput.axis[1] = 1;
+					break;
+				case SDLK_DOWN:
+					spInput.axis[1] = -1;
+					break;
+	#ifdef DINGUX
+				case SDLK_RETURN:
+					spInput.button[SP_BUTTON_START] = 1;
+					break;
+				case SDLK_SPACE:
+					spInput.button[SP_BUTTON_X] = 1;
+					break;
+				case SDLK_LSHIFT:
+					spInput.button[SP_BUTTON_Y] = 1;
+					break;
+				case SDLK_LCTRL:
+					spInput.button[SP_BUTTON_A] = 1;
+					break;
+				case SDLK_LALT:
+					spInput.button[SP_BUTTON_B] = 1;
+					break;
+				case SDLK_ESCAPE:
+					spInput.button[SP_BUTTON_SELECT] = 1;
+					break;
+				case SDLK_TAB:
+					spInput.button[SP_BUTTON_L] = 1;
+					break;
+				case SDLK_BACKSPACE:
+					spInput.button[SP_BUTTON_R] = 1;
+					break;
+				case SDLK_s:
+					spInput.button[SP_BUTTON_VOLPLUS] = 1;
+					break;
+				case SDLK_u:
+					spInput.button[SP_BUTTON_VOLMINUS] = 1;
+					break;
+	#elif defined PANDORA
+	//            case SDLK_MENU:
+	//              spDone=1;
+	//              break;
+				case SDLK_PAGEDOWN:
+					spInput.button[SP_BUTTON_X] = 1;
+					break;
+				case SDLK_PAGEUP:
+					spInput.button[SP_BUTTON_Y] = 1;
+					break;
+				case SDLK_HOME:
+					spInput.button[SP_BUTTON_A] = 1;
+					break;
+				case SDLK_END:
+					spInput.button[SP_BUTTON_B] = 1;
+					break;
+				case SDLK_LCTRL:
+					spInput.button[SP_BUTTON_SELECT] = 1;
+					break;
+				case SDLK_RSHIFT:
+					spInput.button[SP_BUTTON_L] = 1;
+					break;
+				case SDLK_RCTRL:
+					spInput.button[SP_BUTTON_R] = 1;
+					break;
+				case SDLK_LALT:
+					spInput.button[SP_BUTTON_START] = 1;
+					break;
+	#else //PC
+				case SDLK_KP_ENTER:
+				case SDLK_RETURN:
+					spInput.button[SP_BUTTON_START] = 1;
+					break;
+				case SDLK_a:
+					spInput.button[SP_BUTTON_A] = 1;
+					break;
+				case SDLK_d:
+					spInput.button[SP_BUTTON_B] = 1;
+					break;
+				case SDLK_w:
+					spInput.button[SP_BUTTON_Y] = 1;
+					break;
+				case SDLK_s:
+					spInput.button[SP_BUTTON_X] = 1;
+					break;
+				case SDLK_BACKSPACE:
+					spInput.button[SP_BUTTON_SELECT] = 1;
+					break;
+				case SDLK_PLUS:
+					spInput.button[SP_BUTTON_VOLPLUS] = 1;
+					break;
+				case SDLK_MINUS:
+					spInput.button[SP_BUTTON_VOLMINUS] = 1;
+					break;
+				case SDLK_q:
+					spInput.button[SP_BUTTON_L] = 1;
+					break;
+				case SDLK_e:
+					spInput.button[SP_BUTTON_R] = 1;
+					break;
+	#endif
+				case SDLK_m:
+					//spMuteKey=1;
+					break;
+				}
+				break;
+			case SDL_KEYUP:
+				switch ( event.key.keysym.sym )
+				{
+				case SDLK_LEFT:
+					if ( spInput.axis[0] == -1 )
+						spInput.axis[0] = 0;
+					break;
+				case SDLK_RIGHT:
+					if ( spInput.axis[0] == 1 )
+						spInput.axis[0] = 0;
+					break;
+				case SDLK_UP:
+					if ( spInput.axis[1] == 1 )
+						spInput.axis[1] = 0;
+					break;
+				case SDLK_DOWN:
+					if ( spInput.axis[1] == -1 )
+						spInput.axis[1] = 0;
+					break;
+	#ifdef DINGUX
+				case SDLK_RETURN:
+					spInput.button[SP_BUTTON_START] = 0;
+					break;
+				case SDLK_SPACE:
+					spInput.button[SP_BUTTON_X] = 0;
+					break;
+				case SDLK_LSHIFT:
+					spInput.button[SP_BUTTON_Y] = 0;
+					break;
+				case SDLK_LCTRL:
+					spInput.button[SP_BUTTON_A] = 0;
+					break;
+				case SDLK_LALT:
+					spInput.button[SP_BUTTON_B] = 0;
+					break;
+				case SDLK_ESCAPE:
+					spInput.button[SP_BUTTON_SELECT] = 0;
+					break;
+				case SDLK_TAB:
+					spInput.button[SP_BUTTON_L] = 0;
+					break;
+				case SDLK_BACKSPACE:
+					spInput.button[SP_BUTTON_R] = 0;
+					break;
+				case SDLK_s:
+					spInput.button[SP_BUTTON_VOLPLUS] = 0;
+					break;
+				case SDLK_u:
+					spInput.button[SP_BUTTON_VOLMINUS] = 0;
+					break;
+	#elif defined PANDORA
+				case SDLK_PAGEDOWN:
+					spInput.button[SP_BUTTON_X] = 0;
+					break;
+				case SDLK_PAGEUP:
+					spInput.button[SP_BUTTON_Y] = 0;
+					break;
+				case SDLK_HOME:
+					spInput.button[SP_BUTTON_A] = 0;
+					break;
+				case SDLK_END:
+					spInput.button[SP_BUTTON_B] = 0;
+					break;
+				case SDLK_LCTRL:
+					spInput.button[SP_BUTTON_SELECT] = 0;
+					break;
+				case SDLK_RSHIFT:
+					spInput.button[SP_BUTTON_L] = 0;
+					break;
+				case SDLK_RCTRL:
+					spInput.button[SP_BUTTON_R] = 0;
+					break;
+				case SDLK_LALT:
+					spInput.button[SP_BUTTON_START] = 0;
+					break;
+	#else //PC
+				case SDLK_KP_ENTER:
+				case SDLK_RETURN:
+					spInput.button[SP_BUTTON_START] = 0;
+					break;
+				case SDLK_a:
+					spInput.button[SP_BUTTON_A] = 0;
+					break;
+				case SDLK_d:
+					spInput.button[SP_BUTTON_B] = 0;
+					break;
+				case SDLK_w:
+					spInput.button[SP_BUTTON_Y] = 0;
+					break;
+				case SDLK_s:
+					spInput.button[SP_BUTTON_X] = 0;
+					break;
+				case SDLK_BACKSPACE:
+					spInput.button[SP_BUTTON_SELECT] = 0;
+					break;
+				case SDLK_PLUS:
+					spInput.button[SP_BUTTON_VOLPLUS] = 0;
+					break;
+				case SDLK_MINUS:
+					spInput.button[SP_BUTTON_VOLMINUS] = 0;
+					break;
+				case SDLK_q:
+					spInput.button[SP_BUTTON_L] = 0;
+					break;
+				case SDLK_e:
+					spInput.button[SP_BUTTON_R] = 0;
+					break;
+	#endif
+				case SDLK_m:
+					//spMuteKey=0;
+					break;
+				}
+				break;
+			case SDL_JOYAXISMOTION:
+				if ( !( event.jaxis.axis & 1 ) )
+				{
+					if ( event.jaxis.value < SP_JOYSTICK_MIN )
+						spInput.axis[event.jaxis.axis] = -1;
+					else if ( event.jaxis.value > SP_JOYSTICK_MAX )
+						spInput.axis[event.jaxis.axis] = 1;
+					else
+						spInput.axis[event.jaxis.axis] = 0;
+				}
+				if ( event.jaxis.axis & 1 )
+				{
+					if ( event.jaxis.value < SP_JOYSTICK_MIN )
+						spInput.axis[event.jaxis.axis] = 1;
+					else if ( event.jaxis.value > SP_JOYSTICK_MAX )
+						spInput.axis[event.jaxis.axis] = -1;
+					else
+						spInput.axis[event.jaxis.axis] = 0;
+				}
+				break;
+			case SDL_QUIT:
+				spDone = 1;
+				break;
+			case SDL_VIDEORESIZE:
+				spResizeWindow( event.resize.w, event.resize.h, 0, (spWindow->flags & SDL_RESIZABLE ? 1 : 0) );
+				result = 1;
 				break;
-			case SDLK_RIGHT:
-				spInput.axis[0] = 1;
-				break;
-			case SDLK_UP:
-				spInput.axis[1] = 1;
-				break;
-			case SDLK_DOWN:
-				spInput.axis[1] = -1;
-				break;
-#ifdef DINGUX
-			case SDLK_RETURN:
-				spInput.button[SP_BUTTON_START] = 1;
-				break;
-			case SDLK_SPACE:
-				spInput.button[SP_BUTTON_X] = 1;
-				break;
-			case SDLK_LSHIFT:
-				spInput.button[SP_BUTTON_Y] = 1;
-				break;
-			case SDLK_LCTRL:
-				spInput.button[SP_BUTTON_A] = 1;
-				break;
-			case SDLK_LALT:
-				spInput.button[SP_BUTTON_B] = 1;
-				break;
-			case SDLK_ESCAPE:
-				spInput.button[SP_BUTTON_SELECT] = 1;
-				break;
-			case SDLK_TAB:
-				spInput.button[SP_BUTTON_L] = 1;
-				break;
-			case SDLK_BACKSPACE:
-				spInput.button[SP_BUTTON_R] = 1;
-				break;
-			case SDLK_s:
-				spInput.button[SP_BUTTON_VOLPLUS] = 1;
-				break;
-			case SDLK_u:
-				spInput.button[SP_BUTTON_VOLMINUS] = 1;
-				break;
-#elif defined PANDORA
-//            case SDLK_MENU:
-//              spDone=1;
-//              break;
-			case SDLK_PAGEDOWN:
-				spInput.button[SP_BUTTON_X] = 1;
-				break;
-			case SDLK_PAGEUP:
-				spInput.button[SP_BUTTON_Y] = 1;
-				break;
-			case SDLK_HOME:
-				spInput.button[SP_BUTTON_A] = 1;
-				break;
-			case SDLK_END:
-				spInput.button[SP_BUTTON_B] = 1;
-				break;
-			case SDLK_LCTRL:
-				spInput.button[SP_BUTTON_SELECT] = 1;
-				break;
-			case SDLK_RSHIFT:
-				spInput.button[SP_BUTTON_L] = 1;
-				break;
-			case SDLK_RCTRL:
-				spInput.button[SP_BUTTON_R] = 1;
-				break;
-			case SDLK_LALT:
-				spInput.button[SP_BUTTON_START] = 1;
-				break;
-#else //PC
-			case SDLK_KP_ENTER:
-			case SDLK_RETURN:
-				spInput.button[SP_BUTTON_START] = 1;
-				break;
-			case SDLK_a:
-				spInput.button[SP_BUTTON_A] = 1;
-				break;
-			case SDLK_d:
-				spInput.button[SP_BUTTON_B] = 1;
-				break;
-			case SDLK_w:
-				spInput.button[SP_BUTTON_Y] = 1;
-				break;
-			case SDLK_s:
-				spInput.button[SP_BUTTON_X] = 1;
-				break;
-			case SDLK_BACKSPACE:
-				spInput.button[SP_BUTTON_SELECT] = 1;
-				break;
-			case SDLK_PLUS:
-				spInput.button[SP_BUTTON_VOLPLUS] = 1;
-				break;
-			case SDLK_MINUS:
-				spInput.button[SP_BUTTON_VOLMINUS] = 1;
-				break;
-			case SDLK_q:
-				spInput.button[SP_BUTTON_L] = 1;
-				break;
-			case SDLK_e:
-				spInput.button[SP_BUTTON_R] = 1;
-				break;
-#endif
-			case SDLK_m:
-				//spMuteKey=1;
-				break;
-			}
-			break;
-		case SDL_KEYUP:
-			switch ( event.key.keysym.sym )
-			{
-			case SDLK_LEFT:
-				if ( spInput.axis[0] == -1 )
-					spInput.axis[0] = 0;
-				break;
-			case SDLK_RIGHT:
-				if ( spInput.axis[0] == 1 )
-					spInput.axis[0] = 0;
-				break;
-			case SDLK_UP:
-				if ( spInput.axis[1] == 1 )
-					spInput.axis[1] = 0;
-				break;
-			case SDLK_DOWN:
-				if ( spInput.axis[1] == -1 )
-					spInput.axis[1] = 0;
-				break;
-#ifdef DINGUX
-			case SDLK_RETURN:
-				spInput.button[SP_BUTTON_START] = 0;
-				break;
-			case SDLK_SPACE:
-				spInput.button[SP_BUTTON_X] = 0;
-				break;
-			case SDLK_LSHIFT:
-				spInput.button[SP_BUTTON_Y] = 0;
-				break;
-			case SDLK_LCTRL:
-				spInput.button[SP_BUTTON_A] = 0;
-				break;
-			case SDLK_LALT:
-				spInput.button[SP_BUTTON_B] = 0;
-				break;
-			case SDLK_ESCAPE:
-				spInput.button[SP_BUTTON_SELECT] = 0;
-				break;
-			case SDLK_TAB:
-				spInput.button[SP_BUTTON_L] = 0;
-				break;
-			case SDLK_BACKSPACE:
-				spInput.button[SP_BUTTON_R] = 0;
-				break;
-			case SDLK_s:
-				spInput.button[SP_BUTTON_VOLPLUS] = 0;
-				break;
-			case SDLK_u:
-				spInput.button[SP_BUTTON_VOLMINUS] = 0;
-				break;
-#elif defined PANDORA
-			case SDLK_PAGEDOWN:
-				spInput.button[SP_BUTTON_X] = 0;
-				break;
-			case SDLK_PAGEUP:
-				spInput.button[SP_BUTTON_Y] = 0;
-				break;
-			case SDLK_HOME:
-				spInput.button[SP_BUTTON_A] = 0;
-				break;
-			case SDLK_END:
-				spInput.button[SP_BUTTON_B] = 0;
-				break;
-			case SDLK_LCTRL:
-				spInput.button[SP_BUTTON_SELECT] = 0;
-				break;
-			case SDLK_RSHIFT:
-				spInput.button[SP_BUTTON_L] = 0;
-				break;
-			case SDLK_RCTRL:
-				spInput.button[SP_BUTTON_R] = 0;
-				break;
-			case SDLK_LALT:
-				spInput.button[SP_BUTTON_START] = 0;
-				break;
-#else //PC
-			case SDLK_KP_ENTER:
-			case SDLK_RETURN:
-				spInput.button[SP_BUTTON_START] = 0;
-				break;
-			case SDLK_a:
-				spInput.button[SP_BUTTON_A] = 0;
-				break;
-			case SDLK_d:
-				spInput.button[SP_BUTTON_B] = 0;
-				break;
-			case SDLK_w:
-				spInput.button[SP_BUTTON_Y] = 0;
-				break;
-			case SDLK_s:
-				spInput.button[SP_BUTTON_X] = 0;
-				break;
-			case SDLK_BACKSPACE:
-				spInput.button[SP_BUTTON_SELECT] = 0;
-				break;
-			case SDLK_PLUS:
-				spInput.button[SP_BUTTON_VOLPLUS] = 0;
-				break;
-			case SDLK_MINUS:
-				spInput.button[SP_BUTTON_VOLMINUS] = 0;
-				break;
-			case SDLK_q:
-				spInput.button[SP_BUTTON_L] = 0;
-				break;
-			case SDLK_e:
-				spInput.button[SP_BUTTON_R] = 0;
-				break;
-#endif
-			case SDLK_m:
-				//spMuteKey=0;
-				break;
-			}
-			break;
-		case SDL_JOYAXISMOTION:
-			if ( !( event.jaxis.axis & 1 ) )
-			{
-				if ( event.jaxis.value < SP_JOYSTICK_MIN )
-					spInput.axis[event.jaxis.axis] = -1;
-				else if ( event.jaxis.value > SP_JOYSTICK_MAX )
-					spInput.axis[event.jaxis.axis] = 1;
-				else
-					spInput.axis[event.jaxis.axis] = 0;
-			}
-			if ( event.jaxis.axis & 1 )
-			{
-				if ( event.jaxis.value < SP_JOYSTICK_MIN )
-					spInput.axis[event.jaxis.axis] = 1;
-				else if ( event.jaxis.value > SP_JOYSTICK_MAX )
-					spInput.axis[event.jaxis.axis] = -1;
-				else
-					spInput.axis[event.jaxis.axis] = 0;
-			}
-			break;
-		case SDL_QUIT:
-			spDone = 1;
-			break;
-		case SDL_VIDEORESIZE:
-			spResizeWindow( event.resize.w, event.resize.h, 0, (spWindow->flags & SDL_RESIZABLE ? 1 : 0) );
-			result = 1;
-			break;
 		}
 		if ( spEvent )
 			spEvent( &event );
