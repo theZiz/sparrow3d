@@ -72,7 +72,18 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 /* spFlip draws the changes in the window Surface on the screen. */
 PREFIX void spFlip( void );
 
+/* spGetInput returns a pointer of the spInput struct, where the input values
+ * will be set. DON'T FREE IT ON YOUR OWN! */
 PREFIX PspInput spGetInput( void );
+
+/* spSetTouchscreenEmulations sets, whether on systems without touchscreen or
+ * mouse (like the GP2X F100) touchscreen is emulated. IF it shall be emulated
+ * you have to set a button (e.g. SP_BUTTON_SELECT), which will switch between
+ * "normal mode" (where you get all buttons) and "touchscreen mode", where D-Pad
+ * and ok_button (e.g. SP_PRACTICE_OK) will be blocked and used for moving and
+ * using a cursor on the screen. Set switch_button to
+ * SP_NO_TOUCHSCREEN_EMULATION (or -1) to deactivate emulation.*/
+PREFIX void spSetTouchscreenEmulationButtons(int switch_button,int ok_button);
 
 /* spQuitCore just quits the Core. If you don't use it, everytime you close
  * your game, the flying spaghetti monster will kill a kitten.*/

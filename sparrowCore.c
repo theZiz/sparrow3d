@@ -41,6 +41,11 @@ char spDone;
 int spFPS;
 TspInput spInput;
 int debug_time;
+int sp_touchscreen_emulation = 0;
+int sp_switch_button = -1;
+int sp_ok_button = -1;
+int sp_touchscreen_dx;
+int sp_touchscreen_dy;
 
 PREFIX void spSetDefaultWindowSize( int w, int h )
 {
@@ -104,8 +109,8 @@ PREFIX void spInitCore( void )
 	spInput.axis[0] = 0;
 	spInput.axis[1] = 0;
 	spInput.touchscreen.pressed = 0;
-	spInput.touchscreen.x = -1;
-	spInput.touchscreen.y = -1;
+	spInput.touchscreen.x = 0;
+	spInput.touchscreen.y = 0;
 
 #ifdef GP2X
 	//f100, f200, open2x and wiz
@@ -225,8 +230,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 			  break;
 			case SDL_MOUSEBUTTONUP:
 			  spInput.touchscreen.pressed = 0;			
-			  spInput.touchscreen.x = -1;
-			  spInput.touchscreen.y = -1;
 			  break;
 			case SDL_MOUSEMOTION:
 				if (spInput.touchscreen.pressed)
@@ -236,9 +239,107 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				}
 				break;
 			case SDL_JOYBUTTONDOWN:
+			  #ifdef F100
+					if (event.jbutton.button == sp_switch_button || 
+					   (sp_touchscreen_emulation && (event.jbutton.button == sp_ok_button ||
+					   (event.jbutton.button >= SP_AXIS_UP && event.jbutton.button <= SP_AXIS_RIGHTUP))))
+					{
+						if (event.jbutton.button == sp_switch_button)
+						  sp_touchscreen_emulation = 1-sp_touchscreen_emulation;
+						if (sp_touchscreen_emulation)
+						{
+							//moving the cursor *not tested yet*
+							switch (event.jbutton.button)
+							{
+								case SP_AXIS_RIGHT:case SP_AXIS_RIGHTDOWN:case SP_AXIS_RIGHTUP:
+								  sp_touchscreen_dx = +1;
+								  break;
+								case SP_AXIS_LEFT:case SP_AXIS_LEFTDOWN:case SP_AXIS_LEFTUP:
+								  sp_touchscreen_dx = -1;
+								  break;
+								default:
+								  sp_touchscreen_dx = 0;
+								  break;							
+							}
+							switch (event.jbutton.button)
+							{
+								case SP_AXIS_RIGHTDOWN:case SP_AXIS_DOWN:case SP_AXIS_LEFTDOWN:
+								  sp_touchscreen_dy = +1;
+								  break;
+								case SP_AXIS_RIGHTUP:case SP_AXIS_UP:case SP_AXIS_LEFTUP:
+								  sp_touchscreen_dy = -1;
+								  break;
+								default:
+								  sp_touchscreen_dy = 0;
+								  break;							
+							}
+							//clicking *not tested yet*
+							if (event.jbutton.button == sp_ok_button)
+							{
+								SDL_Event newevent;
+								newevent.button.type = SDL_MOUSEBUTTONDOWN;
+								newevent.button.button = SDL_BUTTON_LEFT;
+								newevent.button.state = SDL_PRESSED;
+								newevent.button.x = spInput.touchscreen.x;
+								newevent.button.y = spInput.touchscreen.y;
+								SDL_PushEvent(&event);
+							}
+						}
+					}
+					else
+			  #endif
 				spInput.button[event.jbutton.button] = 1;
 				break;
 			case SDL_JOYBUTTONUP:
+			  #ifdef F100
+					if (event.jbutton.button == sp_switch_button || 
+					   (sp_touchscreen_emulation && (event.jbutton.button == sp_ok_button ||
+					   (event.jbutton.button >= SP_AXIS_UP && event.jbutton.button <= SP_AXIS_RIGHTUP))))
+					{
+						//releasing delta movement
+						if (sp_touchscreen_emulation)
+						{
+							//moving the cursor *not tested yet*
+							switch (event.jbutton.button)
+							{
+								case SP_AXIS_RIGHT:case SP_AXIS_RIGHTDOWN:case SP_AXIS_RIGHTUP:
+								  sp_touchscreen_dx = 0;
+								  break;
+								case SP_AXIS_LEFT:case SP_AXIS_LEFTDOWN:case SP_AXIS_LEFTUP:
+								  sp_touchscreen_dx = 0;
+								  break;
+								default:
+								  sp_touchscreen_dx = 0;
+								  break;							
+							}
+							switch (event.jbutton.button)
+							{
+								case SP_AXIS_RIGHTDOWN:case SP_AXIS_DOWN:case SP_AXIS_LEFTDOWN:
+								  sp_touchscreen_dy = 0;
+								  break;
+								case SP_AXIS_RIGHTUP:case SP_AXIS_UP:case SP_AXIS_LEFTUP:
+								  sp_touchscreen_dy = 0;
+								  break;
+								default:
+								  sp_touchscreen_dy = 0;
+								  break;							
+							}
+							//clicking *not tested yet*
+							if (event.jbutton.button == sp_ok_button)
+							{
+								SDL_Event newevent;
+								newevent.button.type = SDL_MOUSEBUTTONUP;
+								newevent.button.button = SDL_BUTTON_LEFT;
+								newevent.button.state = SDL_RELEASED;
+								newevent.button.x = spInput.touchscreen.x;
+								newevent.button.y = spInput.touchscreen.y;
+								SDL_PushEvent(&event);
+							}
+						}
+						
+					}
+					else
+			  #endif
 				spInput.button[event.jbutton.button] = 0;
 				break;
 			case SDL_KEYDOWN:
@@ -648,6 +749,18 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 		spPrintDebug( "Start mainloop" );
 #endif
 		newticks = SDL_GetTicks();
+	//mouse movement emulation: *untested*
+		#ifdef F100
+			if (sp_touchscreen_emulation)
+			{
+				//If I read right in the SDL code (why document it, if you can read it
+				//in the code? -_-), SDL_WarpMouse should test for the screen dimension.
+				int mouse_steps = newticks - olderticks;
+				if (mouse_steps)
+				  SDL_WarpMouse(spInput.touchscreen.x + sp_touchscreen_dx * mouse_steps,
+				                spInput.touchscreen.y + sp_touchscreen_dy * mouse_steps);
+			}
+		#endif
 		if ( spHandleEvent( spEvent ) && spResize )
 		{
 			spResize( spWindowX, spWindowY );
@@ -728,6 +841,12 @@ PREFIX void spFlip( void )
 PREFIX PspInput spGetInput( void )
 {
 	return &spInput;
+}
+
+PREFIX void spSetTouchscreenEmulationButtons(int switch_button,int ok_button)
+{
+	sp_switch_button = switch_button;
+	sp_ok_button = ok_button;
 }
 
 PREFIX void spQuitCore( void )

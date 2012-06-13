@@ -76,6 +76,8 @@
 #define SP_RIGHT 3
 #define SP_BOTTOM 4
 
+#define SP_NO_TOUCHSCREEN_EMULATION -1
+
 #ifdef FAST_MULTIPLICATION
 	#define spMul(a,b) (((a)>>SP_HALF_ACCURACY)*((b)>>SP_HALF_ACCURACY))
 #else
@@ -121,6 +123,7 @@
 	#define SP_BUTTON_TIP 18
 	//just for different SP_PRActices
 	#define SP_PRACTICE_OK SP_BUTTON_B
+	#define SP_PRACTICE_CANCEL SP_BUTTON_X
 #elif defined CAANOO
 	#define SP_BUTTON_A 0
 	#define SP_BUTTON_X 1
@@ -136,6 +139,7 @@
 	#define SP_BUTTON_VOLPLUS 18
 	#define SP_BUTTON_VOLMINUS 19
 	#define SP_PRACTICE_OK SP_BUTTON_B
+	#define SP_PRACTICE_CANCEL SP_BUTTON_X
 #else //PC and DINGUX and PANDORA
 	#define SP_AXIS_LEFTRIGHT 0
 	#define SP_AXIS_UPDOWN 1
@@ -151,6 +155,7 @@
 	#define SP_BUTTON_VOLMINUS 17
 	#define SP_BUTTON_TIP 18
 	#define SP_PRACTICE_OK SP_BUTTON_A
+	#define SP_PRACTICE_CANCEL SP_BUTTON_X
 #endif
 
 #ifdef F100
@@ -164,6 +169,7 @@
 	#define SP_BUTTON_Y_NAME "Y"
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_B_NAME
+	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
 #elif defined WIZ
 	#define SP_BUTTON_START_NAME "Menu"
 	#define SP_BUTTON_SELECT_NAME "Select"
@@ -175,6 +181,7 @@
 	#define SP_BUTTON_Y_NAME "Y"
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_B_NAME
+	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
 #elif defined CAANOO
 	#define SP_BUTTON_START_NAME "Home"
 	#define SP_BUTTON_SELECT_NAME "Help I"
@@ -186,6 +193,7 @@
 	#define SP_BUTTON_Y_NAME "Y"
 	#define SP_PAD_NAME "Stick"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_B_NAME
+	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
 #elif defined DINGUX
 	#define SP_BUTTON_START_NAME "Start"
 	#define SP_BUTTON_SELECT_NAME "Select"
@@ -197,6 +205,7 @@
 	#define SP_BUTTON_Y_NAME "Y"
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
+	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
 #elif defined PANDORA
 	#define SP_BUTTON_START_NAME "Start"
 	#define SP_BUTTON_SELECT_NAME "Select"
@@ -208,6 +217,7 @@
 	#define SP_BUTTON_Y_NAME "Y"
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
+	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
 #else
 	#define SP_BUTTON_START_NAME "Return"
 	#define SP_BUTTON_SELECT_NAME "Backspace"
@@ -219,6 +229,7 @@
 	#define SP_BUTTON_Y_NAME "w"
 	#define SP_PAD_NAME "Arrow Keys"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
+	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
 #endif
 
 #endif

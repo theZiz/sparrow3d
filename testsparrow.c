@@ -88,7 +88,7 @@ void draw_test( void )
 		break;
 	case 2:
 		spSetAlphaTest( 1 );
-		spTranslate( 0, 0, ( -1SP_ONE ) + spSin( rotation * 4 ) * 3 );
+		spTranslate( 0, 0, ( -11<<SP_ACCURACY ) + spSin( rotation * 4 ) * 3 );
 		spRotateZ( rotation );
 		spRotateX( spSin( rotation ) >> 2 );
 		spRotateY( spCos( rotation * 2 ) >> 2 );
@@ -253,6 +253,12 @@ void draw_test( void )
 	spSetZSet( 0 );
 	spSetZTest( 0 );
 	spSetAlphaTest( 1 );
+	//testing touchscreen
+	if (spGetInput()->touchscreen.pressed)
+	{
+		spBlitSurface(spGetInput()->touchscreen.x,spGetInput()->touchscreen.y,-1,pepper);
+	}
+	
 	spFontDraw( 0, 2, -1, "Previous ("SP_BUTTON_L_NAME")", font );
 	spFontDrawRight( screen->w - 2, 2, -1, "("SP_BUTTON_R_NAME") next", font );
 	switch ( test )
@@ -358,7 +364,7 @@ int main( int argc, char **argv )
 	resize( screen->w, screen->h );
 
 	//Textures loading
-	garfield = spLoadSurface( "./data/garfield-odd.png" );
+	garfield = spLoadSurface( "./data/garfield.png" );
 	pepper = spLoadSurface( "./data/pepper.png" );
 	scientist = spLoadSurface( "./data/science_guy_frames01.png" );
 	spBindTexture( garfield );
