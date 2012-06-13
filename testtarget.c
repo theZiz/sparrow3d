@@ -37,8 +37,8 @@ void draw_test( void )
 	spDrawSprite( 3 * texture->w / 4, texture->h / 4, -1, sprite );
 	sprite->rotation = rotation * 4;
 	spDrawSprite( texture->w / 4, 3 * texture->h / 4, -1, sprite );
-	sprite->zoomX = 1 << SP_ACCURACY;
-	sprite->zoomY = 1 << SP_ACCURACY;
+	sprite->zoomX = SP_ONE;
+	sprite->zoomY = SP_ONE;
 	spDrawSprite( 3 * texture->w / 4, 3 * texture->h / 4, -1, sprite );
 
   //drawing on the graph

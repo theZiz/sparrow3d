@@ -64,6 +64,8 @@
 #define SP_PI 205888
 //This is not really accuracy... More inaccuracy ^^
 #define SP_MATH_ACCURACY 4
+//a fast define for the fixed point value 1.0
+#define SP_ONE 65536
 
 #define SP_JOYSTICK_MIN -16384
 #define SP_JOYSTICK_MAX	16383

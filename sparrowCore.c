@@ -80,7 +80,7 @@ PREFIX void spInitCore( void )
 	if ( !spWindowY )
 		spWindowY = 240;
 #endif
-	spZoom = 1 << SP_ACCURACY;
+	spZoom = SP_ONE;
 	SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO );
 	spJoy = NULL;
 	//#ifdef MOBILE_DEVICE
@@ -219,7 +219,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 		switch ( event.type )
 		{
 			case SDL_MOUSEBUTTONDOWN:
-			  spInput.touchscreen.pressed = 1;			
+			  spInput.touchscreen.pressed = SP_ONE;			
 			  spInput.touchscreen.x = event.button.x;
 			  spInput.touchscreen.y = event.button.y;
 			  break;

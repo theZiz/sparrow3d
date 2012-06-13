@@ -2136,7 +2136,7 @@ inline void vert_tex_ztest_zset_alpha(Sint32 xtl,Sint32 xtr,Sint32 yt,
 
 void sp_intern_Triangle_tex_ztest_zset_alpha(Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color)
 {
-  sp_intern_recursive_Triangle_tex_ztest_zset_alpha(x1<<SP_ACCURACY,y1<<SP_ACCURACY,z1,u1<<SP_ACCURACY,v1<<SP_ACCURACY,
+  sp_intern_recursive_Triangle_tex_ztest_zset_alpha(xSP_ONE,ySP_ONE,z1,uSP_ONE,vSP_ONE,
                                                     x2<<SP_ACCURACY,y2<<SP_ACCURACY,z2,u2<<SP_ACCURACY,v2<<SP_ACCURACY,
                                                     x3<<SP_ACCURACY,y3<<SP_ACCURACY,z3,u3<<SP_ACCURACY,v3<<SP_ACCURACY,color);
 }*/
