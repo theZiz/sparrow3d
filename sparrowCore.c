@@ -224,7 +224,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 		switch ( event.type )
 		{
 			case SDL_MOUSEBUTTONDOWN:
-			  spInput.touchscreen.pressed = SP_ONE;			
+			  spInput.touchscreen.pressed = 1;			
 			  spInput.touchscreen.x = event.button.x;
 			  spInput.touchscreen.y = event.button.y;
 			  break;
