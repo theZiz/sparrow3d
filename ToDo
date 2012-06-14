@@ -1,5 +1,3 @@
-Bugfix:
-- odd textures are doing bubu
 README:
 - -1 near stuff
 - Difference spScreen, spWindow, spRenderTarget
