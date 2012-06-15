@@ -58,8 +58,8 @@ void draw_test( void )
 		spDrawSprite( 2 * screen->w / 5, 5 * screen->h / 8, -1, sprite );
 		sprite->rotation = rotation * 4;
 		spDrawSprite( 3 * screen->w / 5, 5 * screen->h / 8, -1, sprite );
-		sprite->zoomX = 1 << SP_ACCURACY;
-		sprite->zoomY = 1 << SP_ACCURACY;
+		sprite->zoomX = SP_ONE;
+		sprite->zoomY = SP_ONE;
 		spDrawSprite( 4 * screen->w / 5, 5 * screen->h / 8, -1, sprite );
 		break;
 	case 4:
@@ -88,7 +88,7 @@ void draw_test( void )
 		break;
 	case 2:
 		spSetAlphaTest( 1 );
-		spTranslate( 0, 0, ( -11 << SP_ACCURACY ) + spSin( rotation * 4 ) * 3 );
+		spTranslate( 0, 0, ( -11<<SP_ACCURACY ) + spSin( rotation * 4 ) * 3 );
 		spRotateZ( rotation );
 		spRotateX( spSin( rotation ) >> 2 );
 		spRotateY( spCos( rotation * 2 ) >> 2 );
@@ -100,14 +100,14 @@ void draw_test( void )
 					Sint32 matrix[16];
 					memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) );
 					spTranslate( x << SP_ACCURACY + 1, y << SP_ACCURACY + 1, 0 );
-					spQuad3D( -1 << SP_ACCURACY, 1 << SP_ACCURACY, 0,
-							  -1 << SP_ACCURACY, -1 << SP_ACCURACY, 0,
-							  1 << SP_ACCURACY, -1 << SP_ACCURACY, 0,
-							  1 << SP_ACCURACY, 1 << SP_ACCURACY, 0, 32767 );
-					//spQuadTex3D(-1<<SP_ACCURACY, 1<<SP_ACCURACY, 0,SP_FONT_EXTRASPACE,SP_FONT_EXTRASPACE,
-					//            -1<<SP_ACCURACY,-1<<SP_ACCURACY, 0,1,garfield->h-SP_FONT_EXTRASPACE-1,
-					//             1<<SP_ACCURACY,-1<<SP_ACCURACY, 0,garfield->w-SP_FONT_EXTRASPACE-1,garfield->h-SP_FONT_EXTRASPACE-1,
-					//             1<<SP_ACCURACY, 1<<SP_ACCURACY, 0,garfield->w-SP_FONT_EXTRASPACE-1,SP_FONT_EXTRASPACE,65535);
+					spQuad3D( -SP_ONE, SP_ONE, 0,
+							  -SP_ONE, -SP_ONE, 0,
+							  SP_ONE, -SP_ONE, 0,
+							  SP_ONE, SP_ONE, 0, 32767 );
+					//spQuadTex3D(-SP_ONE, SP_ONE, 0,SP_FONT_EXTRASPACE,SP_FONT_EXTRASPACE,
+					//            -SP_ONE,-SP_ONE, 0,1,garfield->h-SP_FONT_EXTRASPACE-1,
+					//             SP_ONE,-SP_ONE, 0,garfield->w-SP_FONT_EXTRASPACE-1,garfield->h-SP_FONT_EXTRASPACE-1,
+					//             SP_ONE, SP_ONE, 0,garfield->w-SP_FONT_EXTRASPACE-1,SP_FONT_EXTRASPACE,65535);
 					memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) );
 				}
 		for ( x = -6; x <= 6; x++ )
@@ -117,34 +117,34 @@ void draw_test( void )
 					Sint32 matrix[16];
 					memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) );
 					spTranslate( x << SP_ACCURACY + 1, y << SP_ACCURACY + 1, 0 );
-					spQuad3D( -1 << SP_ACCURACY, 1 << SP_ACCURACY, 2 << SP_ACCURACY,
-							  -1 << SP_ACCURACY, -1 << SP_ACCURACY, 2 << SP_ACCURACY,
-							  1 << SP_ACCURACY, -1 << SP_ACCURACY, 2 << SP_ACCURACY,
-							  1 << SP_ACCURACY, 1 << SP_ACCURACY, 2 << SP_ACCURACY, 65535 );
+					spQuad3D( -SP_ONE, SP_ONE, 2 << SP_ACCURACY,
+							  -SP_ONE, -SP_ONE, 2 << SP_ACCURACY,
+							  SP_ONE, -SP_ONE, 2 << SP_ACCURACY,
+							  SP_ONE, SP_ONE, 2 << SP_ACCURACY, 65535 );
 					//top
 					//if (y<0)
-					spQuad3D( -1 << SP_ACCURACY, 1 << SP_ACCURACY, 2 << SP_ACCURACY,
-							  1 << SP_ACCURACY, 1 << SP_ACCURACY, 2 << SP_ACCURACY,
-							  1 << SP_ACCURACY, 1 << SP_ACCURACY, 0 << SP_ACCURACY,
-							  -1 << SP_ACCURACY, 1 << SP_ACCURACY, 0 << SP_ACCURACY, 65535 );
+					spQuad3D( -SP_ONE, SP_ONE, 2 << SP_ACCURACY,
+							  SP_ONE, SP_ONE, 2 << SP_ACCURACY,
+							  SP_ONE, SP_ONE, 0 << SP_ACCURACY,
+							  -SP_ONE, SP_ONE, 0 << SP_ACCURACY, 65535 );
 					//bottom
 					//if (y>0)
-					spQuad3D( -1 << SP_ACCURACY, -1 << SP_ACCURACY, 0 << SP_ACCURACY,
-							  1 << SP_ACCURACY, -1 << SP_ACCURACY, 0 << SP_ACCURACY,
-							  1 << SP_ACCURACY, -1 << SP_ACCURACY, 2 << SP_ACCURACY,
-							  -1 << SP_ACCURACY, -1 << SP_ACCURACY, 2 << SP_ACCURACY, 65535 );
+					spQuad3D( -SP_ONE, -SP_ONE, 0 << SP_ACCURACY,
+							  SP_ONE, -SP_ONE, 0 << SP_ACCURACY,
+							  SP_ONE, -SP_ONE, 2 << SP_ACCURACY,
+							  -SP_ONE, -SP_ONE, 2 << SP_ACCURACY, 65535 );
 					//left
 					//if (x>0)
-					spQuad3D( -1 << SP_ACCURACY, -1 << SP_ACCURACY, 2 << SP_ACCURACY,
-							  -1 << SP_ACCURACY, 1 << SP_ACCURACY, 2 << SP_ACCURACY,
-							  -1 << SP_ACCURACY, 1 << SP_ACCURACY, 0 << SP_ACCURACY,
-							  -1 << SP_ACCURACY, -1 << SP_ACCURACY, 0 << SP_ACCURACY, 65535 );
+					spQuad3D( -SP_ONE, -SP_ONE, 2 << SP_ACCURACY,
+							  -SP_ONE, SP_ONE, 2 << SP_ACCURACY,
+							  -SP_ONE, SP_ONE, 0 << SP_ACCURACY,
+							  -SP_ONE, -SP_ONE, 0 << SP_ACCURACY, 65535 );
 					//right
 					//if (x<0)
-					spQuad3D( 1 << SP_ACCURACY, -1 << SP_ACCURACY, 0 << SP_ACCURACY,
-							  1 << SP_ACCURACY, 1 << SP_ACCURACY, 0 << SP_ACCURACY,
-							  1 << SP_ACCURACY, 1 << SP_ACCURACY, 2 << SP_ACCURACY,
-							  1 << SP_ACCURACY, -1 << SP_ACCURACY, 2 << SP_ACCURACY, 65535 );
+					spQuad3D( SP_ONE, -SP_ONE, 0 << SP_ACCURACY,
+							  SP_ONE, SP_ONE, 0 << SP_ACCURACY,
+							  SP_ONE, SP_ONE, 2 << SP_ACCURACY,
+							  SP_ONE, -SP_ONE, 2 << SP_ACCURACY, 65535 );
 					memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) );
 				}
 		break;
@@ -171,9 +171,9 @@ void draw_test( void )
 				else if ( ( y + a + 2 ) & 8 )
 					spEllipse3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 2, 3 << SP_ACCURACY - 2, -SDL_GetTicks() / 128 );
 				else if ( ( y + a + 3 ) & 8 )
-					spRectangleBorder3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 1 << SP_ACCURACY - 2, 1 << SP_ACCURACY - 2, SDL_GetTicks() / 64 );
+					spRectangleBorder3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, SP_ONE - 2, SP_ONE - 2, SDL_GetTicks() / 64 );
 				else if ( ( y + a + 4 ) & 8 )
-					spEllipseBorder3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 2, 3 << SP_ACCURACY - 2, 1 << SP_ACCURACY - 2, 1 << SP_ACCURACY - 2, -SDL_GetTicks() / 64 );
+					spEllipseBorder3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 2, 3 << SP_ACCURACY - 2, SP_ONE - 2, SP_ONE - 2, -SDL_GetTicks() / 64 );
 				else if ( ( y + a + 5 ) & 8 )
 					//spBlit3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,pepper);
 					spRotozoomSurface3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, pepper, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ), spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ), rotation );
@@ -222,37 +222,43 @@ void draw_test( void )
 					 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, garfield->h - 1, 61234 | 31727 );
 		//Front / Back
 		spTranslate( -3 << SP_ACCURACY, 0, 0 );
-		spQuad3D( -1 << SP_ACCURACY, 1 << SP_ACCURACY, 1 << SP_ACCURACY,
-				  -1 << SP_ACCURACY, -1 << SP_ACCURACY, 1 << SP_ACCURACY,
-				  1 << SP_ACCURACY, -1 << SP_ACCURACY, 1 << SP_ACCURACY,
-				  1 << SP_ACCURACY, 1 << SP_ACCURACY, 1 << SP_ACCURACY, 12345 | 31727 );
-		spQuad3D( 1 << SP_ACCURACY, 1 << SP_ACCURACY, -1 << SP_ACCURACY,
-				  1 << SP_ACCURACY, -1 << SP_ACCURACY, -1 << SP_ACCURACY,
-				  -1 << SP_ACCURACY, -1 << SP_ACCURACY, -1 << SP_ACCURACY,
-				  -1 << SP_ACCURACY, 1 << SP_ACCURACY, -1 << SP_ACCURACY, 23456 | 31727 );
+		spQuad3D( -SP_ONE, SP_ONE, SP_ONE,
+				  -SP_ONE, -SP_ONE, SP_ONE,
+				  SP_ONE, -SP_ONE, SP_ONE,
+				  SP_ONE, SP_ONE, SP_ONE, 12345 | 31727 );
+		spQuad3D( SP_ONE, SP_ONE, -SP_ONE,
+				  SP_ONE, -SP_ONE, -SP_ONE,
+				  -SP_ONE, -SP_ONE, -SP_ONE,
+				  -SP_ONE, SP_ONE, -SP_ONE, 23456 | 31727 );
 		//Left / Right
-		spQuad3D( -1 << SP_ACCURACY, 1 << SP_ACCURACY, 1 << SP_ACCURACY,
-				  -1 << SP_ACCURACY, 1 << SP_ACCURACY, -1 << SP_ACCURACY,
-				  -1 << SP_ACCURACY, -1 << SP_ACCURACY, -1 << SP_ACCURACY,
-				  -1 << SP_ACCURACY, -1 << SP_ACCURACY, 1 << SP_ACCURACY, 34567 | 31727 );
-		spQuad3D( 1 << SP_ACCURACY, -1 << SP_ACCURACY, 1 << SP_ACCURACY,
-				  1 << SP_ACCURACY, -1 << SP_ACCURACY, -1 << SP_ACCURACY,
-				  1 << SP_ACCURACY, 1 << SP_ACCURACY, -1 << SP_ACCURACY,
-				  1 << SP_ACCURACY, 1 << SP_ACCURACY, 1 << SP_ACCURACY, 45678 | 31727 );
+		spQuad3D( -SP_ONE, SP_ONE, SP_ONE,
+				  -SP_ONE, SP_ONE, -SP_ONE,
+				  -SP_ONE, -SP_ONE, -SP_ONE,
+				  -SP_ONE, -SP_ONE, SP_ONE, 34567 | 31727 );
+		spQuad3D( SP_ONE, -SP_ONE, SP_ONE,
+				  SP_ONE, -SP_ONE, -SP_ONE,
+				  SP_ONE, SP_ONE, -SP_ONE,
+				  SP_ONE, SP_ONE, SP_ONE, 45678 | 31727 );
 		//Up / Down
-		spQuad3D( 1 << SP_ACCURACY, 1 << SP_ACCURACY, 1 << SP_ACCURACY,
-				  1 << SP_ACCURACY, 1 << SP_ACCURACY, -1 << SP_ACCURACY,
-				  -1 << SP_ACCURACY, 1 << SP_ACCURACY, -1 << SP_ACCURACY,
-				  -1 << SP_ACCURACY, 1 << SP_ACCURACY, 1 << SP_ACCURACY, 56789 | 31727 );
-		spQuad3D( -1 << SP_ACCURACY, -1 << SP_ACCURACY, 1 << SP_ACCURACY,
-				  -1 << SP_ACCURACY, -1 << SP_ACCURACY, -1 << SP_ACCURACY,
-				  1 << SP_ACCURACY, -1 << SP_ACCURACY, -1 << SP_ACCURACY,
-				  1 << SP_ACCURACY, -1 << SP_ACCURACY, 1 << SP_ACCURACY, 61234 | 31727 );
+		spQuad3D( SP_ONE, SP_ONE, SP_ONE,
+				  SP_ONE, SP_ONE, -SP_ONE,
+				  -SP_ONE, SP_ONE, -SP_ONE,
+				  -SP_ONE, SP_ONE, SP_ONE, 56789 | 31727 );
+		spQuad3D( -SP_ONE, -SP_ONE, SP_ONE,
+				  -SP_ONE, -SP_ONE, -SP_ONE,
+				  SP_ONE, -SP_ONE, -SP_ONE,
+				  SP_ONE, -SP_ONE, SP_ONE, 61234 | 31727 );
 		break;
 	}
 	spSetZSet( 0 );
 	spSetZTest( 0 );
 	spSetAlphaTest( 1 );
+	//testing touchscreen
+	if (spGetInput()->touchscreen.pressed)
+	{
+		spBlitSurface(spGetInput()->touchscreen.x,spGetInput()->touchscreen.y,-1,pepper);
+	}
+	
 	spFontDraw( 0, 2, -1, "Previous ("SP_BUTTON_L_NAME")", font );
 	spFontDrawRight( screen->w - 2, 2, -1, "("SP_BUTTON_R_NAME") next", font );
 	switch ( test )
@@ -358,7 +364,7 @@ int main( int argc, char **argv )
 	resize( screen->w, screen->h );
 
 	//Textures loading
-	garfield = spLoadSurface( "./data/garfield-odd.png" );
+	garfield = spLoadSurface( "./data/garfield.png" );
 	pepper = spLoadSurface( "./data/pepper.png" );
 	scientist = spLoadSurface( "./data/science_guy_frames01.png" );
 	spBindTexture( garfield );

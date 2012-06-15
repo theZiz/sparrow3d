@@ -27,8 +27,8 @@ PREFIX spSpritePointer spNewSprite()
 	sprite->maxWidth = 0;
 	sprite->maxHeight = 0;
 	sprite->rotation = 0;
-	sprite->zoomX = 1 << SP_ACCURACY;
-	sprite->zoomY = 1 << SP_ACCURACY;
+	sprite->zoomX = SP_ONE;
+	sprite->zoomY = SP_ONE;
 	sprite->firstSub = NULL;
 	sprite->momSub = NULL;
 	return sprite;
@@ -117,8 +117,8 @@ PREFIX void spSetSpriteZoom( spSpritePointer sprite, Sint32 zoomX, Sint32 zoomY 
 PREFIX void spDrawSprite( Sint32 x, Sint32 y, Sint32 z, spSpritePointer sprite )
 {
 	if ( sprite->rotation == 0 &&
-			sprite->zoomX == ( 1 << SP_ACCURACY ) &&
-			sprite->zoomY == ( 1 << SP_ACCURACY ) )
+			sprite->zoomX == ( SP_ONE ) &&
+			sprite->zoomY == ( SP_ONE ) )
 	{
 		if ( sprite->momSub->sx < 0 )
 			spBlitSurface( x, y, z, sprite->momSub->surface );

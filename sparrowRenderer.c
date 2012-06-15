@@ -30,7 +30,7 @@ Sint32 spProjection[16];
 Sint32 spX_to_Y;
 int spLightOn = -1;
 spLight spLightDiffuse[SP_MAX_LIGHTS];
-Uint32 spLightAmbient[3] = {1 << SP_ACCURACY - 2, 1 << SP_ACCURACY - 2, 1 << SP_ACCURACY - 2};
+Uint32 spLightAmbient[3] = {SP_ONE - 2, SP_ONE - 2, SP_ONE - 2};
 
 
 inline void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
@@ -52,7 +52,7 @@ inline void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bo
 	matrix[8] = spDiv( right + left, temp2 );
 	matrix[9] = spDiv( top + bottom, temp3 );
 	matrix[10] = spDiv( -zfar - znear, temp4 );
-	matrix[11] = -1 << SP_ACCURACY;
+	matrix[11] = -SP_ONE;
 	matrix[12] = 0 << SP_ACCURACY;
 	matrix[13] = 0 << SP_ACCURACY;
 	matrix[14] = spDiv( spMul( -temp, zfar ), temp4 );
@@ -84,22 +84,22 @@ PREFIX Sint32* spGetProjectionMatrix()
 
 PREFIX void spIdentity()
 {
-	spModelView[ 0] = 1 << SP_ACCURACY;
+	spModelView[ 0] = SP_ONE;
 	spModelView[ 1] = 0 << SP_ACCURACY;
 	spModelView[ 2] = 0 << SP_ACCURACY;
 	spModelView[ 3] = 0 << SP_ACCURACY;
 	spModelView[ 4] = 0 << SP_ACCURACY;
-	spModelView[ 5] = 1 << SP_ACCURACY;
+	spModelView[ 5] = SP_ONE;
 	spModelView[ 6] = 0 << SP_ACCURACY;
 	spModelView[ 7] = 0 << SP_ACCURACY;
 	spModelView[ 8] = 0 << SP_ACCURACY;
 	spModelView[ 9] = 0 << SP_ACCURACY;
-	spModelView[10] = 1 << SP_ACCURACY;
+	spModelView[10] = SP_ONE;
 	spModelView[11] = 0 << SP_ACCURACY;
 	spModelView[12] = 0 << SP_ACCURACY;
 	spModelView[13] = 0 << SP_ACCURACY;
 	spModelView[14] = 0 << SP_ACCURACY;
-	spModelView[15] = 1 << SP_ACCURACY;
+	spModelView[15] = SP_ONE;
 }
 
 PREFIX void spScale( Sint32 x, Sint32 y, Sint32 z )
@@ -123,22 +123,22 @@ PREFIX void spRotate( Sint32 x, Sint32 y, Sint32 z, Sint32 rad )
 	y = spDiv( y, l );
 	z = spDiv( z, l );
 	Sint32 rotate[16];
-	rotate[ 0] = c + spMul( spMul( x, x ), ( 1 << SP_ACCURACY ) - c );
-	rotate[ 4] =   spMul( spMul( x, y ), ( 1 << SP_ACCURACY ) - c ) - spMul( z, s );
-	rotate[ 8] =   spMul( spMul( x, z ), ( 1 << SP_ACCURACY ) - c ) + spMul( y, s );
+	rotate[ 0] = c + spMul( spMul( x, x ), ( SP_ONE ) - c );
+	rotate[ 4] =   spMul( spMul( x, y ), ( SP_ONE ) - c ) - spMul( z, s );
+	rotate[ 8] =   spMul( spMul( x, z ), ( SP_ONE ) - c ) + spMul( y, s );
 	rotate[12] = 0;
-	rotate[ 1] =   spMul( spMul( y, x ), ( 1 << SP_ACCURACY ) - c ) + spMul( z, s );
-	rotate[ 5] = c + spMul( spMul( y, y ), ( 1 << SP_ACCURACY ) - c );
-	rotate[ 9] =   spMul( spMul( y, z ), ( 1 << SP_ACCURACY ) - c ) - spMul( x, s );
+	rotate[ 1] =   spMul( spMul( y, x ), ( SP_ONE ) - c ) + spMul( z, s );
+	rotate[ 5] = c + spMul( spMul( y, y ), ( SP_ONE ) - c );
+	rotate[ 9] =   spMul( spMul( y, z ), ( SP_ONE ) - c ) - spMul( x, s );
 	rotate[13] = 0;
-	rotate[ 2] =   spMul( spMul( z, x ), ( 1 << SP_ACCURACY ) - c ) - spMul( y, s );
-	rotate[ 6] =   spMul( spMul( z, y ), ( 1 << SP_ACCURACY ) - c ) + spMul( x, s );
-	rotate[10] = c + spMul( spMul( z, z ), ( 1 << SP_ACCURACY ) - c );
+	rotate[ 2] =   spMul( spMul( z, x ), ( SP_ONE ) - c ) - spMul( y, s );
+	rotate[ 6] =   spMul( spMul( z, y ), ( SP_ONE ) - c ) + spMul( x, s );
+	rotate[10] = c + spMul( spMul( z, z ), ( SP_ONE ) - c );
 	rotate[14] = 0;
 	rotate[ 3] = 0;
 	rotate[ 7] = 0;
 	rotate[11] = 0;
-	rotate[15] = 1 << SP_ACCURACY;
+	rotate[15] = SP_ONE;
 
 	Sint32 result[12];
 	result[ 0] = ( spModelView[ 0] >> SP_HALF_ACCURACY ) * ( rotate[ 0] >> SP_HALF_ACCURACY ) + ( spModelView[ 4] >> SP_HALF_ACCURACY ) * ( rotate[ 1] >> SP_HALF_ACCURACY ) + ( spModelView[ 8] >> SP_HALF_ACCURACY ) * ( rotate[ 2] >> SP_HALF_ACCURACY );
@@ -166,7 +166,7 @@ PREFIX void spRotateX( Sint32 rad )
 	Sint32 c = spCos( rad );
 
 	Sint32 rotate[16];
-	rotate[ 0] = 1 << SP_ACCURACY;
+	rotate[ 0] = SP_ONE;
 	rotate[ 4] = 0;
 	rotate[ 8] = 0;
 	rotate[12] = 0;
@@ -181,7 +181,7 @@ PREFIX void spRotateX( Sint32 rad )
 	rotate[ 3] = 0;
 	rotate[ 7] = 0;
 	rotate[11] = 0;
-	rotate[15] = 1 << SP_ACCURACY;
+	rotate[15] = SP_ONE;
 
 	Sint32 result[8];
 	//+4
@@ -210,7 +210,7 @@ PREFIX void spRotateY( Sint32 rad )
 	rotate[ 8] = s;
 	rotate[12] = 0;
 	rotate[ 1] = 0;
-	rotate[ 5] = 1 << SP_ACCURACY;
+	rotate[ 5] = SP_ONE;
 	rotate[ 9] = 0;
 	rotate[13] = 0;
 	rotate[ 2] = -s;
@@ -220,7 +220,7 @@ PREFIX void spRotateY( Sint32 rad )
 	rotate[ 3] = 0;
 	rotate[ 7] = 0;
 	rotate[11] = 0;
-	rotate[15] = 1 << SP_ACCURACY;
+	rotate[15] = SP_ONE;
 
 	Sint32 result[4];
 	Sint32 result_8[4];
@@ -254,12 +254,12 @@ PREFIX void spRotateZ( Sint32 rad )
 	rotate[13] = 0;
 	rotate[ 2] = 0;
 	rotate[ 6] = 0;
-	rotate[10] = 1 << SP_ACCURACY;
+	rotate[10] = SP_ONE;
 	rotate[14] = 0;
 	rotate[ 3] = 0;
 	rotate[ 7] = 0;
 	rotate[11] = 0;
-	rotate[15] = 1 << SP_ACCURACY;
+	rotate[15] = SP_ONE;
 
 	Sint32 result[8];
 	result[ 0] = spMul( spModelView[ 0], rotate[ 0] ) + spMul( spModelView[ 4], rotate[ 1] );

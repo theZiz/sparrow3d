@@ -33,7 +33,7 @@ PREFIX void spInitMath(void)
 	for (a = 0; a < ((SP_PI     ) >> SP_MATH_ACCURACY); a++)
 		spTanvalue[a] = (Sint32)(tan((float)(a << SP_MATH_ACCURACY) / SP_ACCURACY_FACTOR) * SP_ACCURACY_FACTOR);
 	for (a = 0; a < (2 << SP_ACCURACY) +1; a++)
-		spAcosvalue[a] = (Sint32)(acos((float)(a-(1<<SP_ACCURACY)) / SP_ACCURACY_FACTOR) * SP_ACCURACY_FACTOR);
+		spAcosvalue[a] = (Sint32)(acos((float)(a-(SP_ONE)) / SP_ACCURACY_FACTOR) * SP_ACCURACY_FACTOR);
 }
 
 PREFIX Sint32 spSin(Sint32 value)
@@ -53,11 +53,11 @@ PREFIX Sint32 spTan(Sint32 value)
 
 PREFIX Sint32 spAcos(Sint32 value)
 {
-	if (value<(-1<<SP_ACCURACY))
+	if (value<(-SP_ONE))
 	  return 0;
-	if (value>( 1<<SP_ACCURACY))
+	if (value>( SP_ONE))
 	  return 0;
-	return spAcosvalue[value+(1<<SP_ACCURACY)];
+	return spAcosvalue[value+(SP_ONE)];
 }
 
 PREFIX Sint32 spAsin(Sint32 value)
