@@ -103,4 +103,11 @@ PREFIX SDL_Surface* spCreateSurface(int width,int height);
 /* spDeleteSurface does the same as SDL_FreeSurface: just deleting the surface*/
 PREFIX void spDeleteSurface( SDL_Surface* surface );
 
+/* spGetRGB returns a 16 bit RGB color*/
+PREFIX Uint16 spGetRGB(Uint8 r, Uint8 g, Uint8 b );
+
+/* spGetHSV returns a 16 bit color defined by the HSV values */
+PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
+
+
 #endif

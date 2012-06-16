@@ -225,29 +225,29 @@ void draw_test( void )
 		spQuad3D( -SP_ONE, SP_ONE, SP_ONE,
 				  -SP_ONE, -SP_ONE, SP_ONE,
 				  SP_ONE, -SP_ONE, SP_ONE,
-				  SP_ONE, SP_ONE, SP_ONE, 12345 | 31727 );
+				  SP_ONE, SP_ONE, SP_ONE, spGetRGB(255,0,0) );
 		spQuad3D( SP_ONE, SP_ONE, -SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
 				  -SP_ONE, -SP_ONE, -SP_ONE,
-				  -SP_ONE, SP_ONE, -SP_ONE, 23456 | 31727 );
+				  -SP_ONE, SP_ONE, -SP_ONE, spGetRGB(0,255,0) );
 		//Left / Right
 		spQuad3D( -SP_ONE, SP_ONE, SP_ONE,
 				  -SP_ONE, SP_ONE, -SP_ONE,
 				  -SP_ONE, -SP_ONE, -SP_ONE,
-				  -SP_ONE, -SP_ONE, SP_ONE, 34567 | 31727 );
+				  -SP_ONE, -SP_ONE, SP_ONE, spGetRGB(0,0,255) );
 		spQuad3D( SP_ONE, -SP_ONE, SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
 				  SP_ONE, SP_ONE, -SP_ONE,
-				  SP_ONE, SP_ONE, SP_ONE, 45678 | 31727 );
+				  SP_ONE, SP_ONE, SP_ONE, spGetRGB(255,255,0) );
 		//Up / Down
 		spQuad3D( SP_ONE, SP_ONE, SP_ONE,
 				  SP_ONE, SP_ONE, -SP_ONE,
 				  -SP_ONE, SP_ONE, -SP_ONE,
-				  -SP_ONE, SP_ONE, SP_ONE, 56789 | 31727 );
+				  -SP_ONE, SP_ONE, SP_ONE, spGetRGB(255,0,255) );
 		spQuad3D( -SP_ONE, -SP_ONE, SP_ONE,
 				  -SP_ONE, -SP_ONE, -SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
-				  SP_ONE, -SP_ONE, SP_ONE, 61234 | 31727 );
+				  SP_ONE, -SP_ONE, SP_ONE, spGetRGB(0,255,255) );
 		break;
 	}
 	spSetZSet( 0 );

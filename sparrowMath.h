@@ -56,5 +56,4 @@ PREFIX Sint32 spMin( Sint32 a, Sint32 b );
 /* spMax return the biggest of 2 numbers */
 PREFIX Sint32 spMax( Sint32 a, Sint32 b );
 
-PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
 #endif
