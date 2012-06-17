@@ -197,7 +197,7 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
     char buffer[5];
     buffer[0] = character;
     buffer[1] = 0; //TODO: utf8
-    SDL_Surface* surface = TTF_RenderUTF8_Solid( font->font, buffer, sdlcolor );
+    SDL_Surface* surface = TTF_RenderUTF8_Solid( font->font, caption, sdlcolor );
     width = font->maxheight + SP_FONT_EXTRASPACE * 2;
     if ( width & 1 )
       width++;

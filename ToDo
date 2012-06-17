@@ -2,7 +2,6 @@ README:
 - -1 near stuff
 - Difference spScreen, spWindow, spRenderTarget
 Roadmap:
-- button signs in the font engine
 - sprite format
 - spFont additionals:
 	- support for managing different texts in different languages
