@@ -225,29 +225,29 @@ void draw_test( void )
 		spQuad3D( -SP_ONE, SP_ONE, SP_ONE,
 				  -SP_ONE, -SP_ONE, SP_ONE,
 				  SP_ONE, -SP_ONE, SP_ONE,
-				  SP_ONE, SP_ONE, SP_ONE, spGetRGB(255,0,0) );
+				  SP_ONE, SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
 		spQuad3D( SP_ONE, SP_ONE, -SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
 				  -SP_ONE, -SP_ONE, -SP_ONE,
-				  -SP_ONE, SP_ONE, -SP_ONE, spGetRGB(0,255,0) );
+				  -SP_ONE, SP_ONE, -SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
 		//Left / Right
 		spQuad3D( -SP_ONE, SP_ONE, SP_ONE,
 				  -SP_ONE, SP_ONE, -SP_ONE,
 				  -SP_ONE, -SP_ONE, -SP_ONE,
-				  -SP_ONE, -SP_ONE, SP_ONE, spGetRGB(0,0,255) );
+				  -SP_ONE, -SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
 		spQuad3D( SP_ONE, -SP_ONE, SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
 				  SP_ONE, SP_ONE, -SP_ONE,
-				  SP_ONE, SP_ONE, SP_ONE, spGetRGB(255,255,0) );
+				  SP_ONE, SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
 		//Up / Down
 		spQuad3D( SP_ONE, SP_ONE, SP_ONE,
 				  SP_ONE, SP_ONE, -SP_ONE,
 				  -SP_ONE, SP_ONE, -SP_ONE,
-				  -SP_ONE, SP_ONE, SP_ONE, spGetRGB(255,0,255) );
+				  -SP_ONE, SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
 		spQuad3D( -SP_ONE, -SP_ONE, SP_ONE,
 				  -SP_ONE, -SP_ONE, -SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
-				  SP_ONE, -SP_ONE, SP_ONE, spGetRGB(0,255,255) );
+				  SP_ONE, -SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
 		break;
 	}
 	spSetZSet( 0 );
