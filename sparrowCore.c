@@ -932,14 +932,20 @@ PREFIX void spDeleteSurface( SDL_Surface* surface )
 	SDL_FreeSurface(surface);
 }
 
-/*PREFIX Uint16 spGetRGB(int r, int g, int b )
+PREFIX Uint16 spGetRGB(int r, int g, int b )
 {
-  r = r*2+1 >> 4;
-  g = g*2+1 >> 3;
-  b = b*2+1 >> 4;
+  r = r+4 >> 3;
+  if (r > 31)
+    r = 31;
+  g = g+2 >> 2;
+  if (g > 63)
+    g = 63;
+  b = b+4 >> 3;
+  if (b > 31)
+    b = 31;
   return (r<<11)+(g<<5)+b;
   //return SDL_MapRGB(spGetWindowSurface()->format,r,g,b);
-}*/
+}
 
 PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 {
