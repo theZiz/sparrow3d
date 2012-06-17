@@ -30,7 +30,7 @@ Sint32 spProjection[16];
 Sint32 spX_to_Y;
 int spLightOn = -1;
 spLight spLightDiffuse[SP_MAX_LIGHTS];
-Uint32 spLightAmbient[3] = {SP_ONE - 2, SP_ONE - 2, SP_ONE - 2};
+Uint32 spLightAmbient[3] = {1 << SP_ACCURACY-2,1 << SP_ACCURACY-2,1 << SP_ACCURACY-2};
 
 
 inline void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
