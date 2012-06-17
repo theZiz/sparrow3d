@@ -103,4 +103,16 @@ PREFIX SDL_Surface* spCreateSurface(int width,int height);
 /* spDeleteSurface does the same as SDL_FreeSurface: just deleting the surface*/
 PREFIX void spDeleteSurface( SDL_Surface* surface );
 
+/* spGetRGB returns a 16 bit RGB color*/
+PREFIX Uint16 spGetRGB(int r, int g, int b );
+
+/* spGetFastRGB returns like spGetRGB a 16 bit color out of RGB values,
+ * but it is faster and a little bit inaccurate - if you don't mind,
+ * don't see it or need it VERY often ingame, use this! */
+#define spGetFastRGB(r,g,b) ((((r) >> 3)<<11)+(((g) >> 2)<<5)+((b) >> 3))
+
+/* spGetHSV returns a 16 bit color defined by the HSV values */
+PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
+
+
 #endif

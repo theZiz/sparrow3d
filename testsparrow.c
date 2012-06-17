@@ -225,29 +225,29 @@ void draw_test( void )
 		spQuad3D( -SP_ONE, SP_ONE, SP_ONE,
 				  -SP_ONE, -SP_ONE, SP_ONE,
 				  SP_ONE, -SP_ONE, SP_ONE,
-				  SP_ONE, SP_ONE, SP_ONE, 12345 | 31727 );
+				  SP_ONE, SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
 		spQuad3D( SP_ONE, SP_ONE, -SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
 				  -SP_ONE, -SP_ONE, -SP_ONE,
-				  -SP_ONE, SP_ONE, -SP_ONE, 23456 | 31727 );
+				  -SP_ONE, SP_ONE, -SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
 		//Left / Right
 		spQuad3D( -SP_ONE, SP_ONE, SP_ONE,
 				  -SP_ONE, SP_ONE, -SP_ONE,
 				  -SP_ONE, -SP_ONE, -SP_ONE,
-				  -SP_ONE, -SP_ONE, SP_ONE, 34567 | 31727 );
+				  -SP_ONE, -SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
 		spQuad3D( SP_ONE, -SP_ONE, SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
 				  SP_ONE, SP_ONE, -SP_ONE,
-				  SP_ONE, SP_ONE, SP_ONE, 45678 | 31727 );
+				  SP_ONE, SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
 		//Up / Down
 		spQuad3D( SP_ONE, SP_ONE, SP_ONE,
 				  SP_ONE, SP_ONE, -SP_ONE,
 				  -SP_ONE, SP_ONE, -SP_ONE,
-				  -SP_ONE, SP_ONE, SP_ONE, 56789 | 31727 );
+				  -SP_ONE, SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
 		spQuad3D( -SP_ONE, -SP_ONE, SP_ONE,
 				  -SP_ONE, -SP_ONE, -SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
-				  SP_ONE, -SP_ONE, SP_ONE, 61234 | 31727 );
+				  SP_ONE, -SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
 		break;
 	}
 	spSetZSet( 0 );
@@ -259,8 +259,8 @@ void draw_test( void )
 		spBlitSurface(spGetInput()->touchscreen.x,spGetInput()->touchscreen.y,-1,pepper);
 	}
 	
-	spFontDraw( 0, 2, -1, "Previous ("SP_BUTTON_L_NAME")", font );
-	spFontDrawRight( screen->w - 2, 2, -1, "("SP_BUTTON_R_NAME") next", font );
+	spFontDraw( 0, 2, -1, "Previous ["SP_BUTTON_L_NAME"]", font );
+	spFontDrawRight( screen->w - 2, 2, -1, "["SP_BUTTON_R_NAME"] next", font );
 	switch ( test )
 	{
 	case 0:
@@ -283,18 +283,20 @@ void draw_test( void )
 		break;
 	}
 	if ( quality )
-		spFontDraw( 0, screen->h - font->maxheight, -1, "Light On ("SP_BUTTON_A_NAME")", font );
+		spFontDraw( 0, screen->h - font->maxheight, -1, "Light On ["SP_BUTTON_A_NAME"]", font );
 	else
-		spFontDraw( 0, screen->h - font->maxheight, -1, "Light Off ("SP_BUTTON_A_NAME")", font );
+		spFontDraw( 0, screen->h - font->maxheight, -1, "Light Off ["SP_BUTTON_A_NAME"]", font );
 	char buffer[256];
 	if ( zStuff )
-		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set On ("SP_BUTTON_Y_NAME")", font );
+		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set On ["SP_BUTTON_Y_NAME"]", font );
 	else
-		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set Off ("SP_BUTTON_Y_NAME")", font );
+		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set Off ["SP_BUTTON_Y_NAME"]", font );
+    
 	sprintf( buffer, "%02i:%02i", divisor / 60000, ( divisor / 1000 ) % 60 );
 	spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, buffer, font );
 	sprintf( buffer, "fps: %i", spGetFPS() );
-	spFontDrawRight( screen->w - 2, screen->h - font->maxheight, -1, buffer, font );
+	spFontDrawMiddle( screen->w/2, 1, -1, buffer, font );
+	spFontDrawRight( screen->w - 2, screen->h - font->maxheight, -1, "[S] Exit", font );
 
 	spFlip();
 }
@@ -349,6 +351,16 @@ void resize( Uint16 w, Uint16 h )
 	font = spFontLoad( "./font/StayPuft.ttf", 20 * spGetSizeFactor() >> SP_ACCURACY );
 	spFontAddRange( font, ' ', '~', 0 ); //whole ASCII
 	spFontAddBorder( font, 65535 );
+  spFontSetButtonStrategy(SP_FONT_BUTTON);
+  spFontAddButton( font, SP_BUTTON_A_NAME[0], SP_BUTTON_A_NAME, 65535, spGetRGB(64,64,64));
+  spFontAddButton( font, SP_BUTTON_B_NAME[0], SP_BUTTON_B_NAME, 65535, spGetRGB(64,64,64));
+  spFontAddButton( font, SP_BUTTON_X_NAME[0], SP_BUTTON_X_NAME, 65535, spGetRGB(64,64,64));
+  spFontAddButton( font, SP_BUTTON_Y_NAME[0], SP_BUTTON_Y_NAME, 65535, spGetRGB(64,64,64));
+  spFontAddButton( font, SP_BUTTON_L_NAME[0], SP_BUTTON_L_NAME, 65535, spGetRGB(64,64,64));
+  spFontAddButton( font, SP_BUTTON_R_NAME[0], SP_BUTTON_R_NAME, 65535, spGetRGB(64,64,64));
+  spFontSetButtonStrategy(SP_FONT_INTELLIGENT);
+  spFontAddButton( font, 'S', SP_BUTTON_START_NAME, 65535, spGetRGB(64,64,64));
+  spFontAddButton( font, 'E', SP_BUTTON_SELECT_NAME, 65535, spGetRGB(64,64,64));
 }
 
 
@@ -376,9 +388,7 @@ int main( int argc, char **argv )
 
 	//Sprite Creating
 	sprite = spNewSprite();
-	int i;
-	for ( i = 0; i < 9; i++ )
-		spNewSubSpriteWithTiling( sprite, scientist, i * 24 + 1, 1, 22, 46, 100 );
+  spNewSubSpriteTilingRow( sprite, scientist, 1, 1, 22, 46, 24, 48, 9 ,100);
 	//spNewSubSpriteWithTiling(sprite,scientist,0,0,32,48,100);
 
 	//All glory the main loop

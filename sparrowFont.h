@@ -32,6 +32,10 @@
 #define SP_FONT_DEFAULT_CACHE 16384
 #define SP_FONT_EXTRASPACE 1
 
+#define SP_FONT_INTELLIGENT 0
+#define SP_FONT_BUTTON 1
+#define SP_FONT_KEY 2
+
 /*a letter in a binary tree of a font*/
 typedef struct spLetterStruct_ *spLetterPointer;
 typedef struct spLetterStruct_
@@ -70,6 +74,7 @@ typedef struct spFontStruct_
 	Uint32 cacheOffset;
 	spFontCacheStruct cache;
 	Uint32 size;
+  spLetterPointer buttonRoot; //the root of the buttons of the binary letter tree
 } spFontStruct;
 
 PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size );
@@ -78,6 +83,26 @@ PREFIX void spFontAdd( spFontPointer font, Uint32 character, Uint16 color );
 
 PREFIX void spFontAddRange( spFontPointer font, Uint32 from, Uint32 to, Uint16 color );
 
+/* spFontAddButton creates a new button formed sign with "character" in
+ * center. The background color is bgColor and the color of letter and
+ * border will be fgColor. */
+PREFIX void spFontAddButton( spFontPointer font, Uint32 character, char* caption, Uint16 fgColor, Uint16 bgColor );
+
+/* spFontSetButtonBoderSigns sets the starting and end sign for buttons.
+ * Default values are '[' and ']', so e.g. out of [a] will be made a
+ * button with a in the middle, if the button exist (it has to be
+ * created with spFontAddButton).*/
+PREFIX void spFontSetButtonBorderSigns(Uint32 left,Uint32 right);
+
+/* spFontSetButtonStrategy sets the strategy used to determine, whether
+ * buttons are round (like normal buttons on handhelds) or quadric
+ * (like keyboard buttons). SP_FONT_INTELLIGENT uses e.g. rounds buttons
+ * for normal button, but quadric buttons for Start or Select and always
+ * quadric buttons for keyboard keys. But nevertheless, if it doesn't
+ * work for you, use this function to force round (SP_FONT_BUTTON) or
+ * quadric (SP_FONT_KEY) buttons. */
+PREFIX void spFontSetButtonStrategy(int strategy);
+
 PREFIX void spFontAddBorder( spFontPointer font, Uint16 bordercolor );
 
 PREFIX void spFontReplaceColor( spFontPointer font, Uint16 oldcolor, Uint16 newcolor );
@@ -85,6 +110,8 @@ PREFIX void spFontReplaceColor( spFontPointer font, Uint16 oldcolor, Uint16 newc
 PREFIX void spFontMulWidth( spFontPointer font, Sint32 factor );
 
 PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint32 character, Uint16 color );
+
+PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint32 character, char* caption,  Uint16 fgColor, Uint16 bgColor);
 
 PREFIX spLetterPointer spFontGetLetter( spFontPointer font, Uint32 character );
 

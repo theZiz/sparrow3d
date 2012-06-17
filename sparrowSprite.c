@@ -88,6 +88,24 @@ PREFIX spSubSpritePointer spNewSubSpriteWithTiling( spSpritePointer sprite, SDL_
   return sub;
 }
 
+PREFIX void spNewSubSpriteTilingRow( spSpritePointer sprite, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 sw, Sint32 sh, Sint32 hopw,Sint32 hoph, Sint32 count,Sint32 duration )
+{
+  int i;
+  for (i = 0; i < count; i++)
+  {
+    spNewSubSpriteWithTiling(sprite,surface,sx,sy,sw,sh,duration);
+    sx+=hopw;
+    if (sx >= surface->w)
+    {
+      sx = sx % hopw;
+      sy += hoph;
+      if (sy+sh > surface->h)
+        return;
+    }
+  }
+}
+
+
 PREFIX void spUpdateSprite( spSpritePointer sprite, Sint32 time )
 {
 	if ( sprite->momSub == NULL )

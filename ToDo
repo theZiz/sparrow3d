@@ -16,9 +16,7 @@ Roadmap:
 		    text. If the language is not found, the FIRST added language will be
 		    used, so it makes sense to create English first.
 - Network
-- fixing system surface stuff
-- sprite format
-- button signs in the font engine
+- simple sprite format
 
 version: 1.01
 

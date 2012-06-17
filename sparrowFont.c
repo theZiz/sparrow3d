@@ -21,6 +21,10 @@
 #include "sparrowPrimitives.h"
 #include <stdlib.h>
 
+Uint32 spFontButtonLeft = '[';
+Uint32 spFontButtonRight = ']';
+int spFontStrategy = SP_FONT_INTELLIGENT;
+
 PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size )
 {
 	TTF_Font* ttf = TTF_OpenFont( fontname, size );
@@ -33,6 +37,7 @@ PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size )
 	spFontPointer font = ( spFontPointer )malloc( sizeof( spFontStruct ) );
 	font->font = ttf;
 	font->root = NULL;
+  font->buttonRoot = NULL;
 	font->size = size;
 	font->maxheight = 0;
 	font->cacheOffset = 0;
@@ -128,18 +133,16 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 	int width = surface->w + SP_FONT_EXTRASPACE * 2;
 	if ( width & 1 )
 		width++;
-	SDL_Surface* dummy = SDL_CreateRGBSurface( SDL_SWSURFACE, width, surface->h + SP_FONT_EXTRASPACE * 2, 16, 0 , 0 , 0 ,  0 );
-	SDL_FillRect( dummy, NULL, SP_ALPHA_COLOR );
+	letter->surface = spCreateSurface(width, surface->h + SP_FONT_EXTRASPACE * 2);
+	SDL_FillRect( letter->surface, NULL, SP_ALPHA_COLOR );
 
 	SDL_Rect DestR;
 	DestR.x = SP_FONT_EXTRASPACE;
 	DestR.y = SP_FONT_EXTRASPACE;
 	DestR.w = surface->w;
 	DestR.h = surface->h;
-	SDL_BlitSurface( surface, NULL, dummy, &DestR );
+	SDL_BlitSurface( surface, NULL, letter->surface, &DestR );
 
-	letter->surface = SDL_DisplayFormat( dummy );
-	SDL_FreeSurface( dummy );
 	SDL_FreeSurface( surface );
 
 	TTF_SizeUTF8( font->font, buffer, &( letter->width ), &( letter->height ) );
@@ -163,6 +166,129 @@ PREFIX void spFontAddRange( spFontPointer font, Uint32 from, Uint32 to, Uint16 c
 	Uint32 letter;
 	for ( letter = from; letter <= to; letter++ )
 		spFontAdd( font, letter, color );
+}
+
+int spFontCorrectStrategy(char* button)
+{
+  if (spFontStrategy != SP_FONT_INTELLIGENT)
+    return spFontStrategy;
+  #if defined GP2X || defined CAANOO || defined DINGUX || defined PANDORA
+    if (strcmp(button,SP_BUTTON_A_NAME) == 0 ||
+        strcmp(button,SP_BUTTON_B_NAME) == 0 ||
+        strcmp(button,SP_BUTTON_X_NAME) == 0 ||
+        strcmp(button,SP_BUTTON_Y_NAME) == 0 ||
+        strcmp(button,SP_BUTTON_L_NAME) == 0 ||
+        strcmp(button,SP_BUTTON_R_NAME) == 0)
+        return SP_FONT_BUTTON;
+    else
+      return SP_FONT_KEY;
+  #else
+    return SP_FONT_KEY;
+  #endif
+}
+
+PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint32 character, char* caption, Uint16 fgColor, Uint16 bgColor )
+{
+	letter->color = fgColor;
+	SDL_Color sdlcolor = {( fgColor >> 11 ) << 3, ( ( fgColor << 5 ) >> 10 ) << 2, ( ( fgColor & 31 ) << 3 )};
+  int width;
+  if (spFontCorrectStrategy(caption) == SP_FONT_BUTTON)
+  {
+    char buffer[5];
+    buffer[0] = character;
+    buffer[1] = 0; //TODO: utf8
+    SDL_Surface* surface = TTF_RenderUTF8_Solid( font->font, caption, sdlcolor );
+    width = font->maxheight + SP_FONT_EXTRASPACE * 2;
+    if ( width & 1 )
+      width++;
+    letter->surface = spCreateSurface(width, width);
+    SDL_LockSurface(letter->surface);
+    int x,y;
+    Uint16* pixel = letter->surface->pixels;
+    int w = letter->surface->pitch/letter->surface->format->BytesPerPixel;
+    for (x = 0; x < letter->surface->w; x++)
+      for (y = 0; y < letter->surface->h; y++)
+      {
+        if ((x-width/2)*(x-width/2)+(y-width/2)*(y-width/2) <= width*width/4)
+        {
+          if ((x-width/2)*(x-width/2)+(y-width/2)*(y-width/2) <= width*width/5)
+            pixel[x+y*w] = bgColor;
+          else
+            pixel[x+y*w] = fgColor;
+        }
+        else
+          pixel[x+y*w] = SP_ALPHA_COLOR;
+      }
+    SDL_UnlockSurface(letter->surface);
+
+    SDL_Rect DestR;
+    DestR.x = width/2-surface->w/2;
+    DestR.y = font->maxheight/2+SP_FONT_EXTRASPACE-surface->h/2;
+    DestR.w = surface->w;
+    DestR.h = surface->h;
+    SDL_BlitSurface( surface, NULL, letter->surface, &DestR );
+
+    SDL_FreeSurface( surface );
+  }
+  else
+  {
+    int buttonWidth = font->maxheight + SP_FONT_EXTRASPACE * 2;
+    int border = buttonWidth/14;
+    SDL_Surface* surface = TTF_RenderUTF8_Solid( font->font, caption, sdlcolor );
+    width = surface->w+2*SP_FONT_EXTRASPACE+2*border;
+    if ( width & 1 )
+      width++;
+    letter->surface = spCreateSurface(width, font->maxheight+SP_FONT_EXTRASPACE*2);
+    SDL_LockSurface(letter->surface);
+    int x,y;
+    Uint16* pixel = letter->surface->pixels;
+    int w = letter->surface->pitch/letter->surface->format->BytesPerPixel;
+    for (x = 0; x < letter->surface->w; x++)
+      for (y = 0; y < letter->surface->h; y++)
+      {
+        if (x < border        || y < border ||
+            x >= width-border || y >= letter->surface->h-border)
+          pixel[x+y*w] = fgColor;
+        else
+          pixel[x+y*w] = bgColor;
+      }
+    SDL_UnlockSurface(letter->surface);
+
+    SDL_Rect DestR;
+    DestR.x = SP_FONT_EXTRASPACE+border;
+    DestR.y = font->maxheight/2+SP_FONT_EXTRASPACE-surface->h/2;
+    DestR.w = surface->w;
+    DestR.h = surface->h;
+    SDL_BlitSurface( surface, NULL, letter->surface, &DestR );
+
+    SDL_FreeSurface( surface );
+  }
+
+  letter->height = font->maxheight;
+  letter->width = width;
+}
+
+
+PREFIX void spFontAddButton( spFontPointer font, Uint32 character, char* caption, Uint16 fgColor, Uint16 bgColor )
+{
+  spLetterPointer letter = ( spLetterPointer )malloc( sizeof( spLetterStruct ) );
+
+	spFontChangeButton( font, letter, character, caption, fgColor, bgColor );
+	letter->character = character;
+
+	//tree insert
+	font->buttonRoot = spFontInsert( letter, font->buttonRoot );
+}
+
+PREFIX void spFontSetButtonBorderSigns(Uint32 left,Uint32 right)
+{
+  spFontButtonLeft = left;
+  spFontButtonRight = right;
+}
+
+PREFIX void spFontSetButtonStrategy(int strategy)
+{
+  spFontStrategy = strategy;
 }
 
 void spLetterAddBorder( spLetterPointer letter, Uint16 bordercolor )
@@ -285,7 +411,12 @@ PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPo
 			l++;
 			continue;
 		}
-		spLetterPointer letter = spFontGetLetter( font, text[l] ); //TODO utf8
+    spLetterPointer letter;
+    //first we look for buttons
+    if (text[l]==spFontButtonLeft && (letter = spLetterFind( font->buttonRoot, text[l+1])) && text[l+2]==spFontButtonRight)
+      l+=2;
+    else
+      letter = spFontGetLetter( font, text[l] ); //TODO utf8
 		if ( letter )
 		{
 			pos += letter->width >> 1;
@@ -314,8 +445,13 @@ PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFo
 				again = 1;
 				l++;
 				break;
-			}
-			spLetterPointer letter = spFontGetLetter( font, text[l] ); //TODO utf8
+			}    
+      spLetterPointer letter;
+      //first we look for buttons
+      if (text[l]==spFontButtonLeft && (letter = spLetterFind( font->buttonRoot, text[l+1])) && text[l+2]==spFontButtonRight)
+        l+=2;
+      else
+        letter = spFontGetLetter( font, text[l] ); //TODO utf8
 			if ( letter )
 			{
 				spLetterIterPointer iter = ( spLetterIterPointer )malloc( sizeof( spLetterIterStruct ) );
@@ -369,7 +505,12 @@ PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spF
 				l++;
 				break;
 			}
-			spLetterPointer letter = spFontGetLetter( font, text[l] ); //TODO utf8
+      spLetterPointer letter;
+      //first we look for buttons
+      if (text[l]==spFontButtonLeft && (letter = spLetterFind( font->buttonRoot, text[l+1])) && text[l+2]==spFontButtonRight)
+        l+=2;
+      else
+        letter = spFontGetLetter( font, text[l] ); //TODO utf8
 			if ( letter )
 			{
 				spLetterIterPointer iter = ( spLetterIterPointer )malloc( sizeof( spLetterIterStruct ) );
