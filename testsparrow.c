@@ -388,9 +388,7 @@ int main( int argc, char **argv )
 
 	//Sprite Creating
 	sprite = spNewSprite();
-	int i;
-	for ( i = 0; i < 9; i++ )
-		spNewSubSpriteWithTiling( sprite, scientist, i * 24 + 1, 1, 22, 46, 100 );
+  spNewSubSpriteTilingRow( sprite, scientist, 1, 1, 22, 46, 24, 48, 9 ,100);
 	//spNewSubSpriteWithTiling(sprite,scientist,0,0,32,48,100);
 
 	//All glory the main loop

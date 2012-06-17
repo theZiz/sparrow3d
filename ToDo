@@ -2,7 +2,6 @@ README:
 - -1 near stuff
 - Difference spScreen, spWindow, spRenderTarget
 Roadmap:
-- sprite format
 - spFont additionals:
 	- support for managing different texts in different languages
 		- spFontText* text = spFontCreateText()
@@ -17,6 +16,7 @@ Roadmap:
 		    text. If the language is not found, the FIRST added language will be
 		    used, so it makes sense to create English first.
 - Network
+- simple sprite format
 
 version: 1.01
 

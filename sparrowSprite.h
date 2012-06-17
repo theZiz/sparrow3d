@@ -58,6 +58,8 @@ PREFIX spSubSpritePointer spNewSubSpriteNoTiling( spSpritePointer sprite, SDL_Su
 
 PREFIX spSubSpritePointer spNewSubSpriteWithTiling( spSpritePointer sprite, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 sw, Sint32 sh, Sint32 duration );
 
+PREFIX void spNewSubSpriteTilingRow( spSpritePointer sprite, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 sw, Sint32 sh, Sint32 hopw,Sint32 hoph, Sint32 count,Sint32 duration );
+
 PREFIX void spUpdateSprite( spSpritePointer sprite, Sint32 time );
 
 PREFIX void spSetSpriteRotation( spSpritePointer sprite, Sint32 rotation );
