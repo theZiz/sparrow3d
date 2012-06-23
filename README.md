@@ -1,6 +1,5 @@
-+-------+
-|Content|
-+-------+
+Sparrow3D
+=========
 
 1. About Sparrow3D
 2. Licence
@@ -9,9 +8,8 @@
 
 -------------------------------------------------------------------------------
 
-+------------------+
-|1. About Sparrow3D|
-+------------------+
+1. About Sparrow3D
+==================
 
 Sparrow3D is an application framework with software renderer especially for
 open handhelds. The goal is to just write an application once and to compile
@@ -32,18 +30,17 @@ To see, what is possible with this engine take a look at
 
 -------------------------------------------------------------------------------
 
-+----------+
-|2. Licence|
-+----------+
+
+2. Licence
+==========
 
 Not much to say: Just (L)GPL and MPL. If you want another Licence (e.g. some
 kind of BSD licence) feel free to contact me. ;-)
 
 -------------------------------------------------------------------------------
 
-+----------------------+
-|3. Compiling Sparrow3D|
-+----------------------+
+3. Compiling Sparrow3D
+======================
 
 First have a look in the Makefile. Some platforms are comment out. Just comment
 out the first PC-Variables and comment in your favourate platform. Keep in mind
@@ -88,9 +85,9 @@ MAEMO		Maemo device, specialize version with: MAEMO5 or MAEMO6
 
 -------------------------------------------------------------------------------
 
-+---------+
-|4. Author|
-+---------+
+
+4. Author
+=========
 
 Alexander Matthes aka Ziz
 mail: zizsdl@googlemail.com
