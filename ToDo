@@ -1,6 +1,8 @@
 README:
 - -1 near stuff
 Roadmap:
+- sparrowFont additional or own part, which allows to draw blocked text
+  (e.g. text from sparrowText ;-) )
 - Network
 
 Nice to have:
