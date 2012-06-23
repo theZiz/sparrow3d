@@ -1034,3 +1034,14 @@ PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 	}*/
 	return ((r >> 3) << 11) + ((g >> 2) << 5) + (b >> 3);
 }
+
+PREFIX int spFileExists( char* filename )
+{
+  SDL_RWops *file = SDL_RWFromFile(filename, "rb");
+  if (file)
+  {
+    SDL_RWclose(file);
+    return 1;
+  }
+  return 0;
+}

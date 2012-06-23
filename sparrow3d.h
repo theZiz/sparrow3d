@@ -29,5 +29,6 @@
 #include "sparrowFont.h"
 #include "sparrowRenderer.h"
 #include "sparrowSprite.h"
+#include "sparrowText.h"
 
 #endif

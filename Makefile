@@ -83,7 +83,7 @@ SDL = `sdl-config --cflags`
 endif
 
 
-all: sparrow3d testsparrow testsprite testmesh testtarget
+all: sparrow3d testsparrow testsprite testmesh testtarget testtext
 
 targets:
 	@echo "gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora, maemo5, maemo6"
@@ -99,6 +99,9 @@ testmesh: testmesh.c sparrow3d
 
 testtarget: testtarget.c sparrow3d
 	$(CPP) $(CFLAGS) testtarget.c $(SDL) $(INCLUDE) -L. $(LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testtarget
+
+testtext: testtext.c sparrow3d
+	$(CPP) $(CFLAGS) testtext.c $(SDL) $(INCLUDE) -L. $(LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testtext
 
 sparrow3d: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o
 	$(CPP) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -rdynamic -o libsparrow3d.so sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o $(SDL) $(INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)

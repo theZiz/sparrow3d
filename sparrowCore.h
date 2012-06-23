@@ -114,5 +114,7 @@ PREFIX Uint16 spGetRGB(int r, int g, int b );
 /* spGetHSV returns a 16 bit color defined by the HSV values */
 PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
 
+/* spFileExists tests, whether the file "filename" exists ;-) */
+PREFIX int spFileExists( char* filename );
 
 #endif

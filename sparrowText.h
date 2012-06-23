@@ -35,52 +35,61 @@
 #define SP_LANGUAGE_DE ('d'*256+'e')
 #define SP_LANGUAGE_FR ('f'*256+'r')
 
-typedef struct spTextTranslation *spTextTranslationPointer;
-typedef struct spTextTranslation
+#define SP_TEXT_MAX_READABLE_LINE 65536
+
+typedef struct spTranslation *spTranslationPointer;
+typedef struct spTranslation
 {
 	char* text;
 	Uint16 language; //ISO 639-1
-	int used; //in how many bundles is it used?
-	spTextTranslationPointer next;
-} spTextTranslation;
+	spTranslationPointer next;
+} spTranslation;
 
-typedef struct spTextBundle *spTextBundlePointer;
+typedef struct spBundle *spBundlePointer;
 
 typedef struct spText *spTextPointer;
 typedef struct spText
 {
 	char* caption; //Name of the text - same for every translation
-	spTextTranslationPointer firstTranslation; //the translations
-	spTextBundlePointer bundle;
+	spTranslationPointer firstTranslation; //the translations
+	spBundlePointer bundle;
 	spTextPointer prev,next;
 } spText;
 
-typedef struct spTextBundle
+typedef struct spBundle
 {
 	spTextPointer firstText;
-	spTextBundlePointer next; //only used itnernal. DO NOT CHANGE OR USE!
-} spTextBundle;
+	spBundlePointer next; //only used internal. DO NOT CHANGE OR USE!
+} spBundle;
 
 
 
-/* spTextCreateText creates a new text (which contains different translations
+/* spCreateTextText creates a new text (which contains different translations
  * of the same content) with the name "caption" and adds it (optinal) to the to
  * the bundle "bundle". With bundles you can easily access texts of one kind,
  * e.g. of one level. */
-PREFIX spTextPointer spTextCreate(char* caption,spTextBundlePointer bundle);
+PREFIX spTextPointer spCreateText(const char* caption,spBundlePointer bundle);
 
-PREFIX void spTextAddTranslation(spTextPointer text,Uint16 language,char* translation); //TODO
+PREFIX void spAddTranslation(spTextPointer text,Uint16 language,const char* translation);
 
-PREFIX spTextPointer spTextCreateWithTranslation(char* caption,spTextBundlePointer bundle,Uint16 language,char* translation); //TODO
+PREFIX spTextPointer spCreateTextWithTranslation(const char* caption,spBundlePointer bundle,Uint16 language,const char* translation);
 
-PREFIX spTextBundlePointer spTextCreateBundle();
+PREFIX spTextPointer spSearchCaption(spBundlePointer bundle, char* caption);
 
-PREFIX void spTextChangeBundle(spTextPointer text,spTextBundlePointer bundle);
+PREFIX char* spGetTranslation(spTextPointer text);
 
-PREFIX void spTextDeleteBundle(spTextBundlePointer bundle,int keepText);
+PREFIX char* spGetTranslationFromCaption(spBundlePointer bundle, char* caption);
 
-PREFIX void spTextSetDefaultLanguage(Uint16 language);
+PREFIX spBundlePointer spCreateTextBundle();
 
-PREFIX void spTextDelete(spTextPointer text);
+PREFIX spBundlePointer spLoadBundle(const char* filename,int own_bundle);
+
+PREFIX void spChangeBundle(spTextPointer text,spBundlePointer bundle);
+
+PREFIX void spDeleteBundle(spBundlePointer bundle,int keepText);
+
+PREFIX void spSetDefaultLanguage(Uint16 language);
+
+PREFIX void spDeleteText(spTextPointer text);
 
 #endif

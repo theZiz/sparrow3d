@@ -10,7 +10,7 @@
  under the License.
 
  Alternatively, the contents of this file may be used under the terms
- of the GNU Lesser General Public license (the  "LGPL License"), in which case the
+ of the GNU Lesser General Public license (the	"LGPL License"), in which case the
  provisions of LGPL License are applicable instead of those
  above.
 
@@ -19,24 +19,80 @@
 */
 #include "sparrowText.h"
 
-Uint16 spTextDefaultLanguage = SP_LANGUAGE_EN;
-spTextBundlePointer spUberBundle = NULL;
-spTextBundlePointer spMainBundle = NULL;
+Uint16 spDefaultLanguage = SP_LANGUAGE_EN;
+spBundlePointer spUberBundle = NULL;
+spBundle spMainBundle = {NULL,NULL};
+char spErrorTranslation[] = "No translations found";
 
-PREFIX spTextPointer spTextCreateText(char* caption,spTextBundlePointer bundle)
+PREFIX spTextPointer spCreateText(const char* caption,spBundlePointer bundle)
 {
 	spTextPointer text = (spTextPointer) malloc(sizeof(spText));
 	text->caption = (char*)malloc(strlen(caption)+1);
 	sprintf(text->caption,"%s",caption);
 	text->firstTranslation = NULL;
 	text->bundle = NULL;
-	spTextChangeBundle(text,bundle); 
+	spChangeBundle(text,bundle); 
+	return text;
 }
 
-PREFIX void spTextChangeBundle(spTextPointer text,spTextBundlePointer bundle)
+PREFIX void spAddTranslation(spTextPointer text,Uint16 language,const char* translation)
+{
+	spTranslationPointer result = (spTranslationPointer)malloc(sizeof(spTranslation));
+	result->text = (char*)malloc(strlen(translation)+1);
+	sprintf(result->text,"%s",translation);
+	result->language = language;
+	result->next = text->firstTranslation;
+	text->firstTranslation = result;
+}
+
+PREFIX spTextPointer spCreateTextWithTranslation(const char* caption,spBundlePointer bundle,Uint16 language,const char* translation)
+{
+	spTextPointer text = spCreateText(caption,bundle);
+	spAddTranslation(text,language,translation);
+	return text;
+}
+
+PREFIX spTextPointer spSearchCaption(spBundlePointer bundle, char* caption)
+{
+	if (bundle == NULL)
+		bundle = &spMainBundle;
+	spTextPointer text = bundle->firstText;
+	while (text)
+	{
+		if (strcmp(text->caption,caption) == 0)
+			return text;
+		text = text->next;
+	}
+	return NULL;
+}
+
+PREFIX char* spGetTranslationFromCaption(spBundlePointer bundle, char* caption)
+{
+	return spGetTranslation(spSearchCaption(bundle,caption));
+}
+
+PREFIX char* spGetTranslation(spTextPointer text)
 {
 	if (text == NULL)
-	  return;
+		return spErrorTranslation;
+	spTranslationPointer translation = text->firstTranslation;
+	spTranslationPointer lastTranslation = NULL;
+	while (translation)
+	{
+		if (translation->language == spDefaultLanguage)
+			return translation->text;
+		lastTranslation = translation;
+		translation = translation->next;
+	}
+	if (lastTranslation)
+		return lastTranslation->text;
+	return spErrorTranslation;
+}
+
+PREFIX void spChangeBundle(spTextPointer text,spBundlePointer bundle)
+{
+	if (text == NULL)
+		return;
 	if (text->bundle)
 	{
 		//Deleting from the old bundle
@@ -48,36 +104,34 @@ PREFIX void spTextChangeBundle(spTextPointer text,spTextBundlePointer bundle)
 			next->prev = prev;
 	}
 	if (bundle == NULL) //Adding in the main bundle
-	{
-		if (spMainBundle == NULL)
-			spMainBundle = spTextCreateBundle();
-		bundle = spMainBundle;
-	}
+		bundle = &spMainBundle;
 	//putting in the new bundle at first position
 	text->bundle = bundle;
 	text->prev = NULL;
 	text->next = bundle->firstText;
-	bundle->firstText->prev = text;
+	if (bundle->firstText)
+		bundle->firstText->prev = text;
 	bundle->firstText = text;
 	
 }
 
-PREFIX spTextBundlePointer spTextCreateBundle()
+PREFIX spBundlePointer spCreateTextBundle()
 {
-	spTextBundlePointer bundle = (spTextBundlePointer)malloc(sizeof(spTextBundle));
+	spBundlePointer bundle = (spBundlePointer)malloc(sizeof(spBundle));
 	bundle->next = spUberBundle;
 	spUberBundle = bundle;
 	bundle->firstText = NULL;
+	return bundle;
 }
 
-PREFIX void spTextSetDefaultLanguage(Uint16 language)
+PREFIX void spSetDefaultLanguage(Uint16 language)
 {
-	spTextDefaultLanguage = language;
+	spDefaultLanguage = language;
 }
 
-PREFIX void spTextDeleteBundle(spTextBundlePointer bundle,int keepText)
+PREFIX void spDeleteBundle(spBundlePointer bundle,int keepText)
 {
-	if (bundle == spMainBundle) //The mainBundle is undestroyable!
+	if (bundle == &spMainBundle) //The mainBundle is undestroyable!
 		return;
 	spTextPointer text = bundle->firstText;
 	if (keepText)
@@ -85,7 +139,7 @@ PREFIX void spTextDeleteBundle(spTextBundlePointer bundle,int keepText)
 		while (text)
 		{
 			spTextPointer next = text->next;
-			spTextChangeBundle(text,NULL);
+			spChangeBundle(text,NULL);
 			text = next;
 		}
 	}
@@ -94,19 +148,19 @@ PREFIX void spTextDeleteBundle(spTextBundlePointer bundle,int keepText)
 		while (text)
 		{
 			spTextPointer next = text->next;
-			spTextDelete(text);
+			spDeleteText(text);
 			text = next;
 		}
 	}
 	free(bundle);
 }
 
-PREFIX void spTextDelete(spTextPointer text)
+PREFIX void spDeleteText(spTextPointer text)
 {
 	free(text->caption);
 	while (text->firstTranslation)
 	{
-		spTextTranslationPointer next = text->firstTranslation->next;
+		spTranslationPointer next = text->firstTranslation->next;
 		free(text->firstTranslation->text);
 		free(text->firstTranslation);
 		text->firstTranslation = next;
@@ -119,4 +173,60 @@ PREFIX void spTextDelete(spTextPointer text)
 	if (next)
 		next->prev = prev;
 	free(text);
+}
+
+PREFIX spBundlePointer spLoadBundle(const char* filename,int own_bundle)
+{
+	spBundlePointer bundle = &spMainBundle;
+	if (own_bundle)
+		bundle = spCreateTextBundle();
+	
+	SDL_RWops *file = SDL_RWFromFile(filename, "rt");
+	if (!file)
+		return NULL;
+	
+	//Loading the file line by line
+	int end = 0;
+	spTextPointer text = NULL;
+	while (!end)
+	{
+		char line[SP_TEXT_MAX_READABLE_LINE];
+		int pos = 0;
+		while (pos < SP_TEXT_MAX_READABLE_LINE)
+		{
+			if (SDL_RWread( file, &(line[pos]), 1, 1 ) <= 0)
+			{
+				end = 1;
+				break;
+			}
+			if ( line[pos] == '\n' )
+				break;
+			pos++;
+		}
+		line[pos] = 0;
+		//parsing the line
+		
+		if (line[0] == '-' && line[1] == '-' && line[2] != 0) //new text
+		{
+			char* caption = &(line[3]);
+			text = spCreateText(caption,bundle);
+		}
+		else
+		if (line[0] == '#' || line[0] == ' ') {} //comment
+		else
+		if (line[0] != 0 && line[1] != 0 && line[2] != 0) //new translation
+		{
+			if (text == NULL)
+			{
+				printf("Error: no new text (caption) defined!\n");
+				break;
+			}
+			Uint16 language = line[0]*256+line[1];
+			char* translation = &(line[3]);
+			spAddTranslation(text,language,translation);
+		}
+	}
+
+	SDL_RWclose(file);
+	return bundle;
 }
