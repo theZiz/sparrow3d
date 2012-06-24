@@ -237,7 +237,7 @@ PREFIX spBundlePointer spLoadBundle(const char* filename,int own_bundle)
 PREFIX void spReadPossibleLanguages(const char* filename)
 {
 	spBundlePointer tempBundle = spLoadBundle(filename,1);
-	if (tempBundle->firstText == NULL || tempBundle->firstText->firstTranslation == NULL)
+	if (tempBundle == NULL || tempBundle->firstText == NULL || tempBundle->firstText->firstTranslation == NULL)
 		return;
 	//Reading the languages and the names
 	spLanguageCount = 0;
