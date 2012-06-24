@@ -61,8 +61,20 @@ int main( int argc, char **argv )
 			break;
 	}
 	spSetDefaultLanguage(language);
-	printf("Loading \"%s\"... ",filename);
 	//Loading
+	spReadPossibleLanguages("./data/languages.txt");
+	printf("Possible Languages are (%i languages read from file):\n",spGetPossibleLanguagesCount());
+	for (i = 0; i < spGetPossibleLanguagesCount(); i++)
+	{
+		char buffer[3];
+		Uint16 language = spGetPossibleLanguage(i);
+		buffer[0] = language>>8;
+		buffer[1] = language;
+		buffer[2] = 0;
+		printf("  %s: %s\n",buffer,spGetPossibleLanguageName(i));
+	}
+	
+	printf("Loading \"%s\"... ",filename);	
 	spBundlePointer bundle = spLoadBundle(filename,1);
 	if (bundle)
 		printf(" Success\n");

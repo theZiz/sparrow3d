@@ -62,12 +62,11 @@ typedef struct spBundle
 	spBundlePointer next; //only used internal. DO NOT CHANGE OR USE!
 } spBundle;
 
-
-
 /* spCreateTextText creates a new text (which contains different translations
  * of the same content) with the name "caption" and adds it (optinal) to the to
  * the bundle "bundle". With bundles you can easily access texts of one kind,
  * e.g. of one level. */
+
 PREFIX spTextPointer spCreateText(const char* caption,spBundlePointer bundle);
 
 PREFIX void spAddTranslation(spTextPointer text,Uint16 language,const char* translation);
@@ -83,6 +82,14 @@ PREFIX char* spGetTranslationFromCaption(spBundlePointer bundle, char* caption);
 PREFIX spBundlePointer spCreateTextBundle();
 
 PREFIX spBundlePointer spLoadBundle(const char* filename,int own_bundle);
+
+PREFIX void spReadPossibleLanguages(const char* filename);
+
+PREFIX int spGetPossibleLanguagesCount();
+
+PREFIX Uint16 spGetPossibleLanguage(int nr);
+
+PREFIX char* spGetPossibleLanguageName(int nr);
 
 PREFIX void spChangeBundle(spTextPointer text,spBundlePointer bundle);
 

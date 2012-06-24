@@ -23,6 +23,9 @@ Uint16 spDefaultLanguage = SP_LANGUAGE_EN;
 spBundlePointer spUberBundle = NULL;
 spBundle spMainBundle = {NULL,NULL};
 char spErrorTranslation[] = "No translations found";
+int spLanguageCount = 0;
+Uint16* spLanguageCaption = NULL;
+char** spLanguageName = NULL;
 
 PREFIX spTextPointer spCreateText(const char* caption,spBundlePointer bundle)
 {
@@ -230,3 +233,50 @@ PREFIX spBundlePointer spLoadBundle(const char* filename,int own_bundle)
 	SDL_RWclose(file);
 	return bundle;
 }
+
+PREFIX void spReadPossibleLanguages(const char* filename)
+{
+	spBundlePointer tempBundle = spLoadBundle(filename,1);
+	if (tempBundle->firstText == NULL || tempBundle->firstText->firstTranslation == NULL)
+		return;
+	//Reading the languages and the names
+	spLanguageCount = 0;
+	spTranslationPointer translation = tempBundle->firstText->firstTranslation;
+	while (translation)
+	{
+		spLanguageCount++;
+		translation = translation->next;
+	}
+	spLanguageCaption = (Uint16*)malloc(sizeof(Uint16)*spLanguageCount);
+	spLanguageName = (char**)malloc(sizeof(char*)*spLanguageCount);
+	translation = tempBundle->firstText->firstTranslation;
+	int i;
+	for (i = 0; i < spLanguageCount; i++)
+	{
+		spLanguageCaption[i] = translation->language;
+		spLanguageName[i] = (char*)malloc(strlen(translation->text));
+		sprintf(spLanguageName[i],"%s",translation->text);
+		translation = translation->next;
+	}
+	spDeleteBundle(tempBundle,0);
+}
+
+PREFIX int spGetPossibleLanguagesCount()
+{
+	return spLanguageCount;
+}
+
+PREFIX Uint16 spGetPossibleLanguage(int nr)
+{
+	if (nr >=0 && nr < spLanguageCount)
+		return spLanguageCaption[nr];
+	return 0;
+}
+
+PREFIX char* spGetPossibleLanguageName(int nr)
+{
+	if (nr >=0 && nr < spLanguageCount)
+		return spLanguageName[nr];
+	return 0;
+}
+

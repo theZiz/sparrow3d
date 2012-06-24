@@ -1,0 +1,4 @@
+--:languages
+en English
+de Deutsch
+fr Francais
