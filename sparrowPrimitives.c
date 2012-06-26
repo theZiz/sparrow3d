@@ -4606,38 +4606,44 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 	Sint32 rxr = +rx;
 	Sint32 ryl = -ry;
 	Sint32 ryr = +ry;
-	Sint32 RX = rx * rx;
-	Sint32 RY = ry * ry;
-	Sint32 RR = RX * RY;
 	if ( x + rxr >= spTargetX ) rxr = spTargetX - 1 - x;
 	if ( y + ryr >= spTargetY ) ryr = spTargetY - 1 - y;
 	if ( x + rxl < 0 )          rxl = -x;
 	if ( y + ryl < 0 )          ryl = -y;
 	Sint32 x1 = x;
 	Sint32 y1 = y;
-	Sint32 XX_mul = spDiv( rx * rx << SP_ACCURACY, ry * ry << SP_ACCURACY );
 	SDL_LockSurface( spTarget );
 	if ( spZSet )
 	{
 		if ( spZTest )
 		{
-			//x*x*ry*ry+y*y*rx*rx = rx*rx*ry*ry
+			Sint32 factor = one_over_x(ry);
 			for ( y = ryl; y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				Sint32 angel = spAsin(y*factor >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+				Sint32 LX = -RX;
+				if (LX < rxl)
+					LX = rxl;
+				if (RX > rxr)
+					RX = rxr;
+				for (x = LX;x <= RX; x++)
 					draw_pixel_ztest_zset( x1 + x, y1 + y, z, color );
 			}
 		}
 		else
 		{
-			//x*x*ry*ry+y*y*rx*rx = rx*rx*ry*ry
+			Sint32 factor = one_over_x(ry);
 			for ( y = ryl; y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				Sint32 angel = spAsin(y*factor >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+				Sint32 LX = -RX;
+				if (LX < rxl)
+					LX = rxl;
+				if (RX > rxr)
+					RX = rxr;
+				for (x = LX;x <= RX; x++)
 					draw_pixel_zset( x1 + x, y1 + y, z, color );
 			}
 		}
@@ -4646,23 +4652,33 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 	{
 		if ( spZTest )
 		{
-			//x*x*ry*ry+y*y*rx*rx = rx*rx*ry*ry
+			Sint32 factor = one_over_x(ry);
 			for ( y = ryl; y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				Sint32 angel = spAsin(y*factor >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+				Sint32 LX = -RX;
+				if (LX < rxl)
+					LX = rxl;
+				if (RX > rxr)
+					RX = rxr;
+				for (x = LX;x <= RX; x++)
 					draw_pixel_ztest( x1 + x, y1 + y, z, color );
 			}
 		}
 		else
 		{
-			//x*x*ry*ry+y*y*rx*rx = rx*rx*ry*ry
+			Sint32 factor = one_over_x(ry);
 			for ( y = ryl; y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				Sint32 angel = spAsin(y*factor >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+				Sint32 LX = -RX;
+				if (LX < rxl)
+					LX = rxl;
+				if (RX > rxr)
+					RX = rxr;
+				for (x = LX;x <= RX; x++)
 					draw_pixel( x1 + x, y1 + y, color );
 			}
 		}
@@ -4723,134 +4739,218 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 	{
 		if ( spZTest )
 		{
-			//x*x*ry*ry+y*y*rx*rx = rx*rx*ry*ry
+			Sint32 factor_out = one_over_x(ry);
+			Sint32 factor_in  = one_over_x(ry-by);
 			//up
 			for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+				Sint32 LX = -RX;
+				if (LX < rxl)
+					LX = rxl;
+				if (RX > rxr)
+					RX = rxr;
+				for (x = LX;x <= RX; x++)
 					draw_pixel_ztest_zset( x1 + x, y1 + y, z, color );
 			}
 			//middle
-			for ( ; y < ry - by && y <= ryr; y++ )
+			for (; y < ry - by && y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				Sint32 XXB = ( rx - bx ) * ( rx - bx ) - spMul( y * y, XXB_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x >= XXB && x <= rxr; x++ )
+				Sint32 angel_out = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 angel_in  = spAsin(y*factor_in >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
+				Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
+				Sint32 LX_in  = -RX_in;
+				Sint32 LX_out = -RX_out;
+				if (LX_in < rxl)
+					LX_in = rxl;
+				if (LX_out < rxl)
+					LX_out = rxl;
+				if (RX_in > rxr)
+					RX_in = rxr;
+				if (RX_out > rxr)
+					RX_out = rxr;
+				for (x = LX_out;x < LX_in; x++)
 					draw_pixel_ztest_zset( x1 + x, y1 + y, z, color );
-				for ( ; x * x <= XXB && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				for (x = RX_in;x < RX_out; x++)
 					draw_pixel_ztest_zset( x1 + x, y1 + y, z, color );
-			}
+			}			
 			//down
-			for ( ; y <= ryr; y++ )
+			for (; y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+				Sint32 LX = -RX;
+				if (LX < rxl)
+					LX = rxl;
+				if (RX > rxr)
+					RX = rxr;
+				for (x = LX;x <= RX; x++)
 					draw_pixel_ztest_zset( x1 + x, y1 + y, z, color );
-			}
+			}			
 		}
 		else
 		{
-			//x*x*ry*ry+y*y*rx*rx = rx*rx*ry*ry
+			Sint32 factor_out = one_over_x(ry);
+			Sint32 factor_in  = one_over_x(ry-by);
 			//up
 			for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+				Sint32 LX = -RX;
+				if (LX < rxl)
+					LX = rxl;
+				if (RX > rxr)
+					RX = rxr;
+				for (x = LX;x <= RX; x++)
 					draw_pixel_zset( x1 + x, y1 + y, z, color );
 			}
 			//middle
-			for ( ; y < ry - by && y <= ryr; y++ )
+			for (; y < ry - by && y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				Sint32 XXB = ( rx - bx ) * ( rx - bx ) - spMul( y * y, XXB_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x >= XXB && x <= rxr; x++ )
+				Sint32 angel_out = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 angel_in  = spAsin(y*factor_in >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
+				Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
+				Sint32 LX_in  = -RX_in;
+				Sint32 LX_out = -RX_out;
+				if (LX_in < rxl)
+					LX_in = rxl;
+				if (LX_out < rxl)
+					LX_out = rxl;
+				if (RX_in > rxr)
+					RX_in = rxr;
+				if (RX_out > rxr)
+					RX_out = rxr;
+				for (x = LX_out;x < LX_in; x++)
 					draw_pixel_zset( x1 + x, y1 + y, z, color );
-				for ( ; x * x <= XXB && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				for (x = RX_in;x < RX_out; x++)
 					draw_pixel_zset( x1 + x, y1 + y, z, color );
-			}
+			}			
 			//down
-			for ( ; y <= ryr; y++ )
+			for (; y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+				Sint32 LX = -RX;
+				if (LX < rxl)
+					LX = rxl;
+				if (RX > rxr)
+					RX = rxr;
+				for (x = LX;x <= RX; x++)
 					draw_pixel_zset( x1 + x, y1 + y, z, color );
-			}
+			}			
 		}
 	}
 	else
 	{
 		if ( spZTest )
 		{
-			//x*x*ry*ry+y*y*rx*rx = rx*rx*ry*ry
+			Sint32 factor_out = one_over_x(ry);
+			Sint32 factor_in  = one_over_x(ry-by);
 			//up
 			for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+				Sint32 LX = -RX;
+				if (LX < rxl)
+					LX = rxl;
+				if (RX > rxr)
+					RX = rxr;
+				for (x = LX;x <= RX; x++)
 					draw_pixel_ztest( x1 + x, y1 + y, z, color );
 			}
 			//middle
-			for ( ; y < ry - by && y <= ryr; y++ )
+			for (; y < ry - by && y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				Sint32 XXB = ( rx - bx ) * ( rx - bx ) - spMul( y * y, XXB_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x >= XXB && x <= rxr; x++ )
+				Sint32 angel_out = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 angel_in  = spAsin(y*factor_in >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
+				Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
+				Sint32 LX_in  = -RX_in;
+				Sint32 LX_out = -RX_out;
+				if (LX_in < rxl)
+					LX_in = rxl;
+				if (LX_out < rxl)
+					LX_out = rxl;
+				if (RX_in > rxr)
+					RX_in = rxr;
+				if (RX_out > rxr)
+					RX_out = rxr;
+				for (x = LX_out;x < LX_in; x++)
 					draw_pixel_ztest( x1 + x, y1 + y, z, color );
-				for ( ; x * x <= XXB && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				for (x = RX_in;x < RX_out; x++)
 					draw_pixel_ztest( x1 + x, y1 + y, z, color );
-			}
+			}			
 			//down
-			for ( ; y <= ryr; y++ )
+			for (; y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+				Sint32 LX = -RX;
+				if (LX < rxl)
+					LX = rxl;
+				if (RX > rxr)
+					RX = rxr;
+				for (x = LX;x <= RX; x++)
 					draw_pixel_ztest( x1 + x, y1 + y, z, color );
-			}
+			}			
 		}
 		else
 		{
-			//x*x*ry*ry+y*y*rx*rx = rx*rx*ry*ry
+			Sint32 factor_out = one_over_x(ry);
+			Sint32 factor_in  = one_over_x(ry-by);
 			//up
 			for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+				Sint32 LX = -RX;
+				if (LX < rxl)
+					LX = rxl;
+				if (RX > rxr)
+					RX = rxr;
+				for (x = LX;x <= RX; x++)
 					draw_pixel( x1 + x, y1 + y, color );
 			}
 			//middle
-			for ( ; y < ry - by && y <= ryr; y++ )
+			for (; y < ry - by && y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				Sint32 XXB = ( rx - bx ) * ( rx - bx ) - spMul( y * y, XXB_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x >= XXB && x <= rxr; x++ )
+				Sint32 angel_out = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 angel_in  = spAsin(y*factor_in >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
+				Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
+				Sint32 LX_in  = -RX_in;
+				Sint32 LX_out = -RX_out;
+				if (LX_in < rxl)
+					LX_in = rxl;
+				if (LX_out < rxl)
+					LX_out = rxl;
+				if (RX_in > rxr)
+					RX_in = rxr;
+				if (RX_out > rxr)
+					RX_out = rxr;
+				for (x = LX_out;x < LX_in; x++)
 					draw_pixel( x1 + x, y1 + y, color );
-				for ( ; x * x <= XXB && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				for (x = RX_in;x < RX_out; x++)
 					draw_pixel( x1 + x, y1 + y, color );
-			}
+			}			
 			//down
-			for ( ; y <= ryr; y++ )
+			for (; y <= ryr; y++ )
 			{
-				Sint32 XX = rx * rx - spMul( y * y, XX_mul );
-				for ( x = rxl; x * x >= XX && x <= rxr; x++ );
-				for ( ; x * x <= XX && x <= rxr; x++ )
+				Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+				Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+				Sint32 LX = -RX;
+				if (LX < rxl)
+					LX = rxl;
+				if (RX > rxr)
+					RX = rxr;
+				for (x = LX;x <= RX; x++)
 					draw_pixel( x1 + x, y1 + y, color );
-			}
+			}			
 		}
 	}
 	SDL_UnlockSurface( spTarget );
