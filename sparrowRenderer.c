@@ -375,14 +375,14 @@ inline Uint16 rendererLightCalculation( Uint16 color, Sint32 x1, Sint32 y1, Sint
 {
 	if ( spLightOn <= 0)
 		return color;
-	Uint32 or = ( color >> 11 ); //0..31
-	Uint32 og = ( ( color & 2047 ) >> 5 ); //0..63
-	Uint32 ob = ( color & 31 ); //0..31
+	Sint32 or = ( color >> 11 ); //0..31
+	Sint32 og = ( ( color & 2047 ) >> 5 ); //0..63
+	Sint32 ob = ( color & 31 ); //0..31
 	//globale light:
 
-	Uint32 r = spLightAmbient[0] * or << SP_LIGHT_ACCURACY - SP_ACCURACY;
-	Uint32 g = spLightAmbient[1] * og << SP_LIGHT_ACCURACY - SP_ACCURACY;
-	Uint32 b = spLightAmbient[2] * ob << SP_LIGHT_ACCURACY - SP_ACCURACY;
+	Sint32 r = spLightAmbient[0] * or << SP_LIGHT_ACCURACY - SP_ACCURACY;
+	Sint32 g = spLightAmbient[1] * og << SP_LIGHT_ACCURACY - SP_ACCURACY;
+	Sint32 b = spLightAmbient[2] * ob << SP_LIGHT_ACCURACY - SP_ACCURACY;
 
 	//the other lights
 	int i;
@@ -409,9 +409,8 @@ inline Uint16 rendererLightCalculation( Uint16 color, Sint32 x1, Sint32 y1, Sint
 		if ( div == 0 )
 			div = 1;
 		Sint32 ac = spLightDiv( spLightMul( direction[0], normale[0] ) +
-								spLightMul( direction[1], normale[1] ) +
-								spLightMul( direction[2], normale[2] ),
-								div );
+								            spLightMul( direction[1], normale[1] ) +
+								            spLightMul( direction[2], normale[2] ) , div );
 		if ( ac < 0 )
 			ac = 0;
 		if ( ac > ( 1 << SP_LIGHT_ACCURACY ) )
@@ -424,12 +423,18 @@ inline Uint16 rendererLightCalculation( Uint16 color, Sint32 x1, Sint32 y1, Sint
 	r = r >> SP_LIGHT_ACCURACY;
 	if ( r > 31 )
 		r = 31;
+	if ( r < 0 )
+		r = 0;
 	g = g >> SP_LIGHT_ACCURACY;
 	if ( g > 63 )
 		g = 63;
+	if ( g < 0 )
+		g = 0;
 	b = b >> SP_LIGHT_ACCURACY;
 	if ( b > 31 )
 		b = 31;
+	if ( b < 0 )
+		b = 0;
 	color = ( r << 11 ) + ( g << 5 ) + b;
 	return color;
 }
