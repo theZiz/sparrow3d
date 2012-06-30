@@ -204,7 +204,7 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
     letter->surface = spCreateSurface(width, width);
     SDL_LockSurface(letter->surface);
     int x,y;
-    Uint16* pixel = letter->surface->pixels;
+    Uint16* pixel = (Uint16*)letter->surface->pixels;
     int w = letter->surface->pitch/letter->surface->format->BytesPerPixel;
     for (x = 0; x < letter->surface->w; x++)
       for (y = 0; y < letter->surface->h; y++)
@@ -241,7 +241,7 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
     letter->surface = spCreateSurface(width, font->maxheight+SP_FONT_EXTRASPACE*2);
     SDL_LockSurface(letter->surface);
     int x,y;
-    Uint16* pixel = letter->surface->pixels;
+    Uint16* pixel = (Uint16*)letter->surface->pixels;
     int w = letter->surface->pitch/letter->surface->format->BytesPerPixel;
     for (x = 0; x < letter->surface->w; x++)
       for (y = 0; y < letter->surface->h; y++)

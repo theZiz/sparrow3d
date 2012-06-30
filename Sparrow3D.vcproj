@@ -175,35 +175,35 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\sparrowCore.cpp"
+				RelativePath=".\sparrowCore.c"
 				>
 			</File>
 			<File
-				RelativePath=".\sparrowFont.cpp"
+				RelativePath=".\sparrowFont.c"
 				>
 			</File>
 			<File
-				RelativePath=".\sparrowMath.cpp"
+				RelativePath=".\sparrowMath.c"
 				>
 			</File>
 			<File
-				RelativePath=".\sparrowMesh.cpp"
+				RelativePath=".\sparrowMesh.c"
 				>
 			</File>
 			<File
-				RelativePath=".\sparrowPrimitives.cpp"
+				RelativePath=".\sparrowPrimitives.c"
 				>
 			</File>
 			<File
-				RelativePath=".\sparrowPrimitivesAsm.cpp"
+				RelativePath=".\sparrowPrimitivesAsm.c"
 				>
 			</File>
 			<File
-				RelativePath=".\sparrowRenderer.cpp"
+				RelativePath=".\sparrowRenderer.c"
 				>
 			</File>
 			<File
-				RelativePath=".\sparrowSprite.cpp"
+				RelativePath=".\sparrowSprite.c"
 				>
 			</File>
 		</Filter>
