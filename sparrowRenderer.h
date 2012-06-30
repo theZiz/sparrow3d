@@ -28,9 +28,11 @@
 #endif
 
 #define SP_MAX_LIGHTS 8
-#define SP_LIGHT_ACCURACY 22
-#define SP_LIGHT_HALF_ACCURACY 11
-//#define SP_LIGHT_ACCURACY_FACTOR 1048576.0f
+//If you change SP_LIGHT..., change the iterations in lightSqrt, too!
+#define SP_LIGHT_TYPE Sint64
+#define SP_LIGHT_ACCURACY 24
+#define SP_LIGHT_HALF_ACCURACY 12
+#define SP_LIGHT_ACCURACY_FACTOR (65536.0f*256.0f)
 
 //A point with the projected coordinates, but without uv-coordinates
 typedef struct spPointStruct *spPointPointer;
