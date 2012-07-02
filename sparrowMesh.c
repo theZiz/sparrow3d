@@ -154,8 +154,8 @@ float meshatof( char* buffer )
 		pos++;
 	}
 	if ( esign )
-		return sign * ( number + aftercomma ) * pow( 10.0f, e );
-	return sign * ( number + aftercomma ) / pow( 10.0f, e );
+		return sign * ( number + aftercomma ) * pow( 10.0, e );
+	return sign * ( number + aftercomma ) / pow( 10.0, e );
 }
 
 void meshParseVertex( char* buffer, spPointPointer point, int max )
