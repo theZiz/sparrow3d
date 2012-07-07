@@ -388,7 +388,7 @@ PREFIX spLetterPointer spFontGetLetter( spFontPointer font, Uint32 character )
 	if ( character >= font->cacheOffset && character < font->cacheOffset + font->cache.size )
 	{
 		spLetterPointer result = font->cache.cache[character - font->cacheOffset];
-		if ( result != ( void* )( 0xFFFFFFFF ) ) //Found
+		if ( result != ( void* )( -1 ) ) //Found
 			return result;
 		//Else: Save in Cache
 		result = spLetterFind( font->root, character );
