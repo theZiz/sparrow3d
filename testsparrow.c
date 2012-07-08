@@ -64,11 +64,11 @@ void draw_test( void )
 		break;
 	case 4:
 		srand( 0 );
-		for ( i = 0; i < 500; i++ )
+		for ( i = 0; i < 5; i++ )
 			spEllipseBorder( rand() % screen->w, rand() % screen->h, -1, rand() % screen->w / 4, rand() % screen->h / 4, 10, 20, rand() % 65536 );
-		for ( i = 0; i < 500; i++ )
+		for ( i = 0; i < 5; i++ )
 			spEllipse( rand() % screen->w, rand() % screen->h, -1, rand() % screen->w / 4, rand() % screen->h / 4, rand() % 65536 );
-		/*for ( i = 0; i < 5; i++ )
+		for ( i = 0; i < 5; i++ )
 			spRectangleBorder( rand() % screen->w, rand() % screen->h, -1,
 							   rand() % screen->w / 2, rand() % screen->h / 2, 12, 6, rand() % 65536 );
 		for ( i = 0; i < 5; i++ )
@@ -76,7 +76,7 @@ void draw_test( void )
 						 rand() % screen->w / 2, rand() % screen->h / 2, rand() % 65536 );
 		for ( i = 0; i < 100; i++ )
 			spLine( rand() % screen->w, rand() % screen->h, -1,
-					rand() % screen->w, rand() % screen->h, -1, rand() % 65536 );*/
+					rand() % screen->w, rand() % screen->h, -1, rand() % 65536 );
 		break;
 	case 3:
 		spSetAlphaTest( 0 );
