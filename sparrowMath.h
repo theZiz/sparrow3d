@@ -21,11 +21,7 @@
 #define _SPARROW_MATH_H
 
 #include "sparrowDefines.h"
-#ifdef SDL_INCLUDE_SUBDIR
-#include <SDL/SDL.h>
-#else
 #include <SDL.h>
-#endif
 
 /* spInitMath initializes the fixed point look up tables for sin, cos, etc. */
 PREFIX void spInitMath( void );

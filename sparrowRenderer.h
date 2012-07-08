@@ -21,11 +21,7 @@
 #define _SPARROW_RENDERER_H
 
 #include "sparrowDefines.h"
-#ifdef SDL_INCLUDE_SUBDIR
-#include <SDL/SDL.h>
-#else
 #include <SDL.h>
-#endif
 
 #define SP_MAX_LIGHTS 8
 //If you change SP_LIGHT..., change the iterations in lightSqrt, too!

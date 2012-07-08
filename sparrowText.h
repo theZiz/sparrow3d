@@ -21,13 +21,8 @@
 #define _SPARROW_TEXT_H
 
 #include "sparrowDefines.h"
-#ifdef SDL_INCLUDE_SUBDIR
-#include <SDL/SDL.h>
-#include <SDL/SDL_ttf.h>
-#else
 #include <SDL.h>
 #include <SDL_ttf.h>
-#endif
 
 //Some languages as two-byte-strings from the ISO 639-1
 //http://www.sil.org/iso639-3/codes.asp?order=639

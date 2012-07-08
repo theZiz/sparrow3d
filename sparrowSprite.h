@@ -21,11 +21,7 @@
 #define _SPARROW_SPRITE_H
 
 #include "sparrow3d.h"
-#ifdef SDL_INCLUDE_SUBDIR
-#include <SDL/SDL.h>
-#else
 #include <SDL.h>
-#endif
 
 typedef struct spSubSpriteStruct *spSubSpritePointer;
 typedef struct spSubSpriteStruct

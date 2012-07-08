@@ -21,11 +21,7 @@
 #define _SPARROW_CORE_H
 
 #include "sparrowDefines.h"
-#ifdef SDL_INCLUDE_SUBDIR
-#include <SDL/SDL.h>
-#else
 #include <SDL.h>
-#endif
 
 typedef struct SspInput *PspInput;
 typedef struct SspInput

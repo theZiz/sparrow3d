@@ -21,13 +21,8 @@
 #define _SPARROW_FONT_H
 
 #include "sparrowDefines.h"
-#ifdef SDL_INCLUDE_SUBDIR
-#include <SDL/SDL.h>
-#include <SDL/SDL_ttf.h>
-#else
 #include <SDL.h>
 #include <SDL_ttf.h>
-#endif
 
 #define SP_FONT_DEFAULT_CACHE 16384
 #define SP_FONT_EXTRASPACE 1

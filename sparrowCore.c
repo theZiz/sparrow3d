@@ -21,15 +21,9 @@
 #include "sparrowCore.h"
 #include "sparrowMath.h"
 #include "sparrowPrimitives.h"
-#ifdef SDL_INCLUDE_SUBDIR
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_ttf.h>
-#else
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#endif
 
 int spWindowX = 0;
 int spWindowY = 0;

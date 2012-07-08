@@ -21,11 +21,7 @@
 #define _SPARROW_PRIMITVES_H
 
 #include "sparrow3d.h"
-#ifdef SDL_INCLUDE_SUBDIR
-#include <SDL/SDL.h>
-#else
 #include <SDL.h>
-#endif
 
 /* Some words to colors: Even if I use 32 Bit values, this part of the engine
  * works ONLY with 16 Bit color, with the 5 bit red, 6 bit green and 5 bit blue.
