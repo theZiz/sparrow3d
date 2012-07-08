@@ -333,9 +333,17 @@ inline void spMulModellView( Sint32 x, Sint32 y, Sint32 z, Sint32 *tx, Sint32 *t
     root |= 2 << (N); \
 }
 
-Sint32 lightSqrt ( Sint32 n )
+SP_LIGHT_TYPE lightSqrt ( SP_LIGHT_TYPE n )
 {
-	Sint32 root = 0, tryv;
+	SP_LIGHT_TYPE root = 0, tryv;
+	iter1 ( 23 );
+	iter1 ( 22 );
+	iter1 ( 21 );
+	iter1 ( 20 );
+	iter1 ( 19 );
+	iter1 ( 18 );
+	iter1 ( 17 );
+	iter1 ( 16 );
 	iter1 ( 15 );
 	iter1 ( 14 );
 	iter1 ( 13 );
@@ -357,32 +365,32 @@ Sint32 lightSqrt ( Sint32 n )
 
 //#define lightSqrt(n) (Sint32)(sqrt((float)(n)/SP_LIGHT_ACCURACY_FACTOR)*SP_LIGHT_ACCURACY_FACTOR)
 
-#define spLightMul(a,b) ((Sint64)(a)*(Sint64)(b)>>SP_LIGHT_ACCURACY)
-#define spLightDiv(a,b) (((Sint64)(a)<<SP_LIGHT_ACCURACY)/(Sint64)(b))
+#define spLightMul(a,b) (((a)>>SP_LIGHT_HALF_ACCURACY) * ((b)>>SP_LIGHT_HALF_ACCURACY))
+#define spLightDiv(a,b) (((a)<<SP_LIGHT_HALF_ACCURACY)/(b)<<SP_LIGHT_HALF_ACCURACY)
 
-inline void spCalcLightNormal( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2,
-							   Sint32 x3, Sint32 y3, Sint32 z3, Sint32* normale )
+inline void spCalcLightNormal( SP_LIGHT_TYPE x1, SP_LIGHT_TYPE y1, SP_LIGHT_TYPE z1, SP_LIGHT_TYPE x2, SP_LIGHT_TYPE y2, SP_LIGHT_TYPE z2,
+                               SP_LIGHT_TYPE x3, SP_LIGHT_TYPE y3, SP_LIGHT_TYPE z3, SP_LIGHT_TYPE* normale )
 {
 	normale[0] = spLightMul( y1 - y2, z2 - z3 )
-				 - spLightMul( z1 - z2, y2 - y3 );
+	           - spLightMul( z1 - z2, y2 - y3 );
 	normale[1] = spLightMul( z1 - z2, x2 - x3 )
-				 - spLightMul( x1 - x2, z2 - z3 );
+             - spLightMul( x1 - x2, z2 - z3 );
 	normale[2] = spLightMul( x1 - x2, y2 - y3 )
-				 - spLightMul( y1 - y2, x2 - x3 );
+             - spLightMul( y1 - y2, x2 - x3 );
 }
 
 inline Uint16 rendererLightCalculation( Uint16 color, Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3 )
 {
 	if ( spLightOn <= 0)
 		return color;
-	Uint32 or = ( color >> 11 ); //0..31
-	Uint32 og = ( ( color & 2047 ) >> 5 ); //0..63
-	Uint32 ob = ( color & 31 ); //0..31
+	Sint32 or = ( color >> 11 ); //0..31
+	Sint32 og = ( ( color & 2047 ) >> 5 ); //0..63
+	Sint32 ob = ( color & 31 ); //0..31
 	//globale light:
 
-	Uint32 r = spLightAmbient[0] * or << SP_LIGHT_ACCURACY - SP_ACCURACY;
-	Uint32 g = spLightAmbient[1] * og << SP_LIGHT_ACCURACY - SP_ACCURACY;
-	Uint32 b = spLightAmbient[2] * ob << SP_LIGHT_ACCURACY - SP_ACCURACY;
+	SP_LIGHT_TYPE r = spLightAmbient[0] * or << SP_LIGHT_ACCURACY - SP_ACCURACY;
+	SP_LIGHT_TYPE g = spLightAmbient[1] * og << SP_LIGHT_ACCURACY - SP_ACCURACY;
+	SP_LIGHT_TYPE b = spLightAmbient[2] * ob << SP_LIGHT_ACCURACY - SP_ACCURACY;
 
 	//the other lights
 	int i;
@@ -390,32 +398,31 @@ inline Uint16 rendererLightCalculation( Uint16 color, Sint32 x1, Sint32 y1, Sint
 	{
 		if ( !spLightDiffuse[i].active )
 			continue;
-		Sint32 normale[3];
+		SP_LIGHT_TYPE normale[3];
 		spCalcLightNormal( x1 << SP_LIGHT_ACCURACY - SP_ACCURACY, y1 << SP_LIGHT_ACCURACY - SP_ACCURACY, z1 << SP_LIGHT_ACCURACY - SP_ACCURACY,
-						   x2 << SP_LIGHT_ACCURACY - SP_ACCURACY, y2 << SP_LIGHT_ACCURACY - SP_ACCURACY, z2 << SP_LIGHT_ACCURACY - SP_ACCURACY,
-						   x3 << SP_LIGHT_ACCURACY - SP_ACCURACY, y3 << SP_LIGHT_ACCURACY - SP_ACCURACY, z3 << SP_LIGHT_ACCURACY - SP_ACCURACY, normale );
-		Sint32 normale_length = lightSqrt( spLightMul( normale[0], normale[0] ) +
-										   spLightMul( normale[1], normale[1] ) +
-										   spLightMul( normale[2], normale[2] ) );
+		                   x2 << SP_LIGHT_ACCURACY - SP_ACCURACY, y2 << SP_LIGHT_ACCURACY - SP_ACCURACY, z2 << SP_LIGHT_ACCURACY - SP_ACCURACY,
+		                   x3 << SP_LIGHT_ACCURACY - SP_ACCURACY, y3 << SP_LIGHT_ACCURACY - SP_ACCURACY, z3 << SP_LIGHT_ACCURACY - SP_ACCURACY, normale );
+		SP_LIGHT_TYPE normale_length = lightSqrt( spLightMul( normale[0], normale[0] ) +
+		                                   spLightMul( normale[1], normale[1] ) +
+		                                   spLightMul( normale[2], normale[2] ) );
 
-		Sint32 direction[3];
-		direction[0] = spLightDiffuse[i].x - ( x1 + x2 >> 1 );
-		direction[1] = spLightDiffuse[i].y - ( y1 + y2 >> 1 );
-		direction[2] = spLightDiffuse[i].z - ( z1 + z2 >> 1 );
-		Sint32 direction_length = lightSqrt( spLightMul( direction[0], direction[0] ) +
-											 spLightMul( direction[1], direction[1] ) +
-											 spLightMul( direction[2], direction[2] ) );
-		Sint32 div = spLightMul( direction_length, normale_length );
+		SP_LIGHT_TYPE direction[3];
+		direction[0] = (SP_LIGHT_TYPE)(spLightDiffuse[i].x - ( x1 + x2 >> 1 )) << SP_LIGHT_ACCURACY - SP_ACCURACY;
+		direction[1] = (SP_LIGHT_TYPE)(spLightDiffuse[i].y - ( y1 + y2 >> 1 )) << SP_LIGHT_ACCURACY - SP_ACCURACY;
+		direction[2] = (SP_LIGHT_TYPE)(spLightDiffuse[i].z - ( z1 + z2 >> 1 )) << SP_LIGHT_ACCURACY - SP_ACCURACY;
+		SP_LIGHT_TYPE direction_length = lightSqrt( spLightMul( direction[0], direction[0] ) +
+		                                            spLightMul( direction[1], direction[1] ) +
+		                                            spLightMul( direction[2], direction[2] ) );
+		SP_LIGHT_TYPE div = spLightMul( direction_length, normale_length );
 		if ( div == 0 )
 			div = 1;
-		Sint32 ac = spLightDiv( spLightMul( direction[0], normale[0] ) +
-								spLightMul( direction[1], normale[1] ) +
-								spLightMul( direction[2], normale[2] ),
-								div );
+		SP_LIGHT_TYPE ac = spLightDiv( spLightMul( direction[0], normale[0] ) +
+		                               spLightMul( direction[1], normale[1] ) +
+		                               spLightMul( direction[2], normale[2] ) , div );
 		if ( ac < 0 )
 			ac = 0;
-		if ( ac > ( 1 << SP_LIGHT_ACCURACY ) )
-			ac = 1 << SP_LIGHT_ACCURACY;
+		if ( ac > ( (SP_LIGHT_TYPE)1 << SP_LIGHT_ACCURACY ) )
+			ac = (SP_LIGHT_TYPE)1 << SP_LIGHT_ACCURACY;
 		r += spLightMul( ac, spLightDiffuse[i].r << SP_LIGHT_ACCURACY - SP_ACCURACY ) * or;
 		g += spLightMul( ac, spLightDiffuse[i].g << SP_LIGHT_ACCURACY - SP_ACCURACY ) * og;
 		b += spLightMul( ac, spLightDiffuse[i].b << SP_LIGHT_ACCURACY - SP_ACCURACY ) * ob;
@@ -424,12 +431,18 @@ inline Uint16 rendererLightCalculation( Uint16 color, Sint32 x1, Sint32 y1, Sint
 	r = r >> SP_LIGHT_ACCURACY;
 	if ( r > 31 )
 		r = 31;
+	if ( r < 0 )
+		r = 0;
 	g = g >> SP_LIGHT_ACCURACY;
 	if ( g > 63 )
 		g = 63;
+	if ( g < 0 )
+		g = 0;
 	b = b >> SP_LIGHT_ACCURACY;
 	if ( b > 31 )
 		b = 31;
+	if ( b < 0 )
+		b = 0;
 	color = ( r << 11 ) + ( g << 5 ) + b;
 	return color;
 }
