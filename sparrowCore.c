@@ -703,8 +703,6 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 				spFPS = frames;
 				frames = 0;
 			}
-			//if (steps-minwait > 0)
-			//  SDL_Delay(steps-minwait);
 			steps = 0;
 		}
 	}

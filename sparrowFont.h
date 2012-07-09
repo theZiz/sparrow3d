@@ -78,6 +78,8 @@ PREFIX void spFontAdd( spFontPointer font, Uint32 character, Uint16 color );
 
 PREFIX void spFontAddRange( spFontPointer font, Uint32 from, Uint32 to, Uint16 color );
 
+PREFIX Uint32 spFontGetUnicodeFromUTF8(const char* sign);
+
 /* spFontAddButton creates a new button formed sign with "character" in
  * center. The background color is bgColor and the color of letter and
  * border will be fgColor. */

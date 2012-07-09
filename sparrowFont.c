@@ -24,6 +24,7 @@
 Uint32 spFontButtonLeft = '[';
 Uint32 spFontButtonRight = ']';
 int spFontStrategy = SP_FONT_INTELLIGENT;
+int spFontLastUTF8Length = 0;
 
 PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size )
 {
@@ -125,11 +126,11 @@ spLetterPointer spFontInsert( spLetterPointer letter, spLetterPointer root )
 PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint32 character, Uint16 color )
 {
 	letter->color = color;
-	char buffer[5];
+	Uint16 buffer[2];
 	buffer[0] = character;
-	buffer[1] = 0; //TODO: utf8
+	buffer[1] = 0;
 	SDL_Color sdlcolor = {( color >> 11 ) << 3, ( ( color << 5 ) >> 10 ) << 2, ( ( color & 31 ) << 3 )};
-	SDL_Surface* surface = TTF_RenderUTF8_Solid( font->font, buffer, sdlcolor );
+	SDL_Surface* surface = TTF_RenderUNICODE_Solid( font->font, buffer, sdlcolor );
 	int width = surface->w + SP_FONT_EXTRASPACE * 2;
 	if ( width & 1 )
 		width++;
@@ -145,7 +146,7 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 
 	SDL_FreeSurface( surface );
 
-	TTF_SizeUTF8( font->font, buffer, &( letter->width ), &( letter->height ) );
+	TTF_SizeUNICODE( font->font, buffer, &( letter->width ), &( letter->height ) );
 	if ( font->maxheight < letter->height )
 		font->maxheight = letter->height;
 }
@@ -163,9 +164,36 @@ PREFIX void spFontAdd( spFontPointer font, Uint32 character, Uint16 color )
 
 PREFIX void spFontAddRange( spFontPointer font, Uint32 from, Uint32 to, Uint16 color )
 {
+	printf("Adding unicode sign %i to %i\n",from,to);
 	Uint32 letter;
 	for ( letter = from; letter <= to; letter++ )
 		spFontAdd( font, letter, color );
+}
+
+PREFIX Uint32 spFontGetUnicodeFromUTF8(const char* sign)
+{
+	if (!(sign[0] & 128))
+	{
+		spFontLastUTF8Length = 1;
+		return sign[0]; //	0xxxxxxx
+	}
+	//No ASCII sign => counting the following bytes:
+	int pos = 128; //first bit
+	spFontLastUTF8Length = 0;
+	while (sign[0] & pos) //until we find the first zero
+	{
+		spFontLastUTF8Length++;
+		pos=pos>>1; //pos = pos / 2; => next bit
+	}
+	switch (spFontLastUTF8Length)
+	{
+		case 2: //110xxxxx 10xxxxxx
+			return (((Uint32)sign[0] & 31) << 6) | ((Uint32)sign[1] & 63);
+		case 3: //1110xxxx 10xxxxxx 10xxxxxx
+			return (((Uint32)sign[0] & 15) << 12) | (((Uint32)sign[1] & 63) << 6) | ((Uint32)sign[2] & 63);
+		case 4: //11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+			return (((Uint32)sign[0] & 7) << 18) | (((Uint32)sign[1] & 63) << 12) | (((Uint32)sign[2] & 63) << 6) | ((Uint32)sign[3] & 63);
+	}
 }
 
 int spFontCorrectStrategy(char* button)
@@ -194,9 +222,6 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
   int width;
   if (spFontCorrectStrategy(caption) == SP_FONT_BUTTON)
   {
-    char buffer[5];
-    buffer[0] = character;
-    buffer[1] = 0; //TODO: utf8
     SDL_Surface* surface = TTF_RenderUTF8_Solid( font->font, caption, sdlcolor );
     width = font->maxheight + SP_FONT_EXTRASPACE * 2;
     if ( width & 1 )
@@ -416,14 +441,17 @@ PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPo
     if (text[l]==spFontButtonLeft && (letter = spLetterFind( font->buttonRoot, text[l+1])) && text[l+2]==spFontButtonRight)
       l+=2;
     else
-      letter = spFontGetLetter( font, text[l] ); //TODO utf8
+    {
+			Uint32 sign = spFontGetUnicodeFromUTF8(&(text[l]));
+      letter = spFontGetLetter( font, sign );
+    }
 		if ( letter )
 		{
 			pos += letter->width >> 1;
 			spBlitSurface( pos, y + letter->height / 2, z, letter->surface );
 			pos += letter->width - ( letter->width >> 1 );
 		}
-		l++;
+		l+=spFontLastUTF8Length;
 	}
 }
 
@@ -451,7 +479,10 @@ PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFo
       if (text[l]==spFontButtonLeft && (letter = spLetterFind( font->buttonRoot, text[l+1])) && text[l+2]==spFontButtonRight)
         l+=2;
       else
-        letter = spFontGetLetter( font, text[l] ); //TODO utf8
+			{
+				Uint32 sign = spFontGetUnicodeFromUTF8(&(text[l]));
+				letter = spFontGetLetter( font, sign );
+			}
 			if ( letter )
 			{
 				spLetterIterPointer iter = ( spLetterIterPointer )malloc( sizeof( spLetterIterStruct ) );
@@ -469,7 +500,7 @@ PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFo
 				width += letter->width;
 				iter->next = NULL;
 			}
-			l++;
+			l+=spFontLastUTF8Length;
 		}
 		int pos = x - width;
 		while ( first != NULL )
@@ -510,7 +541,10 @@ PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spF
       if (text[l]==spFontButtonLeft && (letter = spLetterFind( font->buttonRoot, text[l+1])) && text[l+2]==spFontButtonRight)
         l+=2;
       else
-        letter = spFontGetLetter( font, text[l] ); //TODO utf8
+			{
+				Uint32 sign = spFontGetUnicodeFromUTF8(&(text[l]));
+				letter = spFontGetLetter( font, sign );
+			}
 			if ( letter )
 			{
 				spLetterIterPointer iter = ( spLetterIterPointer )malloc( sizeof( spLetterIterStruct ) );
@@ -528,7 +562,7 @@ PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spF
 				width += letter->width;
 				iter->next = NULL;
 			}
-			l++;
+			l+=spFontLastUTF8Length;
 		}
 		int pos = x - width / 2;
 		while ( first != NULL )
