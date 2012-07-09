@@ -599,100 +599,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 	return result;
 }
 
-/*PREFIX signed char spGetAxis(int axis)
-{
-  #ifdef GP2X
-    if (axis==0)
-    {
-      if (spInput.button[SP_AXIS_LEFTUP] ||
-          spInput.button[SP_AXIS_LEFT]   ||
-          spInput.button[SP_AXIS_LEFTDOWN])
-        return -1;
-      if (spInput.button[SP_AXIS_RIGHTUP] ||
-          spInput.button[SP_AXIS_RIGHT]   ||
-          spInput.button[SP_AXIS_RIGHTDOWN])
-        return  1;
-    }
-    else
-    {
-      if (spInput.button[SP_AXIS_LEFTUP] ||
-          spInput.button[SP_AXIS_UP]   ||
-          spInput.button[SP_AXIS_RIGHTUP])
-        return  1;
-      if (spInput.button[SP_AXIS_LEFTDOWN] ||
-          spInput.button[SP_AXIS_DOWN]   ||
-          spInput.button[SP_AXIS_RIGHTDOWN])
-        return -1;
-    }
-    return 0;
-  #else
-    return spInput.axis[axis];
-  #endif
-}*/
-
-/*PREFIX void spSetAxis(int axis,signed char value)
-{
-  #ifdef GP2X
-    if (axis==0)
-    {
-      spInput.button[SP_AXIS_LEFTUP] = 0;
-      spInput.button[SP_AXIS_LEFT] = 0;
-      spInput.button[SP_AXIS_LEFTDOWN] = 0;
-      spInput.button[SP_AXIS_DOWN] = 0;
-      spInput.button[SP_AXIS_RIGHTDOWN] = 0;
-      spInput.button[SP_AXIS_RIGHT] = 0;
-      spInput.button[SP_AXIS_RIGHTUP] = 0;
-      spInput.button[SP_AXIS_UP] = 0;
-      if (spInput.axis[1] == 1 && value == -1)
-        spInput.button[SP_AXIS_LEFTUP] = 1;
-      if (spInput.axis[1] == 0 && value == -1)
-        spInput.button[SP_AXIS_LEFT] = 1;
-      if (spInput.axis[1] == -1 && value == -1)
-        spInput.button[SP_AXIS_LEFTDOWN] = 1;
-      if (spInput.axis[1] == -1 && value == 0)
-        spInput.button[SP_AXIS_DOWN] = 1;
-      if (spInput.axis[1] == -1 && value == 1)
-        spInput.button[SP_AXIS_RIGHTDOWN] = 1;
-      if (spInput.axis[1] == 0 && value == 1)
-        spInput.button[SP_AXIS_RIGHT] = 1;
-      if (spInput.axis[1] == 1 && value == 1)
-        spInput.button[SP_AXIS_RIGHTUP] = 1;
-      if (spInput.axis[1] == 1 && value == 0)
-        spInput.button[SP_AXIS_UP] = 1;
-    }
-    else
-    {
-      spInput.button[SP_AXIS_LEFTUP] = 0;
-      spInput.button[SP_AXIS_LEFT] = 0;
-      spInput.button[SP_AXIS_LEFTDOWN] = 0;
-      spInput.button[SP_AXIS_DOWN] = 0;
-      spInput.button[SP_AXIS_RIGHTDOWN] = 0;
-      spInput.button[SP_AXIS_RIGHT] = 0;
-      spInput.button[SP_AXIS_RIGHTUP] = 0;
-      spInput.button[SP_AXIS_UP] = 0;
-      if (value == 1 && spInput.axis[0] == -1)
-        spInput.button[SP_AXIS_LEFTUP] = 1;
-      if (value == 0 && spInput.axis[0] == -1)
-        spInput.button[SP_AXIS_LEFT] = 1;
-      if (value == -1 && spInput.axis[0] == -1)
-        spInput.button[SP_AXIS_LEFTDOWN] = 1;
-      if (value == -1 && spInput.axis[0] == 0)
-        spInput.button[SP_AXIS_DOWN] = 1;
-      if (value == -1 && spInput.axis[0] == 1)
-        spInput.button[SP_AXIS_RIGHTDOWN] = 1;
-      if (value == 0 && spInput.axis[0] == 1)
-        spInput.button[SP_AXIS_RIGHT] = 1;
-      if (value == 1 && spInput.axis[0] == 1)
-        spInput.button[SP_AXIS_RIGHTUP] = 1;
-      if (value == 1 && spInput.axis[0] == 0)
-        spInput.button[SP_AXIS_UP] = 1;
-        }
-    spUpdateAxis(axis);
-  #else
-    spInput.axis[axis] = value;
-  #endif
-}*/
-
 inline void spUpdateAxis( int axis )
 {
 #ifdef GP2X
@@ -732,9 +638,11 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 	Uint32 bigsteps = 0;
 	Uint32 frames = 0;
 	int back = 0;
+	//time since the last frame
 	Uint32 steps = 0;
-	olderticks = SDL_GetTicks();
+	//time from the last calculation
 	oldticks = olderticks;
+	//time of the current loop pass
 	newticks = olderticks;
 
 	while( back == 0 && !spDone )
@@ -742,19 +650,21 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 #ifdef CORE_DEBUG
 		spPrintDebug( "Start mainloop" );
 #endif
+		oldticks = newticks;
 		newticks = SDL_GetTicks();
-	//mouse movement emulation: *untested*
-		#ifdef F100
-			if (sp_touchscreen_emulation)
-			{
-				//If I read right in the SDL code (why document it, if you can read it
-				//in the code? -_-), SDL_WarpMouse should test for the screen dimension.
-				int mouse_steps = newticks - olderticks;
-				if (mouse_steps)
-				  SDL_WarpMouse(spInput.touchscreen.x + sp_touchscreen_dx * mouse_steps,
-				                spInput.touchscreen.y + sp_touchscreen_dy * mouse_steps);
-			}
-		#endif
+		Uint32 diffticks = newticks-oldticks;
+#ifdef F100
+		//mouse movement emulation: *untested*
+		if (sp_touchscreen_emulation)
+		{
+			//If I read right in the SDL code (why document it, if you can read it
+			//in the code? -_-), SDL_WarpMouse should test for the screen dimension.
+			int mouse_steps = newticks - oldticks;
+			if (mouse_steps)
+				SDL_WarpMouse(spInput.touchscreen.x + sp_touchscreen_dx * mouse_steps,
+											spInput.touchscreen.y + sp_touchscreen_dy * mouse_steps);
+		}
+#endif
 		if ( spHandleEvent( spEvent ) && spResize )
 		{
 			spResize( spWindowX, spWindowY );
@@ -771,16 +681,13 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 #ifdef CORE_DEBUG
 		spPrintDebug( "  Did axis update" );
 #endif
-		if ( newticks - oldticks > 0 )
-		{
-			if ( spCalc )
-				back = spCalc( newticks - oldticks );
+		//Calls with diffticks == 0 are possible!
+		if ( spCalc )
+			back = spCalc( diffticks );
 #ifdef CORE_DEBUG
-			spPrintDebug( "  Did calc" );
+		spPrintDebug( "  Did calc" );
 #endif
-			oldticks = newticks;
-		}
-		steps += newticks - olderticks;
+		steps += diffticks;
 		if ( steps >= minwait )
 		{
 			if ( spDraw )
@@ -794,13 +701,11 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 			{
 				bigsteps -= 1000;
 				spFPS = frames;
-				//printf("FPS: %i\n",spFPS);
 				frames = 0;
 			}
 			//if (steps-minwait > 0)
 			//  SDL_Delay(steps-minwait);
 			steps = 0;
-			olderticks = newticks;
 		}
 	}
 	return back;
