@@ -1,4 +1,23 @@
+# With this file you can define the possibly useable languages of your
+# applications. It is very similar to a "normal" translation file.
+# The text with the languages have to be namend "languages".
+
 --:languages
 en English
 de Deutsch
 fr Francais
+
+# If you use lookuptable based text rendering like sparrowFont it is
+# very useful to define, which signs you need in every language. Do this
+# like shown below with a text namend "sign range".
+# For every language you can just add different signs,
+# seperated by " " or ranges, where start and stop of the range are
+# seperated by "-". " " is not defineable, because EVERY language needs
+# it, it is choosen by default.
+
+#   ASCII For the Lulz
+en: !-~   …
+#   ASCII German      For the Lulz
+de: !-~   ü ä ö Ä Ü Ö …
+#   ASCII French                                  For the Lulz
+fr: !-~   á à é è í ì ó ò ú ù Á À É È Í Ì Ó Ò Ú Ù …
