@@ -105,6 +105,9 @@ PREFIX void spInitCore( void )
 	spInput.touchscreen.pressed = 0;
 	spInput.touchscreen.x = 0;
 	spInput.touchscreen.y = 0;
+	#ifdef KEYBOARD_DEVICE
+	spInput.keyboardBuffer = NULL;
+	#endif
 
 #ifdef GP2X
 	//f100, f200, open2x and wiz
@@ -218,12 +221,12 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 		switch ( event.type )
 		{
 			case SDL_MOUSEBUTTONDOWN:
-			  spInput.touchscreen.pressed = 1;			
+			  spInput.touchscreen.pressed = 1;
 			  spInput.touchscreen.x = event.button.x;
 			  spInput.touchscreen.y = event.button.y;
 			  break;
 			case SDL_MOUSEBUTTONUP:
-			  spInput.touchscreen.pressed = 0;			
+			  spInput.touchscreen.pressed = 0;
 			  break;
 			case SDL_MOUSEMOTION:
 				if (spInput.touchscreen.pressed)
@@ -234,7 +237,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				break;
 			case SDL_JOYBUTTONDOWN:
 			  #ifdef F100
-					if (event.jbutton.button == sp_switch_button || 
+					if (event.jbutton.button == sp_switch_button ||
 					   (sp_touchscreen_emulation && (event.jbutton.button == sp_ok_button ||
 					   (event.jbutton.button >= SP_AXIS_UP && event.jbutton.button <= SP_AXIS_RIGHTUP))))
 					{
@@ -253,7 +256,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 								  break;
 								default:
 								  sp_touchscreen_dx = 0;
-								  break;							
+								  break;
 							}
 							switch (event.jbutton.button)
 							{
@@ -265,7 +268,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 								  break;
 								default:
 								  sp_touchscreen_dy = 0;
-								  break;							
+								  break;
 							}
 							//clicking *not tested yet*
 							if (event.jbutton.button == sp_ok_button)
@@ -286,7 +289,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				break;
 			case SDL_JOYBUTTONUP:
 			  #ifdef F100
-					if (event.jbutton.button == sp_switch_button || 
+					if (event.jbutton.button == sp_switch_button ||
 					   (sp_touchscreen_emulation && (event.jbutton.button == sp_ok_button ||
 					   (event.jbutton.button >= SP_AXIS_UP && event.jbutton.button <= SP_AXIS_RIGHTUP))))
 					{
@@ -304,7 +307,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 								  break;
 								default:
 								  sp_touchscreen_dx = 0;
-								  break;							
+								  break;
 							}
 							switch (event.jbutton.button)
 							{
@@ -316,7 +319,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 								  break;
 								default:
 								  sp_touchscreen_dy = 0;
-								  break;							
+								  break;
 							}
 							//clicking *not tested yet*
 							if (event.jbutton.button == sp_ok_button)
@@ -330,7 +333,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 								SDL_PushEvent(&event);
 							}
 						}
-						
+
 					}
 					else
 			  #endif
@@ -351,7 +354,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_DOWN:
 					spInput.axis[1] = -1;
 					break;
-	#ifdef DINGUX
+			#ifdef DINGUX
 				case SDLK_RETURN:
 					spInput.button[SP_BUTTON_START] = 1;
 					break;
@@ -382,10 +385,10 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_u:
 					spInput.button[SP_BUTTON_VOLMINUS] = 1;
 					break;
-	#elif defined PANDORA
-	//            case SDLK_MENU:
-	//              spDone=1;
-	//              break;
+			#elif defined PANDORA
+//				case SDLK_MENU:
+//					spDone=1;
+//					break;
 				case SDLK_PAGEDOWN:
 					spInput.button[SP_BUTTON_X] = 1;
 					break;
@@ -410,7 +413,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_LALT:
 					spInput.button[SP_BUTTON_START] = 1;
 					break;
-	#else //PC
+			#else //PC
 				case SDLK_KP_ENTER:
 				case SDLK_RETURN:
 					spInput.button[SP_BUTTON_START] = 1;
@@ -442,7 +445,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_e:
 					spInput.button[SP_BUTTON_R] = 1;
 					break;
-	#endif
+			#endif
 				case SDLK_m:
 					//spMuteKey=1;
 					break;
@@ -467,7 +470,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					if ( spInput.axis[1] == -1 )
 						spInput.axis[1] = 0;
 					break;
-	#ifdef DINGUX
+			#ifdef DINGUX
 				case SDLK_RETURN:
 					spInput.button[SP_BUTTON_START] = 0;
 					break;
@@ -498,7 +501,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_u:
 					spInput.button[SP_BUTTON_VOLMINUS] = 0;
 					break;
-	#elif defined PANDORA
+			#elif defined PANDORA
 				case SDLK_PAGEDOWN:
 					spInput.button[SP_BUTTON_X] = 0;
 					break;
@@ -523,7 +526,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_LALT:
 					spInput.button[SP_BUTTON_START] = 0;
 					break;
-	#else //PC
+			#else //PC
 				case SDLK_KP_ENTER:
 				case SDLK_RETURN:
 					spInput.button[SP_BUTTON_START] = 0;
@@ -555,7 +558,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_e:
 					spInput.button[SP_BUTTON_R] = 0;
 					break;
-	#endif
+			#endif
 				case SDLK_m:
 					//spMuteKey=0;
 					break;
@@ -589,6 +592,36 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				result = 1;
 				break;
 		}
+		#ifdef KEYBOARD_DEVICE
+		// TODO: Clean up this code
+		// TODO: Pass array size to spPollKeyboard and check here to avoid segfaults
+		// TODO: Check for shift on number keys
+		// TODO: How to get keyboard mapping???
+		if ( spInput.keyboardBuffer && event.type == SDL_KEYDOWN )
+		{
+			if ( event.key.keysym.sym >= SDLK_SPACE && event.key.keysym.sym < SDLK_a )
+			{
+				char c[2];
+				c[0] = event.key.keysym.sym;
+				c[1] = '\0';
+				strcat( spInput.keyboardBuffer, c );
+			}
+			else if ( event.key.keysym.sym >= SDLK_a && event.key.keysym.sym <= SDLK_z )
+			{
+				char c[2];
+				c[0] = event.key.keysym.sym;
+				c[1] = '\0';
+				if ( event.key.keysym.mod & KMOD_CAPS || event.key.keysym.mod & KMOD_SHIFT )
+					c[0] -= 32;
+				strcat( spInput.keyboardBuffer, c );
+			}
+			else if ( event.key.keysym.sym == SDLK_BACKSPACE && strlen(spInput.keyboardBuffer) > 0 )
+			{
+				spInput.keyboardBuffer[strlen(spInput.keyboardBuffer)-1] = '\0';
+			}
+		}
+		#endif
+
 		if ( spEvent )
 			spEvent( &event );
 	}
@@ -598,6 +631,8 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 #endif
 	return result;
 }
+
+
 
 inline void spUpdateAxis( int axis )
 {
@@ -740,6 +775,13 @@ PREFIX PspInput spGetInput( void )
 	return &spInput;
 }
 
+#ifdef KEYBOARD_DEVICE
+PREFIX void spPollKeyboardInput( char *buffer )
+{
+	spInput.keyboardBuffer = buffer;
+}
+#endif
+
 PREFIX void spSetTouchscreenEmulationButtons(int switch_button,int ok_button)
 {
 	sp_switch_button = switch_button;
@@ -823,7 +865,7 @@ PREFIX SDL_Surface* spCreateSurface(int width,int height)
 	SDL_FreeSurface( surface );
 	return result;
 }
-	
+
 PREFIX void spDeleteSurface( SDL_Surface* surface )
 {
 	SDL_FreeSurface(surface);
