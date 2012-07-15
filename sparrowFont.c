@@ -196,6 +196,57 @@ PREFIX Uint32 spFontGetUnicodeFromUTF8(const char* sign)
 	}
 }
 
+PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
+{
+	if (buffer == NULL)
+		return NULL;
+	if (len < 1)
+		return NULL;
+	buffer[0] = 0;
+
+	if (len < 2)
+		return buffer;
+	if (sign < (1 << 7)) //ASCII
+	{
+		buffer[0] = sign;
+		buffer[1] = 0;
+		return buffer;
+	}
+	
+	if (len < 3)
+		return buffer;
+	if (sign < (1 << 11)) //2 Byte UTF8
+	{
+		buffer[0] = 128+64+(sign >> 6);
+		buffer[1] = 128+   (sign & 63);
+		buffer[2] = 0;
+		return buffer;
+	}
+
+	if (len < 4)
+		return buffer;
+	if (sign < (1 << 16)) //3 Byte UTF8
+	{
+		buffer[0] = 128+64+32+ (sign >> 12);
+		buffer[1] = 128+      ((sign >>  6) & 63);
+		buffer[2] = 128+      ( sign        & 63);
+		buffer[3] = 0;
+		return buffer;
+	}
+	
+	if (len < 5)
+		return buffer;
+	if (sign < (1 << 21)) //4 Byte UTF8
+	{
+		buffer[0] = 128+64+32+ (sign >> 18);
+		buffer[1] = 128+      ((sign >> 12) & 63);
+		buffer[2] = 128+      ((sign >>  6) & 63);
+		buffer[3] = 128+      ( sign        & 63);
+		buffer[4] = 0;
+	}
+	return buffer;
+}
+
 int spFontCorrectStrategy(char* button)
 {
   if (spFontStrategy != SP_FONT_INTELLIGENT)

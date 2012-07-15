@@ -23,6 +23,7 @@ Sint32 divisor = -5000;
 int test = 0;
 int count;
 int zStuff = 1;
+Uint16 lastKey = 0;
 
 void draw_test( void )
 {
@@ -305,6 +306,10 @@ void draw_test( void )
 	sprintf( buffer, "fps: %i", spGetFPS() );
 	spFontDrawMiddle( screen->w/2, 1, -1, buffer, font );
 	spFontDrawRight( screen->w - 2, screen->h - font->maxheight, -1, "[S] Exit", font );
+	char utf8buffer[5];
+	sprintf(buffer,"Pressing \"%s\"",spFontGetUTF8FromUnicode(lastKey,utf8buffer,5));
+	if (lastKey)
+		spFontDrawMiddle( screen->w / 2, screen->h /2 - font->maxheight/2, -1, buffer, font );
 
 	spFlip();
 }
@@ -358,6 +363,8 @@ void resize( Uint16 w, Uint16 h )
 		spFontDelete( font );
 	font = spFontLoad( "./font/StayPuft.ttf", 20 * spGetSizeFactor() >> SP_ACCURACY );
 	spFontAddRange( font, ' ', '~', 0 ); //whole ASCII
+	spFontAddRange( font,spFontGetUnicodeFromUTF8("Ä"),spFontGetUnicodeFromUTF8("ü"),0);//some German letters - and everything, that is between ^^
+	spFontAdd( font,spFontGetUnicodeFromUTF8("ß"),0);//all hail the ß!
 	spFontAddBorder( font, 65535 );
   spFontSetButtonStrategy(SP_FONT_BUTTON);
   spFontAddButton( font, SP_BUTTON_A_NAME[0], SP_BUTTON_A_NAME, 65535, spGetRGB(64,64,64));
@@ -369,6 +376,19 @@ void resize( Uint16 w, Uint16 h )
   spFontSetButtonStrategy(SP_FONT_INTELLIGENT);
   spFontAddButton( font, 'S', SP_BUTTON_START_NAME, 65535, spGetRGB(64,64,64));
   spFontAddButton( font, 'E', SP_BUTTON_SELECT_NAME, 65535, spGetRGB(64,64,64));
+}
+
+void eventHandling(SDL_Event *event)
+{
+	if (event->type == SDL_KEYDOWN)
+	{
+		lastKey = event->key.keysym.unicode;
+		char buffer[5];
+		printf("keydown event 0x%x = \"%s\"!\n",lastKey,spFontGetUTF8FromUnicode(lastKey,buffer,5));
+	}
+	else
+	if (event->type == SDL_KEYUP)
+		lastKey = 0;
 }
 
 
@@ -398,11 +418,14 @@ int main( int argc, char **argv )
 	sprite = spNewSprite();
   spNewSubSpriteTilingRow( sprite, scientist, 1, 1, 22, 46, 24, 48, 9 ,100);
 	//spNewSubSpriteWithTiling(sprite,scientist,0,0,32,48,100);
+	
+	//TODO: This should do sparrow3d ;-)
+	SDL_EnableUNICODE(1);
 
 	//All glory the main loop
-	spLoop( draw_test, calc_test, 10, resize, NULL );
+	spLoop( draw_test, calc_test, 10, resize, eventHandling );
 
-	//Winter Wrap up, Winter Wrap up �
+	//Winter Wrap up, Winter Wrap up 
 	spFontDelete( font );
 	spMeshDelete( mesh );
 	spDeleteSprite( sprite );
