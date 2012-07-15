@@ -31,9 +31,12 @@ typedef struct SspInput
 	char supports_keyboard;
 	struct {int pressed,x,y;} touchscreen; //important: x and y are ONLY valid,
 	//if the touchscreen is pressed! IF the touchscreen is pressed "pressed" is 1
-#ifdef KEYBOARD_DEVICE
-	char *keyboardBuffer;
-#endif
+	struct {
+		char *buffer, *filter;
+		int pos,len,lastSize;
+		char lastChar[5];
+	} keyboard;
+
 } TspInput;
 
 
@@ -72,9 +75,9 @@ PREFIX void spFlip( void );
 /* spGetInput returns a pointer of the spInput struct, where the input values
  * will be set. DON'T FREE IT ON YOUR OWN! */
 PREFIX PspInput spGetInput( void );
-#ifdef KEYBOARD_DEVICE
-PREFIX void spPollKeyboardInput( char *buffer );
-#endif
+
+PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, char *filter );
+PREFIX void spStopKeyboardInput( void );
 
 /* spSetTouchscreenEmulations sets, whether on systems without touchscreen or
  * mouse (like the GP2X F100) touchscreen is emulated. IF it shall be emulated

@@ -212,7 +212,7 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
 		buffer[1] = 0;
 		return buffer;
 	}
-	
+
 	if (len < 3)
 		return buffer;
 	if (sign < (1 << 11)) //2 Byte UTF8
@@ -233,7 +233,7 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
 		buffer[3] = 0;
 		return buffer;
 	}
-	
+
 	if (len < 5)
 		return buffer;
 	if (sign < (1 << 21)) //4 Byte UTF8
@@ -506,32 +506,32 @@ PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPo
 	}
 }
 
-PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font )
+PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, const char *text, spFontPointer font )
 {
 	int l = 0;
 	int width;
 	spLetterIterPointer first = NULL;
 	spLetterIterPointer last = NULL;
 	int again = 1;
-  while (again)
-  {
+	while ( again )
+	{
 		width = 0;
 		again = 0;
 		while ( text[l] != 0 )
 		{
-			if (text[l] == '\n')
+			if ( text[l] == '\n' )
 			{
 				again = 1;
 				l++;
 				break;
-			}    
-      spLetterPointer letter;
-      //first we look for buttons
-      if (text[l]==spFontButtonLeft && (letter = spLetterFind( font->buttonRoot, text[l+1])) && text[l+2]==spFontButtonRight)
-        l+=2;
-      else
+			}
+			spLetterPointer letter;
+			//first we look for buttons
+			if ( text[l] == spFontButtonLeft && ( letter = spLetterFind( font->buttonRoot, text[l + 1] ) ) && text[l + 2] == spFontButtonRight )
+				l += 2;
+			else
 			{
-				Uint32 sign = spFontGetUnicodeFromUTF8(&(text[l]));
+				Uint32 sign = spFontGetUnicodeFromUTF8( &( text[l] ) );
 				letter = spFontGetLetter( font, sign );
 			}
 			if ( letter )
@@ -551,7 +551,7 @@ PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFo
 				width += letter->width;
 				iter->next = NULL;
 			}
-			l+=spFontLastUTF8Length;
+			l += spFontLastUTF8Length;
 		}
 		int pos = x - width;
 		while ( first != NULL )
@@ -563,37 +563,37 @@ PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFo
 			first = first->next;
 			free( mom );
 		}
-		if (again)
-			y+=font->maxheight;
+		if ( again )
+			y += font->maxheight;
 	}
 }
 
-PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font )
+PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, const char *text, spFontPointer font )
 {
 	int l = 0;
 	int width;
 	spLetterIterPointer first = NULL;
 	spLetterIterPointer last = NULL;
 	int again = 1;
-  while (again)
-  {
+	while ( again )
+	{
 		width = 0;
 		again = 0;
 		while ( text[l] != 0 )
 		{
-			if (text[l] == '\n')
+			if ( text[l] == '\n' )
 			{
 				again = 1;
 				l++;
 				break;
 			}
-      spLetterPointer letter;
-      //first we look for buttons
-      if (text[l]==spFontButtonLeft && (letter = spLetterFind( font->buttonRoot, text[l+1])) && text[l+2]==spFontButtonRight)
-        l+=2;
-      else
+			spLetterPointer letter;
+			//first we look for buttons
+			if ( text[l] == spFontButtonLeft && ( letter = spLetterFind( font->buttonRoot, text[l + 1] ) ) && text[l + 2] == spFontButtonRight )
+				l += 2;
+			else
 			{
-				Uint32 sign = spFontGetUnicodeFromUTF8(&(text[l]));
+				Uint32 sign = spFontGetUnicodeFromUTF8( &( text[l] ) );
 				letter = spFontGetLetter( font, sign );
 			}
 			if ( letter )
@@ -613,7 +613,7 @@ PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spF
 				width += letter->width;
 				iter->next = NULL;
 			}
-			l+=spFontLastUTF8Length;
+			l += spFontLastUTF8Length;
 		}
 		int pos = x - width / 2;
 		while ( first != NULL )
@@ -625,8 +625,8 @@ PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spF
 			first = first->next;
 			free( mom );
 		}
-		if (again)
-		  y+=font->maxheight;
+		if ( again )
+			y += font->maxheight;
 	}
 }
 

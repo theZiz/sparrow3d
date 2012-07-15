@@ -105,9 +105,11 @@ PREFIX void spInitCore( void )
 	spInput.touchscreen.pressed = 0;
 	spInput.touchscreen.x = 0;
 	spInput.touchscreen.y = 0;
-	#ifdef KEYBOARD_DEVICE
-	spInput.keyboardBuffer = NULL;
-	#endif
+	spInput.keyboard.buffer = NULL;
+	spInput.keyboard.filter = NULL;
+	spInput.keyboard.len = 0;
+	spInput.keyboard.pos = 0;
+	spInput.keyboard.lastSize = 0;
 
 #ifdef GP2X
 	//f100, f200, open2x and wiz
@@ -592,35 +594,32 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				result = 1;
 				break;
 		}
-		#ifdef KEYBOARD_DEVICE
-		// TODO: Clean up this code
-		// TODO: Pass array size to spPollKeyboard and check here to avoid segfaults
-		// TODO: Check for shift on number keys
-		// TODO: How to get keyboard mapping???
-		if ( spInput.keyboardBuffer && event.type == SDL_KEYDOWN )
+
+		if ( spInput.keyboard.buffer && event.type == SDL_KEYDOWN )
 		{
-			if ( event.key.keysym.sym >= SDLK_SPACE && event.key.keysym.sym < SDLK_a )
+			if ( event.key.keysym.sym == SDLK_BACKSPACE )
 			{
-				char c[2];
-				c[0] = event.key.keysym.sym;
-				c[1] = '\0';
-				strcat( spInput.keyboardBuffer, c );
+				if ( spInput.keyboard.pos > 0 )
+				{
+					spInput.keyboard.pos -= spInput.keyboard.lastSize;
+					spInput.keyboard.buffer[spInput.keyboard.pos] = '\0';
+				}
 			}
-			else if ( event.key.keysym.sym >= SDLK_a && event.key.keysym.sym <= SDLK_z )
+			else if ( event.key.keysym.sym >= SDLK_SPACE && event.key.keysym.sym <= SDLK_z )
 			{
-				char c[2];
-				c[0] = event.key.keysym.sym;
-				c[1] = '\0';
-				if ( event.key.keysym.mod & KMOD_CAPS || event.key.keysym.mod & KMOD_SHIFT )
-					c[0] -= 32;
-				strcat( spInput.keyboardBuffer, c );
-			}
-			else if ( event.key.keysym.sym == SDLK_BACKSPACE && strlen(spInput.keyboardBuffer) > 0 )
-			{
-				spInput.keyboardBuffer[strlen(spInput.keyboardBuffer)-1] = '\0';
+				Uint16 c = event.key.keysym.unicode;
+				char temp[5];
+				spFontGetUTF8FromUnicode( c, temp, 5 );
+				int s = strlen( temp );
+				if ( spInput.keyboard.pos + s <= spInput.keyboard.len )
+				{
+					strcpy( spInput.keyboard.lastChar, temp );
+					strcat( spInput.keyboard.buffer, spInput.keyboard.lastChar );
+					spInput.keyboard.lastSize = s;
+					spInput.keyboard.pos += s;
+				}
 			}
 		}
-		#endif
 
 		if ( spEvent )
 			spEvent( &event );
@@ -775,12 +774,32 @@ PREFIX PspInput spGetInput( void )
 	return &spInput;
 }
 
-#ifdef KEYBOARD_DEVICE
-PREFIX void spPollKeyboardInput( char *buffer )
+PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, char *filter )
 {
-	spInput.keyboardBuffer = buffer;
+	if ( bufferSize > 0 )
+	{
+		spInput.keyboard.buffer = buffer;
+		spInput.keyboard.filter = filter;
+		spInput.keyboard.len = bufferSize;
+		spInput.keyboard.pos = 0;
+		spInput.keyboard.lastSize = 0;
+		SDL_EnableUNICODE( 1 );
+	}
+	else
+	{
+		spStopKeyboardInput();
+	}
 }
-#endif
+
+PREFIX void spStopKeyboardInput( void )
+{
+	spInput.keyboard.buffer = NULL;
+	spInput.keyboard.filter = NULL;
+	spInput.keyboard.len = 0;
+	spInput.keyboard.pos = 0;
+	spInput.keyboard.lastSize = 0;
+	SDL_EnableUNICODE( 0 );
+}
 
 PREFIX void spSetTouchscreenEmulationButtons(int switch_button,int ok_button)
 {
