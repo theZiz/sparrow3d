@@ -1,6 +1,9 @@
 README:
 - -1 near stuff
 Roadmap:
+- changes in the sparrow Font API (L'ß' or "ß" instead of the conversion call - not quite sure yet)
+  - maybe ONE function for just one letter and range
+- predefined ranges for sparrowFont (e.g. SP_ASCII or SP_GERMAN, SP_NUMBERS, SP_LETTERS, SP_SYMBOLS)
 - marking, which signs we need in the language file
 - sparrowFont additional or own part, which allows to draw blocked text
   (e.g. text from sparrowText ;-) )
