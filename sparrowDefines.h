@@ -17,9 +17,14 @@
  For feedback and questions about my Files and Projects please mail me,
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
+
+/* sparrowDefines contains many #defines used by the library or which
+ * may be usefull four your application */
+ 
 #ifndef _SPARROW_DEFINES_H
 #define _SPARROW_DEFINES_H
 
+/* These are defines for creating or using the library in C or C++ */
 #ifdef WIN32
 	#include <windows.h>
 	#if BUILDING_DLL
@@ -40,51 +45,45 @@
 	#endif
 #endif
 
-//If your application is "flickering" set the ACCURACY to a higher value, but
-//keep in mind, that e.g. SP_ACCURACY 20 means, that you have only 12 bits
-//(2048) before the comma! And you have to change every of the following values
-/*
-#define SP_ACCURACY 20
-#define SP_HALF_ACCURACY 10
-#define SP_ACCURACY_FACTOR 1048576.0f
-#define SP_PI 3294199
-#define SP_COS_ACCURACY 8
-*/
-/*
-#define SP_ACCURACY 18
-#define SP_HALF_ACCURACY 9
-#define SP_ACCURACY_FACTOR 262144.0f
-#define SP_PI 823550
-#define SP_COS_ACCURACY 6
-*/
+/* The following #defines are for the fixed point arithmetic in
+ * sparrow3d. Change the values only, if you know, what you are doing.
+ * There should be optimal already.*/
 
 #define SP_ACCURACY 16
 #define SP_HALF_ACCURACY 8
 #define SP_ACCURACY_FACTOR 65536.0f
 #define SP_PI 205888
-//This is not really accuracy... More inaccuracy ^^
+/* This is not really accuracy... More inaccuracy ^^ */
 #define SP_MATH_ACCURACY 4
-//a fast define for the fixed point value 1.0
+/* a fast define for the fixed point value 1.0 */
 #define SP_ONE 65536
 
+/* if a REAL input device (not the sparrow3d generic input device!) has
+ * a analog stick, these are the limits, from which the generic axis are
+ * uneven 0. */
 #define SP_JOYSTICK_MIN -16384
 #define SP_JOYSTICK_MAX	16383
 
+/* These are some #defines e.g. for sparrowPrimitives to determine,
+ * where the base of the drawn primitive is. */
 #define SP_CENTER 0
 #define SP_LEFT 1
 #define SP_TOP 2
 #define SP_RIGHT 3
 #define SP_BOTTOM 4
 
+/* TODO: Hm, what did I used this for? ^^ */
 #define SP_NO_TOUCHSCREEN_EMULATION -1
 
+/* These are some #defines for fast multiplication and division of
+ * fixed point numbers. Use them like normal functions, e.g.
+ * Sint32 a = spMul(b,c); //a = b * c */
 #ifdef FAST_MULTIPLICATION
 	#define spMul(a,b) (((a)>>SP_HALF_ACCURACY)*((b)>>SP_HALF_ACCURACY))
 #else
 	#define spMul(a,b) ((Sint64)(a)*(Sint64)(b)>>SP_ACCURACY)
 #endif
 #define spMulHigh(a,b) ((Sint64)(a)*(Sint64)(b)>>SP_ACCURACY)
-
 
 #ifdef FAST_DIVISION
 	#define spDiv(a,b) ((b>=0 && b<(1<<SP_PRIM_ACCURACY))? \
@@ -100,7 +99,8 @@
 #endif
 #define spDivHigh(a,b) (((Sint64)(a)<<SP_ACCURACY)/(Sint64)(b))
 
-
+/* The following (long) list of #defines gives you the numbers and names
+ * of the generic device buttons. */
 #ifdef GP2X
 	#define SP_AXIS_UP 0
 	#define SP_AXIS_LEFTUP 1

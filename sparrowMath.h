@@ -17,6 +17,9 @@
  For feedback and questions about my Files and Projects please mail me,
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
+
+/* This file is for fast functions for fixed point numbers like
+ * trigonometric functions, square root, etc. */
 #ifndef _SPARROW_MATH_H
 #define _SPARROW_MATH_H
 

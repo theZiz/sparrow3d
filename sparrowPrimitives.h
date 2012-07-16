@@ -17,25 +17,40 @@
  For feedback and questions about my Files and Projects please mail me,
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
+
+/* sparrowPrimitives is for drawing primivites like triangles or quads
+ * (with and without texture), blitting or rotozooming of surfaces, lines,
+ * ellipses, rectangles and for everything providing a zBuffer. You have
+ * to understand the difference between your SCREEN, which could be
+ * provided by sparrowCore (spCreateWindow), and your TARGET. Every call
+ * from this file, draws to the target. This MAY be your screen - but
+ * have no to be! Every SDL Surface could be the target.
+ * 
+ * Some words to colors: Even if I use 32 Bit values, this part of the engine
+ * works ONLY with 16 Bit color, with the 5 bit red, 6 bit green and 5 bit blue.
+ * I just use 32 bit values, because it is faster. Otherwise the compiler always
+ * convertets 16 bit to 32 bit and the other direction. If the compiler,
+ * "thinks", that it is just 32 Bit, it is faster. */
+
 #ifndef _SPARROW_PRIMITVES_H
 #define _SPARROW_PRIMITVES_H
 
 #include "sparrow3d.h"
 #include <SDL.h>
 
-/* Some words to colors: Even if I use 32 Bit values, this part of the engine
- * works ONLY with 16 Bit color, with the 5 bit red, 6 bit green and 5 bit blue.
- * I just use 32 bit values, because it is faster. Otherwise the compiler always
- * convertets 16 bit to 32 bit and the other direction. If the compiler,
- * "thinks", that it is just 32 Bit, it is faster. */
 
 /* IMPORTANT: That means, that you still have 14 Bit for your Pixel Range
  * minus 1 Bit for the sign. So you have 13 Bit == 8192 Pixel Width or Height
  * Maximum!, if you use the software renderer! Furthermore the lookup table
- * for the one_over_x function needs a 18 Bit Array. That is 1 MByte!*/
+ * for the one_over_x function needs a 18 Bit Array. This is 1 MByte!*/
 #define SP_PRIM_ACCURACY 18
 #define SP_HALF_PRIM_ACCURACY 9
+
+/* If alphatest is enabled, this color will not be drawn */
 #define SP_ALPHA_COLOR 63519
+
+/* this is the max negative value for the zBuffer. spResetZBuffer();
+ * sets to this value */
 #define SP_MAX_NEGATIVE -0x80000000
 
 /* Initializes some Look up tables and the zBufferCache. Is called from
@@ -87,20 +102,28 @@ PREFIX void spSetAffineTextureHack( Uint32 test );
  * not be cleaned! */
 PREFIX void spClearTarget( Uint32 color );
 
-/* Draws a Triangle without texture and without alpha value. Returns 1
- * if drawn (culling)*/
+/* Draws a Triangle without texture and without alpha value. Returns 0
+ * if not drawn (culling) or different bits, where the edges are:
+ * 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right,
+ * 64 rightbottom, 128 bottom, 256 leftbottom */
 PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color );
 
-/* Draws a Triangle with texture and without alpha value Returns 1
- * if drawn (culling)*/
+/* Draws a Triangle with texture and without alpha value. Returns 0
+ * if not drawn (culling) or different bits, where the edges are:
+ * 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right,
+ * 64 rightbottom, 128 bottom, 256 leftbottom */
 PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color );
 
-/* Draws a Quad without texture and without alpha value Returns 1
- * if drawn (culling)*/
+/* Draws a Quad without texture and without alpha value. Returns 0
+ * if not drawn (culling) or different bits, where the edges are:
+ * 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right,
+ * 64 rightbottom, 128 bottom, 256 leftbottom */
 PREFIX int spQuad( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 x4, Sint32 y4, Sint32 z4, Uint32 color );
 
-/* Draws a Quad with texture and without alpha value Returns 1
- * if drawn (culling)*/
+/* Draws a Quad with texture and without alpha value. Returns 0
+ * if not drawn (culling) or different bits, where the edges are:
+ * 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right,
+ * 64 rightbottom, 128 bottom, 256 leftbottom */
 PREFIX int spQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 x4, Sint32 y4, Sint32 z4, Sint32 u4, Sint32 v4, Uint32 color );
 
 /* Cache ZBuffers. If you use many Render Targets every time you switch
