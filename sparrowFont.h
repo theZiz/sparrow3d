@@ -97,11 +97,17 @@ typedef struct spFontStruct_
  * returns a spFontPointer for later use */
 PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size );
 
-/* TODO: redesign and documentation of it */
-PREFIX void spFontAdd( spFontPointer font, Uint32 character, Uint16 color );
-
-/* TODO: redesign and documentation of it */
-PREFIX void spFontAddRange( spFontPointer font, Uint32 from, Uint32 to, Uint16 color );
+/* spFontAdd adds characters definied in "characters" to the font.
+ * You can add single characters or ranges (character minus character),
+ * seperated by comma. Adding comma itself looks a bit funny, but is in
+ * fact pretty logical, you will see an example. You can't add a
+ * character twice. So, let's have an example. characters shall be:
+ * " -~,ß,,,ä,ü,ö,Ü,Ä,Ö"
+ * What do we see: First we add a range from " " to "~". Afterwards we
+ * add "ß", then "," itself (",,,"), then some special German letters.
+ * However: "," is already in the range " -~", so the second mention
+ * will be ignored */
+PREFIX void spFontAdd( spFontPointer font, char* characters, Uint16 color );
 
 /* spFontGetUnicodeFromUTF8 converts a utf8 sign passed as char*-string
  * to a 32 bit unicode value */

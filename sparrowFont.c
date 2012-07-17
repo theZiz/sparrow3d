@@ -151,8 +151,9 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 		font->maxheight = letter->height;
 }
 
-PREFIX void spFontAdd( spFontPointer font, Uint32 character, Uint16 color )
+void spFontInternalAddOneCharacter( spFontPointer font, Uint32 character, Uint16 color )
 {
+	char buffer[5];
 	spLetterPointer letter = ( spLetterPointer )malloc( sizeof( spLetterStruct ) );
 
 	spFontChangeLetter( font, letter, character, color );
@@ -162,12 +163,41 @@ PREFIX void spFontAdd( spFontPointer font, Uint32 character, Uint16 color )
 	font->root = spFontInsert( letter, font->root );
 }
 
-PREFIX void spFontAddRange( spFontPointer font, Uint32 from, Uint32 to, Uint16 color )
+PREFIX void spFontAdd( spFontPointer font, char* characters, Uint16 color )
 {
-	printf("Adding unicode sign %i to %i\n",from,to);
-	Uint32 letter;
-	for ( letter = from; letter <= to; letter++ )
-		spFontAdd( font, letter, color );
+	//parsing the characters string.
+	int pos = 0;
+	while (1)
+	{
+		Uint32 character = spFontGetUnicodeFromUTF8(&(characters[pos]));
+		if (character == 0)
+			break;
+		pos+=spFontLastUTF8Length;
+		Uint32 between = spFontGetUnicodeFromUTF8(&(characters[pos]));
+		if (between == 0)
+			break;
+		pos+=spFontLastUTF8Length;
+		
+		if (between==',')
+		//adding the letter
+			spFontInternalAddOneCharacter(font,character,color);
+		else
+		{
+			Uint32 character_2 = spFontGetUnicodeFromUTF8(&(characters[pos]));
+			if (character_2 == 0)
+				break;
+			pos+=spFontLastUTF8Length;
+			Uint32 between = spFontGetUnicodeFromUTF8(&(characters[pos]));
+			if (between == 0)
+				break;
+			pos+=spFontLastUTF8Length;
+			char buffer[5];
+			Uint32 c;
+			for (c = character; c <= character_2; c++)
+				spFontInternalAddOneCharacter(font,c,color);
+		}
+		
+	}
 }
 
 PREFIX Uint32 spFontGetUnicodeFromUTF8(const char* sign)
@@ -188,12 +218,26 @@ PREFIX Uint32 spFontGetUnicodeFromUTF8(const char* sign)
 	switch (spFontLastUTF8Length)
 	{
 		case 2: //110xxxxx 10xxxxxx
+			//the first bit has to be and the second one DOESN'T have to be set
+			if (!(sign[1] & 128) || (sign[1] & 64))
+				return 0;
 			return (((Uint32)sign[0] & 31) << 6) | ((Uint32)sign[1] & 63);
 		case 3: //1110xxxx 10xxxxxx 10xxxxxx
+			if (!(sign[1] & 128) || (sign[1] & 64))
+				return 0;
+			if (!(sign[2] & 128) || (sign[2] & 64))
+				return 0;
 			return (((Uint32)sign[0] & 15) << 12) | (((Uint32)sign[1] & 63) << 6) | ((Uint32)sign[2] & 63);
 		case 4: //11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+			if (!(sign[1] & 128) || (sign[1] & 64))
+				return 0;
+			if (!(sign[2] & 128) || (sign[2] & 64))
+				return 0;
+			if (!(sign[3] & 128) || (sign[3] & 64))
+				return 0;
 			return (((Uint32)sign[0] & 7) << 18) | (((Uint32)sign[1] & 63) << 12) | (((Uint32)sign[2] & 63) << 6) | ((Uint32)sign[3] & 63);
 	}
+	return 0;
 }
 
 PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
