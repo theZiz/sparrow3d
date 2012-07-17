@@ -72,34 +72,93 @@ typedef struct spBundle
  * e.g. of one level. */
 PREFIX spTextPointer spCreateText(const char* caption,spBundlePointer bundle);
 
+/* spAddTranslation adds the translation "translation" of the language
+ * "language" to the spText "text". There is no check, whether a
+ * translation of this language already exist, but it wouldn't make
+ * sense, would it? ;-) */
 PREFIX void spAddTranslation(spTextPointer text,Uint16 language,const char* translation);
 
+/* spCreateTextWithTranslation creates a text like spCreateText, but
+ * also adds a first translatio (like spAddTranslation) to this new
+ * text. */
 PREFIX spTextPointer spCreateTextWithTranslation(const char* caption,spBundlePointer bundle,Uint16 language,const char* translation);
 
+/* With spSearchCaption you are able to find a specific spTextPointer
+ * in a bundle, definied by its caption. This function is a bit
+ * expensive, so try to mind the found value! */
 PREFIX spTextPointer spSearchCaption(spBundlePointer bundle, char* caption);
 
+/* spGetTranslation gives you the translation of the text "text" of the
+ * default language or (if not avaible) to FIRST added language. That is
+ * the reason, why it makes sense, to add Englisch first everytime! */
 PREFIX char* spGetTranslation(spTextPointer text);
 
+/* spGetTranslationFromCaption gives you the translation of the default
+ * language or the first defined language of the found text in the
+ * bundle "bundle". The translation/text is identified by it's caption */
 PREFIX char* spGetTranslationFromCaption(spBundlePointer bundle, char* caption);
 
+/* Creates a text bundle and returns it. Bundles are very practical for
+ * encapsuling texts of different kinds. However: If you don't need them
+ * and always refer to bundle "NULL", the undeletable internal main
+ * bundle of sparrowText is used. */
 PREFIX spBundlePointer spCreateTextBundle();
 
+/* spLoadBundle loads and returns a bundle out of the file "filename".
+ * The files are like ini-files and the interpretation of one line
+ * depends on the beginning. There are 3 kinds of beginning a line:
+ * - "#" starts a comment
+ * - "--" followed by a random sign (like " " or ":") and followed by
+ *   any string defines a new spText with the caption of the given
+ *   string
+ * - "XX" followed by a random sign (like " " or ":") and followed by
+ *   any string defines a new translation of the language "XX", which
+ *   can be any language of the ISO 639-1, e.g. "de" or "en", which is
+ *   added to the LAST defined text. Example:
+ * # this is a comment.
+ * --:example text
+ * en This is an example text.
+ * de Das ist ein Beispieltext
+ * la lorem ipsum ;-) */
 PREFIX spBundlePointer spLoadBundle(const char* filename,int own_bundle);
 
+/* spReadPossibleLanguages reads a "possible languages file". In fact
+ * it is the same like the bundle files explained above, but there is
+ * just one "text" defined and this text HAVE to be named "languages".
+ * The following defined translations are the possible languages and
+ * their names. Example:
+ * --:languages
+ * en:English
+ * de:Deutsch
+ * la:Latinus */
 PREFIX void spReadPossibleLanguages(const char* filename);
 
+/* This gets you the total number of all possible languages, if you
+ * read them with spReadPossibleLanguages */
 PREFIX int spGetPossibleLanguagesCount();
 
+/* This gives you the possible language number "nr". */
 PREFIX Uint16 spGetPossibleLanguage(int nr);
 
+/* This gives you the name of the language above */
 PREFIX char* spGetPossibleLanguageName(int nr);
 
+/* spTexts can change their bundles. Do it with this function ;-) */
 PREFIX void spChangeBundle(spTextPointer text,spBundlePointer bundle);
 
+/* With spDeleteBundle you can delete a whole bundle. If "keepText" is
+ * 1, no text well be deleted and the bundle of the texts will be the
+ * internal main bundle (which will be searched, if you pass "NULL" as
+ * bunch parameter), else the texts are deleted, too. Obviously
+ * spDeleteBundle(NULL,1); doesn't make sense. XD But of course you can
+ * use it to clean the main bundle. */
 PREFIX void spDeleteBundle(spBundlePointer bundle,int keepText);
 
+/* spSetDefaultLanguage sets the default language of sparrowText. The
+ * default default language is Englisch (en). */
 PREFIX void spSetDefaultLanguage(Uint16 language);
 
+/* spDeleteText deletes the spText "text" */
 PREFIX void spDeleteText(spTextPointer text);
 
 #endif

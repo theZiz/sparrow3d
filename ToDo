@@ -1,11 +1,5 @@
 README:
 - wiki => incode documentation link
-- finishing incode documentation of
-	- sparrowFont.h
-	- sparrowMesh.h
-	- sparrowSprite.h
-	- sparrowText.h
-- -1 near stuff
 Roadmap:
 - changes in the sparrow Font API (L'ß' or "ß" instead of the conversion call - not quite sure yet)
 	- maybe ONE function for just one letter and range

@@ -134,7 +134,9 @@ PREFIX void spSetDefaultLanguage(Uint16 language)
 
 PREFIX void spDeleteBundle(spBundlePointer bundle,int keepText)
 {
-	if (bundle == &spMainBundle) //The mainBundle is undestroyable!
+	if (bundle == NULL)
+		bundle = &spMainBundle;
+	if (bundle == &spMainBundle && keepText) //The mainBundle is undestroyable!
 		return;
 	spTextPointer text = bundle->firstText;
 	if (keepText)
@@ -155,7 +157,8 @@ PREFIX void spDeleteBundle(spBundlePointer bundle,int keepText)
 			text = next;
 		}
 	}
-	free(bundle);
+	if (bundle != &spMainBundle)
+		free(bundle);
 }
 
 PREFIX void spDeleteText(spTextPointer text)

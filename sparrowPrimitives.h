@@ -26,11 +26,36 @@
  * from this file, draws to the target. This MAY be your screen - but
  * have no to be! Every SDL Surface could be the target.
  * 
- * Some words to colors: Even if I use 32 Bit values, this part of the engine
- * works ONLY with 16 Bit color, with the 5 bit red, 6 bit green and 5 bit blue.
- * I just use 32 bit values, because it is faster. Otherwise the compiler always
- * convertets 16 bit to 32 bit and the other direction. If the compiler,
- * "thinks", that it is just 32 Bit, it is faster. */
+ * Some words to the z Buffer: First of all. If you DON'T want any z
+ * buffering or stuff like this, call spSetZSet(0); and spSetZTest(0);
+ * at beginning. zBuffers will be created and cached, but not used.
+ * Furthermore most calls will be faster, but you loose a lot of fun and
+ * possibilities. :-P
+ * But if you use it, keep in mind, that the NEAREST z value is -1 and
+ * the farest away z value SP_MAX_NEGATIVE! You see: z has always to
+ * be negative (it's the same at opengl). If some function in
+ * sparrowPrimitves wants to draw a pixel (and you enabled zTest), it
+ * will check, whether the new pixel has a greater z value. If not, it
+ * will not be drawn. Short: Just keep in mind:
+ * - -1 nearest
+ * - SP_MAX_NEGATIVE farest
+ *
+ * Some words to the order of definition of edges of triangles and
+ * quads: It matter! You have to define the edges COUNTERCLOCKWISE. 
+ *
+ * C________B    E.g. the triangle A(150,150) B(200,100) C(100,100) is
+ *  \      /     is definied counterclockwise (z doesn't matter here) 
+ *   \    /      and will be drawn. The triangle C B A would NOT be
+ *    \  /       drawn. ;-)
+ *     \/        The reason is to not draw not seeable triangles/quads
+ *      A        of closed fields.
+ * 
+ * Some words to colors, too: Even if I use 32 Bit values, this part of
+ * the engine works ONLY with 16 Bit color, with the 5 bit red, 6 bit
+ * green and 5 bit blue. I just use 32 bit values, because it is faster.
+ * Otherwise the compiler always converts 16 bit to 32 bit and the other
+ * direction. If the compiler "thinks", that it is just 32 Bit, it is
+ * faster. */
 
 #ifndef _SPARROW_PRIMITVES_H
 #define _SPARROW_PRIMITVES_H
@@ -155,11 +180,12 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface );
 /* Draws a part of a Surface on the target */
 PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h );
 
-/* Draws a surface with rotozoom. Blitting is much faster ;-) zoomX, zoomY and
- * angle are fixed point values! 1<<SP_ACCURACY is default zoom and the
- * angle goes from 0 to 2*SP_PI. */
+/* Draws a surface with rotozoom. Blitting is much faster ;-) zoomX,
+ * zoomY and angle are fixed point values! 1<<SP_ACCURACY is default
+ * zoom and the angle goes from 0 to 2*SP_PI. */
 PREFIX void spRotozoomSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface, Sint32 zoomX, Sint32 zoomY, Sint32 angle );
 
+/* Works like spRotozoomSurface, but only draws a part of the surface */
 PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, Sint32 zoomX, Sint32 zoomY, Sint32 angle );
 
 /* Sets Culling on or off. Culling means, that depending on the order of the
@@ -172,6 +198,9 @@ PREFIX void spSetCulling( char value );
 /* Draws a line from (x1,y1,z1) to (x2,y2,z2) with the specified color*/
 PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Uint32 color );
 
+/* Returns where the pixel (x,y) is in relation to the screen:
+ * 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right,
+ * 64 rightbottom, 128 bottom, 256 leftbottom */
 PREFIX int spGetPixelPosition( Sint32 x, Sint32 y );
 
 /* Draws a filled Rectangle */
