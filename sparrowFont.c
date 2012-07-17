@@ -238,10 +238,10 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
 		return buffer;
 	if (sign < (1 << 21)) //4 Byte UTF8
 	{
-		buffer[0] = 128+64+32+ (sign >> 18);
-		buffer[1] = 128+      ((sign >> 12) & 63);
-		buffer[2] = 128+      ((sign >>  6) & 63);
-		buffer[3] = 128+      ( sign        & 63);
+		buffer[0] = 128+64+32+16+ (sign >> 18);
+		buffer[1] = 128+         ((sign >> 12) & 63);
+		buffer[2] = 128+         ((sign >>  6) & 63);
+		buffer[3] = 128+         ( sign        & 63);
 		buffer[4] = 0;
 	}
 	return buffer;
