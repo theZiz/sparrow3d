@@ -17,6 +17,10 @@
  For feedback and questions about my Files and Projects please mail me,
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
+
+/* This file is the main header file for sparrow3d. It just includes the
+ * other sparrow3d header files for your. */
+
 #ifndef _SPARROW_3D_H
 #define _SPARROW_3D_H
 

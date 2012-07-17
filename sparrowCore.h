@@ -17,20 +17,41 @@
  For feedback and questions about my Files and Projects please mail me,
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
+
+/* sparrowCore is for creating a SDL window, creating optimal surfaces
+ * for blitting on these window, for program main loops with feeedback
+ * functions for drawing, calculation and different kinds of event
+ * handling. Furthermore here are some helper functions like converting
+ * colors or checking, whether a file exists. */
 #ifndef _SPARROW_CORE_H
 #define _SPARROW_CORE_H
 
 #include "sparrowDefines.h"
 #include <SDL.h>
 
+/* This struct contains information about the generic input device
+ * sparrowCore provides, which is same on EVERY target */
 typedef struct SspInput *PspInput;
 typedef struct SspInput
 {
-	signed char axis[2];
-	char button[20];
+	/* the two axis of the input device. Every axis can be -1 (left/up),
+	 * 0 or 1 (right/down) */
+	signed char axis[2]; 
+	/* the generic input device has 20 buttons, but many buttons are
+	 * just for compatibility reason to the gp2x-family. You should only
+	 * use button 8 to 18 (11 buttons) or better: the #defines for the
+	 * buttons like SP_BUTTON_START or SP_BUTTON_A (see sparrowDefines.h) */
+	char button[20]; 
+	/* this variable says, whether the target supports a hardware
+	 * keyboard. However: at least a software onscreen keyboard is
+	 * always provided (TODO!) */
 	char supports_keyboard;
-	struct {int pressed,x,y;} touchscreen; //important: x and y are ONLY valid,
-	//if the touchscreen is pressed! IF the touchscreen is pressed "pressed" is 1
+	/* because of the principle of the least common factor, there is no
+	 * support for mouses, but for touchscreens. The different is, that
+	 * you CAN'T use the position provided here, if the touchscreen is
+	 * not pressed! Please keep that in mind. For devices without
+	 * touchscreen a emulation is provided */
+	struct {int pressed,x,y;} touchscreen;
 } TspInput;
 
 
