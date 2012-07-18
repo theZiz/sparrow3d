@@ -24,6 +24,7 @@ int test = 0;
 int count;
 int zStuff = 1;
 Uint16 lastKey = 0;
+char input[32] = "";
 
 void draw_test( void )
 {
@@ -310,6 +311,8 @@ void draw_test( void )
 	sprintf(buffer,"Pressing \"%s\"",spFontGetUTF8FromUnicode(lastKey,utf8buffer,5));
 	if (lastKey)
 		spFontDrawMiddle( screen->w / 2, screen->h /2 - font->maxheight/2, -1, buffer, font );
+	if (input[0])
+		spFontDrawMiddle( screen->w / 2, screen->h /2 + font->maxheight/2, -1, input, font );
 
 	spFlip();
 }
@@ -419,7 +422,7 @@ int main( int argc, char **argv )
 	//spNewSubSpriteWithTiling(sprite,scientist,0,0,32,48,100);
 
 	//TODO: This should do sparrow3d ;-)
-	SDL_EnableUNICODE(1);
+	spPollKeyboardInput(input,32,NULL);
 
 	//All glory the main loop
 	spLoop( draw_test, calc_test, 10, resize, eventHandling );

@@ -97,7 +97,10 @@ PREFIX void spFlip( void );
  * will be set. DON'T FREE IT ON YOUR OWN! */
 PREFIX PspInput spGetInput( void );
 
+/* TODO: document me! */
 PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, char *filter );
+
+/* TODO: document me! */
 PREFIX void spStopKeyboardInput( void );
 
 /* spSetTouchscreenEmulations sets, whether on systems without touchscreen or
