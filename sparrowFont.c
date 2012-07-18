@@ -173,31 +173,28 @@ PREFIX void spFontAdd( spFontPointer font, char* characters, Uint16 color )
 		if (character == 0)
 			break;
 		pos+=spFontLastUTF8Length;
-		Uint32 between = spFontGetUnicodeFromUTF8(&(characters[pos]));
-		if (between == 0)
-			break;
-		pos+=spFontLastUTF8Length;
-		
-		if (between==',')
-		//adding the letter
-			spFontInternalAddOneCharacter(font,character,color);
-		else
-		{
-			Uint32 character_2 = spFontGetUnicodeFromUTF8(&(characters[pos]));
-			if (character_2 == 0)
-				break;
-			pos+=spFontLastUTF8Length;
-			Uint32 between = spFontGetUnicodeFromUTF8(&(characters[pos]));
-			if (between == 0)
-				break;
-			pos+=spFontLastUTF8Length;
-			char buffer[5];
-			Uint32 c;
-			for (c = character; c <= character_2; c++)
-				spFontInternalAddOneCharacter(font,c,color);
-		}
-		
+		spFontInternalAddOneCharacter(font,character,color);
 	}
+}
+
+PREFIX void spFontAddRange( spFontPointer font, char* from, char* to, Uint16 color )
+{
+	//getting the characters strings
+	Uint32 c_from = spFontGetUnicodeFromUTF8(from);
+	if (c_from == 0)
+		return;
+	Uint32 c_to = spFontGetUnicodeFromUTF8(to);
+	if (c_to == 0)
+		return;
+	Uint32 character;
+	if (c_from > c_to)
+	{	
+		character = c_from;
+		c_from = c_to;
+		c_to = character;
+	}
+	for (character = c_from; character <= c_to; character++)
+		spFontInternalAddOneCharacter(font,character,color);
 }
 
 PREFIX Uint32 spFontGetUnicodeFromUTF8(const char* sign)

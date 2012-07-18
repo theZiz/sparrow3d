@@ -50,6 +50,10 @@
 #define SP_FONT_BUTTON 1
 #define SP_FONT_KEY 2
 
+/* Some default ranges for spFontAdd. */
+#define SP_FONT_RANGE_ASCII "	!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+#define SP_FONT_RANGE_GERMAN "äüöÄÜÖßẞ"
+
 /*a letter in a binary tree of a font*/
 typedef struct spLetterStruct_ *spLetterPointer;
 typedef struct spLetterStruct_
@@ -98,16 +102,26 @@ typedef struct spFontStruct_
 PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size );
 
 /* spFontAdd adds characters definied in "characters" to the font.
- * You can add single characters or ranges (character minus character),
- * seperated by comma. Adding comma itself looks a bit funny, but is in
- * fact pretty logical, you will see an example. You can't add a
- * character twice. So, let's have an example. characters shall be:
- * " -~,ß,,,ä,ü,ö,Ü,Ä,Ö"
- * What do we see: First we add a range from " " to "~". Afterwards we
- * add "ß", then "," itself (",,,"), then some special German letters.
- * However: "," is already in the range " -~", so the second mention
+ * It adds every passed utf8 character in the char* string. Some defines
+ * (SP_FONT_RANGE_ASCII, SP_FONT_RANGE_GERMAN) are provided for easier
+ * use. However: Is a letter already in the range, so the later mentions
  * will be ignored */
 PREFIX void spFontAdd( spFontPointer font, char* characters, Uint16 color );
+
+/* spFontAddRange adds a range of utf8 characters to the font. Even if
+ * it sounds like: You can't use SP_FONT_RANGE_-defines here. ;-)
+ * You pass two single utf8-characters (or more, but only the first ones
+ * will be used), it convert it to unicode and adds every letter from
+ * the first to the last one. Example. You call
+ * spFontAddRange(font,"ä","ü",color); It will add "ä" (Unicode 228),
+ * "ü" (Unicode 252) and EVERYTHING between, which is:
+ * "åæçèéêëìíîïðñòóôõö÷øùúû". So have a look at unicode tables, when
+ * playing with this function, or you may be get trouble. ;-) If you
+ * are not familar with unicode or this function: Don't use it.
+ * spFontAdd is a bit more writing effort, but much easiert to
+ * understand. One last word: If from is greater than to, they will
+ * be switched.*/
+PREFIX void spFontAddRange( spFontPointer font, char* from, char* to, Uint16 color );
 
 /* spFontGetUnicodeFromUTF8 converts a utf8 sign passed as char*-string
  * to a 32 bit unicode value */
