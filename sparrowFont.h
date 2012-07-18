@@ -51,7 +51,7 @@
 #define SP_FONT_KEY 2
 
 /* Some default ranges for spFontAdd. */
-#define SP_FONT_RANGE_ASCII "	!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+#define SP_FONT_RANGE_ASCII " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
 #define SP_FONT_RANGE_GERMAN "äüöÄÜÖßẞ"
 
 /*a letter in a binary tree of a font*/

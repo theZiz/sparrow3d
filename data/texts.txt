@@ -13,3 +13,16 @@ fr Ce fichier contient plusieurs traductions pour un programme.
 en In publishing and graphic design, Lorem ipsum[1] is placeholder text (filler text) commonly used to demonstrate the graphics elements of a document or visual presentation, such as font, typography, and layout. The lorem ipsum text is typically a section of a Latin text by Cicero with words altered, added and removed that make it nonsensical in meaning and not proper Latin.[1] Even though "lorem ipsum" may arouse curiosity because of its resemblance to classical Latin, it is not intended to have meaning. If text is comprehensible in a document, people tend to focus on the textual content rather than upon overall presentation.[citation needed] Therefore publishers use lorem ipsum when displaying a typeface or design elements and page layout in order to direct the focus to the publication style and not the meaning of the text. In spite of its basis in Latin, the use of lorem ipsum is often referred to as greeking, from the phrase "it's all Greek to me", which indicates that something is not meant to be readable text.[2] (Wiki)
 de "Lorem ipsum dolor sit amet, consetetur adipisici elit …" ist ein Blindtext, der nichts bedeuten soll, sondern als Platzhalter im Layout verwendet wird, um einen Eindruck vom fertigen Dokument zu erhalten. Die Verteilung der Buchstaben und der Wortlängen des pseudo-lateinischen Textes entspricht in etwa der natürlichen (lateinischen) Sprache. Der Text ist (absichtlich) unverständlich, damit der Betrachter nicht durch den Inhalt abgelenkt wird. (Wiki)
 fr Le faux-texte (également appelé lorem ipsum, lipsum ) est, en imprimerie, un texte sans valeur sémantique, permettant de remplir des pages lors d'une mise en forme afin d'en calibrer le contenu en l'absence du texte définitif. Généralement, on utilise un texte en faux latin (le texte ne veut rien dire, il a été modifié), le Lorem ipsum ou Lipsum, qui permet donc de faire office de texte d'attente. L'avantage de le mettre en latin est que l'opérateur sait au premier coup d'½il que la page contenant ces lignes n'est pas valide, et surtout l'attention du client n'est pas dérangée par le contenu, il demeure concentré seulement sur l'aspect graphique. (Wiki)
+
+# If you use lookuptable based text rendering like sparrowFont it is
+# very useful to define, which signs you need in every language. Do this
+# like shown below with a unique text, e.g. namend "sign range". If you
+# want whole ASCII, copy it from the #define SP_FONT_RANGE_ASCII in
+# sparrowFont.h. Because double mentioning of signs is ignored and most
+# of the times, you will space as sign, it is a good idea, to seperate
+# your range. Furthermore you can begin with "greater" unicode signs,
+# you don't have to start with the long ASCII range.
+--:sign range
+en: … !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~
+de: ü ä ö Ä Ü Ö … !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~
+fr: á à é è í ì ó ò ú ù Á À É È Í Ì Ó Ò Ú Ù … !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~
