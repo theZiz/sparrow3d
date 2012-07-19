@@ -155,18 +155,18 @@ int main( int argc, char **argv )
 
 	//Textures loading
 	scientist = spLoadSurface( "./data/science_guy_frames01.png" );
-  garfield = spLoadSurface( "./data/garfield.png" );
+	garfield = spLoadSurface( "./data/garfield.png" );
 	texture = spCreateSurface(256,256);
 	graph = spCreateSurface(GRAPH_SIZE,GRAPH_SIZE);
 
 
 	//Sprite Creating
-	sprite = spNewSprite();
+	sprite = spNewSprite( NULL );
 	int i;
 	for ( i = 0; i < 9; i++ )
 		spNewSubSpriteWithTiling( sprite, scientist, i * 24 + 1, 1, 22, 46, 100 );
 		
-  spSetLight( 1 );
+	spSetLight( 1 );
 
 	//All glory the main loop
 	spLoop( draw_test, calc_test, 10, resize, NULL );

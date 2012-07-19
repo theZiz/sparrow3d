@@ -19,7 +19,7 @@
 */
 #include "sparrowSprite.h"
 
-PREFIX spSpritePointer spNewSprite()
+PREFIX spSpritePointer spNewSprite(char* name)
 {
 	spSpritePointer sprite = ( spSpritePointer )malloc( sizeof( spSprite ) );
 	sprite->wholeDuration = 0;
@@ -31,12 +31,21 @@ PREFIX spSpritePointer spNewSprite()
 	sprite->zoomY = SP_ONE;
 	sprite->firstSub = NULL;
 	sprite->momSub = NULL;
+	if (name)
+	{
+		sprite->name = (char*)malloc(strlen(name)+1);
+		sprintf(sprite->name,"%s",name);
+	}
+	else
+		sprite->name = NULL;
+	sprite->collection = NULL;
+	sprite->next = NULL;
 	return sprite;
 }
 
-PREFIX void spDeleteSprite( spSpritePointer sprite )
+PREFIX void spDeleteSprite( spSpritePointer sprite)
 {
-	if ( sprite->firstSub == NULL )
+	if ( sprite == NULL )
 		return;
 	spSubSpritePointer momSub = sprite->firstSub;
 	do
@@ -46,6 +55,8 @@ PREFIX void spDeleteSprite( spSpritePointer sprite )
 		momSub = next;
 	}
 	while ( momSub != sprite->firstSub );
+	if (sprite->collection);
+		spRemoveSpriteFromCollection(sprite);
 	free( sprite );
 }
 
@@ -158,4 +169,257 @@ PREFIX void spDrawSprite3D( Sint32 x, Sint32 y, Sint32 z, spSpritePointer sprite
 		spRotozoomSurface3D( x, y, z, sprite->momSub->surface, sprite->zoomX, sprite->zoomY, sprite->rotation );
 	else
 		spRotozoomSurfacePart3D( x, y, z, sprite->momSub->surface, sprite->momSub->sx, sprite->momSub->sy, sprite->momSub->sw, sprite->momSub->sh, sprite->zoomX, sprite->zoomY, sprite->rotation );
+}
+
+
+PREFIX spSpriteCollectionPointer spNewSpriteCollection()
+{
+	spSpriteCollectionPointer result = (spSpriteCollectionPointer)malloc(sizeof(spSpriteCollection));
+	result->firstSprite = NULL;
+	result->active = NULL;
+	return result;
+}
+
+PREFIX void spDeleteSpriteCollection(spSpriteCollectionPointer collection, int keepSprites)
+{
+	if (collection == NULL)
+		return;
+	spSpritePointer sprite = collection->firstSprite;
+	while (sprite)
+	{
+		spSpritePointer next = sprite->next;
+		if (keepSprites)
+			sprite->collection = NULL;
+		else
+			spDeleteSprite(sprite);
+		sprite = next;
+	}
+}
+
+PREFIX void spAddSpriteToCollection(spSpriteCollectionPointer collection, spSpritePointer sprite)
+{
+	if (collection == NULL || sprite == NULL)
+		return;
+	if (sprite->collection)
+		spRemoveSpriteFromCollection(sprite);
+	sprite->collection = collection;
+	sprite->next = collection->firstSprite;
+	collection->firstSprite = sprite;
+	if (collection->active == NULL)
+		collection->active = sprite;
+}
+
+PREFIX void spRemoveSpriteFromCollection(spSpritePointer sprite)
+{
+	spSpritePointer before = sprite->collection->firstSprite;
+	if (before == sprite)
+		sprite->collection->firstSprite = NULL;
+	else
+	{
+		while (before && before->next != sprite)
+			before = before->next;
+		if (before)
+			before->next = sprite->next;
+	}
+	sprite->collection = NULL;
+}
+
+PREFIX void spSelectSprite(spSpriteCollectionPointer collection,char* name)
+{
+	if (collection == NULL)
+		return;
+	spSpritePointer sprite = collection->firstSprite;
+	while (sprite)
+	{
+		if (strcmp(sprite->name,name) == 0)
+			break;
+		sprite = sprite->next;
+	}
+	if (sprite)
+		collection->active = sprite;
+}
+
+PREFIX spSpritePointer spActiveSprite(spSpriteCollectionPointer collection)
+{
+	if (collection == NULL)
+		return NULL;
+	return collection->active;
+}
+
+int spSpriteCollectionGetKeyword(char* name)
+{
+	if (strcmp(name,"default") == 0)
+		return 1;
+	if (strcmp(name,"image") == 0)
+		return 2;
+	if (strcmp(name,"fps") == 0)
+		return 3;
+	if (strcmp(name,"framesize") == 0)
+		return 4;
+	if (strcmp(name,"bordersize") == 0)
+		return 5;
+	if (strcmp(name,"frame") == 0)
+		return 6;
+	return 0;
+}
+
+PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surface* fallback_surface)
+{
+	SDL_RWops *file = SDL_RWFromFile(filename, "rt");
+	if (!file)
+		return NULL;
+	spSpriteCollectionPointer collection = spNewSpriteCollection();
+	
+	//Loading the file line by line
+	int end = 0;
+	spSpritePointer sprite = NULL;
+	SDL_Surface * surface_d = fallback_surface;
+	//border default
+	int bw_d = 0;
+	int bh_d = 0;
+	//frame default
+	int fw_d = 0;
+	int fh_d = 0;
+	int fps_d = 0;
+	char sprite_d[256] = "";
+	SDL_Surface * surface = surface_d;
+	int bw = bw_d;
+	int bh = bh_d;
+	int fw = fw_d;
+	int fh = fh_d;
+	int fps = fps_d;
+	while (!end)
+	{
+		//reading the line
+		char line[SP_TEXT_MAX_READABLE_LINE];
+		int pos = 0;
+		while (pos < SP_TEXT_MAX_READABLE_LINE)
+		{
+			if (SDL_RWread( file, &(line[pos]), 1, 1 ) <= 0)
+			{
+				end = 1;
+				break;
+			}
+			if ( line[pos] == '\n' )
+				break;
+			pos++;
+		}
+		line[pos] = 0;
+		
+		//parsing the line
+		if (line[0] == '#' || line[0] == ';') {} //comment
+		else
+		if (line[0] == '[') //new sprite
+		{
+			int i;
+			for (i = 1; line[i]!=']' && line[i]!=0; i++);
+			line[i] = 0;
+			sprite = spNewSprite(&(line[1]));
+			spAddSpriteToCollection(collection,sprite);
+			printf("Adding sprite \"%s\"\n",&(line[1]));
+			surface = surface_d;
+			bw = bw_d;
+			bh = bh_d;
+			fw = fw_d;
+			fh = fh_d;
+			fps = fps_d;
+		}
+		else //some keywords
+		{
+			//searching the '=', ' ' or \0.
+			int i;
+			for (i = 1; line[i]!='=' && line[i]!=' ' && line[i]!=0; i++);
+			if (line[i]==0) //hm, not good...
+				continue;
+			int keyword = 0;
+			if (line[i]=='=')
+			{
+				line[i] = 0;
+				keyword = spSpriteCollectionGetKeyword(line);
+				line[i] = '=';
+			}
+			else // ' '
+			{
+				line[i] = 0;
+				keyword = spSpriteCollectionGetKeyword(line);
+				line[i] =' ';
+				for (i++;line[i]!='=' && line[i]!=0; i++);
+				if (line[i]==0) //hm, not good...
+					continue;
+			}
+			for (i++;line[i]==' '; i++);
+			char* value = &(line[i]);
+			int j;
+			for (j = strlen(value)-1;value[j]==' ' && j>=0;j--);
+			value[j+1] = 0;
+			int x,y,n;
+			switch (keyword)
+			{
+				case 1: //"default"
+					sprintf(sprite_d,"%s",value);
+					break;
+				case 2: //"image"
+					//TODO: Using Surface Cache!
+					surface = fallback_surface;
+					break;
+				case 3: //fps
+					if (sprite)
+						fps = atoi(value);
+					else
+						fps_d = atoi(value);
+					break;
+				case 4: //framesize
+					if (sprite)
+						fw = atoi(value);
+					else
+						fw_d = atoi(value);
+					for (i++;line[i]!=',' && line[i]!=0; i++);
+					if (line[i] == 0)
+						continue;
+					value = &(line[i+1]);
+					if (sprite)
+						fh = atoi(value);
+					else
+						fh_d = atoi(value);
+					break;
+				case 5: //bordersize
+					if (sprite)
+						bw = atoi(value);
+					else
+						bw_d = atoi(value);
+					for (i++;line[i]!=',' && line[i]!=0; i++);
+					if (line[i] == 0)
+						continue;
+					value = &(line[i+1]);
+					if (sprite)
+						bh = atoi(value);
+					else
+						bh_d = atoi(value);
+					break;
+				case 6: //frame
+					if (!sprite)
+						break;
+					x = atoi(value);
+					for (i++;line[i]!=',' && line[i]!=0; i++);
+					if (line[i] == 0)
+						continue;
+					value = &(line[i+1]);
+					y = atoi(value);
+					for (i++;line[i]!=',' && line[i]!=0; i++);
+					if (line[i] == 0)
+						spNewSubSpriteWithTiling(sprite,surface,x+(bw-fw)/2,y+(bh-fh)/2,fw,fh,1000/fps);
+					else
+					{
+						value = &(line[i+1]);
+						n = atoi(value);
+						if (n > 0)
+							spNewSubSpriteTilingRow(sprite,surface,x+(bw-fw)/2,y+(bh-fh)/2,fw,fh,bw,bh,n,1000/fps);
+					}
+					break;
+			}
+		}
+	}
+	spSelectSprite(collection,sprite_d);
+	SDL_RWclose(file);
+	return collection;
 }

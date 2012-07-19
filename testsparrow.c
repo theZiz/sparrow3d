@@ -414,8 +414,8 @@ int main( int argc, char **argv )
 	//mesh = spMeshLoadObj("./data/foobar.obj",garfield,65535);
 
 	//Sprite Creating
-	sprite = spNewSprite();
-  spNewSubSpriteTilingRow( sprite, scientist, 1, 1, 22, 46, 24, 48, 9 ,100);
+	sprite = spNewSprite(NULL);
+	spNewSubSpriteTilingRow( sprite, scientist, 1, 1, 22, 46, 24, 48, 9 ,100);
 	//spNewSubSpriteWithTiling(sprite,scientist,0,0,32,48,100);
 	
 	//TODO: This should do sparrow3d ;-)
