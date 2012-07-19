@@ -601,8 +601,22 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 			{
 				if ( spInput.keyboard.pos > 0 )
 				{
-					spInput.keyboard.pos -= spInput.keyboard.lastSize;
-					spInput.keyboard.buffer[spInput.keyboard.pos] = '\0';
+					if ( spInput.keyboard.lastSize == 0 ) // need to determine size of last char in buffer
+					{
+						int I;
+						for ( I = strlen( spInput.keyboard.buffer ) - 1; I >= 0; --I )
+						{
+							++spInput.keyboard.lastSize;
+							if ( spInput.keyboard.buffer[I] >= 0 ) // unicode-signs are < 0
+								break;
+						}
+					}
+					if ( spInput.keyboard.lastSize > 0 )
+					{
+						spInput.keyboard.pos -= spInput.keyboard.lastSize;
+						spInput.keyboard.buffer[spInput.keyboard.pos] = '\0';
+						spInput.keyboard.lastSize = 0;
+					}
 				}
 			}
 			else if ( event.key.keysym.sym >= SDLK_SPACE && event.key.keysym.sym <= SDLK_z )
@@ -613,8 +627,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				int s = strlen( temp );
 				if ( spInput.keyboard.pos + s <= spInput.keyboard.len )
 				{
-					strcpy( spInput.keyboard.lastChar, temp );
-					strcat( spInput.keyboard.buffer, spInput.keyboard.lastChar );
+					strcat( spInput.keyboard.buffer, temp );
 					spInput.keyboard.lastSize = s;
 					spInput.keyboard.pos += s;
 				}
@@ -781,7 +794,7 @@ PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, char *filter )
 		spInput.keyboard.buffer = buffer;
 		spInput.keyboard.filter = filter;
 		spInput.keyboard.len = bufferSize;
-		spInput.keyboard.pos = 0;
+		spInput.keyboard.pos = strlen( buffer );
 		spInput.keyboard.lastSize = 0;
 		SDL_EnableUNICODE( 1 );
 	}

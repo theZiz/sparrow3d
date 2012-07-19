@@ -51,8 +51,10 @@
 #define SP_FONT_KEY 2
 
 /* Some default ranges for spFontAdd. */
-#define SP_FONT_RANGE_ASCII " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
-#define SP_FONT_RANGE_GERMAN "äüöÄÜÖßẞ"
+#define SP_FONT_GROUP_ASCII " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+#define SP_FONT_GROUP_GERMAN "äüöÄÜÖßẞ"
+#define SP_FONT_GROUP_ALPHABET " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+#define SP_FONT_GROUP_NUMBERS "0123456789.,-"
 
 /*a letter in a binary tree of a font*/
 typedef struct spLetterStruct_ *spLetterPointer;
