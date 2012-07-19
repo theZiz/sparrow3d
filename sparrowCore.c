@@ -607,7 +607,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 						for ( I = strlen( spInput.keyboard.buffer ) - 1; I >= 0; --I )
 						{
 							++spInput.keyboard.lastSize;
-							if ( spInput.keyboard.buffer[I] >= 0 ) // unicode-signs are < 0
+							if ( spInput.keyboard.buffer[I] >= 0 || spInput.keyboard.buffer[I] == -61 )
 								break;
 						}
 					}

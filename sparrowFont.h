@@ -104,23 +104,22 @@ typedef struct spFontStruct_
 PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size );
 
 /* spFontAdd adds characters definied in "characters" to the font.
- * It adds every passed utf8 character in the char* string. Some defines
- * (SP_FONT_RANGE_ASCII, SP_FONT_RANGE_GERMAN) are provided for easier
- * use. However: Is a letter already in the range, so the later mentions
+ * It adds every utf8 character passed in the char* string. Some defines
+ * (SP_FONT_GROUP_ASCII, SP_FONT_GROUP_GERMAN, etc. ) are provided for ease
+ * of use. However: If a letter already is in the range, the later mentions
  * will be ignored */
 PREFIX void spFontAdd( spFontPointer font, char* characters, Uint16 color );
 
-/* spFontAddRange adds a range of utf8 characters to the font. Even if
- * it sounds like: You can't use SP_FONT_RANGE_-defines here. ;-)
+/* spFontAddRange adds a range of utf8 characters to the font.
  * You pass two single utf8-characters (or more, but only the first ones
- * will be used), it convert it to unicode and adds every letter from
- * the first to the last one. Example. You call
+ * will be used), it converts them to unicode and adds every in between
+ * For example, you call
  * spFontAddRange(font,"ä","ü",color); It will add "ä" (Unicode 228),
  * "ü" (Unicode 252) and EVERYTHING between, which is:
  * "åæçèéêëìíîïðñòóôõö÷øùúû". So have a look at unicode tables, when
- * playing with this function, or you may be get trouble. ;-) If you
+ * playing with this function, or you may get trouble. ;-) If you
  * are not familar with unicode or this function: Don't use it.
- * spFontAdd is a bit more writing effort, but much easiert to
+ * spFontAdd is a bit more writing effort, but much easier to
  * understand. One last word: If from is greater than to, they will
  * be switched.*/
 PREFIX void spFontAddRange( spFontPointer font, char* from, char* to, Uint16 color );

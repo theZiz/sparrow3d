@@ -365,8 +365,8 @@ void resize( Uint16 w, Uint16 h )
 	if ( font )
 		spFontDelete( font );
 	font = spFontLoad( "./font/StayPuft.ttf", 20 * spGetSizeFactor() >> SP_ACCURACY );
-	spFontAdd( font, SP_FONT_RANGE_ASCII, 0 ); //whole ASCII
-	spFontAdd( font, "äüöÄÜÖßẞ", 0 ); //German stuff (same like spFontAdd( font, SP_FONT_RANGE_GERMAN, 0 ); )
+	spFontAdd( font, SP_FONT_GROUP_ASCII, 0 ); //whole ASCII
+	spFontAdd( font, "äüöÄÜÖßẞ", 0 ); //German stuff (same like spFontAdd( font, SP_FONT_GROUP_GERMAN, 0 ); )
 	spFontAddBorder( font, 65535 );
 	spFontSetButtonStrategy( SP_FONT_BUTTON );
 	spFontAddButton( font, SP_BUTTON_A_NAME[0], SP_BUTTON_A_NAME, 65535, spGetRGB( 64, 64, 64 ) );
