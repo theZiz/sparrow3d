@@ -24,6 +24,7 @@ int test = 0;
 int count;
 int zStuff = 1;
 Uint16 lastKey = 0;
+char input[32] = "";
 
 void draw_test( void )
 {
@@ -267,7 +268,7 @@ void draw_test( void )
 	{
 		spBlitSurface(spGetInput()->touchscreen.x,spGetInput()->touchscreen.y,-1,pepper);
 	}
-	
+
 	spFontDraw( 0, 2, -1, "Previous ["SP_BUTTON_L_NAME"]", font );
 	spFontDrawRight( screen->w - 2, 2, -1, "["SP_BUTTON_R_NAME"] next", font );
 	switch ( test )
@@ -300,7 +301,7 @@ void draw_test( void )
 		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set On ["SP_BUTTON_Y_NAME"]", font );
 	else
 		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set Off ["SP_BUTTON_Y_NAME"]", font );
-    
+
 	sprintf( buffer, "%02i:%02i", divisor / 60000, ( divisor / 1000 ) % 60 );
 	spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, buffer, font );
 	sprintf( buffer, "fps: %i", spGetFPS() );
@@ -310,6 +311,8 @@ void draw_test( void )
 	sprintf(buffer,"Pressing \"%s\"",spFontGetUTF8FromUnicode(lastKey,utf8buffer,5));
 	if (lastKey)
 		spFontDrawMiddle( screen->w / 2, screen->h /2 - font->maxheight/2, -1, buffer, font );
+	if (input[0])
+		spFontDrawMiddle( screen->w / 2, screen->h /2 + font->maxheight/2, -1, input, font );
 
 	spFlip();
 }
@@ -365,16 +368,16 @@ void resize( Uint16 w, Uint16 h )
 	spFontAdd( font, SP_FONT_RANGE_ASCII, 0 ); //whole ASCII
 	spFontAdd( font, "äüöÄÜÖßẞ", 0 ); //German stuff (same like spFontAdd( font, SP_FONT_RANGE_GERMAN, 0 ); )
 	spFontAddBorder( font, 65535 );
-	spFontSetButtonStrategy(SP_FONT_BUTTON);
-	spFontAddButton( font, SP_BUTTON_A_NAME[0], SP_BUTTON_A_NAME, 65535, spGetRGB(64,64,64));
-	spFontAddButton( font, SP_BUTTON_B_NAME[0], SP_BUTTON_B_NAME, 65535, spGetRGB(64,64,64));
-	spFontAddButton( font, SP_BUTTON_X_NAME[0], SP_BUTTON_X_NAME, 65535, spGetRGB(64,64,64));
-	spFontAddButton( font, SP_BUTTON_Y_NAME[0], SP_BUTTON_Y_NAME, 65535, spGetRGB(64,64,64));
-	spFontAddButton( font, SP_BUTTON_L_NAME[0], SP_BUTTON_L_NAME, 65535, spGetRGB(64,64,64));
-	spFontAddButton( font, SP_BUTTON_R_NAME[0], SP_BUTTON_R_NAME, 65535, spGetRGB(64,64,64));
-	spFontSetButtonStrategy(SP_FONT_INTELLIGENT);
-	spFontAddButton( font, 'S', SP_BUTTON_START_NAME, 65535, spGetRGB(64,64,64));
-	spFontAddButton( font, 'E', SP_BUTTON_SELECT_NAME, 65535, spGetRGB(64,64,64));
+	spFontSetButtonStrategy( SP_FONT_BUTTON );
+	spFontAddButton( font, SP_BUTTON_A_NAME[0], SP_BUTTON_A_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, SP_BUTTON_B_NAME[0], SP_BUTTON_B_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, SP_BUTTON_X_NAME[0], SP_BUTTON_X_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, SP_BUTTON_Y_NAME[0], SP_BUTTON_Y_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, SP_BUTTON_L_NAME[0], SP_BUTTON_L_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, SP_BUTTON_R_NAME[0], SP_BUTTON_R_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontSetButtonStrategy( SP_FONT_INTELLIGENT );
+	spFontAddButton( font, 'S', SP_BUTTON_START_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'E', SP_BUTTON_SELECT_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 }
 
 void eventHandling(SDL_Event *event)
@@ -417,9 +420,9 @@ int main( int argc, char **argv )
 	sprite = spNewSprite(NULL);
 	spNewSubSpriteTilingRow( sprite, scientist, 1, 1, 22, 46, 24, 48, 9 ,100);
 	//spNewSubSpriteWithTiling(sprite,scientist,0,0,32,48,100);
-	
+
 	//TODO: This should do sparrow3d ;-)
-	SDL_EnableUNICODE(1);
+	spPollKeyboardInput(input,32,NULL);
 
 	//All glory the main loop
 	spLoop( draw_test, calc_test, 10, resize, eventHandling );
