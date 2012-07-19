@@ -73,6 +73,8 @@ PREFIX spSubSpritePointer spNewSubSpriteWithTiling( spSpritePointer sprite, SDL_
 	sub->sy = sy;
 	sub->sw = sw;
 	sub->sh = sh;
+	if (duration <= 0)
+		duration = 1;
 	sub->duration = duration;
 	sub->age = 0;
 
@@ -407,13 +409,13 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 					y = atoi(value);
 					for (i++;line[i]!=',' && line[i]!=0; i++);
 					if (line[i] == 0)
-						spNewSubSpriteWithTiling(sprite,surface,x+(bw-fw)/2,y+(bh-fh)/2,fw,fh,1000/fps);
+						spNewSubSpriteWithTiling(sprite,surface,x+(bw-fw)/2,y+(bh-fh)/2,fw,fh,1000/(fps>0?fps:1));
 					else
 					{
 						value = &(line[i+1]);
 						n = atoi(value);
 						if (n > 0)
-							spNewSubSpriteTilingRow(sprite,surface,x+(bw-fw)/2,y+(bh-fh)/2,fw,fh,bw,bh,n,1000/fps);
+							spNewSubSpriteTilingRow(sprite,surface,x+(bw-fw)/2,y+(bh-fh)/2,fw,fh,bw,bh,n,1000/(fps>0?fps:1));
 					}
 					break;
 			}
