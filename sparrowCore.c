@@ -40,6 +40,19 @@ int sp_switch_button = -1;
 int sp_ok_button = -1;
 int sp_touchscreen_dx;
 int sp_touchscreen_dy;
+char sp_caching = 1;
+
+typedef struct sp_cache_struct *sp_cache_pointer;
+typedef struct sp_cache_struct {
+	char* name;
+	SDL_Surface* surface;
+	Uint32 ref;
+	Uint32 hash;
+	sp_cache_pointer next;
+} sp_cache;
+
+sp_cache_pointer sp_cache_line[SP_CACHE_SIZE];
+sp_cache_pointer sp_first_cache_line = NULL;
 
 PREFIX void spSetDefaultWindowSize( int w, int h )
 {
@@ -124,6 +137,7 @@ PREFIX void spInitCore( void )
 
 	spInitPrimitives();
 	spInitMath();
+	memset(sp_cache_line,0,SP_CACHE_SIZE*sizeof(sp_cache));
 }
 
 PREFIX void spPrintDebug( char* text )
@@ -832,7 +846,7 @@ PREFIX Sint32 spGetSizeFactor( void )
 	return spZoom;
 }
 
-PREFIX SDL_Surface* spLoadSurface( char* name )
+PREFIX SDL_Surface* spLoadUncachedSurface( char* name )
 {
 	SDL_Surface* surface = IMG_Load( name );
 	/*printf("%s: %i\n",name,surface->format->BitsPerPixel);
@@ -877,6 +891,96 @@ PREFIX SDL_Surface* spLoadSurface( char* name )
 	return result;
 }
 
+inline sp_cache_pointer sp_get_cached_surface( char* name)
+{
+	Uint32 hash = 0;
+	int i;
+	for (i = 0;name[i]!=0;i++)
+		hash+=name[i];
+  hash = hash & (SP_CACHE_SIZE-1);
+	sp_cache_pointer c = sp_cache_line[hash];
+	//Searching in the fast cache
+	if (c && strcmp(c->name,name) == 0)
+	{
+		return c;
+	}
+	//Searching in the slower, but accurate cache
+	c = sp_first_cache_line;
+	while (c)
+	{
+		if (strcmp(c->name,name) == 0)
+		{
+			sp_cache_line[hash] = c;
+			return c;
+		}
+		c = c->next;
+	}
+	return NULL;
+}
+
+PREFIX SDL_Surface* spLoadSurface( char* name )
+{
+	if (sp_caching)
+	{
+		sp_cache_pointer c = sp_get_cached_surface(name);
+		if (c)
+			c->ref++;
+		else
+		{
+			//not found, creating and adding
+			c = (sp_cache_pointer)malloc(sizeof(sp_cache));
+			c->surface = spLoadUncachedSurface(name);
+			if (c->surface == NULL)
+			{
+				c->surface = spCreateSurface(32,32);
+				SDL_LockSurface(c->surface);
+				Uint16* pixel = c->surface->pixels;
+				int x,y;
+				for (x = 0; x < 32; x++)
+					for (y = 0; y < 32; y++)
+						if (((x & 1) && (y & 1)) || (!(x & 1) && !(y & 1)))
+							pixel[x+y*32] = 0; //black
+						else
+							pixel[x+y*32] = 65504; //yellow
+				SDL_UnlockSurface(c->surface);
+			}
+			c->name = (char*)malloc(strlen(name)+1);
+			sprintf(c->name,"%s",name);
+			c->ref = 1;
+			c->hash = 0;
+			int i;
+			for (i = 0;name[i]!=0;i++)
+				c->hash+=name[i];
+			c->hash = c->hash & (SP_CACHE_SIZE-1);
+			c->next = sp_first_cache_line;
+			sp_first_cache_line = c;
+		}
+		return c->surface;
+	}
+	else
+		spLoadUncachedSurface(name);
+}
+
+PREFIX void spEnableCaching()
+{
+	sp_caching = 1;
+}
+
+PREFIX void spDisableCaching()
+{
+	sp_caching = 0;
+}
+
+PREFIX void spClearCache()
+{
+	while (sp_first_cache_line)
+	{
+		free(sp_first_cache_line->name);
+		sp_first_cache_line = sp_first_cache_line->next;
+	}
+	memset(sp_cache_line,0,SP_CACHE_SIZE*sizeof(sp_cache));
+}
+
 PREFIX SDL_Surface* spCreateSurface(int width,int height)
 {
 	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
@@ -887,7 +991,38 @@ PREFIX SDL_Surface* spCreateSurface(int width,int height)
 
 PREFIX void spDeleteSurface( SDL_Surface* surface )
 {
-	SDL_FreeSurface(surface);
+	if (surface == NULL)
+		return;
+	sp_cache_pointer c = sp_first_cache_line;
+	sp_cache_pointer p = NULL;
+	while (c)
+	{
+		if (c->surface == surface)
+		{
+			sp_cache_line[c->hash] = c;
+			break;
+		}
+		p = c;
+		c = c->next;
+	}
+
+	if (c)
+	{
+		c->ref--;
+		if (c->ref <= 0)
+		{
+			sp_cache_line[c->hash] = NULL;
+			if (p)
+				p->next = c->next;
+			else
+				sp_first_cache_line = c->next;
+			free(c->name);
+			free(c);
+			SDL_FreeSurface(surface);
+		}		
+	}
+	else
+		SDL_FreeSurface(surface);
 }
 
 PREFIX Uint16 spGetRGB(int r, int g, int b )

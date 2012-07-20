@@ -29,6 +29,9 @@
 #include "sparrowDefines.h"
 #include <SDL.h>
 
+/* The size of the surface cache */
+#define SP_CACHE_SIZE 1024
+
 /* This struct contains information about the generic input device
  * sparrowCore provides, which is same on EVERY target */
 typedef struct SspInput *PspInput;
@@ -122,15 +125,36 @@ PREFIX int spGetFPS( void );
 /* spGetSizeFactor returns a fixed point factor for the screen size. */
 PREFIX Sint32 spGetSizeFactor( void );
 
-/* spLoadSurface loads a 16 Surface needed by the engine */
+/* spLoadSurface loads a 16 Surface needed by the engine. If enabled it will be
+ * cached. */
 PREFIX SDL_Surface* spLoadSurface( char* name );
 
-/* spCreateSurface creates a 16 Surface 100% compatible to the engine,
- * widht should be even.*/
+/* spLoadSurface loads a 16 Surface needed by the engine. It will not be cached*/
+PREFIX SDL_Surface* spLoadUncachedSurface( char* name );
+
+/* spEnableCaching enables the caching surfaces. That means, that, if you load
+ * a image twice, internal it is only loaded once to save RAM. If you WANT
+ * one image in two different surfaces, disable caching (spriteCollection may
+ * wont work then anymore) or use spLoadUncachedSurface instead of
+ * spLoadSurface. At default caching is enabled. A reference counter counts,
+ * how often a surface is loaded for spDeleteSurface*/
+PREFIX void spEnableCaching();
+
+/* spDisableCaching disables chaching of surfaces */
+PREFIX void spDisableCaching();
+
+/* spCreateSurface creates a 16 Surface 100% compatible to the engine. This
+ * surface is not cached (because it has no filename to remember ;-) )*/
 PREFIX SDL_Surface* spCreateSurface(int width,int height);
 
-/* spDeleteSurface does the same as SDL_FreeSurface: just deleting the surface*/
+/* spDeleteSurface deletes a surface, if it is not cached or the reference
+ * counter reaches 0. If the reference counter is greater 0, it is just
+ * decreased. Don't call it more often than spCreateSurface for the same image!*/
 PREFIX void spDeleteSurface( SDL_Surface* surface );
+
+/* spClearCache deletes ALL cached surfaces! You can't use them anymore and has
+ * to reload them! */
+PREFIX void spClearCache();
 
 /* spGetRGB returns a 16 bit RGB color*/
 PREFIX Uint16 spGetRGB(int r, int g, int b );
