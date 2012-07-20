@@ -39,12 +39,12 @@ typedef struct SspInput
 {
 	/* the two axis of the input device. Every axis can be -1 (left/up),
 	 * 0 or 1 (right/down) */
-	signed char axis[2]; 
+	signed char axis[2];
 	/* the generic input device has 20 buttons, but many buttons are
 	 * just for compatibility reason to the gp2x-family. You should only
 	 * use button 8 to 18 (11 buttons) or better: the #defines for the
 	 * buttons like SP_BUTTON_START or SP_BUTTON_A (see sparrowDefines.h) */
-	char button[20]; 
+	char button[20];
 	/* this variable says, whether the target supports a hardware
 	 * keyboard. However: at least a software onscreen keyboard is
 	 * always provided (TODO!) */
@@ -59,7 +59,6 @@ typedef struct SspInput
 		char *buffer; //buffer, where the input goes into
 		char *filter; //filter, which signs are allowed (not implemented yet)
 		int pos,len,lastSize; //some internal variables about the input. Do not change!
-		char lastChar[5]; //the last pressed character as utf8-sign
 	} keyboard;
 } TspInput;
 
