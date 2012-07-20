@@ -137,7 +137,7 @@ PREFIX void spInitCore( void )
 
 	spInitPrimitives();
 	spInitMath();
-	memset(sp_cache_line,0,SP_CACHE_SIZE*sizeof(sp_cache));
+	memset(sp_cache_line,0,SP_CACHE_SIZE*sizeof(sp_cache_pointer));
 }
 
 PREFIX void spPrintDebug( char* text )
@@ -971,6 +971,11 @@ PREFIX void spDisableCaching()
 	sp_caching = 0;
 }
 
+PREFIX int spIsCachingEnabled()
+{
+	return sp_caching;
+}
+
 PREFIX void spClearCache()
 {
 	while (sp_first_cache_line)
@@ -978,7 +983,7 @@ PREFIX void spClearCache()
 		free(sp_first_cache_line->name);
 		sp_first_cache_line = sp_first_cache_line->next;
 	}
-	memset(sp_cache_line,0,SP_CACHE_SIZE*sizeof(sp_cache));
+	memset(sp_cache_line,0,SP_CACHE_SIZE*sizeof(sp_cache_pointer));
 }
 
 PREFIX SDL_Surface* spCreateSurface(int width,int height)

@@ -143,6 +143,10 @@ PREFIX void spEnableCaching();
 /* spDisableCaching disables chaching of surfaces */
 PREFIX void spDisableCaching();
 
+/* spIsCachingEnabled says, whether caching of surfaces is enabled or
+ * not */
+PREFIX int spIsCachingEnabled();
+
 /* spCreateSurface creates a 16 Surface 100% compatible to the engine. This
  * surface is not cached (because it has no filename to remember ;-) )*/
 PREFIX SDL_Surface* spCreateSurface(int width,int height);

@@ -51,6 +51,7 @@ PREFIX void spDeleteSprite( spSpritePointer sprite)
 	do
 	{
 		spSubSpritePointer next = momSub->next;
+		spDeleteSurface(momSub->surface);
 		free( momSub );
 		momSub = next;
 	}
@@ -275,7 +276,7 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 	//Loading the file line by line
 	int end = 0;
 	spSpritePointer sprite = NULL;
-	SDL_Surface * surface_d = fallback_surface;
+	char surface_d[1024] = "";
 	//border default
 	int bw_d = 0;
 	int bh_d = 0;
@@ -283,8 +284,8 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 	int fw_d = 0;
 	int fh_d = 0;
 	int fps_d = 0;
-	char sprite_d[256] = "";
-	SDL_Surface * surface = surface_d;
+	char sprite_d[1024] = "";
+	char surface[1024] = "";
 	int bw = bw_d;
 	int bh = bh_d;
 	int fw = fw_d;
@@ -319,7 +320,7 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 			sprite = spNewSprite(&(line[1]));
 			spAddSpriteToCollection(collection,sprite);
 			printf("Adding sprite \"%s\"\n",&(line[1]));
-			surface = surface_d;
+			sprintf(surface,"%s",surface_d);
 			bw = bw_d;
 			bh = bh_d;
 			fw = fw_d;
@@ -355,14 +356,17 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 			for (j = strlen(value)-1;value[j]==' ' && j>=0;j--);
 			value[j+1] = 0;
 			int x,y,n;
+			SDL_Surface* s;
 			switch (keyword)
 			{
 				case 1: //"default"
 					sprintf(sprite_d,"%s",value);
 					break;
 				case 2: //"image"
-					//TODO: Using Surface Cache!
-					surface = fallback_surface;
+					if (sprite)
+						sprintf(surface,"%s",value);
+					else
+						sprintf(surface_d,"%s",value);
 					break;
 				case 3: //fps
 					if (sprite)
@@ -408,14 +412,22 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 					value = &(line[i+1]);
 					y = atoi(value);
 					for (i++;line[i]!=',' && line[i]!=0; i++);
+					
+					s = spLoadSurface( surface );
 					if (line[i] == 0)
-						spNewSubSpriteWithTiling(sprite,surface,x+(bw-fw)/2,y+(bh-fh)/2,fw,fh,1000/(fps>0?fps:1));
+						spNewSubSpriteWithTiling(sprite,s,x+(bw-fw)/2,y+(bh-fh)/2,fw,fh,1000/(fps>0?fps:1));
 					else
 					{
 						value = &(line[i+1]);
-						n = atoi(value);
+						n = atoi(value);						
 						if (n > 0)
-							spNewSubSpriteTilingRow(sprite,surface,x+(bw-fw)/2,y+(bh-fh)/2,fw,fh,bw,bh,n,1000/(fps>0?fps:1));
+						{
+							int k;
+							if (spIsCachingEnabled())
+								for (k = 1; k < n; k++) //for the ref counter
+									spLoadSurface( surface );
+							spNewSubSpriteTilingRow(sprite,s,x+(bw-fw)/2,y+(bh-fh)/2,fw,fh,bw,bh,n,1000/(fps>0?fps:1));
+						}
 					}
 					break;
 			}
