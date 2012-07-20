@@ -129,8 +129,16 @@ PREFIX Sint32 spGetSizeFactor( void );
  * cached. */
 PREFIX SDL_Surface* spLoadSurface( char* name );
 
-/* spLoadSurface loads a 16 Surface needed by the engine. It will not be cached*/
-PREFIX SDL_Surface* spLoadUncachedSurface( char* name );
+/* This creates a "copy" of a surface. If caching is enabled, it just
+ * returns the cached surface pointer (which should be the same as the
+ * parameter) and increases the reference counter. If caching is
+ * disabled, a real copy is made. If you need a REAL copy every time,
+ * use spUniqueCopySurface. */
+PREFIX SDL_Surface* spCopySurface( SDL_Surface* surface );
+
+/* This call creates a real copy of a surface - doesn't matter, whether
+ * caching is enabled or not. */
+PREFIX SDL_Surface* spUniqueCopySurface( SDL_Surface* surface );
 
 /* spEnableCaching enables the caching surfaces. That means, that, if you load
  * a image twice, internal it is only loaded once to save RAM. If you WANT

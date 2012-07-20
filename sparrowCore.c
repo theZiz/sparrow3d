@@ -47,11 +47,14 @@ typedef struct sp_cache_struct {
 	char* name;
 	SDL_Surface* surface;
 	Uint32 ref;
-	Uint32 hash;
+	Uint32 name_hash;
+	Uint32 surface_hash;
+	sp_cache_pointer prev;
 	sp_cache_pointer next;
 } sp_cache;
 
-sp_cache_pointer sp_cache_line[SP_CACHE_SIZE];
+sp_cache_pointer sp_cache_name[SP_CACHE_SIZE];
+sp_cache_pointer sp_cache_surface[SP_CACHE_SIZE];
 sp_cache_pointer sp_first_cache_line = NULL;
 
 PREFIX void spSetDefaultWindowSize( int w, int h )
@@ -137,7 +140,8 @@ PREFIX void spInitCore( void )
 
 	spInitPrimitives();
 	spInitMath();
-	memset(sp_cache_line,0,SP_CACHE_SIZE*sizeof(sp_cache_pointer));
+	memset(sp_cache_name,0,SP_CACHE_SIZE*sizeof(sp_cache_pointer));
+	memset(sp_cache_surface,0,SP_CACHE_SIZE*sizeof(sp_cache_pointer));
 }
 
 PREFIX void spPrintDebug( char* text )
@@ -846,7 +850,7 @@ PREFIX Sint32 spGetSizeFactor( void )
 	return spZoom;
 }
 
-PREFIX SDL_Surface* spLoadUncachedSurface( char* name )
+SDL_Surface* spLoadUncachedSurface( char* name )
 {
 	SDL_Surface* surface = IMG_Load( name );
 	/*printf("%s: %i\n",name,surface->format->BitsPerPixel);
@@ -891,68 +895,120 @@ PREFIX SDL_Surface* spLoadUncachedSurface( char* name )
 	return result;
 }
 
-inline sp_cache_pointer sp_get_cached_surface( char* name)
+inline sp_cache_pointer sp_get_cached_surface_by_name( char* name)
 {
+	if (name == NULL)
+		return NULL;
 	Uint32 hash = 0;
 	int i;
 	for (i = 0;name[i]!=0;i++)
 		hash+=name[i];
   hash = hash & (SP_CACHE_SIZE-1);
-	sp_cache_pointer c = sp_cache_line[hash];
+	sp_cache_pointer c = sp_cache_name[hash];
 	//Searching in the fast cache
-	if (c && strcmp(c->name,name) == 0)
-	{
+	if (c && c->name && strcmp(c->name,name) == 0)
 		return c;
-	}
 	//Searching in the slower, but accurate cache
 	c = sp_first_cache_line;
-	while (c)
+	if (c)
+	do
 	{
-		if (strcmp(c->name,name) == 0)
+		if (c->name && strcmp(c->name,name) == 0)
 		{
-			sp_cache_line[hash] = c;
+			sp_cache_name[hash] = c;
+			c->name_hash = hash;
 			return c;
 		}
 		c = c->next;
 	}
+	while (c!=sp_first_cache_line);
 	return NULL;
+}
+
+inline sp_cache_pointer sp_get_cached_surface_by_surface( SDL_Surface* surface )
+{
+  Uint32 hash = (int)surface & (SP_CACHE_SIZE-1);
+	sp_cache_pointer c = sp_cache_surface[hash];
+	//Searching in the fast cache
+	if (c && c->surface == surface)
+		return c;
+	//Searching in the slower, but accurate cache
+	c = sp_first_cache_line;
+	if (c)
+	do
+	{
+		if (c->surface == surface)
+		{
+			sp_cache_surface[hash] = c;
+			c->surface_hash = hash;
+			return c;
+		}
+		c = c->next;
+	}
+	while (c!=sp_first_cache_line);
+	return NULL;
+}
+
+PREFIX SDL_Surface* spCopySurface( SDL_Surface* surface )
+{
+	if (surface == NULL)
+		return NULL;
+	if (sp_caching)
+	{
+		sp_cache_pointer c = sp_get_cached_surface_by_surface( surface );
+		if (c)
+			c->ref++;
+		return c->surface;
+	}
+	else
+	{
+		return spUniqueCopySurface( surface );
+	}
+}
+
+PREFIX SDL_Surface* spUniqueCopySurface( SDL_Surface* surface )
+{
+	SDL_Surface* result = spCreateSurface(surface->w,surface->h);
+	SDL_SetColorKey( surface, 0, 0 );
+	SDL_BlitSurface( surface, NULL, result, NULL );
+	return result;	
 }
 
 PREFIX SDL_Surface* spLoadSurface( char* name )
 {
 	if (sp_caching)
 	{
-		sp_cache_pointer c = sp_get_cached_surface(name);
+		sp_cache_pointer c = sp_get_cached_surface_by_name(name);
 		if (c)
 			c->ref++;
 		else
 		{
 			//not found, creating and adding
+			SDL_Surface *surface = spLoadUncachedSurface(name);
+			if (surface == NULL)
+				return NULL; //Null surfaces are not cached...
 			c = (sp_cache_pointer)malloc(sizeof(sp_cache));
-			c->surface = spLoadUncachedSurface(name);
-			if (c->surface == NULL)
-			{
-				c->surface = spCreateSurface(32,32);
-				SDL_LockSurface(c->surface);
-				Uint16* pixel = c->surface->pixels;
-				int x,y;
-				for (x = 0; x < 32; x++)
-					for (y = 0; y < 32; y++)
-						if (((x & 1) && (y & 1)) || (!(x & 1) && !(y & 1)))
-							pixel[x+y*32] = 0; //black
-						else
-							pixel[x+y*32] = 65504; //yellow
-				SDL_UnlockSurface(c->surface);
-			}
+			c->surface = surface;
 			c->name = (char*)malloc(strlen(name)+1);
 			sprintf(c->name,"%s",name);
 			c->ref = 1;
-			c->hash = 0;
+			c->name_hash = 0;
 			int i;
 			for (i = 0;name[i]!=0;i++)
-				c->hash+=name[i];
-			c->hash = c->hash & (SP_CACHE_SIZE-1);
-			c->next = sp_first_cache_line;
+				c->name_hash+=name[i];
+			c->name_hash = c->name_hash & (SP_CACHE_SIZE-1);
+			c->surface_hash = (int)c->surface & (SP_CACHE_SIZE-1);
+			if (sp_first_cache_line)
+			{
+				sp_first_cache_line->prev->next = c;
+				c->prev = sp_first_cache_line->prev;
+				c->next = sp_first_cache_line;
+			}
+			else
+			{
+				c->prev = c;
+				c->next = c;
+			}
 			sp_first_cache_line = c;
 		}
 		return c->surface;
@@ -983,7 +1039,8 @@ PREFIX void spClearCache()
 		free(sp_first_cache_line->name);
 		sp_first_cache_line = sp_first_cache_line->next;
 	}
-	memset(sp_cache_line,0,SP_CACHE_SIZE*sizeof(sp_cache_pointer));
+	memset(sp_cache_name,0,SP_CACHE_SIZE*sizeof(sp_cache_pointer));
+	memset(sp_cache_surface,0,SP_CACHE_SIZE*sizeof(sp_cache_pointer));
 }
 
 PREFIX SDL_Surface* spCreateSurface(int width,int height)
@@ -991,6 +1048,27 @@ PREFIX SDL_Surface* spCreateSurface(int width,int height)
 	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
 	SDL_Surface* result = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
+	if (sp_caching)
+	{
+		sp_cache_pointer c = (sp_cache_pointer)malloc(sizeof(sp_cache));
+		c->surface = surface;
+		c->name = NULL;
+		c->ref = 1;
+		c->name_hash = SP_CACHE_SIZE;
+		c->surface_hash = (int)c->surface & (SP_CACHE_SIZE-1);
+		if (sp_first_cache_line)
+		{
+			sp_first_cache_line->prev->next = c;
+			c->prev = sp_first_cache_line->prev;
+			c->next = sp_first_cache_line;
+		}
+		else
+		{
+			c->prev = c;
+			c->next = c;
+		}
+		sp_first_cache_line = c;
+	}
 	return result;
 }
 
@@ -998,30 +1076,25 @@ PREFIX void spDeleteSurface( SDL_Surface* surface )
 {
 	if (surface == NULL)
 		return;
-	sp_cache_pointer c = sp_first_cache_line;
-	sp_cache_pointer p = NULL;
-	while (c)
-	{
-		if (c->surface == surface)
-		{
-			sp_cache_line[c->hash] = c;
-			break;
-		}
-		p = c;
-		c = c->next;
-	}
-
+	
+	sp_cache_pointer c = sp_get_cached_surface_by_surface( surface );
+	
 	if (c)
 	{
 		c->ref--;
 		if (c->ref <= 0)
 		{
-			sp_cache_line[c->hash] = NULL;
-			if (p)
-				p->next = c->next;
-			else
+			if (c->name)
+				sp_cache_name[c->name_hash] = NULL;
+			sp_cache_surface[c->surface_hash] = NULL;
+			c->prev->next = c->next;
+			c->next->prev = c->prev;
+			if (sp_first_cache_line == c)
 				sp_first_cache_line = c->next;
-			free(c->name);
+			if (sp_first_cache_line == c) //again? that means, it is a double linked chain with just ONE element - which we remove right now
+				sp_first_cache_line = NULL;
+			if (c->name)
+				free(c->name);
 			free(c);
 			SDL_FreeSurface(surface);
 		}		

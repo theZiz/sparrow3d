@@ -418,9 +418,6 @@ int main( int argc, char **argv )
 
 	//Sprite Creating
 	sprite = spNewSprite(NULL);
-	int i;
-	for (i = 0; i < 8; i++)
-		spLoadSurface( "./data/science_guy_frames01.png" );
 	spNewSubSpriteTilingRow( sprite, scientist, 1, 1, 22, 46, 24, 48, 9 ,100);
 	//spNewSubSpriteWithTiling(sprite,scientist,0,0,32,48,100);
 
@@ -436,7 +433,7 @@ int main( int argc, char **argv )
 	spDeleteSprite( sprite );
 	spDeleteSurface( garfield );
 	spDeleteSurface( pepper );
-	//spDeleteSurface( scientist );
+	spDeleteSurface( scientist );
 	spQuitCore();
 	printf( "Average fps: %.1f\n", ( float )fpssum / ( float )divisor );
 	return 0;

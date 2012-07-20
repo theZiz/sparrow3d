@@ -56,7 +56,7 @@ PREFIX void spDeleteSprite( spSpritePointer sprite)
 		momSub = next;
 	}
 	while ( momSub != sprite->firstSub );
-	if (sprite->collection);
+	if (sprite->collection)
 		spRemoveSpriteFromCollection(sprite);
 	free( sprite );
 }
@@ -69,7 +69,7 @@ PREFIX spSubSpritePointer spNewSubSpriteNoTiling( spSpritePointer sprite, SDL_Su
 PREFIX spSubSpritePointer spNewSubSpriteWithTiling( spSpritePointer sprite, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 sw, Sint32 sh, Sint32 duration )
 {
 	spSubSpritePointer sub = ( spSubSpritePointer )malloc( sizeof( spSubSprite ) );
-	sub->surface = surface;
+	sub->surface = spCopySurface(surface); //for increasing ref counter!
 	sub->sx = sx;
 	sub->sy = sy;
 	sub->sw = sw;
@@ -413,7 +413,9 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 					y = atoi(value);
 					for (i++;line[i]!=',' && line[i]!=0; i++);
 					
-					s = spLoadSurface( surface );
+					SDL_Surface* s = spLoadSurface( surface );
+					if (s == NULL)
+						s = fallback_surface;
 					if (line[i] == 0)
 						spNewSubSpriteWithTiling(sprite,s,x+(bw-fw)/2,y+(bh-fh)/2,fw,fh,1000/(fps>0?fps:1));
 					else
@@ -421,14 +423,10 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 						value = &(line[i+1]);
 						n = atoi(value);						
 						if (n > 0)
-						{
-							int k;
-							if (spIsCachingEnabled())
-								for (k = 1; k < n; k++) //for the ref counter
-									spLoadSurface( surface );
 							spNewSubSpriteTilingRow(sprite,s,x+(bw-fw)/2,y+(bh-fh)/2,fw,fh,bw,bh,n,1000/(fps>0?fps:1));
-						}
 					}
+					//We loaded the surface one time more, than we will it delete later, so lets decrease the ref counter:
+					spDeleteSurface( s );
 					break;
 			}
 		}

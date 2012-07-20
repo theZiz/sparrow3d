@@ -21,7 +21,9 @@
 /* sparrowSprite is about drawing sprites. Sprites are small animations
  * of surfaces with scaling and rotation. Scale and rotation are more
  * expensive, than just blitting, keep that in mind. So rotation = 0 and
- * scaling = SP_ONE (fixed point value!) will be fastest. */
+ * scaling = SP_ONE (fixed point value!) will be fastest. If you disable
+ * caching, it may need a lot of space, because every subsprite then
+ * owns it own copy of the surface.*/
 #ifndef _SPARROW_SPRITE_H
 #define _SPARROW_SPRITE_H
 
@@ -148,8 +150,7 @@ PREFIX spSpritePointer spActiveSprite(spSpriteCollectionPointer collection);
 /* Loads the a sprite Collection from a ssc-file (see folder data for
  * example files) and returns it as a sprite collection.
  * The fallback_surface is, if the image, which should have loaded, is
- * not found, surface caching is not activated (not implemented yet)
- * or no image is defined. */
+ * not found.*/
 PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surface* fallback_surface);
 
 #endif
