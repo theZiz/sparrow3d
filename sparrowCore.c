@@ -957,13 +957,13 @@ PREFIX SDL_Surface* spCopySurface( SDL_Surface* surface )
 	{
 		sp_cache_pointer c = sp_get_cached_surface_by_surface( surface );
 		if (c)
+		{
 			c->ref++;
-		return c->surface;
+			return c->surface;
+		}
+		//not Null, but not the cache? O_o Lets add a copy and return
 	}
-	else
-	{
-		return spUniqueCopySurface( surface );
-	}
+	return spUniqueCopySurface( surface );
 }
 
 PREFIX SDL_Surface* spUniqueCopySurface( SDL_Surface* surface )
