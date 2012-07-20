@@ -625,7 +625,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 						for ( I = strlen( spInput.keyboard.buffer ) - 1; I >= 0; --I )
 						{
 							++spInput.keyboard.lastSize;
-							if ( spInput.keyboard.buffer[I] >= 0 || spInput.keyboard.buffer[I] == -61 )
+							if ( !((Uint8)(spInput.keyboard.buffer[I] & 128) == 128 && (Uint8)(spInput.keyboard.buffer[I] & 64) == 0)) //no follower bit
 								break;
 						}
 					}
@@ -637,7 +637,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					}
 				}
 			}
-			else if ( event.key.keysym.sym >= SDLK_SPACE && event.key.keysym.sym <= SDLK_z )
+			else if ( event.key.keysym.sym >= SDLK_SPACE/* && event.key.keysym.sym <= SDLK_z */)
 			{
 				Uint16 c = event.key.keysym.unicode;
 				char temp[5];
