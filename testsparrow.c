@@ -269,8 +269,8 @@ void draw_test( void )
 		spBlitSurface(spGetInput()->touchscreen.x,spGetInput()->touchscreen.y,-1,pepper);
 	}
 
-	spFontDraw( 0, 2, -1, "Previous ["SP_BUTTON_L_NAME"]", font );
-	spFontDrawRight( screen->w - 2, 2, -1, "["SP_BUTTON_R_NAME"] next", font );
+	spFontDraw( 0, 2, -1, "Previous [L]", font );
+	spFontDrawRight( screen->w - 2, 2, -1, "[R] next", font );
 	switch ( test )
 	{
 	case 0:
@@ -293,14 +293,14 @@ void draw_test( void )
 		break;
 	}
 	if ( quality )
-		spFontDraw( 0, screen->h - font->maxheight, -1, "Light On ["SP_BUTTON_A_NAME"]", font );
+		spFontDraw( 0, screen->h - font->maxheight, -1, "Light On [A]", font );
 	else
-		spFontDraw( 0, screen->h - font->maxheight, -1, "Light Off ["SP_BUTTON_A_NAME"]", font );
+		spFontDraw( 0, screen->h - font->maxheight, -1, "Light Off [A]", font );
 	char buffer[256];
 	if ( zStuff )
-		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set On ["SP_BUTTON_Y_NAME"]", font );
+		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set On [Y]", font );
 	else
-		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set Off ["SP_BUTTON_Y_NAME"]", font );
+		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set Off [Y]", font );
 
 	sprintf( buffer, "%02i:%02i", divisor / 60000, ( divisor / 1000 ) % 60 );
 	spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, buffer, font );
@@ -364,18 +364,16 @@ void resize( Uint16 w, Uint16 h )
 	//Font Loading
 	if ( font )
 		spFontDelete( font );
-	font = spFontLoad( "./font/StayPuft.ttf", 20 * spGetSizeFactor() >> SP_ACCURACY );
+	font = spFontLoad( "./font/StayPuft.ttf", 17 * spGetSizeFactor() >> SP_ACCURACY );
 	spFontAdd( font, SP_FONT_GROUP_ASCII, 0 ); //whole ASCII
 	spFontAdd( font, "äüöÄÜÖßẞ", 0 ); //German stuff (same like spFontAdd( font, SP_FONT_GROUP_GERMAN, 0 ); )
 	spFontAddBorder( font, 65535 );
-	spFontSetButtonStrategy( SP_FONT_BUTTON );
-	spFontAddButton( font, SP_BUTTON_A_NAME[0], SP_BUTTON_A_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontAddButton( font, SP_BUTTON_B_NAME[0], SP_BUTTON_B_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontAddButton( font, SP_BUTTON_X_NAME[0], SP_BUTTON_X_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontAddButton( font, SP_BUTTON_Y_NAME[0], SP_BUTTON_Y_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontAddButton( font, SP_BUTTON_L_NAME[0], SP_BUTTON_L_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontAddButton( font, SP_BUTTON_R_NAME[0], SP_BUTTON_R_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontSetButtonStrategy( SP_FONT_INTELLIGENT );
+	spFontAddButton( font, 'A', SP_BUTTON_A_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'B', SP_BUTTON_B_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'X', SP_BUTTON_X_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'Y', SP_BUTTON_Y_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'L', SP_BUTTON_L_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'R', SP_BUTTON_R_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 	spFontAddButton( font, 'S', SP_BUTTON_START_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 	spFontAddButton( font, 'E', SP_BUTTON_SELECT_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 }
@@ -386,7 +384,7 @@ void eventHandling(SDL_Event *event)
 	{
 		lastKey = event->key.keysym.unicode;
 		char buffer[5];
-		printf("keydown event 0x%x = \"%s\"!\n",lastKey,spFontGetUTF8FromUnicode(lastKey,buffer,5));
+		printf("keydown event 0x%x = \"%s\" keysym=%i\n",lastKey,spFontGetUTF8FromUnicode(lastKey,buffer,5),event->key.keysym.sym);
 	}
 	else
 	if (event->type == SDL_KEYUP)

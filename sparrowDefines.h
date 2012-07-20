@@ -220,13 +220,13 @@
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
 #else
 	#define SP_BUTTON_START_NAME "Return"
-	#define SP_BUTTON_SELECT_NAME "Backspace"
-	#define SP_BUTTON_L_NAME "q"
-	#define SP_BUTTON_R_NAME "e"
-	#define SP_BUTTON_A_NAME "a"
-	#define SP_BUTTON_B_NAME "d"
-	#define SP_BUTTON_X_NAME "s"
-	#define SP_BUTTON_Y_NAME "w"
+	#define SP_BUTTON_SELECT_NAME "Esc"
+	#define SP_BUTTON_L_NAME "PgUp"
+	#define SP_BUTTON_R_NAME "PgDn"
+	#define SP_BUTTON_A_NAME "AltGr"
+	#define SP_BUTTON_B_NAME "Ctrl"
+	#define SP_BUTTON_X_NAME "Super"
+	#define SP_BUTTON_Y_NAME "Alt"
 	#define SP_PAD_NAME "Arrow Keys"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
