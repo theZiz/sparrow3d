@@ -42,6 +42,10 @@ typedef struct spSubSpriteStruct
 	spSubSpritePointer next;
 } spSubSprite;
 
+/* A spSpriteCollection is a collection of different sprites of one
+ * kind. See below for more details. */
+typedef struct spSpriteCollectionStruct *spSpriteCollectionPointer;
+
 /* The sprite struct */
 typedef struct spSpriteStruct *spSpritePointer;
 typedef struct spSpriteStruct
@@ -55,13 +59,25 @@ typedef struct spSpriteStruct
 	Sint32 zoomX, zoomY; //the zoom of the sprite, fixed point values. SP_ONE means no zoom
 	spSubSpritePointer firstSub; //double linked list of subsprites
 	spSubSpritePointer momSub; //for drawing and update. Don't touch it.
+	char* name; //the name of the sprite. Important for spriteCollection
+	spSpriteCollectionPointer collection;
+	spSpritePointer next; //Used for spriteCollections. Do not modify!
 } spSprite;
 
-/* spNewSprite creates a new (empty) sprite */
-PREFIX spSpritePointer spNewSprite();
+typedef struct spSpriteCollectionStruct
+{
+	spSpritePointer firstSprite; //the first sprite of the collection
+	spSpritePointer active; //the selected sprite
+} spSpriteCollection;
 
-/* spDeleteSprite deletes a sprite and all subsprites. */
-PREFIX void spDeleteSprite( spSpritePointer sprite );
+/* spNewSprite creates a new (empty) sprite. If you pass as name, it
+ * will be copied and saved - important for sprite collections, but if
+ * you don't use them, feel free to pass NULL.*/
+PREFIX spSpritePointer spNewSprite(char* name);
+
+/* spDeleteSprite deletes a sprite and all subsprites. If the sprite is
+ * in a collection (see below), it is removed from there, too.*/
+PREFIX void spDeleteSprite( spSpritePointer sprite);
 
 /* spNewSubSpriteNoTiling creates a new subSprite out of a whole surface
  * and add it to the sprite "sprite" with the duration "duration". */
@@ -71,7 +87,6 @@ PREFIX spSubSpritePointer spNewSubSpriteNoTiling( spSpritePointer sprite, SDL_Su
  * but instead of a surface a PART of the surface is passed. sx and sy
  * are the left/top egde of the part and sw and sh the width and high.*/
 PREFIX spSubSpritePointer spNewSubSpriteWithTiling( spSpritePointer sprite, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 sw, Sint32 sh, Sint32 duration );
-
 
 /* spNewSubSpriteTilingRow is very similar to spNewSubSpriteWithTiling -
  * But instead of adding ONE part of a surface, count parts of the
@@ -98,5 +113,43 @@ PREFIX void spDrawSprite( Sint32 x, Sint32 y, Sint32 z, spSpritePointer sprite )
 
 /* Works like spDrawSprite, but it projects the sprite first. */
 PREFIX void spDrawSprite3D( Sint32 x, Sint32 y, Sint32 z, spSpritePointer sprite );
+
+/* Sometimes it is useful to encapsulated different sprites to one
+ * bundle, e.g. if you have a character with different animationloops
+ * like running left, jumping left, running right, jumping right, etc.
+ * These bundles are called "spriteCollections" in sparrow3d. Every
+ * sprite can (but have not to be!) in one collection. The name of the
+ * sprite is used to identify it, so keep in mind to give every sprite
+ * a unique name at creation time! */
+PREFIX spSpriteCollectionPointer spNewSpriteCollection();
+
+/* This deletes the collection "collection". If "keepSprites" is 0 the
+ * sprites in the collection will be deleted, too. */
+PREFIX void spDeleteSpriteCollection(spSpriteCollectionPointer collection, int keepSprites);
+
+/* This adds the existing (!) sprite "sprite" to the collection
+ * "collection". If sprite is already in a collection, it will
+ * automaticly removed first. */
+PREFIX void spAddSpriteToCollection(spSpriteCollectionPointer collection, spSpritePointer sprite);
+
+/* This call removes a sprite from a collection and sets it collection
+ * to NULL. The sprite is NOT deleted, but if you would delete it, it
+ * would automaticly removed from the collection. */
+PREFIX void spRemoveSpriteFromCollection(spSpritePointer sprite);
+
+/* Sets the active sprite of the collection. If no sprite with the name
+ * "name" is found, no change is made. */
+PREFIX void spSelectSprite(spSpriteCollectionPointer collection,char* name);
+
+/* Returns the active sprite of the sprite Collection. Same to
+ * collection->active, but looks nicer, don't you think? ;-) */
+PREFIX spSpritePointer spActiveSprite(spSpriteCollectionPointer collection);
+
+/* Loads the a sprite Collection from a ssc-file (see folder data for
+ * example files) and returns it as a sprite collection.
+ * The fallback_surface is, if the image, which should have loaded, is
+ * not found, surface caching is not activated (not implemented yet)
+ * or no image is defined. */
+PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surface* fallback_surface);
 
 #endif

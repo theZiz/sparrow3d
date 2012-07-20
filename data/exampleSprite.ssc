@@ -1,0 +1,69 @@
+# ssc files (sparrow sprite collection) are like other ini-files.
+# The file format is line based (every line one command).
+# comments begin with # - like this one - or with ;
+# every section (started with [ and ended with ]) is one sprite. The
+# name of the section is between [ and ]
+# Every key before the first section is for global keys. Every key
+# after the first section is a local key for the last defined sprite.
+# A key looks like this "keyname = keyvalue". The count of space between
+# doesn't matter. Only the name, the = and the value of the key are
+# important.
+
+# first some global defines.
+
+# the default sprite is the first defined or this one defined here:
+default = run right
+# if no image in the section is defined, this shall be the default. The
+# image is, where the parts are used from
+image = ./data/science_guy_frames01.png   
+# if no fps in the section is defined, this shall be the default.
+# The fps say, how long a sprite-frame is seeable. E.g. with fps = 24
+# every frame is 1000/24 ~ 42 ms seeable (internal it is always rounded
+# down, so it would be 41 ms per frame).
+fps = 10
+# if no framesize in the section is defined, this shall be the default.
+# The framesize is, how much you see, when you draw the sprite.
+framesize = 22, 46
+# if no bordersize in the section is defined, this shall be the default.
+# The bordersize is, how much is jumped, if you define multiply frames
+# at once (sprite sheet). Furthermore the sparrow3d rotozoom function is
+# a bit inaccurate. That means: a colorless border (pink is alpha color)
+# may prevent you from dirty artifacts.
+# The frame (with it framesize) is centered in the border!
+bordersize = 24, 48
+
+[stand right]
+# frame defines the frame(s) of the sprite. It can be just one frame
+# like here, multiply calls of frame or a third parameter as count of
+# the frames, which are loaded at once (a whole spritesheet at once).
+# If there is just one frame, obviously the fps doesn't matter.
+# The first both parameters are the x and y position of the border (!)
+# of the frame in the image.
+frame = 0, 0
+
+[stand left]
+frame = 0, 96
+
+[run right]
+# the default fps is used
+frame = 0, 0, 8
+
+[run left]
+frame = 0, 96, 8
+
+[push right]
+# the default fps (10) is to "fast" for the push animation, so we define
+# a own fps
+fps = 8
+frame = 24, 48, 6
+
+[push left]
+fps = 8
+frame = 24, 144, 6
+
+[jump right]
+frame = 0, 48
+
+[jump left]
+frame = 0, 144, 1
+

@@ -189,7 +189,7 @@ PREFIX spBundlePointer spLoadBundle(const char* filename,int own_bundle)
 	
 	SDL_RWops *file = SDL_RWFromFile(filename, "rt");
 	if (!file)
-		return NULL;
+		return bundle;
 	
 	//Loading the file line by line
 	int end = 0;
