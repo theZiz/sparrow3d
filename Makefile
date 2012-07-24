@@ -9,7 +9,7 @@
 
 # -DFAST_DIVISION does the same as -DFAST_MULTIPLICATION, but for division.
 
-# -DFAST_BUT_UGLY could crash. It uses possibly memory (just reading),
+# -DFAST_BUT_UGLY may crash. It uses possibly memory (just reading),
 # which it not owns. Try always to have some border pixels to your
 # textures if using! However as it says, it makes sparrow3d a bit faster,
 # but the texture mapping a bit uglier.
@@ -60,13 +60,13 @@ SDL_PATH = -I/usr/include/SDL
 # === The Targets. Set your own paths on your PC!
 # == GP2X/WIZ ==
 ifeq ($(TARGET),open2x)
-CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
+CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 -DFAST_BUT_UGLY $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
 SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags` 
 INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
 LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib
 endif
 ifeq ($(TARGET),gp2x)
-CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
+CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 -DFAST_BUT_UGLY $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
 STATIC = -Wl,-Bstatic -lSDL -lm -Wl,-Bdynamic
 DYNAMIC = -lSDL_image -lSDL_ttf -lfreetype -lpng -lz -ljpeg
 SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags`
@@ -90,7 +90,7 @@ LIB = -L/opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi/sys-root/usr/
 endif
 # == Dingux ==
 ifeq ($(TARGET),dingux)
-CPP = /opt/opendingux-toolchain/usr/bin/mipsel-linux-gcc -DMOBILE_DEVICE -DDINGUX $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
+CPP = /opt/opendingux-toolchain/usr/bin/mipsel-linux-gcc -DMOBILE_DEVICE -DDINGUX -DFAST_BUT_UGLY $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
 SDL = -I/opt/opendingux-toolchain/usr/mipsel-unknown-linux-uclibc/sys-include/SDL -D_GNU_SOURCE=1 -D_REENTRANT
 INCLUDE = -I/opt/opendingux-toolchain/usr/mipsel-unknown-linux-uclibc/sys-include
 LIB = -L/opt/opendingux-toolchain/usr/lib -Wl,-rpath=/opt/opendingux-toolchain/usr/lib

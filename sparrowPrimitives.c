@@ -1000,27 +1000,105 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 	return result;
 }
 
-inline void draw_pixel_tex_ztest_zset( Sint32 x, Sint32 y, Sint32 z, Sint32 u, Sint32 v, Uint32 color )
+#ifdef FAST_BUT_UGLY
+	#define draw_pixel_tex_ztest_zset(x,y,z,u,v,color) \
+	{ \
+		if ( (z) < 0 && (z) > spZBuffer[(x) + (y) * spTargetScanLine] ) \
+		{ \
+			Uint32 pixel = spTexturePixel[(u) + (v) * spTextureScanLine];  \
+			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+		} \
+	}
+#else
+	#define draw_pixel_tex_ztest_zset(x,y,z,u,v,color) \
+	{ \
+		if ( (z) < 0 && (z) > spZBuffer[(x) + (y) * spTargetScanLine] ) \
+		{ \
+			Uint32 pixel = spTexturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * spTextureScanLine];  \
+			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+		} \
+	}
+#endif
+
+#ifdef FAST_BUT_UGLY
+	#define draw_pixel_tex_ztest(x,y,z,u,v,color) \
+	{ \
+		if ( (z) < 0 && (z) > spZBuffer[(x) + (y) * spTargetScanLine] ) \
+		{ \
+			Uint32 pixel = spTexturePixel[(u) + (v) * spTextureScanLine];  \
+			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		} \
+	}
+#else
+	#define draw_pixel_tex_ztest(x,y,z,u,v,color) \
+	{ \
+		if ( (z) < 0 && (z) > spZBuffer[(x) + (y) * spTargetScanLine] ) \
+		{ \
+			Uint32 pixel = spTexturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * spTextureScanLine];  \
+			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		} \
+	}
+#endif
+
+#ifdef FAST_BUT_UGLY
+	#define draw_pixel_tex_zset(x,y,z,u,v,color) \
+	{ \
+		Uint32 pixel = spTexturePixel[(u) + (v) * spTextureScanLine];  \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+	}
+#else
+	#define draw_pixel_tex_zset(x,y,z,u,v,color) \
+	{ \
+		Uint32 pixel = spTexturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * spTextureScanLine];  \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+	}
+#endif
+
+#ifdef FAST_BUT_UGLY
+	#define draw_pixel_tex(x,y,u,v,color) \
+	{ \
+		Uint32 pixel = spTexturePixel[(u) + (v) * spTextureScanLine];  \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	}
+#else
+	#define draw_pixel_tex(x,y,u,v,color) \
+	{ \
+		Uint32 pixel = spTexturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * spTextureScanLine];  \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	}
+#endif
+/*inline void draw_pixel_tex_ztest_zset( Sint32 x, Sint32 y, Sint32 z, Sint32 u, Sint32 v, Uint32 color )
 {
 	if ( z < 0 && z > spZBuffer[x + y * spTargetScanLine] )
 	{
 #ifdef FAST_BUT_UGLY
-		//if (u+v*spTextureScanLine < 0 || u+v*spTextureScanLine >= spTextureXY)
-		//  spTargetPixel[x+y*spTargetScanLine] = color;
-		//else
+		Uint32 pixel = spTexturePixel[u + v * spTextureScanLine];
 #else
-		if ( u < 0 )
-			u = 0;
-		if ( v < 0 )
-			v = 0;
-		if ( u >= spTextureX )
-			u = spTextureX - 1;
-		if ( v >= spTextureY )
-			v = spTextureY - 1;
+		Uint32 pixel = spTexturePixel[((u<0)?0:(u>=spTextureX)?spTextureX-1:u) + ((v<0)?0:(v>=spTextureY)?spTextureY-1:v) * spTextureScanLine];
 #endif
-		spTargetPixel[x + y * spTargetScanLine] = ( ( spTexturePixel[u + v * spTextureScanLine] * color >> 16 ) & 63488 )
-										   + ( ( ( spTexturePixel[u + v * spTextureScanLine] & 2047 ) * ( color & 2047 ) >> 11 ) & 2016 )
-										   + ( ( spTexturePixel[u + v * spTextureScanLine] & 31 ) * ( color & 31 ) >> 5 );
+		spTargetPixel[x + y * spTargetScanLine] = ( ( pixel * color >> 16 ) & 63488 )
+		                                      + ( ( ( pixel & 2047 ) * ( color & 2047 ) >> 11 ) & 2016 )
+		                                        + ( ( pixel & 31 ) * ( color & 31 ) >> 5 );
 		spZBuffer[x + y * spTargetScanLine] = z;
 	}
 }
@@ -1030,67 +1108,42 @@ inline void draw_pixel_tex_ztest( Sint32 x, Sint32 y, Sint32 z, Sint32 u, Sint32
 	if ( z < 0 && z > spZBuffer[x + y * spTargetScanLine] )
 	{
 #ifdef FAST_BUT_UGLY
-		//if (u+v*spTextureScanLine < 0 || u+v*spTextureScanLine >= spTextureXY)
-		//  spTargetPixel[x+y*spTargetScanLine] = color;
-		//else
+		Uint32 pixel = spTexturePixel[u + v * spTextureScanLine];
 #else
-		if ( u < 0 )
-			u = 0;
-		if ( v < 0 )
-			v = 0;
-		if ( u >= spTextureX )
-			u = spTextureX - 1;
-		if ( v >= spTextureY )
-			v = spTextureY - 1;
+		Uint32 pixel = spTexturePixel[((u<0)?0:(u>=spTextureX)?spTextureX-1:u) + ((v<0)?0:(v>=spTextureY)?spTextureY-1:v) * spTextureScanLine];
 #endif
-		spTargetPixel[x + y * spTargetScanLine] = ( ( spTexturePixel[u + v * spTextureScanLine] * color >> 16 ) & 63488 )
-										   + ( ( ( spTexturePixel[u + v * spTextureScanLine] & 2047 ) * ( color & 2047 ) >> 11 ) & 2016 )
-										   + ( ( spTexturePixel[u + v * spTextureScanLine] & 31 ) * ( color & 31 ) >> 5 );
+		spTargetPixel[x + y * spTargetScanLine] = ( ( pixel * color >> 16 ) & 63488 )
+		                                      + ( ( ( pixel & 2047 ) * ( color & 2047 ) >> 11 ) & 2016 )
+		                                        + ( ( pixel & 31 ) * ( color & 31 ) >> 5 );
 	}
 }
 
 inline void draw_pixel_tex_zset( Sint32 x, Sint32 y, Sint32 z, Sint32 u, Sint32 v, Uint32 color )
 {
 #ifdef FAST_BUT_UGLY
-	//if (u+v*spTextureScanLine < 0 || u+v*spTextureScanLine >= spTextureXY)
-	//  spTargetPixel[x+y*spTargetScanLine] = color;
-	//else
+	Uint32 pixel = spTexturePixel[u + v * spTextureScanLine];
 #else
-	if ( u < 0 )
-		u = 0;
-	if ( v < 0 )
-		v = 0;
-	if ( u >= spTextureX )
-		u = spTextureX - 1;
-	if ( v >= spTextureY )
-		v = spTextureY - 1;
+	Uint32 pixel = spTexturePixel[((u<0)?0:(u>=spTextureX)?spTextureX-1:u) + ((v<0)?0:(v>=spTextureY)?spTextureY-1:v) * spTextureScanLine];
 #endif
-	spTargetPixel[x + y * spTargetScanLine] = ( ( spTexturePixel[u + v * spTextureScanLine] * color >> 16 ) & 63488 )
-									   + ( ( ( spTexturePixel[u + v * spTextureScanLine] & 2047 ) * ( color & 2047 ) >> 11 ) & 2016 )
-									   + ( ( spTexturePixel[u + v * spTextureScanLine] & 31 ) * ( color & 31 ) >> 5 );
+	spTargetPixel[x + y * spTargetScanLine] = ( ( pixel * color >> 16 ) & 63488 )
+																				+ ( ( ( pixel & 2047 ) * ( color & 2047 ) >> 11 ) & 2016 )
+																					+ ( ( pixel & 31 ) * ( color & 31 ) >> 5 );
 	spZBuffer[x + y * spTargetScanLine] = z;
 }
+
 
 inline void draw_pixel_tex( Sint32 x, Sint32 y, Sint32 u, Sint32 v, Uint32 color )
 {
 #ifdef FAST_BUT_UGLY
-	//if (u+v*spTextureScanLine < 0 || u+v*spTextureScanLine >= spTextureXY)
-	//  spTargetPixel[x+y*spTargetScanLine] = color;
-	//else
+	Uint32 pixel = spTexturePixel[u + v * spTextureScanLine];
 #else
-	if ( u < 0 )
-		u = 0;
-	if ( v < 0 )
-		v = 0;
-	if ( u >= spTextureX )
-		u = spTextureX - 1;
-	if ( v >= spTextureY )
-		v = spTextureY - 1;
+	Uint32 pixel = spTexturePixel[((u<0)?0:(u>=spTextureX)?spTextureX-1:u) + ((v<0)?0:(v>=spTextureY)?spTextureY-1:v) * spTextureScanLine];
 #endif
-	spTargetPixel[x + y * spTargetScanLine] = ( ( spTexturePixel[u + v * spTextureScanLine] * color >> 16 ) & 63488 )
-									   + ( ( ( spTexturePixel[u + v * spTextureScanLine] & 2047 ) * ( color & 2047 ) >> 11 ) & 2016 )
-									   + ( ( spTexturePixel[u + v * spTextureScanLine] & 31 ) * ( color & 31 ) >> 5 );
-}
+	spTargetPixel[x + y * spTargetScanLine] = ( ( pixel * color >> 16 ) & 63488 )
+																				+ ( ( ( pixel & 2047 ) * ( color & 2047 ) >> 11 ) & 2016 )
+																					+ ( ( pixel & 31 ) * ( color & 31 ) >> 5 );
+}*/
+
 
 inline void draw_line_tex_ztest_zset( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ )
 {
