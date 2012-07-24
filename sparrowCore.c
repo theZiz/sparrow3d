@@ -1283,3 +1283,18 @@ PREFIX int spFileExists( char* filename )
   }
   return 0;
 }
+
+PREFIX int spReadOneLine( SDL_RWops *file , char* buffer, int buffer_len)
+{
+		int pos = 0;
+		while (pos < buffer_len)
+		{
+			if (SDL_RWread( file, &(buffer[pos]), 1, 1 ) <= 0)
+				return 1; //EOF
+			if ( buffer[pos] == '\n' )
+				break;
+			pos++;
+		}
+		buffer[pos] = 0;
+		return 0; //not EOF
+}

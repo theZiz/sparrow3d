@@ -181,4 +181,9 @@ PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
 /* spFileExists tests, whether the file "filename" exists ;-) */
 PREFIX int spFileExists( char* filename );
 
+/* spReadOneLine reads one line from a SDL_RWops file. This line is
+ * written to buffer. buffer_len is the length of buffer (with zero
+ * byte!). If the end of file is reached, 1 is return, else 0.*/
+PREFIX int spReadOneLine( SDL_RWops *file , char* buffer, int buffer_len);
+
 #endif

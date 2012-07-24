@@ -291,24 +291,10 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 	int fw = fw_d;
 	int fh = fh_d;
 	int fps = fps_d;
-	while (!end)
+	while (!end) 
 	{
-		//reading the line
-		char line[SP_TEXT_MAX_READABLE_LINE];
-		int pos = 0;
-		while (pos < SP_TEXT_MAX_READABLE_LINE)
-		{
-			if (SDL_RWread( file, &(line[pos]), 1, 1 ) <= 0)
-			{
-				end = 1;
-				break;
-			}
-			if ( line[pos] == '\n' )
-				break;
-			pos++;
-		}
-		line[pos] = 0;
-		
+		char line[512];
+		end = spReadOneLine(file,line,512);
 		//parsing the line
 		if (line[0] == '#' || line[0] == ';') {} //comment
 		else

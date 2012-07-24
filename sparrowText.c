@@ -197,19 +197,7 @@ PREFIX spBundlePointer spLoadBundle(const char* filename,int own_bundle)
 	while (!end)
 	{
 		char line[SP_TEXT_MAX_READABLE_LINE];
-		int pos = 0;
-		while (pos < SP_TEXT_MAX_READABLE_LINE)
-		{
-			if (SDL_RWread( file, &(line[pos]), 1, 1 ) <= 0)
-			{
-				end = 1;
-				break;
-			}
-			if ( line[pos] == '\n' )
-				break;
-			pos++;
-		}
-		line[pos] = 0;
+		end = spReadOneLine(file,line,SP_TEXT_MAX_READABLE_LINE);
 		//parsing the line
 		
 		if (line[0] == '-' && line[1] == '-' && line[2] != 0) //new text
