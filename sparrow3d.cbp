@@ -12,44 +12,217 @@
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createStaticLib="1" />
+				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-DX86CPU" />
 					<Add option="-DBUILDING_DLL" />
 					<Add directory="$(#mingw.include)" />
+					<Add directory="$(#mingw.include)\SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add option="-lSDLmain" />
-					<Add option="-lSDL" />
-					<Add option="-lSDL_image" />
-					<Add option="-lSDL_ttf" />
 					<Add directory="$(#mingw.lib)" />
 				</Linker>
 			</Target>
 			<Target title="Pandora">
-				<Option output="bin\Pandora\libsparrow3d" prefix_auto="1" extension_auto="1" />
+				<Option output="bin\Pandora\libsparrow3d.so" prefix_auto="1" extension_auto="0" />
 				<Option object_output="obj\Pandora\" />
 				<Option type="3" />
-				<Option compiler="pandora" />
-				<Option createStaticLib="1" />
+				<Option compiler="armelfgcc" />
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-DMOBILE_DEVICE" />
 					<Add option="-DARMCPU" />
 					<Add option="-DPANDORA" />
 					<Add directory="$(#pandora_sdk.include)" />
+					<Add directory="$(#pandora_sdk.include)\SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add option="-ldl" />
 					<Add option="-lpthread" />
-					<Add option="-lSDL_ttf" />
 					<Add option="-lfreetype" />
-					<Add option="-lSDL_image" />
-					<Add option="-lSDL" />
 					<Add option="-lpng" />
 					<Add option="-lz" />
+					<Add option='-Wl,-soname=&quot;bin\Pandora\libsparrow.so&quot;' />
+					<Add directory="$(#pandora_sdk.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testsparrow (Win x86)">
+				<Option output="bin\W32\testsparrow" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\W32\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DX86CPU" />
+					<Add option="-DBUILDING_DLL" />
+					<Add directory="$(#mingw.include)" />
+					<Add directory="$(#mingw.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lmingw32" />
+					<Add option="-lSDLmain" />
+					<Add directory="$(#mingw.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testsparrow (Pandora)">
+				<Option output="bin\Pandora\testsparrow" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj\Pandora\" />
+				<Option type="0" />
+				<Option compiler="armelfgcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DMOBILE_DEVICE" />
+					<Add option="-DARMCPU" />
+					<Add option="-DPANDORA" />
+					<Add directory="$(#pandora_sdk.include)" />
+					<Add directory="$(#pandora_sdk.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-ldl" />
+					<Add option="-lpthread" />
+					<Add option="-lfreetype" />
+					<Add option="-lpng" />
+					<Add option="-lz" />
+					<Add option="-lts" />
+					<Add directory="$(#pandora_sdk.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testsprite (Win x86)">
+				<Option output="bin\W32\testsprite" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\W32\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DX86CPU" />
+					<Add option="-DBUILDING_DLL" />
+					<Add directory="$(#mingw.include)" />
+					<Add directory="$(#mingw.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lmingw32" />
+					<Add option="-lSDLmain" />
+					<Add directory="$(#mingw.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testsprite (Pandora)">
+				<Option output="bin\Pandora\testsprite" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj\Pandora\" />
+				<Option type="0" />
+				<Option compiler="armelfgcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DMOBILE_DEVICE" />
+					<Add option="-DARMCPU" />
+					<Add option="-DPANDORA" />
+					<Add directory="$(#pandora_sdk.include)" />
+					<Add directory="$(#pandora_sdk.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-ldl" />
+					<Add option="-lpthread" />
+					<Add option="-lfreetype" />
+					<Add option="-lpng" />
+					<Add option="-lz" />
+					<Add option="-lts" />
+					<Add directory="$(#pandora_sdk.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testtext (Win x86)">
+				<Option output="bin\W32\testtext" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\W32\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DX86CPU" />
+					<Add option="-DBUILDING_DLL" />
+					<Add directory="$(#mingw.include)" />
+					<Add directory="$(#mingw.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lmingw32" />
+					<Add option="-lSDLmain" />
+					<Add directory="$(#mingw.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testtext (Pandora)">
+				<Option output="bin\Pandora\testtext" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj\Pandora\" />
+				<Option type="1" />
+				<Option compiler="armelfgcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DMOBILE_DEVICE" />
+					<Add option="-DARMCPU" />
+					<Add option="-DPANDORA" />
+					<Add directory="$(#pandora_sdk.include)" />
+					<Add directory="$(#pandora_sdk.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-ldl" />
+					<Add option="-lpthread" />
+					<Add option="-lfreetype" />
+					<Add option="-lpng" />
+					<Add option="-lz" />
+					<Add option="-lts" />
+					<Add directory="$(#pandora_sdk.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testmesh (Win x86)">
+				<Option output="bin\W32\testmesh" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\W32\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DX86CPU" />
+					<Add option="-DBUILDING_DLL" />
+					<Add directory="$(#mingw.include)" />
+					<Add directory="$(#mingw.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lmingw32" />
+					<Add option="-lSDLmain" />
+					<Add directory="$(#mingw.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testmesh (Pandora)">
+				<Option output="bin\Pandora\testmesh" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj\Pandora\" />
+				<Option type="0" />
+				<Option compiler="armelfgcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DMOBILE_DEVICE" />
+					<Add option="-DARMCPU" />
+					<Add option="-DPANDORA" />
+					<Add directory="$(#pandora_sdk.include)" />
+					<Add directory="$(#pandora_sdk.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-ldl" />
+					<Add option="-lpthread" />
+					<Add option="-lfreetype" />
+					<Add option="-lpng" />
+					<Add option="-lz" />
+					<Add option="-lts" />
 					<Add directory="$(#pandora_sdk.lib)" />
 				</Linker>
 			</Target>
@@ -65,8 +238,16 @@
 			<Add option="-Wunsafe-loop-optimizations" />
 			<Add option="-fvariable-expansion-in-unroller" />
 			<Add option="-DSDL_INCLUDE_SUBDIR" />
+			<Add directory="." />
 		</Compiler>
-		<Unit filename="Makefile" />
+		<Linker>
+			<Add option="-lSDL_ttf" />
+			<Add option="-lSDL_image" />
+			<Add option="-lSDL" />
+		</Linker>
+		<Unit filename="Makefile">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="sparrowCore.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -99,6 +280,30 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="sparrowSprite.h" />
+		<Unit filename="sparrowText.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sparrowText.h" />
+		<Unit filename="testmesh.c">
+			<Option compilerVar="CC" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+		</Unit>
+		<Unit filename="testsparrow.c">
+			<Option compilerVar="CC" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+		</Unit>
+		<Unit filename="testsprite.c">
+			<Option compilerVar="CC" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+		</Unit>
+		<Unit filename="testtext.c">
+			<Option compilerVar="CC" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />
