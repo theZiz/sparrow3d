@@ -3606,22 +3606,26 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 {
 	if ( z >= 0 )
 		return;
+	int addu;
+	switch (spHorizontalOrigin)
+	{
+		case SP_LEFT: addu = 0; break;
+		case SP_RIGHT: addu = w - 1; break;
+		default: addu = w >> 1;
+	}	
+	int addv;
+	switch (spVerticalOrigin)
+	{
+		case SP_TOP: addv = 0; break;
+		case SP_BOTTOM: addv = h - 1; break;
+		default: addv = h >> 1;
+	}
 	if ( spAlphaTest )
 	{
 		if ( spZSet )
 		{
 			if ( spZTest )
 			{
-				int addu = w >> 1;
-				if ( spHorizontalOrigin == SP_LEFT )
-					addu = 0;
-				if ( spHorizontalOrigin == SP_RIGHT )
-					addu = w - 1;
-				int addv = h >> 1;
-				if ( spVerticalOrigin == SP_TOP )
-					addv = 0;
-				if ( spVerticalOrigin == SP_BOTTOM )
-					addv = h - 1;
 				int x1 = x - addu;
 				if ( x1 >= spTargetX )
 					return;
@@ -3632,12 +3636,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					x1 = 0;
 				}
 				int x2 = x1 + w;
-				if ( x2 < 0 )
+				if ( x2 <= 0 )
 					return;
-				if ( x2 >= spTargetX )
+				if ( x2 > spTargetX )
 				{
-					w -= x2 - spTargetX + 1;
-					x2 = spTargetX - 1;
+					w -= x2 - spTargetX;
+					x2 = spTargetX;
 				}
 				int y1 = y - addv;
 				if ( y1 >= spTargetY )
@@ -3649,12 +3653,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					y1 = 0;
 				}
 				int y2 = y1 + h;
-				if ( y2 < 0 )
+				if ( y2 <= 0 )
 					return;
-				if ( y2 >= spTargetY )
+				if ( y2 > spTargetY )
 				{
-					h -= y2 - spTargetY + 1;
-					y2 = spTargetY - 1;
+					h -= y2 - spTargetY;
+					y2 = spTargetY;
 				}
 				SDL_Surface* oldTexture = spTexture;
 				spBindTexture( surface );
@@ -3675,16 +3679,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 			}
 			else
 			{
-				int addu = w >> 1;
-				if ( spHorizontalOrigin == SP_LEFT )
-					addu = 0;
-				if ( spHorizontalOrigin == SP_RIGHT )
-					addu = w - 1;
-				int addv = h >> 1;
-				if ( spVerticalOrigin == SP_TOP )
-					addv = 0;
-				if ( spVerticalOrigin == SP_BOTTOM )
-					addv = h - 1;
 				int x1 = x - addu;
 				if ( x1 >= spTargetX )
 					return;
@@ -3695,12 +3689,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					x1 = 0;
 				}
 				int x2 = x1 + w;
-				if ( x2 < 0 )
+				if ( x2 <= 0 )
 					return;
-				if ( x2 >= spTargetX )
+				if ( x2 > spTargetX )
 				{
-					w -= x2 - spTargetX + 1;
-					x2 = spTargetX - 1;
+					w -= x2 - spTargetX;
+					x2 = spTargetX;
 				}
 				int y1 = y - addv;
 				if ( y1 >= spTargetY )
@@ -3712,12 +3706,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					y1 = 0;
 				}
 				int y2 = y1 + h;
-				if ( y2 < 0 )
+				if ( y2 <= 0 )
 					return;
-				if ( y2 >= spTargetY )
+				if ( y2 > spTargetY )
 				{
-					h -= y2 - spTargetY + 1;
-					y2 = spTargetY - 1;
+					h -= y2 - spTargetY;
+					y2 = spTargetY;
 				}
 				int u = sx;
 				for ( x = x1; x < x2; x++ )
@@ -3741,16 +3735,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 		{
 			if ( spZTest )
 			{
-				int addu = w >> 1;
-				if ( spHorizontalOrigin == SP_LEFT )
-					addu = 0;
-				if ( spHorizontalOrigin == SP_RIGHT )
-					addu = w - 1;
-				int addv = h >> 1;
-				if ( spVerticalOrigin == SP_TOP )
-					addv = 0;
-				if ( spVerticalOrigin == SP_BOTTOM )
-					addv = h - 1;
 				int x1 = x - addu;
 				if ( x1 >= spTargetX )
 					return;
@@ -3761,12 +3745,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					x1 = 0;
 				}
 				int x2 = x1 + w;
-				if ( x2 < 0 )
+				if ( x2 <= 0 )
 					return;
-				if ( x2 >= spTargetX )
+				if ( x2 > spTargetX )
 				{
-					w -= x2 - spTargetX + 1;
-					x2 = spTargetX - 1;
+					w -= x2 - spTargetX;
+					x2 = spTargetX;
 				}
 				int y1 = y - addv;
 				if ( y1 >= spTargetY )
@@ -3778,12 +3762,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					y1 = 0;
 				}
 				int y2 = y1 + h;
-				if ( y2 < 0 )
+				if ( y2 <= 0 )
 					return;
-				if ( y2 >= spTargetY )
+				if ( y2 > spTargetY )
 				{
-					h -= y2 - spTargetY + 1;
-					y2 = spTargetY - 1;
+					h -= y2 - spTargetY;
+					y2 = spTargetY;
 				}
 				SDL_Surface* oldTexture = spTexture;
 				spBindTexture( surface );
@@ -3804,16 +3788,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 			}
 			else
 			{
-				int addu = w >> 1;
-				if ( spHorizontalOrigin == SP_LEFT )
-					addu = 0;
-				if ( spHorizontalOrigin == SP_RIGHT )
-					addu = w - 1;
-				int addv = h >> 1;
-				if ( spVerticalOrigin == SP_TOP )
-					addv = 0;
-				if ( spVerticalOrigin == SP_BOTTOM )
-					addv = h - 1;
 				SDL_Rect dest;
 				dest.w = w;
 				dest.h = h;
@@ -3835,16 +3809,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 		{
 			if ( spZTest )
 			{
-				int addu = w >> 1;
-				if ( spHorizontalOrigin == SP_LEFT )
-					addu = 0;
-				if ( spHorizontalOrigin == SP_RIGHT )
-					addu = w - 1;
-				int addv = h >> 1;
-				if ( spVerticalOrigin == SP_TOP )
-					addv = 0;
-				if ( spVerticalOrigin == SP_BOTTOM )
-					addv = h - 1;
 				int x1 = x - addu;
 				if ( x1 >= spTargetX )
 					return;
@@ -3855,12 +3819,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					x1 = 0;
 				}
 				int x2 = x1 + w;
-				if ( x2 < 0 )
+				if ( x2 <= 0 )
 					return;
-				if ( x2 >= spTargetX )
+				if ( x2 > spTargetX )
 				{
-					w -= x2 - spTargetX + 1;
-					x2 = spTargetX - 1;
+					w -= x2 - spTargetX;
+					x2 = spTargetX;
 				}
 				int y1 = y - addv;
 				if ( y1 >= spTargetY )
@@ -3872,12 +3836,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					y1 = 0;
 				}
 				int y2 = y1 + h;
-				if ( y2 < 0 )
+				if ( y2 <= 0 )
 					return;
-				if ( y2 >= spTargetY )
+				if ( y2 > spTargetY )
 				{
-					h -= y2 - spTargetY + 1;
-					y2 = spTargetY - 1;
+					h -= y2 - spTargetY;
+					y2 = spTargetY;
 				}
 				SDL_Surface* oldTexture = spTexture;
 				spBindTexture( surface );
@@ -3898,16 +3862,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 			}
 			else
 			{
-				int addu = w >> 1;
-				if ( spHorizontalOrigin == SP_LEFT )
-					addu = 0;
-				if ( spHorizontalOrigin == SP_RIGHT )
-					addu = w - 1;
-				int addv = h >> 1;
-				if ( spVerticalOrigin == SP_TOP )
-					addv = 0;
-				if ( spVerticalOrigin == SP_BOTTOM )
-					addv = h - 1;
 				int x1 = x - addu;
 				if ( x1 >= spTargetX )
 					return;
@@ -3918,12 +3872,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					x1 = 0;
 				}
 				int x2 = x1 + w;
-				if ( x2 < 0 )
+				if ( x2 <= 0 )
 					return;
-				if ( x2 >= spTargetX )
+				if ( x2 > spTargetX )
 				{
-					w -= x2 - spTargetX + 1;
-					x2 = spTargetX - 1;
+					w -= x2 - spTargetX;
+					x2 = spTargetX;
 				}
 				int y1 = y - addv;
 				if ( y1 >= spTargetY )
@@ -3935,12 +3889,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					y1 = 0;
 				}
 				int y2 = y1 + h;
-				if ( y2 < 0 )
+				if ( y2 <= 0 )
 					return;
-				if ( y2 >= spTargetY )
+				if ( y2 > spTargetY )
 				{
-					h -= y2 - spTargetY + 1;
-					y2 = spTargetY - 1;
+					h -= y2 - spTargetY;
+					y2 = spTargetY;
 				}
 				int u = sx;
 				for ( x = x1; x < x2; x++ )
@@ -3964,16 +3918,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 		{
 			if ( spZTest )
 			{
-				int addu = w >> 1;
-				if ( spHorizontalOrigin == SP_LEFT )
-					addu = 0;
-				if ( spHorizontalOrigin == SP_RIGHT )
-					addu = w - 1;
-				int addv = h >> 1;
-				if ( spVerticalOrigin == SP_TOP )
-					addv = 0;
-				if ( spVerticalOrigin == SP_BOTTOM )
-					addv = h - 1;
 				int x1 = x - addu;
 				if ( x1 >= spTargetX )
 					return;
@@ -3984,12 +3928,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					x1 = 0;
 				}
 				int x2 = x1 + w;
-				if ( x2 < 0 )
+				if ( x2 <= 0 )
 					return;
-				if ( x2 >= spTargetX )
+				if ( x2 > spTargetX )
 				{
-					w -= x2 - spTargetX + 1;
-					x2 = spTargetX - 1;
+					w -= x2 - spTargetX;
+					x2 = spTargetX;
 				}
 				int y1 = y - addv;
 				if ( y1 >= spTargetY )
@@ -4001,12 +3945,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					y1 = 0;
 				}
 				int y2 = y1 + h;
-				if ( y2 < 0 )
+				if ( y2 <= 0 )
 					return;
-				if ( y2 >= spTargetY )
+				if ( y2 > spTargetY )
 				{
-					h -= y2 - spTargetY + 1;
-					y2 = spTargetY - 1;
+					h -= y2 - spTargetY;
+					y2 = spTargetY;
 				}
 				SDL_Surface* oldTexture = spTexture;
 				spBindTexture( surface );
@@ -4027,16 +3971,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 			}
 			else
 			{
-				int addu = w >> 1;
-				if ( spHorizontalOrigin == SP_LEFT )
-					addu = 0;
-				if ( spHorizontalOrigin == SP_RIGHT )
-					addu = w - 1;
-				int addv = h >> 1;
-				if ( spVerticalOrigin == SP_TOP )
-					addv = 0;
-				if ( spVerticalOrigin == SP_BOTTOM )
-					addv = h - 1;
 				SDL_Rect dest;
 				dest.w = w;
 				dest.h = h;
