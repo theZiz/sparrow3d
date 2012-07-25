@@ -186,4 +186,10 @@ PREFIX int spFileExists( char* filename );
  * byte!). If the end of file is reached, 1 is return, else 0.*/
 PREFIX int spReadOneLine( SDL_RWops *file , char* buffer, int buffer_len);
 
+/* spReadUntil reads from file to buffer until the end_sign or
+ * buffer_len is reached. The end_sign is NOT part of the string.
+ * If you read again from the file, the sign AFTER the end_sign will be
+ * the next one. */
+PREFIX int spReadUntil( SDL_RWops *file , char* buffer, int buffer_len, char end_sign);
+
 #endif
