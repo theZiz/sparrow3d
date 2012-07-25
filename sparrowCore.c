@@ -491,7 +491,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					break;
 				case SDLK_e:
 					spInput.button[SP_BUTTON_R] = 1;
-					break;					
+					break;
 			#endif
 				case SDLK_m:
 					//spMuteKey=1;
@@ -859,6 +859,20 @@ PREFIX PspInput spGetInput( void )
 	return &spInput;
 }
 
+PREFIX void spResetButtonsState( void )
+{
+	int I;
+	for ( I = 0; I < SP_INPUT_BUTTON_COUNT; ++I )
+		spInput.button[I] = 0;
+}
+
+PREFIX void spResetAxisState( void )
+{
+	int I;
+	for ( I = 0; I < SP_INPUT_AXIS_COUNT; ++I )
+		spInput.axis[I] = 0;
+}
+
 PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, char *filter )
 {
 	if ( bufferSize > 0 )
@@ -1038,7 +1052,7 @@ PREFIX SDL_Surface* spUniqueCopySurface( SDL_Surface* surface )
 	SDL_Surface* result = spCreateSurface(surface->w,surface->h);
 	SDL_SetColorKey( surface, 0, 0 );
 	SDL_BlitSurface( surface, NULL, result, NULL );
-	return result;	
+	return result;
 }
 
 PREFIX SDL_Surface* spLoadSurface( char* name )
@@ -1143,9 +1157,9 @@ PREFIX void spDeleteSurface( SDL_Surface* surface )
 {
 	if (surface == NULL)
 		return;
-	
+
 	sp_cache_pointer c = sp_get_cached_surface_by_surface( surface );
-	
+
 	if (c)
 	{
 		c->ref--;
@@ -1164,7 +1178,7 @@ PREFIX void spDeleteSurface( SDL_Surface* surface )
 				free(c->name);
 			free(c);
 			SDL_FreeSurface(surface);
-		}		
+		}
 	}
 	else
 		SDL_FreeSurface(surface);
@@ -1301,5 +1315,5 @@ PREFIX int spReadUntil( SDL_RWops *file , char* buffer, int buffer_len, char end
 		pos++;
 	}
 	buffer[pos] = 0;
-	return 0; //not EOF	
+	return 0; //not EOF
 }

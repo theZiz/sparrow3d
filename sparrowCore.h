@@ -31,6 +31,8 @@
 
 /* The size of the surface cache */
 #define SP_CACHE_SIZE 1024
+#define SP_INPUT_BUTTON_COUNT 20
+#define SP_INPUT_AXIS_COUNT 2
 
 /* This struct contains information about the generic input device
  * sparrowCore provides, which is same on EVERY target */
@@ -39,12 +41,12 @@ typedef struct SspInput
 {
 	/* the two axis of the input device. Every axis can be -1 (left/up),
 	 * 0 or 1 (right/down) */
-	signed char axis[2];
+	signed char axis[SP_INPUT_AXIS_COUNT];
 	/* the generic input device has 20 buttons, but many buttons are
 	 * just for compatibility reason to the gp2x-family. You should only
 	 * use button 8 to 18 (11 buttons) or better: the #defines for the
 	 * buttons like SP_BUTTON_START or SP_BUTTON_A (see sparrowDefines.h) */
-	char button[20];
+	char button[SP_INPUT_BUTTON_COUNT];
 	/* this variable says, whether the target supports a hardware
 	 * keyboard. However: at least a software onscreen keyboard is
 	 * always provided (TODO!) */
@@ -99,11 +101,16 @@ PREFIX void spFlip( void );
  * will be set. DON'T FREE IT ON YOUR OWN! */
 PREFIX PspInput spGetInput( void );
 
+PREFIX void spResetButtonsState( void );
+
+PREFIX void spResetAxisState( void );
+
 /* TODO: document me! */
 PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, char *filter );
 
 /* TODO: document me! */
 PREFIX void spStopKeyboardInput( void );
+
 
 /* spSetTouchscreenEmulations sets, whether on systems without touchscreen or
  * mouse (like the GP2X F100) touchscreen is emulated. IF it shall be emulated
