@@ -77,7 +77,7 @@ PREFIX void spQuitPrimitives()
 PREFIX void spSelectRenderTarget( SDL_Surface* target )
 {
 	spTarget = target;
-  spTargetScanLine = target->pitch/target->format->BytesPerPixel;
+	spTargetScanLine = target->pitch/target->format->BytesPerPixel;
 	spTargetX = target->w;
 	spTargetY = target->h;
 	spTargetPixel = ( Uint16* )target->pixels;
@@ -3375,7 +3375,7 @@ PREFIX int spQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Si
 }
 
 PREFIX void spReAllocateZBuffer()
-{
+{	
 	//in Cache?
 	int cacheline;
 	for ( cacheline = 0; cacheline < spZBufferCacheCount; cacheline++ )
@@ -3396,7 +3396,6 @@ PREFIX void spReAllocateZBuffer()
 	{
 		spZBuffer = spZBufferCache[cacheline];
 	}
-
 }
 
 PREFIX void spResetZBuffer()

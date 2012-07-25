@@ -424,6 +424,7 @@ int main( int argc, char **argv )
 
 	//All glory the main loop
 	spLoop( draw_test, calc_test, 10, resize, eventHandling );
+	
 
 	//Winter Wrap up, Winter Wrap up 
 	spFontDelete( font );

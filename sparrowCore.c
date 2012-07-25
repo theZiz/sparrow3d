@@ -898,8 +898,8 @@ PREFIX void spQuitCore( void )
 	if ( SDL_NumJoysticks() > 0 )
 	{
 		int i;
-		for ( i = 0; i < SDL_NumJoysticks(); i++ );
-		SDL_JoystickClose( spJoy[i] );
+		for ( i = 0; i < SDL_NumJoysticks(); i++ )
+			SDL_JoystickClose( spJoy[i] );
 		free( spJoy );
 	}
 	//#endif
