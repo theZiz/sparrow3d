@@ -101,16 +101,31 @@ PREFIX void spFlip( void );
  * will be set. DON'T FREE IT ON YOUR OWN! */
 PREFIX PspInput spGetInput( void );
 
+/* Resets the state of any button in spInput to 0 (=unpressed) */
 PREFIX void spResetButtonsState( void );
 
+/* Resets the state of any joystick or D-Pad axis in spInput to 0 (=no
+ * deflexion) */
 PREFIX void spResetAxisState( void );
 
-/* TODO: document me! */
+/* Prints all following keyboard input (that is numbers, letters and symbols)
+ * into the passed buffer.
+ * buffersize sets the maximum size of the passed buffer
+ * filter is a group of characters allowed for printing (so only chars in there
+ * will be passed to the buffer) - NOT IMPLEMENTED YET!
+ * Unicode might be used when necessary, your current locale will also be used.
+ * This function does not halt execution, rather the buffer is filled over the
+ * next frames until it is full or polling is stopped.
+ * Only backspace is allowed for editing.
+ * On devices without a physical keyboard you have to make sure to show some
+ * kind of on-screen keyboard allowing for input. */
 PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, char *filter );
 
-/* TODO: document me! */
+/* Stops keyboard input. Any input following this call will not be passed to a
+ * buffer, rather will be ignored.
+ * This function will not be called automatically when the buffer passed to
+ * spPollKeyboardInput is full. */
 PREFIX void spStopKeyboardInput( void );
-
 
 /* spSetTouchscreenEmulations sets, whether on systems without touchscreen or
  * mouse (like the GP2X F100) touchscreen is emulated. IF it shall be emulated
