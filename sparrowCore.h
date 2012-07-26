@@ -186,20 +186,12 @@ PREFIX int spFileExists( char* filename );
  * byte!). If the end of file is reached, 1 is return, else 0.*/
 PREFIX int spReadOneLine( SDL_RWops *file , char* buffer, int buffer_len);
 
-<<<<<<< HEAD
 /* spReadUntil reads signs from the file "file" until the buffer is full
  * (buffer_len) or the sign "end_sign" is reached. The sign before 
  * "end_sign" is the last sign of the string! If you read more signs
  * from the file, the sign AFTER "end_sign" is the next you will read.
  * It is usefull for parsing simple XML files. Like spReadOneLine it
  * returns 1 if eof is reached, else 0.*/
-=======
-/* spReadUntil reads from file to buffer until the end_sign or
- * buffer_len is reached. The end_sign is NOT part of the string.
- * If you read again from the file, the sign AFTER the end_sign will be
- * the next one. Returns 1 if end of file is reached like spReadOneLine.
- * The function is usefull for parsing easy structured XML files.*/
->>>>>>> 0d3d774145325bdda49b73fa0e0c4681a5fc9564
 PREFIX int spReadUntil( SDL_RWops *file , char* buffer, int buffer_len, char end_sign);
 
 #endif
