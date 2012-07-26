@@ -898,8 +898,8 @@ PREFIX void spQuitCore( void )
 	if ( SDL_NumJoysticks() > 0 )
 	{
 		int i;
-		for ( i = 0; i < SDL_NumJoysticks(); i++ );
-		SDL_JoystickClose( spJoy[i] );
+		for ( i = 0; i < SDL_NumJoysticks(); i++ )
+			SDL_JoystickClose( spJoy[i] );
 		free( spJoy );
 	}
 	//#endif
@@ -1286,20 +1286,20 @@ PREFIX int spFileExists( char* filename )
 
 PREFIX int spReadOneLine( SDL_RWops *file , char* buffer, int buffer_len)
 {
-		spReadUntil( file, buffer, buffer_len, '\n');
+	return spReadUntil(file,buffer,buffer_len,'\n');
 }
 
 PREFIX int spReadUntil( SDL_RWops *file , char* buffer, int buffer_len, char end_sign)
 {
-		int pos = 0;
-		while (pos < buffer_len)
-		{
-			if (SDL_RWread( file, &(buffer[pos]), 1, 1 ) <= 0)
-				return 1; //EOF
-			if ( buffer[pos] == end_sign )
-				break;
-			pos++;
-		}
-		buffer[pos] = 0;
-		return 0; //not EOF
+	int pos = 0;
+	while (pos < buffer_len)
+	{
+		if (SDL_RWread( file, &(buffer[pos]), 1, 1 ) <= 0)
+			return 1; //EOF
+		if ( buffer[pos] == end_sign )
+			break;
+		pos++;
+	}
+	buffer[pos] = 0;
+	return 0; //not EOF	
 }
