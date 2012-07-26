@@ -31,6 +31,8 @@
 
 /* The size of the surface cache */
 #define SP_CACHE_SIZE 1024
+#define SP_INPUT_BUTTON_COUNT 20
+#define SP_INPUT_AXIS_COUNT 2
 
 /* This struct contains information about the generic input device
  * sparrowCore provides, which is same on EVERY target */
@@ -39,12 +41,12 @@ typedef struct SspInput
 {
 	/* the two axis of the input device. Every axis can be -1 (left/up),
 	 * 0 or 1 (right/down) */
-	signed char axis[2];
+	signed char axis[SP_INPUT_AXIS_COUNT];
 	/* the generic input device has 20 buttons, but many buttons are
 	 * just for compatibility reason to the gp2x-family. You should only
 	 * use button 8 to 18 (11 buttons) or better: the #defines for the
 	 * buttons like SP_BUTTON_START or SP_BUTTON_A (see sparrowDefines.h) */
-	char button[20];
+	char button[SP_INPUT_BUTTON_COUNT];
 	/* this variable says, whether the target supports a hardware
 	 * keyboard. However: at least a software onscreen keyboard is
 	 * always provided (TODO!) */
@@ -99,10 +101,30 @@ PREFIX void spFlip( void );
  * will be set. DON'T FREE IT ON YOUR OWN! */
 PREFIX PspInput spGetInput( void );
 
-/* TODO: document me! */
+/* Resets the state of any button in spInput to 0 (=unpressed) */
+PREFIX void spResetButtonsState( void );
+
+/* Resets the state of any joystick or D-Pad axis in spInput to 0 (=no
+ * deflexion) */
+PREFIX void spResetAxisState( void );
+
+/* Prints all following keyboard input (that is numbers, letters and symbols)
+ * into the passed buffer.
+ * buffersize sets the maximum size of the passed buffer
+ * filter is a group of characters allowed for printing (so only chars in there
+ * will be passed to the buffer) - NOT IMPLEMENTED YET!
+ * Unicode might be used when necessary, your current locale will also be used.
+ * This function does not halt execution, rather the buffer is filled over the
+ * next frames until it is full or polling is stopped.
+ * Only backspace is allowed for editing.
+ * On devices without a physical keyboard you have to make sure to show some
+ * kind of on-screen keyboard allowing for input. */
 PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, char *filter );
 
-/* TODO: document me! */
+/* Stops keyboard input. Any input following this call will not be passed to a
+ * buffer, rather will be ignored.
+ * This function will not be called automatically when the buffer passed to
+ * spPollKeyboardInput is full. */
 PREFIX void spStopKeyboardInput( void );
 
 /* spSetTouchscreenEmulations sets, whether on systems without touchscreen or
