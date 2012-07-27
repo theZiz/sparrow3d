@@ -114,10 +114,8 @@ PREFIX void spInitCore( void )
 	spWindow = NULL;
 	spDone = 0;
 	spFPS = 0;
-	for ( i = 0; i < 20; i++ )
-		spInput.button[i] = 0;
-	spInput.axis[0] = 0;
-	spInput.axis[1] = 0;
+	spResetButtonsState();
+	spResetAxisState();
 	spInput.touchscreen.pressed = 0;
 	spInput.touchscreen.x = 0;
 	spInput.touchscreen.y = 0;
