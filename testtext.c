@@ -19,7 +19,7 @@ int main( int argc, char **argv )
 	printf("  possible languages are de, en or fr. If you don't define a\n");
 	printf("  lanugage, the default language (en) will be used.\n");
 	printf("\n");
-	char defaultname[] = "data/texts.txt";
+	char defaultname[] = "./data/texts.txt";
 	char* filename = defaultname;
 	Uint16 language = SP_LANGUAGE_EN;
 	int i;

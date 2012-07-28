@@ -799,7 +799,7 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 		spPrintDebug( "  Did axis update" );
 #endif
 		//Calls with diffticks == 0 are possible!
-		if ( spCalc )
+		if ( spCalc && diffticks)
 			back = spCalc( diffticks );
 #ifdef CORE_DEBUG
 		spPrintDebug( "  Did calc" );
