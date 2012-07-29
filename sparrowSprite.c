@@ -47,6 +47,8 @@ PREFIX void spDeleteSprite( spSpritePointer sprite)
 {
 	if ( sprite == NULL )
 		return;
+	if (sprite->name)
+		free(sprite->name);
 	spSubSpritePointer momSub = sprite->firstSub;
 	do
 	{
@@ -197,6 +199,7 @@ PREFIX void spDeleteSpriteCollection(spSpriteCollectionPointer collection, int k
 			spDeleteSprite(sprite);
 		sprite = next;
 	}
+	free(collection);
 }
 
 PREFIX void spAddSpriteToCollection(spSpriteCollectionPointer collection, spSpritePointer sprite)

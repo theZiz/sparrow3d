@@ -10,7 +10,6 @@
 #include <SDL_image.h>
 
 SDL_Surface *screen;
-SDL_Surface *tile_map;
 spSpriteCollectionPointer collection;
 Sint32 rotation = 0;
 
@@ -109,11 +108,8 @@ int main( int argc, char **argv )
 	screen = spCreateDefaultWindow();
 	spSelectRenderTarget(screen);
 
-	//Tile map loading
-	tile_map = spLoadSurface( "./data/science_guy_frames01.png" );
-
 	//Loading the collection
-	collection = spLoadSpriteCollection("./data/exampleSprite.ssc",tile_map);
+	collection = spLoadSpriteCollection("./data/exampleSprite.ssc",NULL);
 
 	//We don't want to use the zBuffer in any way
 	spSetZSet(0);
@@ -128,7 +124,6 @@ int main( int argc, char **argv )
 
 	//Winter Wrap up, Winter Wrap up
 	spDeleteSpriteCollection( collection , 0);
-	spDeleteSurface( tile_map );
 	spQuitCore();
 	return 0;
 }
