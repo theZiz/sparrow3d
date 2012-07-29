@@ -15,7 +15,7 @@
 default = run right
 # if no image in the section is defined, this shall be the default. The
 # image is, where the parts are used from
-image = ./data/science_guy_frames01.png   
+image = ./data/science_guy_frames01.png
 # if no fps in the section is defined, this shall be the default.
 # The fps say, how long a sprite-frame is seeable. E.g. with fps = 24
 # every frame is 1000/24 ~ 42 ms seeable (internal it is always rounded

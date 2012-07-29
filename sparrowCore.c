@@ -1310,7 +1310,8 @@ PREFIX int spReadUntil( SDL_RWops *file , char* buffer, int buffer_len, char end
 			return 1; //EOF
 		if ( buffer[pos] == end_sign )
 			break;
-		pos++;
+		if (buffer[pos] != '\r') //fucking windows line break
+			pos++;
 	}
 	buffer[pos] = 0;
 	return 0; //not EOF

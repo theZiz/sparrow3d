@@ -305,7 +305,6 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 			line[i] = 0;
 			sprite = spNewSprite(&(line[1]));
 			spAddSpriteToCollection(collection,sprite);
-			printf("Adding sprite \"%s\"\n",&(line[1]));
 			sprintf(surface,"%s",surface_d);
 			bw = bw_d;
 			bh = bh_d;
