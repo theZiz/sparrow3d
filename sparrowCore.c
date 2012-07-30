@@ -41,6 +41,7 @@ int sp_ok_button = -1;
 int sp_touchscreen_dx;
 int sp_touchscreen_dy;
 char sp_caching = 1;
+int sp_axis_was_used[SP_INPUT_AXIS_COUNT];
 
 typedef struct sp_cache_struct *sp_cache_pointer;
 typedef struct sp_cache_struct {
@@ -116,6 +117,8 @@ PREFIX void spInitCore( void )
 	spFPS = 0;
 	spResetButtonsState();
 	spResetAxisState();
+	for (i = 0; i < SP_INPUT_AXIS_COUNT; i++)
+		sp_axis_was_used[i] = 0;
 	spInput.touchscreen.pressed = 0;
 	spInput.touchscreen.x = 0;
 	spInput.touchscreen.y = 0;
@@ -637,23 +640,45 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				}
 				break;
 			case SDL_JOYAXISMOTION:
-				if ( !( event.jaxis.axis & 1 ) )
+				if ( !( event.jaxis.axis & 1 ) ) //axis 0
 				{
-					if ( event.jaxis.value < SP_JOYSTICK_MIN )
-						spInput.axis[event.jaxis.axis] = -1;
-					else if ( event.jaxis.value > SP_JOYSTICK_MAX )
-						spInput.axis[event.jaxis.axis] = 1;
+					if ( event.jaxis.value < SP_JOYSTICK_MIN_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != -1 )
+					{
+						spInput.axis[event.jaxis.axis & 1] = -1;
+						sp_axis_was_used[event.jaxis.axis & 1] = -1;
+					}
 					else
-						spInput.axis[event.jaxis.axis] = 0;
+					if ( event.jaxis.value > SP_JOYSTICK_MAX_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != 1)
+					{
+						spInput.axis[event.jaxis.axis & 1] = 1;
+						sp_axis_was_used[event.jaxis.axis & 1] = 1;
+					}
+					else
+					if (event.jaxis.value > SP_JOYSTICK_MIN_TRIGGER_OFF && event.jaxis.value < SP_JOYSTICK_MAX_TRIGGER_OFF)
+					{
+						spInput.axis[event.jaxis.axis & 1] = 0;
+						sp_axis_was_used[event.jaxis.axis & 1] = 0;
+					}
 				}
-				if ( event.jaxis.axis & 1 )
+				if ( event.jaxis.axis & 1 ) //axis 1
 				{
-					if ( event.jaxis.value < SP_JOYSTICK_MIN )
-						spInput.axis[event.jaxis.axis] = 1;
-					else if ( event.jaxis.value > SP_JOYSTICK_MAX )
-						spInput.axis[event.jaxis.axis] = -1;
+					if ( event.jaxis.value < SP_JOYSTICK_MIN_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != 1 )
+					{
+						spInput.axis[event.jaxis.axis & 1] = 1;
+						sp_axis_was_used[event.jaxis.axis & 1] = 1;
+					}
 					else
-						spInput.axis[event.jaxis.axis] = 0;
+					if ( event.jaxis.value > SP_JOYSTICK_MAX_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != -1)
+					{
+						spInput.axis[event.jaxis.axis & 1] = -1;
+						sp_axis_was_used[event.jaxis.axis & 1] = -1;
+					}
+					else
+					if (event.jaxis.value > SP_JOYSTICK_MIN_TRIGGER_OFF && event.jaxis.value < SP_JOYSTICK_MAX_TRIGGER_OFF)
+					{
+						spInput.axis[event.jaxis.axis & 1] = 0;
+						sp_axis_was_used[event.jaxis.axis & 1] = 0;
+					}
 				}
 				break;
 			case SDL_QUIT:
