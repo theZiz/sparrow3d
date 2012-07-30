@@ -691,7 +691,7 @@ void spLetterDelete( spLetterPointer letter )
 		return;
 	spLetterDelete( letter->left );
 	spLetterDelete( letter->right );
-	spDeleteSurface( letter->surface );( letter->surface );
+	spDeleteSurface( letter->surface );
 	free( letter );
 }
 
