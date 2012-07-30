@@ -691,7 +691,7 @@ void spLetterDelete( spLetterPointer letter )
 		return;
 	spLetterDelete( letter->left );
 	spLetterDelete( letter->right );
-	SDL_FreeSurface( letter->surface );
+	spDeleteSurface( letter->surface );( letter->surface );
 	free( letter );
 }
 
