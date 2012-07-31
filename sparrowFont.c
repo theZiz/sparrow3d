@@ -153,7 +153,8 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 
 void spFontInternalAddOneCharacter( spFontPointer font, Uint32 character, Uint16 color )
 {
-	char buffer[5];
+	if (spFontGetLetter(font,character))
+		return;
 	spLetterPointer letter = ( spLetterPointer )malloc( sizeof( spLetterStruct ) );
 
 	spFontChangeLetter( font, letter, character, color );
@@ -491,7 +492,6 @@ spLetterPointer spLetterFind( spLetterPointer root, Uint32 character )
 {
 	if ( root == NULL )
 		return NULL;
-
 	if ( character < root->character )
 		return spLetterFind( root->left, character );
 	if ( character > root->character )
@@ -509,7 +509,8 @@ PREFIX spLetterPointer spFontGetLetter( spFontPointer font, Uint32 character )
 			return result;
 		//Else: Save in Cache
 		result = spLetterFind( font->root, character );
-		font->cache.cache[character - font->cacheOffset] = result;
+		if (result)
+			font->cache.cache[character - font->cacheOffset] = result;
 		return result;
 	}
 	return spLetterFind( font->root, character );

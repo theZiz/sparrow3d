@@ -30,7 +30,7 @@
 #include <SDL.h>
 
 /* The size of the surface cache */
-#define SP_CACHE_SIZE 1024
+#define SP_CACHE_SIZE 2048
 #define SP_INPUT_BUTTON_COUNT 20
 #define SP_INPUT_AXIS_COUNT 2
 
