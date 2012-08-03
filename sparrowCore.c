@@ -1121,7 +1121,7 @@ PREFIX SDL_Surface* spLoadSurface( char* name )
 		return c->surface;
 	}
 	else
-		spLoadUncachedSurface(name);
+		return spLoadUncachedSurface(name);
 }
 
 PREFIX void spEnableCaching()
