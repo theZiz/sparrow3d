@@ -218,7 +218,7 @@ PREFIX SDL_Surface* spGetWindowSurface( void )
 	return spWindow;
 }
 
-inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
+inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) ) 
 {
 	int result = 0;
 #ifdef PANDORA
@@ -738,7 +738,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 #endif
 	return result;
 }
-
 
 
 inline void spUpdateAxis( int axis )

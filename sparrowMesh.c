@@ -20,7 +20,7 @@
 #include "sparrowMesh.h"
 #include <math.h>
 
-int meshReadLine( char* buffer, SDL_RWops *file, int max ) //Returns 0 at EOF, otherwise amount of letters
+static int meshReadLine( char* buffer, SDL_RWops *file, int max ) //Returns 0 at EOF, otherwise amount of letters
 {
 	char sign;
 	int pos = 0;
@@ -44,7 +44,7 @@ typedef struct spMeshTempStruct
 	spMeshTempPointer next;
 } spMeshTemp;
 
-Uint32 meshGetNumber( spMeshTempPointer* first, Uint32 point, Uint32 uv )
+static Uint32 meshGetNumber( spMeshTempPointer* first, Uint32 point, Uint32 uv )
 {
 	spMeshTempPointer mom = *first;
 	Uint32 nr = -1;
@@ -71,7 +71,7 @@ Uint32 meshGetNumber( spMeshTempPointer* first, Uint32 point, Uint32 uv )
 	return mom->nr;
 }
 
-Uint32 meshGetNumberEdge( spMeshTempPointer* first, Uint32 point, Uint32 uv )
+static Uint32 meshGetNumberEdge( spMeshTempPointer* first, Uint32 point, Uint32 uv )
 {
 	spMeshTempPointer mom = *first;
 	Uint32 nr = -1;
@@ -100,7 +100,7 @@ Uint32 meshGetNumberEdge( spMeshTempPointer* first, Uint32 point, Uint32 uv )
 	return mom->nr;
 }
 
-float meshatof( char* buffer )
+static float meshatof( char* buffer )
 {
 	double number = 0.0f;
 	double sign = 1.0f;
@@ -158,7 +158,7 @@ float meshatof( char* buffer )
 	return sign * ( number + aftercomma ) / pow( 10.0, e );
 }
 
-void meshParseVertex( char* buffer, spPointPointer point, int max )
+static void meshParseVertex( char* buffer, spPointPointer point, int max )
 {
 	point->x = 0;
 	point->y = 0;
@@ -208,7 +208,7 @@ void meshParseVertex( char* buffer, spPointPointer point, int max )
 	buffer[right] = oldc;
 }
 
-void meshParseUV( char* buffer, spTexPointPointer point, int max, int texw, int texh )
+static void meshParseUV( char* buffer, spTexPointPointer point, int max, int texw, int texh )
 {
 	point->u = 0;
 	point->v = 0;
@@ -243,7 +243,7 @@ void meshParseUV( char* buffer, spTexPointPointer point, int max, int texw, int 
 	buffer[right] = oldc;
 }
 
-int meshParseFace( char* buffer, int* face, int max ) //3 triangle, 4 quad
+static int meshParseFace( char* buffer, int* face, int max ) //3 triangle, 4 quad
 {
 	int count = 0;
 	//search ' ' after 'f'

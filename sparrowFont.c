@@ -47,12 +47,12 @@ PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size )
 	return font;
 }
 
-Sint32 spLetterGetHeight( spLetterPointer letter )
+static Sint32 spLetterGetHeight( spLetterPointer letter )
 {
 	return letter ? letter->binary_height : -1;
 }
 
-spLetterPointer spLetterRotateLeft( spLetterPointer K2 )
+static spLetterPointer spLetterRotateLeft( spLetterPointer K2 )
 {
 	spLetterPointer K1;
 
@@ -66,7 +66,7 @@ spLetterPointer spLetterRotateLeft( spLetterPointer K2 )
 	return K1;
 }
 
-spLetterPointer spLetterRotateRight( spLetterPointer K1 )
+static spLetterPointer spLetterRotateRight( spLetterPointer K1 )
 {
 	spLetterPointer K2;
 
@@ -80,19 +80,19 @@ spLetterPointer spLetterRotateRight( spLetterPointer K1 )
 	return K2;
 }
 
-spLetterPointer spLetterDoubleLeft( spLetterPointer K3 )
+static spLetterPointer spLetterDoubleLeft( spLetterPointer K3 )
 {
 	K3->left = spLetterRotateRight( K3->left );
 	return spLetterRotateLeft( K3 );
 }
 
-spLetterPointer spLetterDoubleRight( spLetterPointer K3 )
+static spLetterPointer spLetterDoubleRight( spLetterPointer K3 )
 {
 	K3->right = spLetterRotateLeft( K3->right );
 	return spLetterRotateRight( K3 );
 }
 
-spLetterPointer spFontInsert( spLetterPointer letter, spLetterPointer root )
+static spLetterPointer spFontInsert( spLetterPointer letter, spLetterPointer root )
 {
 	if( root == NULL )
 	{
@@ -151,7 +151,7 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 		font->maxheight = letter->height;
 }
 
-void spFontInternalAddOneCharacter( spFontPointer font, Uint32 character, Uint16 color )
+static void spFontInternalAddOneCharacter( spFontPointer font, Uint32 character, Uint16 color )
 {
 	if (spFontGetLetter(font,character))
 		return;
@@ -289,7 +289,7 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
 	return buffer;
 }
 
-int spFontCorrectStrategy(char* button)
+static int spFontCorrectStrategy(char* button)
 {
   if (spFontStrategy != SP_FONT_INTELLIGENT)
     return spFontStrategy;
@@ -409,7 +409,7 @@ PREFIX void spFontSetButtonStrategy(int strategy)
   spFontStrategy = strategy;
 }
 
-void spLetterAddBorder( spLetterPointer letter, Uint16 bordercolor )
+static void spLetterAddBorder( spLetterPointer letter, Uint16 bordercolor )
 {
 	if ( letter == NULL )
 		return;
@@ -449,7 +449,7 @@ PREFIX void spFontAddBorder( spFontPointer font, Uint16 bordercolor )
 	spLetterAddBorder( font->root, bordercolor );
 }
 
-void spLetterReplaceColor( spLetterPointer letter, Uint16 oldcolor, Uint16 newcolor )
+static void spLetterReplaceColor( spLetterPointer letter, Uint16 oldcolor, Uint16 newcolor )
 {
 	if ( letter == NULL )
 		return;
@@ -488,7 +488,7 @@ PREFIX void spFontMulWidth( spFontPointer font, Sint32 factor )
 	spLetterMulWidth( font->root, factor );
 }
 
-spLetterPointer spLetterFind( spLetterPointer root, Uint32 character )
+static spLetterPointer spLetterFind( spLetterPointer root, Uint32 character )
 {
 	if ( root == NULL )
 		return NULL;
@@ -686,7 +686,7 @@ PREFIX int spFontWidth(const char* text, spFontPointer font )
 	return width;
 }
 
-void spLetterDelete( spLetterPointer letter )
+static void spLetterDelete( spLetterPointer letter )
 {
 	if ( letter == NULL )
 		return;
@@ -724,3 +724,4 @@ PREFIX Sint32 spFontGetCacheStart( spFontPointer font )
 {
 	return font->cacheOffset;
 }
+

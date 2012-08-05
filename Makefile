@@ -24,12 +24,12 @@ DYNAMIC = -lSDL_ttf -lSDL_image -lSDL -lm
 
 # CFLAGS defines some globale flags for gcc. Even on the gp2x with only 16 KB
 # CPU Cache, -O3 is faster than -Os. So most things you don't have to change
-CFLAGS = -O3 -fsingle-precision-constant -fPIC 
+CFLAGS = -O2 -fsingle-precision-constant -fPIC 
 
 # GENERAL_TWEAKS are some flags for gcc, which should make the compilation
 # faster, but some of them are just poinsoness snake oil - they may help a bit,
 # but could also kill you. ^^
-GENERAL_TWEAKS = -ffast-math -fgcse-sm -fsched-spec-load -fmodulo-sched -fgcse-las -ftracer -funsafe-loop-optimizations -Wunsafe-loop-optimizations -fvariable-expansion-in-unroller
+GENERAL_TWEAKS = -ffast-math
 
 # every device using SMALL_RESOLUTION_DEVICES in the compilation will enable
 # the faster multiplication and division
@@ -37,7 +37,7 @@ SMALL_RESOLUTION_DEVICES = -DFAST_MULTIPLICATION -DFAST_DIVISION
 
 # The default Compiler is gcc with debug symbols and a X86CPU (that's a define
 # for sparrow or your game, not used by gcc.
-CPP = gcc -g -march=native -DX86CPU $(GENERAL_TWEAKS)
+CPP = gcc -march=native -DX86CPU $(GENERAL_TWEAKS)
 
 # SDL sets some SDL options with the program "sdl-config".
 SDL = `sdl-config --cflags`
@@ -60,6 +60,8 @@ SDL_PATH = -I/usr/include/SDL
 # === The Targets. Set your own paths on your PC!
 # == GP2X/WIZ ==
 ifeq ($(TARGET),open2x)
+# CPP_LINK = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 -DFAST_BUT_UGLY $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
+# CPP = /opt/open2x/wiz-toolchain-4.6.3-3/bin/arm-wiz-linux-gnu-gcc -mfpu=fpa -msoft-float -mcpu=arm920t -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 -DFAST_BUT_UGLY $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
 CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 -DFAST_BUT_UGLY $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
 SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags` 
 INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
@@ -103,6 +105,8 @@ INCLUDE = -I/opt/pandora/arm-2011.03/usr/include
 LIB = -L/opt/pandora/arm-2011.03/usr/lib -Wl,-rpath=/opt/pandora/arm-2011.03/usr/lib
 endif
 
+# I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
+CPP_LINK = $(CPP)
 
 all: sparrow3d testsparrow testsprite testmesh testtarget testtext testparallax
 
@@ -110,25 +114,25 @@ targets:
 	@echo "gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora"
 
 testsparrow: testsparrow.c sparrow3d
-	$(CPP) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testsparrow
+	$(CPP_LINK) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testsparrow
 
 testsprite: testsprite.c sparrow3d
-	$(CPP) $(CFLAGS) testsprite.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testsprite
+	$(CPP_LINK) $(CFLAGS) testsprite.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testsprite
 
 testmesh: testmesh.c sparrow3d
-	$(CPP) $(CFLAGS) testmesh.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testmesh
+	$(CPP_LINK) $(CFLAGS) testmesh.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testmesh
 
 testtarget: testtarget.c sparrow3d
-	$(CPP) $(CFLAGS) testtarget.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testtarget
+	$(CPP_LINK) $(CFLAGS) testtarget.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testtarget
 
 testtext: testtext.c sparrow3d
-	$(CPP) $(CFLAGS) testtext.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testtext
+	$(CPP_LINK) $(CFLAGS) testtext.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testtext
 
 testparallax: testparallax.c sparrow3d
-	$(CPP) $(CFLAGS) testparallax.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testparallax
+	$(CPP_LINK) $(CFLAGS) testparallax.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testparallax
 
 sparrow3d: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o
-	$(CPP) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -rdynamic -o libsparrow3d.so sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC)
+	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -rdynamic -o libsparrow3d.so sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SDL_LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC)
 
 sparrowCore.o: sparrowCore.c sparrowCore.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
