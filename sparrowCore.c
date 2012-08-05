@@ -1067,6 +1067,7 @@ PREFIX SDL_Surface* spCopySurface( SDL_Surface* surface )
 			return c->surface;
 		}
 		//not Null, but not the cache? O_o Lets add a copy and return
+		printf("Can't find surface in cache. Will return a real copy.\n");
 	}
 	return spUniqueCopySurface( surface );
 }
@@ -1120,7 +1121,7 @@ PREFIX SDL_Surface* spLoadSurface( char* name )
 		return c->surface;
 	}
 	else
-		spLoadUncachedSurface(name);
+		return spLoadUncachedSurface(name);
 }
 
 PREFIX void spEnableCaching()

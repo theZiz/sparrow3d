@@ -344,7 +344,6 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 			for (j = strlen(value)-1;value[j]==' ' && j>=0;j--);
 			value[j+1] = 0;
 			int x,y,n;
-			SDL_Surface* s;
 			switch (keyword)
 			{
 				case 1: //"default"
