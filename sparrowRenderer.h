@@ -136,7 +136,8 @@ typedef struct spLightStruct
  * - fovyInDegrees is the field of View in degrees
  * - aspectRatio is self-explanatory. width / height is a good value
  *   most of the times.
- * - znear and zfar are the nearest and farest value for the z ordinate. */
+ * - znear and zfar are the nearest and farest value for the z ordinate.
+ *   in fact: znear is ignored most of the time*/
 PREFIX void spSetPerspective( float fovyInDegrees, float aspectRatio,
 							  float znear, float zfar );
 

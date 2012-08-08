@@ -78,10 +78,11 @@ void draw_test( void )
 		break;
 	case 3:
 		spSetAlphaTest( 0 );
-		spTranslate( 0, 0, -8 << SP_ACCURACY );
+		spTranslate( 0, 0, (-12 << SP_ACCURACY)/*+spSin(rotation)*4*/ );
 		spRotateX( rotation );
 		spRotateY( rotation );
 		spRotateZ( rotation );
+		spScale(spSin(rotation) + 3*SP_ONE/2,spSin(rotation) + 3*SP_ONE/2,spSin(rotation) + 3*SP_ONE/2);
 		count = spMesh3D( mesh, 1 );
 		break;
 	case 2:

@@ -27,7 +27,6 @@
 
 Sint32 spModelView[16];
 Sint32 spProjection[16];
-Sint32 spX_to_Y;
 int spLightOn = -1;
 spLight spLightDiffuse[SP_MAX_LIGHTS];
 Uint32 spLightAmbient[3] = {1 << SP_ACCURACY-2,1 << SP_ACCURACY-2,1 << SP_ACCURACY-2};
@@ -63,18 +62,18 @@ PREFIX void spSetPerspective( float fovyInDegrees, float aspectRatio,
 							  float znear, float zfar )
 {
 	float ymax, xmax;
-	ymax = znear * tanf( fovyInDegrees * M_PI / 360.0 );
+	ymax = znear * tanf( fovyInDegrees * M_PI / 360.0f );
 	//ymin = -ymax;
 	//xmin = -ymax * aspectRatio;
 	xmax = ymax * aspectRatio;
-	spSetFrustumf2( spProjection, ( Sint32 )( -xmax * SP_ACCURACY_FACTOR ),
-					( Sint32 )( xmax * SP_ACCURACY_FACTOR ),
-					( Sint32 )( -ymax * SP_ACCURACY_FACTOR ),
-					( Sint32 )( ymax * SP_ACCURACY_FACTOR ),
-					( Sint32 )( znear * SP_ACCURACY_FACTOR ),
-					( Sint32 )( zfar * SP_ACCURACY_FACTOR ) );
+	spSetFrustumf2( spProjection, ( Sint32 )( -xmax  * SP_ACCURACY_FACTOR ),
+	                              ( Sint32 )(  xmax  * SP_ACCURACY_FACTOR ),
+	                              ( Sint32 )( -ymax  * SP_ACCURACY_FACTOR ),
+	                              ( Sint32 )(  ymax  * SP_ACCURACY_FACTOR ),
+	                              ( Sint32 )(  znear * SP_ACCURACY_FACTOR ),
+	                              ( Sint32 )(  zfar  * SP_ACCURACY_FACTOR ));
 	Sint32 spRatio = ( Sint32 )( aspectRatio * SP_ACCURACY_FACTOR );
-	spX_to_Y = ( spGetWindowSurface()->w << SP_ACCURACY ) / spGetWindowSurface()->h;
+	spSetZFar((Sint32)(zfar * SP_ACCURACY_FACTOR));
 }
 
 PREFIX Sint32* spGetProjectionMatrix()
@@ -105,8 +104,19 @@ PREFIX void spIdentity()
 PREFIX void spScale( Sint32 x, Sint32 y, Sint32 z )
 {
 	spModelView[ 0] = spMul( spModelView[ 0], x );
+	spModelView[ 1] = spMul( spModelView[ 1], x );
+	spModelView[ 2] = spMul( spModelView[ 2], x );
+	spModelView[ 3] = spMul( spModelView[ 3], x );
+	
+	spModelView[ 4] = spMul( spModelView[ 4], y );
 	spModelView[ 5] = spMul( spModelView[ 5], y );
+	spModelView[ 6] = spMul( spModelView[ 6], y );
+	spModelView[ 7] = spMul( spModelView[ 7], y );
+	
+	spModelView[ 8] = spMul( spModelView[ 8], z );
+	spModelView[ 9] = spMul( spModelView[ 9], z );
 	spModelView[10] = spMul( spModelView[10], z );
+	spModelView[11] = spMul( spModelView[11], z );
 }
 
 PREFIX void spRotate( Sint32 x, Sint32 y, Sint32 z, Sint32 rad )

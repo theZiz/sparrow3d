@@ -74,10 +74,6 @@
 /* If alphatest is enabled, this color will not be drawn */
 #define SP_ALPHA_COLOR 63519
 
-/* this is the max negative value for the zBuffer. spResetZBuffer();
- * sets to this value */
-#define SP_MAX_NEGATIVE -0x80000000
-
 /* Initializes some Look up tables and the zBufferCache. Is called from
  * sparrowCore. */
 PREFIX void spInitPrimitives();
@@ -222,5 +218,8 @@ PREFIX void spSetHorizontalOrigin( Sint32 origin );
 /* Sets the vertical origin of the Surface and Rectangle functions.
  * Possible is: SP_TOP, SP_BOTTOM and SP_CENTER. SP_CENTER is default*/
 PREFIX void spSetVerticalOrigin( Sint32 origin );
+
+/* Sets the value, to which the zbuffer will be reseted */
+PREFIX void spSetZFar(Sint32 zfar);
 
 #endif

@@ -29,6 +29,7 @@ Uint32 spZSet = 1;
 Uint32 spAlphaTest = 1;
 Uint32 spQuadQuali = 1;
 Sint32* spZBuffer = NULL;
+Sint32 spZFar = 6553600; //100.0f
 Sint32 spTargetScanLine = 0; //if the surface is even, same as spTargetX, else +1.
 Sint32 spTargetX = 0;
 Sint32 spTargetY = 0;
@@ -146,7 +147,7 @@ inline Sint32 one_over_x( Sint32 x )
 inline Sint32 z_div( Sint32 z, Sint32 d ) __attribute__((always_inline));
 inline Sint32 z_div( Sint32 z, Sint32 d )
 {
-#ifdef REALGP2X_TODO_FIX_ME
+#ifdef REALGP2X
 	return ( z >> SP_HALF_PRIM_ACCURACY ) * ( one_over_x( d ) >> SP_HALF_PRIM_ACCURACY );
 #else
 	if ( d == 0 )
@@ -3417,7 +3418,7 @@ PREFIX void spResetZBuffer()
 	int i;
 	if ( spZBuffer )
 		for ( i = 0; i < spTargetScanLine * spTargetY; i++ )
-			spZBuffer[i] = SP_MAX_NEGATIVE;
+		spZBuffer[i] = spZFar;
 }
 
 PREFIX Sint32* spGetZBuffer()
@@ -3511,14 +3512,14 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
 
 PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 {
-	if ( z >= 0 )
-		return;
 	if ( spAlphaTest )
 	{
 		if ( spZSet )
 		{
 			if ( spZTest )
 			{
+				if ( z >= 0 )
+					return;
 				SDL_LockSurface( spTarget );
 				Uint16 *pixel;
 				pixel = ( Uint16* )( surface->pixels );
@@ -3595,6 +3596,8 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 		{
 			if ( spZTest )
 			{
+				if ( z >= 0 )
+					return;
 				SDL_LockSurface( spTarget );
 				Uint16 *pixel;
 				pixel = ( Uint16* )( surface->pixels );
@@ -3655,6 +3658,8 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 		{
 			if ( spZTest )
 			{
+				if ( z >= 0 )
+					return;
 				SDL_LockSurface( spTarget );
 				Uint16 *pixel;
 				pixel = ( Uint16* )( surface->pixels );
@@ -3731,6 +3736,8 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 		{
 			if ( spZTest )
 			{
+				if ( z >= 0 )
+					return;
 				SDL_LockSurface( spTarget );
 				Uint16 *pixel;
 				pixel = ( Uint16* )( surface->pixels );
@@ -3789,8 +3796,6 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 
 PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h )
 {
-	if ( z >= 0 )
-		return;
 	int addu;
 	switch (spHorizontalOrigin)
 	{
@@ -3811,6 +3816,8 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 		{
 			if ( spZTest )
 			{
+				if ( z >= 0 )
+					return;
 				int x1 = x - addu;
 				if ( x1 >= spTargetX )
 					return;
@@ -3920,6 +3927,8 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 		{
 			if ( spZTest )
 			{
+				if ( z >= 0 )
+					return;
 				int x1 = x - addu;
 				if ( x1 >= spTargetX )
 					return;
@@ -3994,6 +4003,8 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 		{
 			if ( spZTest )
 			{
+				if ( z >= 0 )
+					return;
 				int x1 = x - addu;
 				if ( x1 >= spTargetX )
 					return;
@@ -4103,6 +4114,8 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 		{
 			if ( spZTest )
 			{
+				if ( z >= 0 )
+					return;
 				int x1 = x - addu;
 				if ( x1 >= spTargetX )
 					return;
@@ -5289,4 +5302,9 @@ PREFIX void spSetHorizontalOrigin( Sint32 origin )
 PREFIX void spSetVerticalOrigin( Sint32 origin )
 {
 	spVerticalOrigin = origin;
+}
+
+PREFIX void spSetZFar(Sint32 zfar)
+{
+	spZFar = -zfar;
 }
