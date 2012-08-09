@@ -1,4 +1,6 @@
 Roadmap:
+- fixing backspace on keyboard input
+- adding a virtual keyboard
 - third device layer
 - Changing the button on PC.
 - sparrowFont additional or own part, which allows to draw blocked text

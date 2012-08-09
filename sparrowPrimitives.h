@@ -222,4 +222,7 @@ PREFIX void spSetVerticalOrigin( Sint32 origin );
 /* Sets the value, to which the zbuffer will be reseted */
 PREFIX void spSetZFar(Sint32 zfar);
 
+/* Gets the value, to which the zbuffer will be reseted */
+PREFIX Sint32 spGetZFar();
+
 #endif

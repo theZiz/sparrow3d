@@ -102,7 +102,14 @@
 #define spDivHigh(a,b) (((Sint64)(a)<<SP_ACCURACY)/(Sint64)(b))
 
 /* The following (long) list of #defines gives you the numbers and names
- * of the generic device buttons. */
+ * of the generic device buttons or of the buttons on the explizit
+ * device. The Dingoo e.g. has the A button on the right, but GP2X and
+ * others on the left. That means: If you want the button with the
+ * CAPTION "A" use SP_BUTTON_A, but if you want the LEFT Button on every
+ * device use SP_BUTTON_LEFT, which will be SP_BUTTON_A on the gp2x or
+ * SP_BUTTON_Y on the Dingoo. The same for the names. Buttons like
+ * SP_BUTTON_L or similar are defined just one time - because their are
+ * the same on every device.*/
 #ifdef GP2X
 	#define SP_AXIS_UP 0
 	#define SP_AXIS_LEFTUP 1
@@ -120,10 +127,14 @@
 	#define SP_BUTTON_B 13
 	#define SP_BUTTON_X 14
 	#define SP_BUTTON_Y 15
+	#define SP_BUTTON_LEFT SP_BUTTON_A
+	#define SP_BUTTON_UP SP_BUTTON_Y
+	#define SP_BUTTON_RIGHT SP_BUTTON_B
+	#define SP_BUTTON_DOWN SP_BUTTON_X
 	#define SP_BUTTON_VOLPLUS 16
 	#define SP_BUTTON_VOLMINUS 17
 	#define SP_BUTTON_TIP 18
-	//just for different SP_PRActices
+	//just for different practices
 	#define SP_PRACTICE_OK SP_BUTTON_B
 	#define SP_PRACTICE_CANCEL SP_BUTTON_X
 #elif defined CAANOO
@@ -131,6 +142,10 @@
 	#define SP_BUTTON_X 1
 	#define SP_BUTTON_B 2
 	#define SP_BUTTON_Y 3
+	#define SP_BUTTON_LEFT SP_BUTTON_A
+	#define SP_BUTTON_UP SP_BUTTON_Y
+	#define SP_BUTTON_RIGHT SP_BUTTON_B
+	#define SP_BUTTON_DOWN SP_BUTTON_X
 	#define SP_BUTTON_L 4
 	#define SP_BUTTON_R 5
 	#define SP_BUTTON_START 6
@@ -142,7 +157,7 @@
 	#define SP_BUTTON_VOLMINUS 19
 	#define SP_PRACTICE_OK SP_BUTTON_B
 	#define SP_PRACTICE_CANCEL SP_BUTTON_X
-#else //PC and DINGUX and PANDORA
+#elif defined DINGUX
 	#define SP_AXIS_LEFTRIGHT 0
 	#define SP_AXIS_UPDOWN 1
 	#define SP_BUTTON_START 8
@@ -153,6 +168,30 @@
 	#define SP_BUTTON_B 13
 	#define SP_BUTTON_X 14
 	#define SP_BUTTON_Y 15
+	#define SP_BUTTON_LEFT SP_BUTTON_Y
+	#define SP_BUTTON_UP SP_BUTTON_X
+	#define SP_BUTTON_RIGHT SP_BUTTON_A
+	#define SP_BUTTON_DOWN SP_BUTTON_B
+	#define SP_BUTTON_VOLPLUS 16
+	#define SP_BUTTON_VOLMINUS 17
+	#define SP_BUTTON_TIP 18
+	#define SP_PRACTICE_OK SP_BUTTON_A
+	#define SP_PRACTICE_CANCEL SP_BUTTON_X
+#else //PC and PANDORA
+	#define SP_AXIS_LEFTRIGHT 0
+	#define SP_AXIS_UPDOWN 1
+	#define SP_BUTTON_START 8
+	#define SP_BUTTON_SELECT 9
+	#define SP_BUTTON_L 10
+	#define SP_BUTTON_R 11
+	#define SP_BUTTON_A 12
+	#define SP_BUTTON_B 13
+	#define SP_BUTTON_X 14
+	#define SP_BUTTON_Y 15
+	#define SP_BUTTON_LEFT SP_BUTTON_A
+	#define SP_BUTTON_UP SP_BUTTON_Y
+	#define SP_BUTTON_RIGHT SP_BUTTON_B
+	#define SP_BUTTON_DOWN SP_BUTTON_X
 	#define SP_BUTTON_VOLPLUS 16
 	#define SP_BUTTON_VOLMINUS 17
 	#define SP_BUTTON_TIP 18
@@ -169,6 +208,10 @@
 	#define SP_BUTTON_B_NAME "B"
 	#define SP_BUTTON_X_NAME "X"
 	#define SP_BUTTON_Y_NAME "Y"
+	#define SP_BUTTON_LEFT_NAME SP_BUTTON_A_NAME
+	#define SP_BUTTON_UP_NAME SP_BUTTON_Y_NAME
+	#define SP_BUTTON_RIGHT_NAME SP_BUTTON_B_NAME
+	#define SP_BUTTON_DOWN_NAME SP_BUTTON_X_NAME
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_B_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
@@ -181,6 +224,10 @@
 	#define SP_BUTTON_B_NAME "B"
 	#define SP_BUTTON_X_NAME "X"
 	#define SP_BUTTON_Y_NAME "Y"
+	#define SP_BUTTON_LEFT_NAME SP_BUTTON_A_NAME
+	#define SP_BUTTON_UP_NAME SP_BUTTON_Y_NAME
+	#define SP_BUTTON_RIGHT_NAME SP_BUTTON_B_NAME
+	#define SP_BUTTON_DOWN_NAME SP_BUTTON_X_NAME
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_B_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
@@ -193,6 +240,10 @@
 	#define SP_BUTTON_B_NAME "B"
 	#define SP_BUTTON_X_NAME "X"
 	#define SP_BUTTON_Y_NAME "Y"
+	#define SP_BUTTON_LEFT_NAME SP_BUTTON_A_NAME
+	#define SP_BUTTON_UP_NAME SP_BUTTON_Y_NAME
+	#define SP_BUTTON_RIGHT_NAME SP_BUTTON_B_NAME
+	#define SP_BUTTON_DOWN_NAME SP_BUTTON_X_NAME
 	#define SP_PAD_NAME "Stick"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_B_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
@@ -205,6 +256,10 @@
 	#define SP_BUTTON_B_NAME "B"
 	#define SP_BUTTON_X_NAME "X"
 	#define SP_BUTTON_Y_NAME "Y"
+	#define SP_BUTTON_LEFT_NAME SP_BUTTON_Y_NAME
+	#define SP_BUTTON_UP_NAME SP_BUTTON_X_NAME
+	#define SP_BUTTON_RIGHT_NAME SP_BUTTON_A_NAME
+	#define SP_BUTTON_DOWN_NAME SP_BUTTON_B_NAME
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
@@ -217,6 +272,10 @@
 	#define SP_BUTTON_B_NAME "B"
 	#define SP_BUTTON_X_NAME "X"
 	#define SP_BUTTON_Y_NAME "Y"
+	#define SP_BUTTON_LEFT_NAME SP_BUTTON_A_NAME
+	#define SP_BUTTON_UP_NAME SP_BUTTON_Y_NAME
+	#define SP_BUTTON_RIGHT_NAME SP_BUTTON_B_NAME
+	#define SP_BUTTON_DOWN_NAME SP_BUTTON_X_NAME
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
@@ -236,6 +295,10 @@
 	#define SP_BUTTON_B_NAME "d"
 	#define SP_BUTTON_X_NAME "s"
 	#define SP_BUTTON_Y_NAME "w"	
+	#define SP_BUTTON_LEFT_NAME SP_BUTTON_A_NAME
+	#define SP_BUTTON_UP_NAME SP_BUTTON_Y_NAME
+	#define SP_BUTTON_RIGHT_NAME SP_BUTTON_B_NAME
+	#define SP_BUTTON_DOWN_NAME SP_BUTTON_X_NAME
 	#define SP_PAD_NAME "Arrow Keys"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME

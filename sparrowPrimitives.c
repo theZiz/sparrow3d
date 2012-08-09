@@ -5308,3 +5308,8 @@ PREFIX void spSetZFar(Sint32 zfar)
 {
 	spZFar = -zfar;
 }
+
+PREFIX Sint32 spGetZFar()
+{
+	return -spZFar;
+}
