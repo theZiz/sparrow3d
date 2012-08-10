@@ -782,9 +782,9 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 	//time since the last frame
 	Uint32 steps = 0;
 	//time from the last calculation
-	oldticks = olderticks;
+	oldticks = SDL_GetTicks();
 	//time of the current loop pass
-	newticks = olderticks;
+	newticks = oldticks;
 
 	while( back == 0 && !spDone )
 	{
