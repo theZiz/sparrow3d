@@ -846,6 +846,10 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 			}
 			steps = 0;
 		}
+		#ifndef DO_NOT_USE_DELAY
+		if (diffticks == 0)
+			SDL_Delay(1);
+		#endif
 	}
 	return back;
 }
