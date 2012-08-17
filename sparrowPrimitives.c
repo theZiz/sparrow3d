@@ -19,7 +19,6 @@
 */
 #include "sparrowPrimitives.h"
 #include <stdlib.h>
-
 SDL_Surface* spTarget = NULL;
 Uint16* spTargetPixel = NULL;
 SDL_Surface* spTexture = NULL;
@@ -126,7 +125,9 @@ PREFIX void spClearTarget( Uint32 color )
 	SDL_UnlockSurface(spTarget);*/
 }
 
+#ifdef __GNUC__
 inline Sint32 one_over_x( Sint32 x ) __attribute__((always_inline));
+#endif
 inline Sint32 one_over_x( Sint32 x )
 {
 	if ( x > 0 )
@@ -144,7 +145,9 @@ inline Sint32 one_over_x( Sint32 x )
 	return 0;
 }
 
+#ifdef __GNUC__
 inline Sint32 z_div( Sint32 z, Sint32 d ) __attribute__((always_inline));
+#endif
 inline Sint32 z_div( Sint32 z, Sint32 d )
 {
 #ifdef REALGP2X
@@ -199,7 +202,9 @@ inline Sint32 z_div( Sint32 z, Sint32 d )
 	spTargetPixel[x + y * spTargetScanLine] = color;
 }*/
 
+#ifdef __GNUC__
 inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+#endif
 inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
 {
 	if ( x1 >= spTargetX )
@@ -222,7 +227,9 @@ inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Si
 	}
 }
 
+#ifdef __GNUC__
 inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+#endif
 inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
 {
 	if ( x1 >= spTargetX )
@@ -245,7 +252,9 @@ inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 
 	}
 }
 
+#ifdef __GNUC__
 inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+#endif
 inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
 {
 	if ( x1 >= spTargetX )
@@ -268,7 +277,9 @@ inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y
 	}
 }
 
+#ifdef __GNUC__
 inline void draw_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color ) __attribute__((always_inline));
+#endif
 inline void draw_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color )
 {
 	if ( x1 >= spTargetX )
@@ -1152,7 +1163,9 @@ inline void draw_pixel_tex( Sint32 x, Sint32 y, Sint32 u, Sint32 v, Uint32 color
 }*/
 
 
+#ifdef __GNUC__
 inline void draw_line_tex_ztest_zset( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ ) __attribute__((always_inline));
+#endif
 inline void draw_line_tex_ztest_zset( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ )
 {
 	if ( x1 >= spTargetX )
@@ -1181,7 +1194,9 @@ inline void draw_line_tex_ztest_zset( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1
 	}
 }
 
+#ifdef __GNUC__
 inline void draw_line_tex_ztest( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ ) __attribute__((always_inline));
+#endif
 inline void draw_line_tex_ztest( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ )
 {
 	if ( x1 >= spTargetX )
@@ -1210,7 +1225,9 @@ inline void draw_line_tex_ztest( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sin
 	}
 }
 
+#ifdef __GNUC__
 inline void draw_line_tex_zset( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ ) __attribute__((always_inline));
+#endif
 inline void draw_line_tex_zset( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ )
 {
 	if ( x1 >= spTargetX )
@@ -1239,7 +1256,9 @@ inline void draw_line_tex_zset( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint
 	}
 }
 
+#ifdef __GNUC__
 inline void draw_line_tex( Sint32 x1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV ) __attribute__((always_inline));
+#endif
 inline void draw_line_tex( Sint32 x1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV )
 {
 	if ( x1 >= spTargetX )
@@ -2132,7 +2151,9 @@ inline void draw_pixel_tex_alpha( Sint32 x, Sint32 y, Sint32 u, Sint32 v, Uint32
 	}
 }*/
 
+#ifdef __GNUC__
 inline void draw_line_tex_ztest_zset_alpha( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ ) __attribute__((always_inline));
+#endif
 inline void draw_line_tex_ztest_zset_alpha( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ )
 {
 	if ( x1 >= spTargetX )
@@ -2161,7 +2182,9 @@ inline void draw_line_tex_ztest_zset_alpha( Sint32 x1, Sint32 z1, Sint32 u1, Sin
 	}
 }
 
+#ifdef __GNUC__
 inline void draw_line_tex_ztest_alpha( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ ) __attribute__((always_inline));
+#endif
 inline void draw_line_tex_ztest_alpha( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ )
 {
 	if ( x1 >= spTargetX )
@@ -2190,7 +2213,9 @@ inline void draw_line_tex_ztest_alpha( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v
 	}
 }
 
+#ifdef __GNUC__
 inline void draw_line_tex_zset_alpha( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ ) __attribute__((always_inline));
+#endif
 inline void draw_line_tex_zset_alpha( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV, Sint32 sZ )
 {
 	if ( x1 >= spTargetX )
@@ -2219,7 +2244,9 @@ inline void draw_line_tex_zset_alpha( Sint32 x1, Sint32 z1, Sint32 u1, Sint32 v1
 	}
 }
 
+#ifdef __GNUC__
 inline void draw_line_tex_alpha( Sint32 x1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV ) __attribute__((always_inline));
+#endif
 inline void draw_line_tex_alpha( Sint32 x1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 u2, Sint32 v2, Sint32 y, Uint32 color, Sint32 sU, Sint32 sV )
 {
 	if ( x1 >= spTargetX )
