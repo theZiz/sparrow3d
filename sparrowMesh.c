@@ -100,64 +100,6 @@ static Uint32 meshGetNumberEdge( spMeshTempPointer* first, Uint32 point, Uint32 
 	return mom->nr;
 }
 
-static float meshatof( char* buffer )
-{
-	double number = 0.0f;
-	double sign = 1.0f;
-	int pos = 0;
-	//crap at the beginning
-	while ( buffer[pos] != 0 && buffer[pos] < '0' && buffer[pos] > '9' && buffer[pos] != '+' && buffer[pos] != '-' )
-		pos++;
-	if ( buffer[pos] == 0 )
-		return number;
-	if ( buffer[pos] == '+' )
-		pos++;
-	else if ( buffer[pos] == '-' )
-	{
-		pos++;
-		sign = -1.0f;
-	}
-	//the number itself
-	while ( buffer[pos] >= '0' && buffer[pos] <= '9' )
-	{
-		number = number * 10.0f + ( double )( buffer[pos] - '0' );
-		pos++;
-	}
-	if ( buffer[pos] != '.' )
-		return sign * number;
-	//after the comma
-	pos++;
-	double divisor = 1.0f;
-	double aftercomma = 0.0f;
-	while ( buffer[pos] >= '0' && buffer[pos] <= '9' )
-	{
-		divisor *= 10.0f;
-		aftercomma = aftercomma + ( double )( buffer[pos] - '0' ) / divisor;
-		pos++;
-	}
-	if ( buffer[pos] != 'e' && buffer[pos] != 'E' )
-		return sign * ( number + aftercomma );
-	//after e
-	pos++;
-	double e = 1.0f;
-	int esign = 1;
-	if ( buffer[pos] == '+' )
-		pos++;
-	else if ( buffer[pos] == '-' )
-	{
-		pos++;
-		esign = 0;
-	}
-	while ( buffer[pos] >= '0' && buffer[pos] <= '9' )
-	{
-		e = e * 10.0f + ( double )( buffer[pos] - '0' );
-		pos++;
-	}
-	if ( esign )
-		return sign * ( number + aftercomma ) * pow( 10.0, e );
-	return sign * ( number + aftercomma ) / pow( 10.0, e );
-}
-
 static void meshParseVertex( char* buffer, spPointPointer point, int max )
 {
 	point->x = 0;
@@ -175,7 +117,7 @@ static void meshParseVertex( char* buffer, spPointPointer point, int max )
 	//now buffer[right] is the ' ' after the number
 	char oldc = buffer[right];
 	buffer[right] = 0;
-	float number = meshatof( &( buffer[left] ) );
+	float number = spAtof_float( &( buffer[left] ) );
 	point->x = ( int )( number * SP_ACCURACY_FACTOR );
 	buffer[right] = oldc;
 
@@ -189,7 +131,7 @@ static void meshParseVertex( char* buffer, spPointPointer point, int max )
 		right++;
 	oldc = buffer[right];
 	buffer[right] = 0;
-	number = meshatof( &( buffer[left] ) );
+	number = spAtof_float( &( buffer[left] ) );
 	point->y = ( int )( number * SP_ACCURACY_FACTOR );
 	buffer[right] = oldc;
 
@@ -203,7 +145,7 @@ static void meshParseVertex( char* buffer, spPointPointer point, int max )
 		right++;
 	oldc = buffer[right];
 	buffer[right] = 0;
-	number = meshatof( &( buffer[left] ) );
+	number = spAtof_float( &( buffer[left] ) );
 	point->z = ( int )( number * SP_ACCURACY_FACTOR );
 	buffer[right] = oldc;
 }
@@ -224,7 +166,7 @@ static void meshParseUV( char* buffer, spTexPointPointer point, int max, int tex
 	//now buffer[right] is the ' ' after the number
 	char oldc = buffer[right];
 	buffer[right] = 0;
-	float number = meshatof( &( buffer[left] ) );
+	float number = spAtof_float( &( buffer[left] ) );
 	point->u = ( int )( number * ( float )texw );
 	buffer[right] = oldc;
 
@@ -238,7 +180,7 @@ static void meshParseUV( char* buffer, spTexPointPointer point, int max, int tex
 		right++;
 	oldc = buffer[right];
 	buffer[right] = 0;
-	number = meshatof( &( buffer[left] ) );
+	number = spAtof_float( &( buffer[left] ) );
 	point->v = texh - 1 - ( int )( number * ( float )( texh - 1 ) );
 	buffer[right] = oldc;
 }
