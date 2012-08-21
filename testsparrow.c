@@ -14,6 +14,7 @@ SDL_Surface *garfield;
 SDL_Surface *pepper;
 SDL_Surface *scientist;
 spModelPointer mesh;
+spModelPointer wheal[15];
 spSpritePointer sprite;
 Sint32 rotation = 0;
 spFontPointer font = NULL;
@@ -46,6 +47,29 @@ void draw_test( void )
 
 	switch ( test )
 	{
+	case 6:
+		spSetAlphaTest( 0 );
+		spTranslate( 0, 0, (-10 << SP_ACCURACY));
+		spRotateX(rotation);
+		spRotateY(rotation);
+		spRotateZ(rotation);
+		for (i = 0; i < 15; i++)
+		{
+			//glPush()
+			Sint32 matrix[16];
+			memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) );
+			
+			spRotateY(SP_PI*i*8/15);
+			spTranslate(0,0,-9 << SP_ACCURACY-2);
+			
+			spRotateX(SP_PI*i*2/15);
+			spRotateZ( (i & 1)?rotation:-rotation);
+			count = spMesh3D( wheal[i], 1 );
+
+			//glPop()
+			memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) );
+		}
+		break;
 	case 5:
 		spRotozoomSurface( screen->w / 4, screen->h / 4, -1, garfield, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ) >> 2, spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ) >> 2, rotation );
 		spRotozoomSurfacePart( 3 * screen->w / 4, screen->h / 4, -1, garfield, garfield->w / 4, garfield->h / 4, garfield->w / 2, garfield->w / 2, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ) >> 1, spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ) >> 1, rotation );
@@ -292,6 +316,9 @@ void draw_test( void )
 	case 5:
 		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 6:\nSprites & Rotozoom", font );
 		break;
+	case 6:
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 7:\nCrazy stuff", font );
+		break;
 	}
 	if ( quality )
 		spFontDraw( 0, screen->h - font->maxheight, -1, "Light On [A]", font );
@@ -340,12 +367,12 @@ int calc_test( Uint32 steps )
 	if ( spGetInput()->button[SP_BUTTON_R] )
 	{
 		spGetInput()->button[SP_BUTTON_R] = 0;
-		test = ( test + 1 ) % 6;
+		test = ( test + 1 ) % 7;
 	}
 	if ( spGetInput()->button[SP_BUTTON_L] )
 	{
 		spGetInput()->button[SP_BUTTON_L] = 0;
-		test = ( test + 5 ) % 6;
+		test = ( test + 6 ) % 7;
 	}
 	if ( spGetInput()->button[SP_BUTTON_Y] )
 	{
@@ -412,8 +439,9 @@ int main( int argc, char **argv )
 
 	//Mesh loading
 	mesh = spMeshLoadObj( "./data/testmeshuv_tri.obj", garfield, 65535 );
-	//mesh = spMeshLoadObj("./data/bamuv.obj",garfield,65535);
-	//mesh = spMeshLoadObj("./data/foobar.obj",garfield,65535);
+	int i;
+	for (i = 0; i < 15; i++)
+		wheal[i] = spMeshLoadObj( "./data/wheal.obj", NULL, spGetHSV(i*2*SP_PI/15,255,255));
 
 	//Sprite Creating
 	sprite = spNewSprite(NULL);
@@ -430,6 +458,8 @@ int main( int argc, char **argv )
 	//Winter Wrap up, Winter Wrap up 
 	spFontDelete( font );
 	spMeshDelete( mesh );
+	for (i = 0; i < 15; i++)
+		spMeshDelete( wheal[i] );
 	spDeleteSprite( sprite );
 	spDeleteSurface( garfield );
 	spDeleteSurface( pepper );

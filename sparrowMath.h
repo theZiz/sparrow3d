@@ -55,10 +55,6 @@ PREFIX Sint32 spMin( Sint32 a, Sint32 b );
 /* spMax return the biggest of 2 numbers */
 PREFIX Sint32 spMax( Sint32 a, Sint32 b );
 
-/* For some reasons the "normal" atof makes bullshit on the GP2X... So I
- * implemented it myself. It is not fast, but works */
-PREFIX float spAtof_float( char* buffer );
-
 /* Converts a string to a Sint32 fixed point number like atof. Be careful, it
  * is slow, especially on devices without FPU. But perfect for loading stuff. */
 PREFIX Sint32 spAtof( char* buffer );

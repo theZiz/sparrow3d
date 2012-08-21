@@ -1232,89 +1232,47 @@ PREFIX Uint16 spGetRGB(int r, int g, int b )
 
 PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 {
-	h = h % (2 * SP_PI);
-	Uint8 hi = h / (SP_PI / 3);
-	Sint32 f = ((3 * h << SP_HALF_ACCURACY) / SP_PI >> SP_HALF_ACCURACY) - (hi << SP_ACCURACY);
-	Sint32 p = (v << (SP_HALF_ACCURACY - 8)) * ((1 << SP_HALF_ACCURACY) - (s << (SP_HALF_ACCURACY - 8)));
-	Sint32 q = (v << (SP_HALF_ACCURACY - 8)) * ((1 << SP_HALF_ACCURACY) - (((f >> SP_HALF_ACCURACY) * (s << (SP_HALF_ACCURACY - 8))) >> SP_HALF_ACCURACY));
-	Sint32 t = (v << (SP_HALF_ACCURACY - 8)) * ((1 << SP_HALF_ACCURACY) - ((((1 << SP_HALF_ACCURACY) - (f >> SP_HALF_ACCURACY)) * (s << (SP_HALF_ACCURACY - 8))) >> SP_HALF_ACCURACY));
-	Uint8 r;
-	Uint8 g;
-	Uint8 b;
+	int hi = h / (SP_PI/3);
+	Sint32 S = (Sint32)s << SP_ACCURACY-8;
+	Sint32 V = (Sint32)v << SP_ACCURACY-8;
+	Sint32 f = spDivHigh(h,SP_PI/3) - (hi << SP_ACCURACY);
+	Sint32 p = spMulHigh(V,SP_ONE-S);
+	Sint32 q = spMulHigh(V,SP_ONE-spMulHigh(S,f));
+	Sint32 t = spMulHigh(V,SP_ONE-spMulHigh(S,SP_ONE-f));
+	Sint32 r,g,b;
 	switch (hi)
 	{
-	case 1:
-		r = q >> (SP_ACCURACY - 8);
-		g = v;
-		b = p >> (SP_ACCURACY - 8);
-		break;
-	case 2:
-		r = p >> (SP_ACCURACY - 8);
-		g = v;
-		b = t >> (SP_ACCURACY - 8);
-		break;
-	case 3:
-		r = p >> (SP_ACCURACY - 8);
-		g = q >> (SP_ACCURACY - 8);
-		b = v;
-		break;
-	case 4:
-		r = t >> (SP_ACCURACY - 8);
-		g = p >> (SP_ACCURACY - 8);
-		b = v;
-		break;
-	case 5:
-		r = v;
-		g = p >> (SP_ACCURACY - 8);
-		b = q >> (SP_ACCURACY - 8);
-		break;
-	default:
-		r = v;
-		g = t >> (SP_ACCURACY - 8);
-		b = p >> (SP_ACCURACY - 8);
-		break;
+		case 0: case 6:
+			r = V >> SP_ACCURACY-8;
+			g = t >> SP_ACCURACY-8;
+			b = p >> SP_ACCURACY-8;
+			break;
+		case 1:
+			r = q >> SP_ACCURACY-8;
+			g = V >> SP_ACCURACY-8;
+			b = p >> SP_ACCURACY-8;
+			break;
+		case 2:
+			r = p >> SP_ACCURACY-8;
+			g = V >> SP_ACCURACY-8;
+			b = t >> SP_ACCURACY-8;
+			break;
+		case 3:
+			r = p >> SP_ACCURACY-8;
+			g = q >> SP_ACCURACY-8;
+			b = V >> SP_ACCURACY-8;
+			break;
+		case 4:
+			r = t >> SP_ACCURACY-8;
+			g = p >> SP_ACCURACY-8;
+			b = V >> SP_ACCURACY-8;
+			break;
+		case 5:
+			r = V >> SP_ACCURACY-8;
+			g = p >> SP_ACCURACY-8;
+			b = q >> SP_ACCURACY-8;
+			break;
 	}
-	/*Uint8 hi = ((h<<SP_HALF_ACCURACY)/(SP_PI/3))>>SP_HALF_ACCURACY;
-	Sint32 f = ((3*h<<SP_HALF_ACCURACY)/SP_PI>>SP_HALF_ACCURACY)-(hi<<SP_ACCURACY);
-	Sint32 p = (v<<(SP_HALF_ACCURACY-8))*((1<<SP_HALF_ACCURACY)-(s<<(SP_HALF_ACCURACY-8)));
-	Sint32 q = (v<<(SP_HALF_ACCURACY-8))*((1<<SP_HALF_ACCURACY)-(((f>>SP_HALF_ACCURACY)*(s<<(SP_HALF_ACCURACY-8)))>>SP_HALF_ACCURACY));
-	Sint32 t = (v<<(SP_HALF_ACCURACY-8))*((1<<SP_HALF_ACCURACY)-((((1<<SP_HALF_ACCURACY)-(f>>SP_HALF_ACCURACY))*(s<<(SP_HALF_ACCURACY-8)))>>SP_HALF_ACCURACY));
-	Uint8 r;
-	Uint8 g;
-	Uint8 b;
-	switch (hi)
-	{
-	  case 1:
-	    r=q>>(SP_ACCURACY-8);
-	    g=v;
-	    b=p>>(SP_ACCURACY-8);
-	    break;
-	  case 2:
-	    r=p>>(SP_ACCURACY-8);
-	    g=v;
-	    b=t>>(SP_ACCURACY-8);
-	    break;
-	  case 3:
-	    r=p>>(SP_ACCURACY-8);
-	    g=q>>(SP_ACCURACY-8);
-	    b=v;
-	    break;
-	  case 4:
-	    r=t>>(SP_ACCURACY-8);
-	    g=p>>(SP_ACCURACY-8);
-	    b=v;
-	    break;
-	  case 5:
-	    r=v;
-	    g=p>>(SP_ACCURACY-8);
-	    b=q>>(SP_ACCURACY-8);
-	    break;
-	  default:
-	    r=v;
-	    g=t>>(SP_ACCURACY-8);
-	    b=p>>(SP_ACCURACY-8);
-	    break;
-	}*/
 	return ((r >> 3) << 11) + ((g >> 2) << 5) + (b >> 3);
 }
 

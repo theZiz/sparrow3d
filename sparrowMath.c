@@ -107,65 +107,7 @@ PREFIX Sint32 spMax(Sint32 a, Sint32 b)
 	return (a > b) ? a : b;
 }
 
-PREFIX float spAtof_float( char* buffer )
-{
-	double number = 0.0f;
-	double sign = 1.0f;
-	int pos = 0;
-	//crap at the beginning
-	while ( buffer[pos] != 0 && buffer[pos] < '0' && buffer[pos] > '9' && buffer[pos] != '+' && buffer[pos] != '-' )
-		pos++;
-	if ( buffer[pos] == 0 )
-		return number;
-	if ( buffer[pos] == '+' )
-		pos++;
-	else if ( buffer[pos] == '-' )
-	{
-		pos++;
-		sign = -1.0f;
-	}
-	//the number itself
-	while ( buffer[pos] >= '0' && buffer[pos] <= '9' )
-	{
-		number = number * 10.0f + ( double )( buffer[pos] - '0' );
-		pos++;
-	}
-	if ( buffer[pos] != '.' )
-		return sign * number;
-	//after the comma
-	pos++;
-	double divisor = 1.0f;
-	double aftercomma = 0.0f;
-	while ( buffer[pos] >= '0' && buffer[pos] <= '9' )
-	{
-		divisor *= 10.0f;
-		aftercomma = aftercomma + ( double )( buffer[pos] - '0' ) / divisor;
-		pos++;
-	}
-	if ( buffer[pos] != 'e' && buffer[pos] != 'E' )
-		return sign * ( number + aftercomma );
-	//after e
-	pos++;
-	double e = 1.0f;
-	int esign = 1;
-	if ( buffer[pos] == '+' )
-		pos++;
-	else if ( buffer[pos] == '-' )
-	{
-		pos++;
-		esign = 0;
-	}
-	while ( buffer[pos] >= '0' && buffer[pos] <= '9' )
-	{
-		e = e * 10.0f + ( double )( buffer[pos] - '0' );
-		pos++;
-	}
-	if ( esign )
-		return sign * ( number + aftercomma ) * pow( 10.0, e );
-	return sign * ( number + aftercomma ) / pow( 10.0, e );
-}
-
 PREFIX Sint32 spAtof( char* buffer )
 {
-	return (Sint32)(spAtof_float(buffer)*SP_ACCURACY_FACTOR);
+	return (Sint32)(atof(buffer)*SP_ACCURACY_FACTOR);
 }

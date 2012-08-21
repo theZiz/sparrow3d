@@ -19,6 +19,7 @@
 */
 #include "sparrowMesh.h"
 #include <math.h>
+#include <stdlib.h>
 
 static int meshReadLine( char* buffer, SDL_RWops *file, int max ) //Returns 0 at EOF, otherwise amount of letters
 {
@@ -117,8 +118,7 @@ static void meshParseVertex( char* buffer, spPointPointer point, int max )
 	//now buffer[right] is the ' ' after the number
 	char oldc = buffer[right];
 	buffer[right] = 0;
-	float number = spAtof_float( &( buffer[left] ) );
-	point->x = ( int )( number * SP_ACCURACY_FACTOR );
+	point->x = spAtof(&( buffer[left] ));
 	buffer[right] = oldc;
 
 	//second number
@@ -131,8 +131,7 @@ static void meshParseVertex( char* buffer, spPointPointer point, int max )
 		right++;
 	oldc = buffer[right];
 	buffer[right] = 0;
-	number = spAtof_float( &( buffer[left] ) );
-	point->y = ( int )( number * SP_ACCURACY_FACTOR );
+	point->y = spAtof(&( buffer[left] ));
 	buffer[right] = oldc;
 
 	//third number
@@ -145,8 +144,7 @@ static void meshParseVertex( char* buffer, spPointPointer point, int max )
 		right++;
 	oldc = buffer[right];
 	buffer[right] = 0;
-	number = spAtof_float( &( buffer[left] ) );
-	point->z = ( int )( number * SP_ACCURACY_FACTOR );
+	point->z = spAtof(&( buffer[left] ));
 	buffer[right] = oldc;
 }
 
@@ -166,7 +164,7 @@ static void meshParseUV( char* buffer, spTexPointPointer point, int max, int tex
 	//now buffer[right] is the ' ' after the number
 	char oldc = buffer[right];
 	buffer[right] = 0;
-	float number = spAtof_float( &( buffer[left] ) );
+	float number = atof( &( buffer[left] ) );
 	point->u = ( int )( number * ( float )texw );
 	buffer[right] = oldc;
 
@@ -180,7 +178,7 @@ static void meshParseUV( char* buffer, spTexPointPointer point, int max, int tex
 		right++;
 	oldc = buffer[right];
 	buffer[right] = 0;
-	number = spAtof_float( &( buffer[left] ) );
+	number = atof( &( buffer[left] ) );
 	point->v = texh - 1 - ( int )( number * ( float )( texh - 1 ) );
 	buffer[right] = oldc;
 }
