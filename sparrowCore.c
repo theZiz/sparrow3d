@@ -1233,46 +1233,49 @@ PREFIX Uint16 spGetRGB(int r, int g, int b )
 PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 {
 	int hi = h / (SP_PI/3);
-	Sint32 S = (Sint32)s << SP_ACCURACY-8;
-	Sint32 V = (Sint32)v << SP_ACCURACY-8;
-	Sint32 f = spDivHigh(h,SP_PI/3) - (hi << SP_ACCURACY);
-	Sint32 p = spMulHigh(V,SP_ONE-S);
-	Sint32 q = spMulHigh(V,SP_ONE-spMulHigh(S,f));
-	Sint32 t = spMulHigh(V,SP_ONE-spMulHigh(S,SP_ONE-f));
+	Sint32 S = s;
+	Sint32 V = v;
+	printf("-------------- %f %i %i %i\n",(float)h/SP_ACCURACY_FACTOR,S,V,hi);
+	Sint32 f = (spDivHigh(h,SP_PI/3) >> SP_ACCURACY-8) - (hi << 8);
+	Sint32 p = V*(255-S) >> 8;
+	Sint32 q = V*(255-(S*f >> 8)) >> 8;
+	Sint32 t = V*(255-(S*(255-f) >> 8)) >> 8;
+	printf("-------------- %i %i %i %i\n",f,p,q,t);
 	Sint32 r,g,b;
 	switch (hi)
 	{
 		case 0: case 6:
-			r = V >> SP_ACCURACY-8;
-			g = t >> SP_ACCURACY-8;
-			b = p >> SP_ACCURACY-8;
+			r = V;
+			g = t;
+			b = p;
 			break;
 		case 1:
-			r = q >> SP_ACCURACY-8;
-			g = V >> SP_ACCURACY-8;
-			b = p >> SP_ACCURACY-8;
+			r = q;
+			g = V;
+			b = p;
 			break;
 		case 2:
-			r = p >> SP_ACCURACY-8;
-			g = V >> SP_ACCURACY-8;
-			b = t >> SP_ACCURACY-8;
+			r = p;
+			g = V;
+			b = t;
 			break;
 		case 3:
-			r = p >> SP_ACCURACY-8;
-			g = q >> SP_ACCURACY-8;
-			b = V >> SP_ACCURACY-8;
+			r = p;
+			g = q;
+			b = V;
 			break;
 		case 4:
-			r = t >> SP_ACCURACY-8;
-			g = p >> SP_ACCURACY-8;
-			b = V >> SP_ACCURACY-8;
+			r = t;
+			g = p;
+			b = V;
 			break;
 		case 5:
-			r = V >> SP_ACCURACY-8;
-			g = p >> SP_ACCURACY-8;
-			b = q >> SP_ACCURACY-8;
+			r = V;
+			g = p;
+			b = q;
 			break;
 	}
+	printf("-------------- %i %i %i\n",r,g,b);
 	return ((r >> 3) << 11) + ((g >> 2) << 5) + (b >> 3);
 }
 

@@ -49,7 +49,7 @@ void draw_test( void )
 	{
 	case 6:
 		spSetAlphaTest( 0 );
-		spTranslate( 0, 0, (-10 << SP_ACCURACY));
+		spTranslate( 0, 0, (-8 << SP_ACCURACY));
 		spRotateX(rotation);
 		spRotateY(rotation);
 		spRotateZ(rotation);
@@ -59,13 +59,12 @@ void draw_test( void )
 			Sint32 matrix[16];
 			memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) );
 			
-			spRotateY(SP_PI*i*8/15);
-			spTranslate(0,0,-9 << SP_ACCURACY-2);
+			spRotateY(SP_PI*i*4/15);
+			spTranslate(0,0,-35 << SP_ACCURACY-4);
 			
-			spRotateX(SP_PI*i*2/15);
-			spRotateZ( (i & 1)?rotation:-rotation);
+			spRotateX(SP_PI*i/15);
+			spRotateZ( (i & 1) ?rotation:(-rotation+SP_PI/11));
 			count = spMesh3D( wheal[i], 1 );
-
 			//glPop()
 			memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) );
 		}
@@ -317,7 +316,7 @@ void draw_test( void )
 		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 6:\nSprites & Rotozoom", font );
 		break;
 	case 6:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 7:\nCrazy stuff", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 7:\nMAKE IT STOP!", font );
 		break;
 	}
 	if ( quality )
