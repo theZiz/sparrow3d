@@ -14,7 +14,7 @@ SDL_Surface *garfield;
 SDL_Surface *pepper;
 SDL_Surface *scientist;
 spModelPointer mesh;
-spModelPointer wheal[15];
+spModelPointer wheel[15];
 spSpritePointer sprite;
 Sint32 rotation = 0;
 spFontPointer font = NULL;
@@ -64,7 +64,7 @@ void draw_test( void )
 			
 			spRotateX(SP_PI*i/15);
 			spRotateZ( (i & 1) ?rotation:(-rotation+SP_PI/11));
-			count = spMesh3D( wheal[i], 1 );
+			count = spMesh3D( wheel[i], 1 );
 			//glPop()
 			memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) );
 		}
@@ -440,7 +440,7 @@ int main( int argc, char **argv )
 	mesh = spMeshLoadObj( "./data/testmeshuv_tri.obj", garfield, 65535 );
 	int i;
 	for (i = 0; i < 15; i++)
-		wheal[i] = spMeshLoadObj( "./data/wheal.obj", NULL, spGetHSV(i*2*SP_PI/15,255,255));
+		wheel[i] = spMeshLoadObj( "./data/wheel.obj", NULL, spGetHSV(i*2*SP_PI/15,255,255));
 
 	//Sprite Creating
 	sprite = spNewSprite(NULL);
@@ -458,7 +458,7 @@ int main( int argc, char **argv )
 	spFontDelete( font );
 	spMeshDelete( mesh );
 	for (i = 0; i < 15; i++)
-		spMeshDelete( wheal[i] );
+		spMeshDelete( wheel[i] );
 	spDeleteSprite( sprite );
 	spDeleteSurface( garfield );
 	spDeleteSurface( pepper );
