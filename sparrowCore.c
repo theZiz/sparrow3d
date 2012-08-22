@@ -1235,12 +1235,10 @@ PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 	int hi = h / (SP_PI/3);
 	Sint32 S = s;
 	Sint32 V = v;
-	printf("-------------- %f %i %i %i\n",(float)h/SP_ACCURACY_FACTOR,S,V,hi);
 	Sint32 f = (spDivHigh(h,SP_PI/3) >> SP_ACCURACY-8) - (hi << 8);
 	Sint32 p = V*(255-S) >> 8;
 	Sint32 q = V*(255-(S*f >> 8)) >> 8;
 	Sint32 t = V*(255-(S*(255-f) >> 8)) >> 8;
-	printf("-------------- %i %i %i %i\n",f,p,q,t);
 	Sint32 r,g,b;
 	switch (hi)
 	{
@@ -1275,7 +1273,6 @@ PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 			b = q;
 			break;
 	}
-	printf("-------------- %i %i %i\n",r,g,b);
 	return ((r >> 3) << 11) + ((g >> 2) << 5) + (b >> 3);
 }
 
