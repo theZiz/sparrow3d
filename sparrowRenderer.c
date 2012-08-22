@@ -337,15 +337,23 @@ inline void spMulModellView( Sint32 x, Sint32 y, Sint32 z, Sint32 *tx, Sint32 *t
 
 //senquack - credit for this fast sqrt goes to Wilco Dijkstra http://www.finesse.demon.co.uk/steven/sqrt.html
 #define iter1(N) \
-  tryv = root + (1 << (N)); \
-  if (n >= tryv << (N))   \
-    {   n -= tryv << (N);   \
-    root |= 2 << (N); \
-}
+	tryv = root + (1 << (N));\
+	if (n >= tryv << (N))\
+	{\
+		n -= tryv << (N);\
+		root |= 2 << (N);\
+	}
 
 SP_LIGHT_TYPE lightSqrt ( SP_LIGHT_TYPE n )
 {
 	SP_LIGHT_TYPE root = 0, tryv;
+	iter1 ( 30 );
+	iter1 ( 29 );
+	iter1 ( 28 );
+	iter1 ( 27 );
+	iter1 ( 26 );
+	iter1 ( 25 );
+	iter1 ( 24 );
 	iter1 ( 23 );
 	iter1 ( 22 );
 	iter1 ( 21 );
@@ -373,10 +381,27 @@ SP_LIGHT_TYPE lightSqrt ( SP_LIGHT_TYPE n )
 	return root << ( SP_LIGHT_HALF_ACCURACY - 1 );
 }
 
-//#define lightSqrt(n) (Sint32)(sqrt((float)(n)/SP_LIGHT_ACCURACY_FACTOR)*SP_LIGHT_ACCURACY_FACTOR)
 
 #define spLightMul(a,b) (((a)>>SP_LIGHT_HALF_ACCURACY) * ((b)>>SP_LIGHT_HALF_ACCURACY))
 #define spLightDiv(a,b) (((a)<<SP_LIGHT_HALF_ACCURACY)/(b)<<SP_LIGHT_HALF_ACCURACY)
+
+/*SP_LIGHT_TYPE lightSqrt ( SP_LIGHT_TYPE n )
+{
+	SP_LIGHT_TYPE root = 1 << 31;
+	int i;
+	for (i = 31; i > 0; i--)
+	{
+		if (spLightMul(root,root) >= n)
+			root -= 1 << i;
+		else
+			root += 1 << i;
+	}
+	return root;
+}*/
+
+
+//#define lightSqrt(n) (SP_LIGHT_TYPE)(sqrt((float)(n)/SP_LIGHT_ACCURACY_FACTOR)*SP_LIGHT_ACCURACY_FACTOR)
+
 
 inline void spCalcLightNormal( SP_LIGHT_TYPE x1, SP_LIGHT_TYPE y1, SP_LIGHT_TYPE z1, SP_LIGHT_TYPE x2, SP_LIGHT_TYPE y2, SP_LIGHT_TYPE z2,
                                SP_LIGHT_TYPE x3, SP_LIGHT_TYPE y3, SP_LIGHT_TYPE z3, SP_LIGHT_TYPE* normale )
@@ -412,18 +437,33 @@ inline Uint16 rendererLightCalculation( Uint16 color, Sint32 x1, Sint32 y1, Sint
 		spCalcLightNormal( x1 << SP_LIGHT_ACCURACY - SP_ACCURACY, y1 << SP_LIGHT_ACCURACY - SP_ACCURACY, z1 << SP_LIGHT_ACCURACY - SP_ACCURACY,
 		                   x2 << SP_LIGHT_ACCURACY - SP_ACCURACY, y2 << SP_LIGHT_ACCURACY - SP_ACCURACY, z2 << SP_LIGHT_ACCURACY - SP_ACCURACY,
 		                   x3 << SP_LIGHT_ACCURACY - SP_ACCURACY, y3 << SP_LIGHT_ACCURACY - SP_ACCURACY, z3 << SP_LIGHT_ACCURACY - SP_ACCURACY, normale );
-		SP_LIGHT_TYPE normale_length = lightSqrt( spLightMul( normale[0], normale[0] ) +
-		                                   spLightMul( normale[1], normale[1] ) +
-		                                   spLightMul( normale[2], normale[2] ) );
+		#ifdef FAST_BUT_UGLY
+			SP_LIGHT_TYPE normale_length = ( spLightMul( normale[0], normale[0] ) +
+																				 spLightMul( normale[1], normale[1] ) +
+																				 spLightMul( normale[2], normale[2] ) );
+		#else
+			SP_LIGHT_TYPE normale_length = lightSqrt( spLightMul( normale[0], normale[0] ) +
+																				 spLightMul( normale[1], normale[1] ) +
+																				 spLightMul( normale[2], normale[2] ) );
+		#endif
 
 		SP_LIGHT_TYPE direction[3];
 		direction[0] = (SP_LIGHT_TYPE)(spLightDiffuse[i].x - ( x1 + x2 >> 1 )) << SP_LIGHT_ACCURACY - SP_ACCURACY;
 		direction[1] = (SP_LIGHT_TYPE)(spLightDiffuse[i].y - ( y1 + y2 >> 1 )) << SP_LIGHT_ACCURACY - SP_ACCURACY;
 		direction[2] = (SP_LIGHT_TYPE)(spLightDiffuse[i].z - ( z1 + z2 >> 1 )) << SP_LIGHT_ACCURACY - SP_ACCURACY;
-		SP_LIGHT_TYPE direction_length = lightSqrt( spLightMul( direction[0], direction[0] ) +
-		                                            spLightMul( direction[1], direction[1] ) +
-		                                            spLightMul( direction[2], direction[2] ) );
+		#ifdef FAST_BUT_UGLY
+			SP_LIGHT_TYPE direction_length = ( spLightMul( direction[0], direction[0] ) +
+																									spLightMul( direction[1], direction[1] ) +
+																									spLightMul( direction[2], direction[2] ) );
+		#else
+			SP_LIGHT_TYPE direction_length = lightSqrt( spLightMul( direction[0], direction[0] ) +
+																									spLightMul( direction[1], direction[1] ) +
+																									spLightMul( direction[2], direction[2] ) );
+		#endif
 		SP_LIGHT_TYPE div = spLightMul( direction_length, normale_length );
+		#ifdef FAST_BUT_UGLY
+			div = lightSqrt(div);
+		#endif
 		if ( div == 0 )
 			div = 1;
 		SP_LIGHT_TYPE ac = spLightDiv( spLightMul( direction[0], normale[0] ) +
@@ -981,7 +1021,7 @@ PREFIX void spSetLight( int value )
 		spLightDiffuse[0].z = 0 << SP_ACCURACY;
 		memset( &( spLightDiffuse[1] ), 0, sizeof( spLight ) * ( SP_MAX_LIGHTS - 1 ) );
 	}
-	spLightOn = value;
+	spLightOn = value != 0;
 }
 
 PREFIX void spEnableLight( int number, Sint32 active )
