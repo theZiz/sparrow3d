@@ -29,6 +29,18 @@
 #include "sparrowDefines.h"
 #include <SDL.h>
 
+/* The minimal and maximal value of the analog axis */
+#define SP_ANALOG_AXIS_MIN -32768
+#define SP_ANALOG_AXIS_MAX  32767
+
+/* if a REAL input device (not the sparrow3d generic input device!) has
+ * a analog stick, these are the limits, from which the generic axis are
+ * uneven 0 or reseted to 0 again*/
+#define SP_JOYSTICK_MIN_TRIGGER_ON -24576
+#define SP_JOYSTICK_MIN_TRIGGER_OFF -8192
+#define SP_JOYSTICK_MAX_TRIGGER_ON 24576
+#define SP_JOYSTICK_MAX_TRIGGER_OFF	8192
+
 /* The size of the surface cache */
 #define SP_CACHE_SIZE 2048
 #define SP_INPUT_BUTTON_COUNT 20
@@ -62,6 +74,11 @@ typedef struct SspInput
 		char *filter; //filter, which signs are allowed (not implemented yet)
 		int pos,len,lastSize; //some internal variables about the input. Do not change!
 	} keyboard;
+	/* These analog axis is the SAME like above, but with more different states
+	 * instead of a trinary -1, 0, 1 decision. If a device doesn't have a analog
+	 * stick, it will emulated as full pressed, but axis like the pandora nubs or
+	 * an analog stick on a gamepad will be presented here with full SDL accuracy*/
+	Sint16 analog_axis[SP_INPUT_AXIS_COUNT];
 } TspInput;
 
 
