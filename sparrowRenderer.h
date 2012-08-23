@@ -201,8 +201,14 @@ PREFIX void spEnableLight( int number, Sint32 active );
 /* Sets the Light Color */
 PREFIX void spSetLightColor( int number, Uint32 r, Uint32 g, Uint32 b );
 
-/* Sets the Light Position */
+/* Sets the Light Position. The Position will be transformed with the
+ * Modelview matrix as it is at call! */
 PREFIX void spSetLightPosition( int number, Sint32 x, Sint32 y, Sint32 z );
+
+/* If you want to update the lights position without a recall of
+ * spSetLightPosition use this. This just multiplies the lights position
+ * with the Modelviewmatrix. */
+PREFIX void spUpdateLight(int number);
 
 /* Sets the global ambient light value used be every 3D quad or triangle
  * Default: 0.25, 0.25, 0.25 */
@@ -291,7 +297,5 @@ PREFIX void spBlit3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface );
  * perspective correct width, you don't want the rotation. In this case
  * set it to 0. Most of the time you should be fine with 1. */
 PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 withModelview );
-
-PREFIX void spUpdateLight(int number);
 
 #endif
