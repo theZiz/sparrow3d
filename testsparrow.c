@@ -8,7 +8,7 @@
 */
 #include <sparrow3d.h>
 #include <SDL_image.h>
-
+#include <math.h>
 SDL_Surface *screen;
 SDL_Surface *garfield;
 SDL_Surface *pepper;

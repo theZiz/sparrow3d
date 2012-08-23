@@ -37,6 +37,7 @@
 /* These are the types for the light calculation. Sint64 because of the
  * high accuracy. Really: With Sint32 it is flickering like hell... */
 #define SP_LIGHT_TYPE Sint64
+#define SP_LIGHT_TYPE_SIZE 64
 #define SP_LIGHT_ACCURACY 24
 #define SP_LIGHT_HALF_ACCURACY 12
 #define SP_LIGHT_ACCURACY_FACTOR (65536.0f*256.0f)
