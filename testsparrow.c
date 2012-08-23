@@ -63,7 +63,7 @@ void draw_test( void )
 			spTranslate(0,0,-35 << SP_ACCURACY-4);
 			
 			spRotateX(SP_PI*i/15);
-			spRotateZ( (i & 1) ?rotation:(-rotation+SP_PI/11));
+			spRotateZ( (i & 1) ?rotation*4:(-rotation*4+SP_PI/11));
 			count = spMesh3D( wheel[i], 1 );
 			//glPop()
 			memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) );
