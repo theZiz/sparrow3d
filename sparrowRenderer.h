@@ -124,6 +124,7 @@ typedef struct spLightStruct
 {
 	Uint32 r, g, b; //fix point color! (1,1,1) is "normal"
 	Sint32 x, y, z; //the position
+	Sint32 tx,ty,tz; //the translated position;
 	Sint32 active;  //just guess, what is says ;-)
 } spLight;
 
@@ -289,7 +290,8 @@ PREFIX void spBlit3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface );
  * the ModelViewMatrix should be involved. E.g. if you want to get a
  * perspective correct width, you don't want the rotation. In this case
  * set it to 0. Most of the time you should be fine with 1. */
-PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 withModelview );
+PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 withModelview );
 
+PREFIX void spUpdateLight(int number);
 
 #endif

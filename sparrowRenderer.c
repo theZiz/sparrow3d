@@ -25,7 +25,7 @@
 #include <math.h>
 #include <string.h>
 
-Sint32 spModelView[16];
+Sint32 spModelView[16] = {SP_ONE,0,0,0,0,SP_ONE,0,0,0,0,SP_ONE,0,0,0,0,SP_ONE};
 Sint32 spProjection[16];
 int spLightOn = -1;
 spLight spLightDiffuse[SP_MAX_LIGHTS];
@@ -460,9 +460,9 @@ inline Uint16 rendererLightCalculation( Uint16 color, Sint32 x1, Sint32 y1, Sint
 																			 spLightMul( normale[1], normale[1] ) +
 																			 spLightMul( normale[2], normale[2] ) );
 		SP_LIGHT_TYPE direction[3];
-		direction[0] = (SP_LIGHT_TYPE)(spLightDiffuse[i].x - ( x1 + x2 >> 1 )) << SP_LIGHT_ACCURACY - SP_ACCURACY;
-		direction[1] = (SP_LIGHT_TYPE)(spLightDiffuse[i].y - ( y1 + y2 >> 1 )) << SP_LIGHT_ACCURACY - SP_ACCURACY;
-		direction[2] = (SP_LIGHT_TYPE)(spLightDiffuse[i].z - ( z1 + z2 >> 1 )) << SP_LIGHT_ACCURACY - SP_ACCURACY;
+		direction[0] = (SP_LIGHT_TYPE)(spLightDiffuse[i].tx - ( x1 + x2 >> 1 )) << SP_LIGHT_ACCURACY - SP_ACCURACY;
+		direction[1] = (SP_LIGHT_TYPE)(spLightDiffuse[i].ty - ( y1 + y2 >> 1 )) << SP_LIGHT_ACCURACY - SP_ACCURACY;
+		direction[2] = (SP_LIGHT_TYPE)(spLightDiffuse[i].tz - ( z1 + z2 >> 1 )) << SP_LIGHT_ACCURACY - SP_ACCURACY;
 		SP_LIGHT_TYPE direction_length = lightSqrt( spLightMul( direction[0], direction[0] ) +
 																								spLightMul( direction[1], direction[1] ) +
 																								spLightMul( direction[2], direction[2] ) );
@@ -1022,6 +1022,9 @@ PREFIX void spSetLight( int value )
 		spLightDiffuse[0].x = 0 << SP_ACCURACY;
 		spLightDiffuse[0].y = 0 << SP_ACCURACY;
 		spLightDiffuse[0].z = 0 << SP_ACCURACY;
+		spLightDiffuse[0].tx = 0 << SP_ACCURACY;
+		spLightDiffuse[0].ty = 0 << SP_ACCURACY;
+		spLightDiffuse[0].tz = 0 << SP_ACCURACY;
 		memset( &( spLightDiffuse[1] ), 0, sizeof( spLight ) * ( SP_MAX_LIGHTS - 1 ) );
 	}
 	spLightOn = value != 0;
@@ -1050,6 +1053,7 @@ PREFIX void spSetLightPosition( int number, Sint32 x, Sint32 y, Sint32 z )
 	spLightDiffuse[number].x = x;
 	spLightDiffuse[number].y = y;
 	spLightDiffuse[number].z = z;
+	spUpdateLight(number);
 }
 
 PREFIX void spGlobalAmbientLight( Uint32 r, Uint32 g, Uint32 b )
@@ -1189,15 +1193,15 @@ PREFIX void spEllipseBorder3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 r
 
 
 
-PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 withModelview )
+PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 withModelview )
 {
 	int windowX = spGetWindowSurface()->w;
 	int windowY = spGetWindowSurface()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
-	Sint32 tx1, ty1, tz1, tw1;
-	spMulModellView( x, y, z, &tx1, &ty1, &tz1, &tw1 );
+	Sint32 tx1, ty1, tw1;
+	spMulModellView( x, y, z, &tx1, &ty1, pz, &tw1 );
 	if ( withModelview )
 	{
 		x = spMul( spProjection[ 0], tx1 );
@@ -1208,7 +1212,7 @@ PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *
 		x = spMul( spProjection[ 0], x );
 		y = spMul( spProjection[ 5], y );
 	}
-	Sint32 w1 = spMul( spProjection[11], tz1 );
+	Sint32 w1 = spMul( spProjection[11], *pz );
 	if ( w1 == 0 )
 		w1 = 1;
 	Sint32 nx1 = spDiv( x, w1 ) >> SP_HALF_ACCURACY;
@@ -1281,4 +1285,12 @@ PREFIX void spRotozoomSurfacePart3D( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* 
 	zoomX = nzoomX1 * ( windowX >> 1 ) / surface->w;
 	zoomY = nzoomY1 * ( windowY >> 1 ) / surface->h;
 	spRotozoomSurfacePart( x, y, tz1, surface, sx, sy, w, h, zoomX, zoomY, angle );
+}
+
+PREFIX void spUpdateLight(int number)
+{
+	if ( number < 0 || number >= SP_MAX_LIGHTS )
+		return;
+	Sint32 tw_dummy;
+	spMulModellView( spLightDiffuse[number].x, spLightDiffuse[number].y, spLightDiffuse[number].z, &(spLightDiffuse[number].tx), &(spLightDiffuse[number].ty), &(spLightDiffuse[number].tz), &tw_dummy );
 }
