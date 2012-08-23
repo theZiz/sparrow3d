@@ -1056,7 +1056,7 @@ PREFIX void spSetLightPosition( int number, Sint32 x, Sint32 y, Sint32 z )
 	spUpdateLight(number);
 }
 
-PREFIX void spGlobalAmbientLight( Uint32 r, Uint32 g, Uint32 b )
+PREFIX void spSetAmbientLightColor( Uint32 r, Uint32 g, Uint32 b )
 {
 	spLightAmbient[0] = r;
 	spLightAmbient[1] = g;
