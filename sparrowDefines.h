@@ -52,6 +52,7 @@
 #define SP_ACCURACY 16
 #define SP_HALF_ACCURACY 8
 #define SP_ACCURACY_FACTOR 65536.0f
+#define SP_SQRT_ACCURACY 16
 #define SP_PI 205888
 /* This is not really accuracy... More inaccuracy ^^ */
 #define SP_MATH_ACCURACY 4

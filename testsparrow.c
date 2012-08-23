@@ -8,7 +8,7 @@
 */
 #include <sparrow3d.h>
 #include <SDL_image.h>
-
+#include <math.h>
 SDL_Surface *screen;
 SDL_Surface *garfield;
 SDL_Surface *pepper;
@@ -44,7 +44,10 @@ void draw_test( void )
 	spSetZSet( zStuff );
 	spSetZTest( zStuff );
 	int i;
-
+	Sint32 matrix[16];
+	Sint32 px, py, pz;
+	spSetLightPosition(0,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3);
+	spSetLightColor(0,SP_ONE,SP_ONE,SP_ONE);
 	switch ( test )
 	{
 	case 6:
@@ -53,21 +56,41 @@ void draw_test( void )
 		spRotateX(rotation);
 		spRotateY(rotation);
 		spRotateZ(rotation);
+		
+		memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) ); //glPush()
+		spTranslate(0,2 << SP_ACCURACY,0);
+		spSetLightPosition(0,0,0,0);
+		spSetLightColor(0,0,SP_ONE,SP_ONE);
+		spProjectPoint3D( 0,0,0, &px,&py,&pz, 1);
+		spEllipse3D(0,0,0,1 << SP_ACCURACY-3,1 << SP_ACCURACY-3,spGetFastRGB(0,255,255));
+		spSetAlphaTest(1);
+		spFontDrawMiddle( px,py-font->maxheight/2,pz, "light", font );
+		spSetAlphaTest(0);
+		spTranslate(0,-4 << SP_ACCURACY,0);
+		spEnableLight(1,1);
+		spSetLightPosition(1,0,0,0);
+		spSetLightColor(1,SP_ONE,SP_ONE,0);
+		spProjectPoint3D( 0,0,0, &px,&py,&pz, 1);
+		spEllipse3D(0,0,0,1 << SP_ACCURACY-3,1 << SP_ACCURACY-3,spGetFastRGB(255,255,0));
+		spSetAlphaTest(1);
+		spFontDrawMiddle( px,py-font->maxheight/2,pz, "light", font );
+		spSetAlphaTest(0);
+		memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) ); //glPop()
+		
 		for (i = 0; i < 15; i++)
 		{
-			//glPush()
-			Sint32 matrix[16];
-			memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) );
+			memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) ); //glPush()
 			
 			spRotateY(SP_PI*i*4/15);
 			spTranslate(0,0,-35 << SP_ACCURACY-4);
 			
 			spRotateX(SP_PI*i/15);
-			spRotateZ( (i & 1) ?rotation:(-rotation+SP_PI/11));
+			spRotateZ( (i & 1) ?rotation*4:(-rotation*4+SP_PI/11));
 			count = spMesh3D( wheel[i], 1 );
-			//glPop()
-			memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) );
+			
+			memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) ); //glPop()
 		}
+		spEnableLight(1,0);
 		break;
 	case 5:
 		spRotozoomSurface( screen->w / 4, screen->h / 4, -1, garfield, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ) >> 2, spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ) >> 2, rotation );

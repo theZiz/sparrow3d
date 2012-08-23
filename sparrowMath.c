@@ -24,6 +24,7 @@
 Sint32 spCosvalue[(2 * SP_PI) >> SP_MATH_ACCURACY];
 Sint32 spTanvalue[(    SP_PI) >> SP_MATH_ACCURACY];
 Sint32 spAcosvalue[(2 << SP_ACCURACY)+1];
+Sint32 spSqrtvalue[(1 << SP_SQRT_ACCURACY)+1];
 
 PREFIX void spInitMath(void)
 {
@@ -34,6 +35,8 @@ PREFIX void spInitMath(void)
 		spTanvalue[a] = (Sint32)(tan((float)(a << SP_MATH_ACCURACY) / SP_ACCURACY_FACTOR) * SP_ACCURACY_FACTOR);
 	for (a = 0; a < (2 << SP_ACCURACY) +1; a++)
 		spAcosvalue[a] = (Sint32)(acos((float)(a-(SP_ONE)) / SP_ACCURACY_FACTOR) * SP_ACCURACY_FACTOR);
+	for (a = 0; a < (1 << SP_SQRT_ACCURACY) +1; a++)
+		spSqrtvalue[a] = (Sint32)(sqrt((float)a / SP_ACCURACY_FACTOR) * SP_ACCURACY_FACTOR);
 }
 
 PREFIX Sint32 spSin(Sint32 value)
@@ -74,8 +77,27 @@ PREFIX Sint32 spAsin(Sint32 value)
         root |= 2 << (N); \
     }
 
+PREFIX Sint32 spUnsave_Small_Sqrt(Sint32 n)
+{
+	return spSqrtvalue[n];	
+}
+
 PREFIX Sint32 spSqrt (Sint32 n)
 {
+	if (n <= 0)
+		return 0;
+	if (n <= (1 << SP_SQRT_ACCURACY)+1)
+		return spSqrtvalue[n];
+#ifdef FAST_BUT_UGLY
+	int bit_count = 30;
+	Sint32 x = 1 << bit_count;
+	while (x > n)
+	{
+		bit_count-=2;
+		x >>= 2;
+	}
+	return spSqrtvalue[n >> bit_count - SP_SQRT_ACCURACY + 2] << (bit_count - SP_SQRT_ACCURACY >> 1) + 1;
+#else
 	Sint32 root = 0, try_;
 	iter1 (15);
 	iter1 (14);
@@ -94,6 +116,7 @@ PREFIX Sint32 spSqrt (Sint32 n)
 	iter1 (1);
 	iter1 (0);
 	return root << (SP_HALF_ACCURACY - 1);
+#endif
 }
 
 

@@ -37,6 +37,7 @@
 /* These are the types for the light calculation. Sint64 because of the
  * high accuracy. Really: With Sint32 it is flickering like hell... */
 #define SP_LIGHT_TYPE Sint64
+#define SP_LIGHT_TYPE_SIZE 64
 #define SP_LIGHT_ACCURACY 24
 #define SP_LIGHT_HALF_ACCURACY 12
 #define SP_LIGHT_ACCURACY_FACTOR (65536.0f*256.0f)
@@ -123,6 +124,7 @@ typedef struct spLightStruct
 {
 	Uint32 r, g, b; //fix point color! (1,1,1) is "normal"
 	Sint32 x, y, z; //the position
+	Sint32 tx,ty,tz; //the translated position;
 	Sint32 active;  //just guess, what is says ;-)
 } spLight;
 
@@ -199,12 +201,18 @@ PREFIX void spEnableLight( int number, Sint32 active );
 /* Sets the Light Color */
 PREFIX void spSetLightColor( int number, Uint32 r, Uint32 g, Uint32 b );
 
-/* Sets the Light Position */
+/* Sets the Light Position. The Position will be transformed with the
+ * Modelview matrix as it is at call! */
 PREFIX void spSetLightPosition( int number, Sint32 x, Sint32 y, Sint32 z );
+
+/* If you want to update the lights position without a recall of
+ * spSetLightPosition use this. This just multiplies the lights position
+ * with the Modelviewmatrix. */
+PREFIX void spUpdateLight(int number);
 
 /* Sets the global ambient light value used be every 3D quad or triangle
  * Default: 0.25, 0.25, 0.25 */
-PREFIX void spGlobalAmbientLight( Uint32 r, Uint32 g, Uint32 b );
+PREFIX void spSetAmbientLightColor( Uint32 r, Uint32 g, Uint32 b );
 
 //--- "Real" 3D functions, where the primitives is correct rotated ---
 
@@ -288,7 +296,6 @@ PREFIX void spBlit3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface );
  * the ModelViewMatrix should be involved. E.g. if you want to get a
  * perspective correct width, you don't want the rotation. In this case
  * set it to 0. Most of the time you should be fine with 1. */
-PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 withModelview );
-
+PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 withModelview );
 
 #endif
