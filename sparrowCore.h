@@ -218,20 +218,4 @@ PREFIX Uint16 spGetRGB(int r, int g, int b );
 /* spGetHSV returns a 16 bit color defined by the HSV values */
 PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
 
-/* spFileExists tests, whether the file "filename" exists ;-) */
-PREFIX int spFileExists( char* filename );
-
-/* spReadOneLine reads one line from a SDL_RWops file. This line is
- * written to buffer. buffer_len is the length of buffer (with zero
- * byte!). If the end of file is reached, 1 is return, else 0.*/
-PREFIX int spReadOneLine( SDL_RWops *file , char* buffer, int buffer_len);
-
-/* spReadUntil reads signs from the file "file" until the buffer is full
- * (buffer_len) or the sign "end_sign" is reached. The sign before 
- * "end_sign" is the last sign of the string! If you read more signs
- * from the file, the sign AFTER "end_sign" is the next you will read.
- * It is usefull for parsing simple XML files. Like spReadOneLine it
- * returns 1 if eof is reached, else 0.*/
-PREFIX int spReadUntil( SDL_RWops *file , char* buffer, int buffer_len, char end_sign);
-
 #endif

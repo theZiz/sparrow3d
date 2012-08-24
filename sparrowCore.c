@@ -1286,35 +1286,3 @@ PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 	}
 	return ((r >> 3) << 11) + ((g >> 2) << 5) + (b >> 3);
 }
-
-PREFIX int spFileExists( char* filename )
-{
-  SDL_RWops *file = SDL_RWFromFile(filename, "rb");
-  if (file)
-  {
-    SDL_RWclose(file);
-    return 1;
-  }
-  return 0;
-}
-
-PREFIX int spReadOneLine( SDL_RWops *file , char* buffer, int buffer_len)
-{
-	return spReadUntil(file,buffer,buffer_len,'\n');
-}
-
-PREFIX int spReadUntil( SDL_RWops *file , char* buffer, int buffer_len, char end_sign)
-{
-	int pos = 0;
-	while (pos < buffer_len)
-	{
-		if (SDL_RWread( file, &(buffer[pos]), 1, 1 ) <= 0)
-			return 1; //EOF
-		if ( buffer[pos] == end_sign )
-			break;
-		if (buffer[pos] != '\r') //fucking windows line break
-			pos++;
-	}
-	buffer[pos] = 0;
-	return 0; //not EOF
-}
