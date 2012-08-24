@@ -59,14 +59,6 @@
 /* a fast define for the fixed point value 1.0 */
 #define SP_ONE 65536
 
-/* if a REAL input device (not the sparrow3d generic input device!) has
- * a analog stick, these are the limits, from which the generic axis are
- * uneven 0 or reseted to 0 again*/
-#define SP_JOYSTICK_MIN_TRIGGER_ON -24576
-#define SP_JOYSTICK_MIN_TRIGGER_OFF -8192
-#define SP_JOYSTICK_MAX_TRIGGER_ON 24576
-#define SP_JOYSTICK_MAX_TRIGGER_OFF	8192
-
 /* These are some #defines e.g. for sparrowPrimitives to determine,
  * where the base of the drawn primitive is. */
 #define SP_CENTER 0

@@ -29,6 +29,18 @@
 #include "sparrowDefines.h"
 #include <SDL.h>
 
+/* The minimal and maximal value of the analog axis */
+#define SP_ANALOG_AXIS_MIN -32768
+#define SP_ANALOG_AXIS_MAX  32767
+
+/* if a REAL input device (not the sparrow3d generic input device!) has
+ * a analog stick, these are the limits, from which the generic axis are
+ * uneven 0 or reseted to 0 again*/
+#define SP_JOYSTICK_MIN_TRIGGER_ON -24576
+#define SP_JOYSTICK_MIN_TRIGGER_OFF -8192
+#define SP_JOYSTICK_MAX_TRIGGER_ON 24576
+#define SP_JOYSTICK_MAX_TRIGGER_OFF	8192
+
 /* The size of the surface cache */
 #define SP_CACHE_SIZE 2048
 #define SP_INPUT_BUTTON_COUNT 20
@@ -62,6 +74,11 @@ typedef struct SspInput
 		char *filter; //filter, which signs are allowed (not implemented yet)
 		int pos,len,lastSize; //some internal variables about the input. Do not change!
 	} keyboard;
+	/* These analog axis is the SAME like above, but with more different states
+	 * instead of a trinary -1, 0, 1 decision. If a device doesn't have a analog
+	 * stick, it will emulated as full pressed, but axis like the pandora nubs or
+	 * an analog stick on a gamepad will be presented here with full SDL accuracy*/
+	Sint16 analog_axis[SP_INPUT_AXIS_COUNT];
 } TspInput;
 
 
@@ -200,21 +217,5 @@ PREFIX Uint16 spGetRGB(int r, int g, int b );
 
 /* spGetHSV returns a 16 bit color defined by the HSV values */
 PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
-
-/* spFileExists tests, whether the file "filename" exists ;-) */
-PREFIX int spFileExists( char* filename );
-
-/* spReadOneLine reads one line from a SDL_RWops file. This line is
- * written to buffer. buffer_len is the length of buffer (with zero
- * byte!). If the end of file is reached, 1 is return, else 0.*/
-PREFIX int spReadOneLine( SDL_RWops *file , char* buffer, int buffer_len);
-
-/* spReadUntil reads signs from the file "file" until the buffer is full
- * (buffer_len) or the sign "end_sign" is reached. The sign before 
- * "end_sign" is the last sign of the string! If you read more signs
- * from the file, the sign AFTER "end_sign" is the next you will read.
- * It is usefull for parsing simple XML files. Like spReadOneLine it
- * returns 1 if eof is reached, else 0.*/
-PREFIX int spReadUntil( SDL_RWops *file , char* buffer, int buffer_len, char end_sign);
 
 #endif

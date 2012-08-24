@@ -6,6 +6,11 @@ Roadmap:
 - sparrowFont additional or own part, which allows to draw blocked text
   (e.g. text from sparrowText ;-) )
 - Network
+- GUI
+- File management
+	- for basic stuff SDL, but also
+	- searching files
+	- creating folder
 
 Nice to have:
 - cool intro with sparrows

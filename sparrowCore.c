@@ -365,15 +365,19 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				{
 				case SDLK_LEFT:
 					spInput.axis[0] = -1;
+					spInput.analog_axis[0] = SP_ANALOG_AXIS_MIN;
 					break;
 				case SDLK_RIGHT:
 					spInput.axis[0] = 1;
+					spInput.analog_axis[0] = SP_ANALOG_AXIS_MAX;
 					break;
 				case SDLK_UP:
-					spInput.axis[1] = 1;
+					spInput.axis[1] = -1;
+					spInput.analog_axis[1] = SP_ANALOG_AXIS_MIN;
 					break;
 				case SDLK_DOWN:
-					spInput.axis[1] = -1;
+					spInput.axis[1] = 1;
+					spInput.analog_axis[1] = SP_ANALOG_AXIS_MAX;
 					break;
 			#ifdef DINGUX
 				case SDLK_RETURN:
@@ -504,19 +508,31 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				{
 				case SDLK_LEFT:
 					if ( spInput.axis[0] == -1 )
+					{
 						spInput.axis[0] = 0;
+						spInput.analog_axis[0] = 0;
+					}
 					break;
 				case SDLK_RIGHT:
 					if ( spInput.axis[0] == 1 )
+					{
 						spInput.axis[0] = 0;
+						spInput.analog_axis[0] = 0;
+					}
 					break;
 				case SDLK_UP:
-					if ( spInput.axis[1] == 1 )
+					if ( spInput.axis[1] == -1 )
+					{
 						spInput.axis[1] = 0;
+						spInput.analog_axis[1] = 0;
+					}
 					break;
 				case SDLK_DOWN:
-					if ( spInput.axis[1] == -1 )
+					if ( spInput.axis[1] == 1 )
+					{
 						spInput.axis[1] = 0;
+						spInput.analog_axis[1] = 0;
+					}
 					break;
 			#ifdef DINGUX
 				case SDLK_RETURN:
@@ -640,45 +656,23 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				}
 				break;
 			case SDL_JOYAXISMOTION:
-				if ( !( event.jaxis.axis & 1 ) ) //axis 0
+				spInput.analog_axis[event.jaxis.axis & 1] = event.jaxis.value;
+				if ( event.jaxis.value < SP_JOYSTICK_MIN_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != -1 )
 				{
-					if ( event.jaxis.value < SP_JOYSTICK_MIN_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != -1 )
-					{
-						spInput.axis[event.jaxis.axis & 1] = -1;
-						sp_axis_was_used[event.jaxis.axis & 1] = -1;
-					}
-					else
-					if ( event.jaxis.value > SP_JOYSTICK_MAX_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != 1)
-					{
-						spInput.axis[event.jaxis.axis & 1] = 1;
-						sp_axis_was_used[event.jaxis.axis & 1] = 1;
-					}
-					else
-					if (event.jaxis.value > SP_JOYSTICK_MIN_TRIGGER_OFF && event.jaxis.value < SP_JOYSTICK_MAX_TRIGGER_OFF)
-					{
-						spInput.axis[event.jaxis.axis & 1] = 0;
-						sp_axis_was_used[event.jaxis.axis & 1] = 0;
-					}
+					spInput.axis[event.jaxis.axis & 1] = -1;
+					sp_axis_was_used[event.jaxis.axis & 1] = -1;
 				}
-				if ( event.jaxis.axis & 1 ) //axis 1
+				else
+				if ( event.jaxis.value > SP_JOYSTICK_MAX_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != 1)
 				{
-					if ( event.jaxis.value < SP_JOYSTICK_MIN_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != 1 )
-					{
-						spInput.axis[event.jaxis.axis & 1] = 1;
-						sp_axis_was_used[event.jaxis.axis & 1] = 1;
-					}
-					else
-					if ( event.jaxis.value > SP_JOYSTICK_MAX_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != -1)
-					{
-						spInput.axis[event.jaxis.axis & 1] = -1;
-						sp_axis_was_used[event.jaxis.axis & 1] = -1;
-					}
-					else
-					if (event.jaxis.value > SP_JOYSTICK_MIN_TRIGGER_OFF && event.jaxis.value < SP_JOYSTICK_MAX_TRIGGER_OFF)
-					{
-						spInput.axis[event.jaxis.axis & 1] = 0;
-						sp_axis_was_used[event.jaxis.axis & 1] = 0;
-					}
+					spInput.axis[event.jaxis.axis & 1] = 1;
+					sp_axis_was_used[event.jaxis.axis & 1] = 1;
+				}
+				else
+				if (event.jaxis.value > SP_JOYSTICK_MIN_TRIGGER_OFF && event.jaxis.value < SP_JOYSTICK_MAX_TRIGGER_OFF)
+				{
+					spInput.axis[event.jaxis.axis & 1] = 0;
+					sp_axis_was_used[event.jaxis.axis & 1] = 0;
 				}
 				break;
 			case SDL_QUIT:
@@ -754,6 +748,13 @@ inline void spUpdateAxis( int axis )
 				spInput.button[SP_AXIS_RIGHT]   ||
 				spInput.button[SP_AXIS_RIGHTDOWN] )
 			spInput.axis[axis] = 1;
+		if (spInput.axis[axis] == -1)
+			spInput.analog_axis[axis] = SP_ANALOG_AXIS_MIN;
+		else
+		if (spInput.axis[axis] ==  1)
+			spInput.analog_axis[axis] = SP_ANALOG_AXIS_MAX;
+		else
+		spInput.analog_axis[axis] = 0;
 	}
 	else
 	{
@@ -761,11 +762,18 @@ inline void spUpdateAxis( int axis )
 		if ( spInput.button[SP_AXIS_LEFTUP] ||
 				spInput.button[SP_AXIS_UP]   ||
 				spInput.button[SP_AXIS_RIGHTUP] )
-			spInput.axis[axis] = 1;
+			spInput.axis[axis] = -1;
 		if ( spInput.button[SP_AXIS_LEFTDOWN] ||
 				spInput.button[SP_AXIS_DOWN]   ||
 				spInput.button[SP_AXIS_RIGHTDOWN] )
-			spInput.axis[axis] = -1;
+			spInput.axis[axis] = 1;
+		if (spInput.axis[axis] == -1)
+			spInput.analog_axis[axis] = SP_ANALOG_AXIS_MIN;
+		else
+		if (spInput.axis[axis] ==  1)
+			spInput.analog_axis[axis] = SP_ANALOG_AXIS_MAX;
+		else
+		spInput.analog_axis[axis] = 0;
 	}
 #endif
 }
@@ -896,7 +904,10 @@ PREFIX void spResetAxisState( void )
 {
 	int I;
 	for ( I = 0; I < SP_INPUT_AXIS_COUNT; ++I )
+	{
 		spInput.axis[I] = 0;
+		spInput.analog_axis[I] = 0;
+	}
 }
 
 PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, char *filter )
@@ -1274,36 +1285,4 @@ PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 			break;
 	}
 	return ((r >> 3) << 11) + ((g >> 2) << 5) + (b >> 3);
-}
-
-PREFIX int spFileExists( char* filename )
-{
-  SDL_RWops *file = SDL_RWFromFile(filename, "rb");
-  if (file)
-  {
-    SDL_RWclose(file);
-    return 1;
-  }
-  return 0;
-}
-
-PREFIX int spReadOneLine( SDL_RWops *file , char* buffer, int buffer_len)
-{
-	return spReadUntil(file,buffer,buffer_len,'\n');
-}
-
-PREFIX int spReadUntil( SDL_RWops *file , char* buffer, int buffer_len, char end_sign)
-{
-	int pos = 0;
-	while (pos < buffer_len)
-	{
-		if (SDL_RWread( file, &(buffer[pos]), 1, 1 ) <= 0)
-			return 1; //EOF
-		if ( buffer[pos] == end_sign )
-			break;
-		if (buffer[pos] != '\r') //fucking windows line break
-			pos++;
-	}
-	buffer[pos] = 0;
-	return 0; //not EOF
 }
