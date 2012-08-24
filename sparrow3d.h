@@ -35,4 +35,6 @@
 #include "sparrowSprite.h"
 #include "sparrowText.h"
 
+#include "sparrowSound.h"
+
 #endif
