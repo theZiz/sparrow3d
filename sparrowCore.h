@@ -52,7 +52,7 @@ typedef struct SspInput *PspInput;
 typedef struct SspInput
 {
 	/* the two axis of the input device. Every axis can be -1 (left/up),
-	 * 0 or 1 (right/down) */
+	 * 0 (no direction) or 1 (right/down) */
 	signed char axis[SP_INPUT_AXIS_COUNT];
 	/* the generic input device has 20 buttons, but many buttons are
 	 * just for compatibility reason to the gp2x-family. You should only
