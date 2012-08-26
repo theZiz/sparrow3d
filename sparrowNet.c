@@ -10,7 +10,7 @@
  under the License.
 
  Alternatively, the contents of this file may be used under the terms
- of the GNU Lesser General Public license (the	"LGPL License"), in which case the
+ of the GNU Lesser General Public license (the  "LGPL License"), in which case the
  provisions of LGPL License are applicable instead of those
  above.
 
@@ -18,25 +18,4 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 
-/* This file is the main header file for sparrow3d. It just includes the
- * other sparrow3d header files for your. */
-
-#ifndef _SPARROW_3D_H
-#define _SPARROW_3D_H
-
-#include "sparrowCore.h"
-#include "sparrowDefines.h"
-#include "sparrowFont.h"
-#include "sparrowMath.h"
-#include "sparrowMesh.h"
-#include "sparrowPrimitives.h"
-#include "sparrowFont.h"
-#include "sparrowRenderer.h"
-#include "sparrowSprite.h"
-#include "sparrowText.h"
-
-#include "sparrowSound.h"
-
 #include "sparrowNet.h"
-
-#endif

@@ -112,7 +112,7 @@ endif
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
 
-all: sparrow3d sparrowSound testsparrow testsprite testmesh testtarget testtext testparallax
+all: sparrow3d sparrowSound sparrowNet testsparrow testsprite testmesh testtarget testtext testparallax testclient testserver
 
 targets:
 	@echo "gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora"
@@ -135,11 +135,20 @@ testtext: testtext.c sparrow3d
 testparallax: testparallax.c sparrow3d
 	$(CPP_LINK) $(CFLAGS) testparallax.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testparallax
 
+testclient: testclient.c sparrow3d sparrowNet
+	$(CPP_LINK) $(CFLAGS) testclient.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o testclient
+
+testserver: testserver.c sparrow3d sparrowNet
+	$(CPP_LINK) $(CFLAGS) testserver.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o testserver
+
 sparrow3d: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o
 	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -rdynamic -o libsparrow3d.so sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
 sparrowSound: sparrowSound.o
 	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrowSound.so -rdynamic -o libsparrowSound.so sparrowSound.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
+
+sparrowNet: sparrowNet.o
+	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrowNet.so -rdynamic -o libsparrowNet.so sparrowNet.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
 sparrowCore.o: sparrowCore.c sparrowCore.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
@@ -174,11 +183,19 @@ sparrowFile.o: sparrowFile.c sparrowFile.h
 sparrowSound.o: sparrowSound.c sparrowSound.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowSound.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
 
+sparrowNet.o: sparrowNet.c sparrowNet.h
+	$(CPP) $(CFLAGS) -fPIC -c sparrowNet.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+
 clean:
 	rm -f *.o
 	rm -f libsparrow3d.so
 	rm -f testsparrow
 	rm -f testsprite
 	rm -f testmesh
+	rm -f testtext
+	rm -f testtarget
+	rm -f testparallax
+	rm -f testclient
+	rm -f testserver
 
 # This Makefile is AWESOME! /)^ɛ^(\ 
