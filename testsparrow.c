@@ -363,44 +363,44 @@ void draw_test( void )
 		spFontDrawMiddle( screen->w / 2, screen->h /2 - font->maxheight/2, -1, buffer, font );
 	if (input[0])
 		spFontDrawMiddle( screen->w / 2, screen->h /2 + font->maxheight/2, -1, input, font );
-	if (spGetInput()->analog_axis[0])
+
+	if (spGetInput()->analog_axis[0] < 0)
 	{
-		if (spGetInput()->analog_axis[0] < 0)
-		{
-			sprintf(buffer,"<");
-			int i;
-			for (i = 0; i < -spGetInput()->analog_axis[0]; i+=-SP_ANALOG_AXIS_MIN/5)
-				sprintf(buffer,"%s-",buffer);
-		}	
-		else
-		{
-			buffer[0] = 0;
-			int i;
-			for (i = 0; i < spGetInput()->analog_axis[0]; i+=SP_ANALOG_AXIS_MAX/5)
-				sprintf(buffer,"%s-",buffer);
-			sprintf(buffer,"%s>",buffer);
-		}	
-		spFontDraw( 2, font->maxheight, -1, buffer, font );
-	}
-	if (spGetInput()->analog_axis[1])
+		sprintf(buffer,"<");
+		int i;
+		for (i = 0; i < -spGetInput()->analog_axis[0]; i+=-SP_ANALOG_AXIS_MIN/5)
+			sprintf(buffer,"%s-",buffer);
+	}	
+	else
+		sprintf(buffer," ");
+	sprintf(buffer,"%s\"%i\" ",buffer,spGetInput()->analog_axis[0]);
+	if (spGetInput()->analog_axis[0] > 0)
 	{
-		if (spGetInput()->analog_axis[1] < 0)
-		{
-			sprintf(buffer,"^\n");
-			int i;
-			for (i = 0; i < -spGetInput()->analog_axis[1]; i+=-SP_ANALOG_AXIS_MIN/5)
-				sprintf(buffer,"%s|\n",buffer);
-		}	
-		else
-		{
-			buffer[0] = 0;
-			int i;
-			for (i = 0; i < spGetInput()->analog_axis[1]; i+=SP_ANALOG_AXIS_MAX/5)
-				sprintf(buffer,"%s|\n",buffer);
-			sprintf(buffer,"%sv",buffer);
-		}	
-		spFontDraw( 2, font->maxheight*2, -1, buffer, font );
-	}
+		int i;
+		for (i = 0; i < spGetInput()->analog_axis[0]; i+=SP_ANALOG_AXIS_MAX/5)
+			sprintf(buffer,"%s-",buffer);
+		sprintf(buffer,"%s>",buffer);
+	}	
+	spFontDraw( 2, font->maxheight, -1, buffer, font );
+
+	if (spGetInput()->analog_axis[1] < 0)
+	{
+		sprintf(buffer,"^\n");
+		int i;
+		for (i = 0; i < -spGetInput()->analog_axis[1]; i+=-SP_ANALOG_AXIS_MIN/5)
+			sprintf(buffer,"%s|\n",buffer);
+	}	
+	else
+		sprintf(buffer," ");
+	sprintf(buffer,"%s\"%i\"\n",buffer,spGetInput()->analog_axis[1]);
+	if (spGetInput()->analog_axis[1] > 0)
+	{
+		int i;
+		for (i = 0; i < spGetInput()->analog_axis[1]; i+=SP_ANALOG_AXIS_MAX/5)
+			sprintf(buffer,"%s|\n",buffer);
+		sprintf(buffer,"%sv",buffer);
+	}	
+	spFontDraw( 2, font->maxheight*2, -1, buffer, font );
 
 	spFlip();
 }
