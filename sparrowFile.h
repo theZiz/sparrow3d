@@ -21,7 +21,11 @@
 /* sparrowFile is for file handling. Most basic tasks (opening, reading a
  * amount of bytes, closing) are already done by SDL. sparrowFile extends this
  * to checking, whether a file exists, Reading until specific signs, searching
- * files, creating folders, etc. Use only /! not \ ...*/
+ * files, creating folders, etc. Use only /! not \ ... For more information
+ * about file functions see http://www.libsdl.org/cgi/docwiki.cgi/SDL_API
+ * and scroll down to "Files (RWops)". Keep in mind: spFilePointer and
+ * SDL_RWops* are EXACTLY the same. ;-) */
+
 #ifndef _SPARROW_FILE_H
 #define _SPARROW_FILE_H
 #include "sparrowDefines.h"
@@ -38,9 +42,8 @@ typedef enum
 //Just because it looks better :)
 typedef SDL_RWops *spFilePointer;
 
-
 /* spFileExists tests, whether the file "filename" exists ;-) */
-PREFIX int spFileExists( char* filename );
+PREFIX int spFileExists( const char* filename );
 
 /* spReadOneLine reads one line from a SDL_RWops file. This line is
  * written to buffer. buffer_len is the length of buffer (with zero
@@ -60,15 +63,17 @@ PREFIX int spReadUntil( spFilePointer file , char* buffer, int buffer_len, char 
 
 /* Creates a directory chain (like /home/user/.config/pinball/settings/) if
  * it not exists already. */
-PREFIX spFileError spCreateDirectoryChain(char* directories);
-
-// ---- TODO: Not implemented yet ----
+PREFIX spFileError spCreateDirectoryChain( const char* directories);
 
 /* Removes the file filename. Returns 0 at success, otherwise see spFileError */
-PREFIX spFileError spRemoveFile( char* filename );
+PREFIX spFileError spRemoveFile( const char* filename );
+
+/* Removes the directory dirname. Returns 0 at success, otherwise see
+ * spFileError */
+PREFIX spFileError spRemoveDirectory( const char* dirname );
 
 /* Rename the file filename the newname. Returns 0 at success, otherwise see
  * spFileError */
-PREFIX spFileError spRenameFile( char* filename , char* newname);
+PREFIX spFileError spRenameFile( const char* filename , const char* newname);
 
 #endif

@@ -20,9 +20,10 @@
 
 #include "sparrowFile.h"
 #include <sys/stat.h>
+#include <stdio.h>
 #include <errno.h>
 
-PREFIX int spFileExists( char* filename )
+PREFIX int spFileExists( const char* filename )
 {
   SDL_RWops *file = SDL_RWFromFile(filename, "rb");
   if (file)
@@ -63,7 +64,7 @@ PREFIX int spReadUntil( spFilePointer file , char* buffer, int buffer_len, char 
 	return 0; //not EOF
 }
 
-PREFIX spFileError spCreateDirectoryChain(char* directories)
+PREFIX spFileError spCreateDirectoryChain( const char* directories)
 {
 	//Creating copy:
 	int len = strlen(directories)+1;
@@ -72,9 +73,12 @@ PREFIX spFileError spCreateDirectoryChain(char* directories)
 	//Splitting in subdirectories
 	char* subString = directoriesCopy;
 	char* endOfString = strchr(subString,'/');
+	if (endOfString == NULL)
+		endOfString = strchr(subString,0);
 	spFileError result;
 	while (endOfString)
 	{
+		char oldChar = endOfString[0];
 		endOfString[0] = 0;
 		#ifdef WIN32
 			if (CreateDirectory(directoriesCopy,NULL))
@@ -100,10 +104,71 @@ PREFIX spFileError spCreateDirectoryChain(char* directories)
 				break;
 			}
 		#endif
-		endOfString[0] = '/';
+		endOfString[0] = oldChar;
+		if (oldChar == 0)
+			break;
 		subString = &(endOfString[1]);
 		endOfString = strchr(subString,'/');
+		if (endOfString == NULL)
+			endOfString = strchr(subString,0);
 	}
 	
 	return result;
+}
+
+PREFIX spFileError spRemoveFile( const char* filename )
+{
+#ifdef WIN32
+	if (DeleteFile(filename))
+		return SP_FILE_EVERYTHING_OK;
+	if (getLastError() == ERROR_FILE_NOT_FOUND)
+		return SP_FILE_NOT_FOUND_ERROR;
+	return SP_FILE_ACCESS_ERROR;
+#else
+	if (remove(filename))
+	{
+		if (errno == ENOENT)
+			return SP_FILE_NOT_FOUND_ERROR;
+		return SP_FILE_ACCESS_ERROR;
+	}
+	return SP_FILE_EVERYTHING_OK;
+#endif
+}
+
+PREFIX spFileError spRemoveDirectory( const char* dirname )
+{
+#ifdef WIN32
+	if (RemoveDirectory(dirname))
+		return SP_FILE_EVERYTHING_OK;
+	if (getLastError() == ERROR_PATH_NOT_FOUND)
+		return SP_FILE_NOT_FOUND_ERROR;
+	return SP_FILE_ACCESS_ERROR;
+#else
+	if (rmdir(dirname))
+	{
+		if (errno == ENOENT)
+			return SP_FILE_NOT_FOUND_ERROR;
+		return SP_FILE_ACCESS_ERROR;
+	}
+	return SP_FILE_EVERYTHING_OK;
+#endif
+}
+
+PREFIX spFileError spRenameFile( const char* filename , const char* newname)
+{
+#ifdef WIN32
+	if (MoveFile(filename,newname))
+		return SP_FILE_EVERYTHING_OK;
+	if (getLastError() == ERROR_FILE_NOT_FOUND)
+		return SP_FILE_NOT_FOUND_ERROR;
+	return SP_FILE_ACCESS_ERROR;
+#else
+	if (rename(filename,newname))
+	{
+		if (errno == ENOENT)
+			return SP_FILE_NOT_FOUND_ERROR;
+		return SP_FILE_ACCESS_ERROR;
+	}
+	return SP_FILE_EVERYTHING_OK;	
+#endif
 }
