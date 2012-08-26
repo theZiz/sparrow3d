@@ -73,7 +73,9 @@ PREFIX spFileError spRemoveFile( const char* filename );
 PREFIX spFileError spRemoveDirectory( const char* dirname );
 
 /* Rename the file filename the newname. Returns 0 at success, otherwise see
- * spFileError */
+ * spFileError. You can use the same function for files and directories. That
+ * is the reason, why I just defined another name for the same function. ;-) */
 PREFIX spFileError spRenameFile( const char* filename , const char* newname);
+#define spRenameDirectory spRenameFile
 
 #endif
