@@ -19,6 +19,8 @@
 */
 
 #include "sparrowFile.h"
+#include <sys/stat.h>
+#include <errno.h>
 
 PREFIX int spFileExists( char* filename )
 {
@@ -31,12 +33,12 @@ PREFIX int spFileExists( char* filename )
   return 0;
 }
 
-PREFIX int spReadOneLine( SDL_RWops *file , char* buffer, int buffer_len)
+PREFIX int spReadOneLine( spFilePointer file , char* buffer, int buffer_len)
 {
 	return spReadUntil(file,buffer,buffer_len,'\n',1);
 }
 
-PREFIX int spReadUntil( SDL_RWops *file , char* buffer, int buffer_len, char end_sign,char ignore_windows_return)
+PREFIX int spReadUntil( spFilePointer file , char* buffer, int buffer_len, char end_sign,char ignore_windows_return)
 {
 	int pos = 0;
 	if (ignore_windows_return)
@@ -61,3 +63,47 @@ PREFIX int spReadUntil( SDL_RWops *file , char* buffer, int buffer_len, char end
 	return 0; //not EOF
 }
 
+PREFIX spFileError spCreateDirectoryChain(char* directories)
+{
+	//Creating copy:
+	int len = strlen(directories)+1;
+	char directoriesCopy[len];
+	memcpy(directoriesCopy,directories,len);
+	//Splitting in subdirectories
+	char* subString = directoriesCopy;
+	char* endOfString = strchr(subString,'/');
+	spFileError result;
+	while (endOfString)
+	{
+		endOfString[0] = 0;
+		#ifdef WIN32
+			if (CreateDirectory(directoriesCopy,NULL))
+				result = SP_FILE_EVERYTHING_OK;
+			else
+			if (getLastError() == ERROR_ALREADY_EXISTS)
+				result = SP_FILE_ALREADY_EXISTS_ERROR;
+			else
+			{
+				result = SP_FILE_ACCESS_ERROR;
+				break;
+			}
+		#else
+			int error = mkdir(directoriesCopy,0777);
+			if (error == 0) //thats okay :)
+					result = SP_FILE_EVERYTHING_OK;
+			else
+			if (errno == EEXIST || errno == ENOENT) //thats okay :)
+					result = SP_FILE_ALREADY_EXISTS_ERROR;
+			else //not okay
+			{
+				result = SP_FILE_ACCESS_ERROR;
+				break;
+			}
+		#endif
+		endOfString[0] = '/';
+		subString = &(endOfString[1]);
+		endOfString = strchr(subString,'/');
+	}
+	
+	return result;
+}

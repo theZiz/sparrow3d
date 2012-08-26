@@ -21,11 +21,22 @@
 /* sparrowFile is for file handling. Most basic tasks (opening, reading a
  * amount of bytes, closing) are already done by SDL. sparrowFile extends this
  * to checking, whether a file exists, Reading until specific signs, searching
- * files, creating folders, etc. */
+ * files, creating folders, etc. Use only /! not \ ...*/
 #ifndef _SPARROW_FILE_H
 #define _SPARROW_FILE_H
 #include "sparrowDefines.h"
 #include <SDL.h>
+
+typedef enum
+{
+	SP_FILE_EVERYTHING_OK = 0,
+	SP_FILE_ACCESS_ERROR = 1,
+	SP_FILE_NOT_FOUND_ERROR = 2,
+	SP_FILE_ALREADY_EXISTS_ERROR = 3
+} spFileError;
+
+//Just because it looks better :)
+typedef SDL_RWops *spFilePointer;
 
 
 /* spFileExists tests, whether the file "filename" exists ;-) */
@@ -34,7 +45,7 @@ PREFIX int spFileExists( char* filename );
 /* spReadOneLine reads one line from a SDL_RWops file. This line is
  * written to buffer. buffer_len is the length of buffer (with zero
  * byte!). If the end of file is reached, 1 is return, else 0.*/
-PREFIX int spReadOneLine( SDL_RWops *file , char* buffer, int buffer_len);
+PREFIX int spReadOneLine( spFilePointer file , char* buffer, int buffer_len);
 
 /* spReadUntil reads signs from the file "file" until the buffer is full
  * (buffer_len) or the sign "end_sign" is reached. The sign before 
@@ -45,6 +56,19 @@ PREFIX int spReadOneLine( SDL_RWops *file , char* buffer, int buffer_len);
  * (VERY smart...), so if you set ignore_windows_return to 1, \r will be
  * ignored. Necessary for Windows textfiles, but for binary files it doesn't
  * make sense maybe.*/
-PREFIX int spReadUntil( SDL_RWops *file , char* buffer, int buffer_len, char end_sign,char ignore_windows_return);
+PREFIX int spReadUntil( spFilePointer file , char* buffer, int buffer_len, char end_sign,char ignore_windows_return);
+
+/* Creates a directory chain (like /home/user/.config/pinball/settings/) if
+ * it not exists already. */
+PREFIX spFileError spCreateDirectoryChain(char* directories);
+
+// ---- TODO: Not implemented yet ----
+
+/* Removes the file filename. Returns 0 at success, otherwise see spFileError */
+PREFIX spFileError spRemoveFile( char* filename );
+
+/* Rename the file filename the newname. Returns 0 at success, otherwise see
+ * spFileError */
+PREFIX spFileError spRenameFile( char* filename , char* newname);
 
 #endif

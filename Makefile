@@ -41,7 +41,7 @@ SMALL_RESOLUTION_DEVICES = -DFAST_MULTIPLICATION -DFAST_DIVISION
 
 # The default Compiler is gcc with debug symbols and a X86CPU (that's a define
 # for sparrow or your game, not used by gcc.
-CPP = gcc -march=native -DX86CPU $(GENERAL_TWEAKS)
+CPP = gcc -march=native -DX86CPU -g $(GENERAL_TWEAKS)
 
 # SDL sets some SDL options with the program "sdl-config".
 SDL = `sdl-config --cflags`
