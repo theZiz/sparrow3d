@@ -68,7 +68,7 @@ PREFIX spFileError spCreateDirectoryChain( const char* directories)
 {
 	//Creating copy:
 	int len = strlen(directories)+1;
-	char directoriesCopy[len];
+	char* directoriesCopy = (char*)malloc( len * sizeof(char) );
 	memcpy(directoriesCopy,directories,len);
 	//Splitting in subdirectories
 	char* subString = directoriesCopy;
@@ -81,6 +81,7 @@ PREFIX spFileError spCreateDirectoryChain( const char* directories)
 		char oldChar = endOfString[0];
 		endOfString[0] = 0;
 		#ifdef WIN32
+
 			if (CreateDirectory(directoriesCopy,NULL))
 				result = SP_FILE_EVERYTHING_OK;
 			else
@@ -113,6 +114,7 @@ PREFIX spFileError spCreateDirectoryChain( const char* directories)
 			endOfString = strchr(subString,0);
 	}
 	
+	free(directoriesCopy);
 	return result;
 }
 
