@@ -36,7 +36,7 @@
 #include "sparrowText.h"
 
 #include "sparrowSound.h"
-
+#include "sparrowFile.h"
 #include "sparrowNet.h"
 
 #endif

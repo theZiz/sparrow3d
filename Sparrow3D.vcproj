@@ -179,6 +179,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\sparrowFile.c"
+				>
+			</File>
+			<File
 				RelativePath=".\sparrowFont.c"
 				>
 			</File>
@@ -188,6 +192,10 @@
 			</File>
 			<File
 				RelativePath=".\sparrowMesh.c"
+				>
+			</File>
+			<File
+				RelativePath=".\sparrowNet.c"
 				>
 			</File>
 			<File
@@ -203,7 +211,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\sparrowSound.c"
+				>
+			</File>
+			<File
 				RelativePath=".\sparrowSprite.c"
+				>
+			</File>
+			<File
+				RelativePath=".\sparrowText.c"
 				>
 			</File>
 		</Filter>
@@ -213,11 +229,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\sparrow3d.h"
+				>
+			</File>
+			<File
 				RelativePath=".\sparrowCore.h"
 				>
 			</File>
 			<File
 				RelativePath=".\sparrowDefines.h"
+				>
+			</File>
+			<File
+				RelativePath=".\sparrowFile.h"
 				>
 			</File>
 			<File
@@ -233,6 +257,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\sparrowNet.h"
+				>
+			</File>
+			<File
 				RelativePath=".\sparrowPrimitives.h"
 				>
 			</File>
@@ -241,7 +269,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\sparrowSound.h"
+				>
+			</File>
+			<File
 				RelativePath=".\sparrowSprite.h"
+				>
+			</File>
+			<File
+				RelativePath=".\sparrowText.h"
 				>
 			</File>
 		</Filter>

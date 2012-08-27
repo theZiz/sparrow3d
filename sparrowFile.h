@@ -28,8 +28,12 @@
 
 #ifndef _SPARROW_FILE_H
 #define _SPARROW_FILE_H
-#include "sparrowDefines.h"
+#include "sparrow3d.h"
 #include <SDL.h>
+
+#ifndef getLastError
+#define getLastError GetLastError
+#endif
 
 typedef enum
 {

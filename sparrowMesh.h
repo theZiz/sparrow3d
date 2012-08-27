@@ -24,7 +24,7 @@
 #ifndef _SPARROW_MESH_H
 #define _SPARROW_MESH_H
 
-#include "sparrowDefines.h"
+#include "sparrow3d.h"
 #include "sparrowRenderer.h"
 
 /* Loads the object file "name". Every face in a sparrow3d mesh file has
