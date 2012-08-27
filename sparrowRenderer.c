@@ -973,6 +973,196 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 	return count;
 }
 
+PREFIX int spMesh3DwithPos(Sint32 x,Sint32 y,Sint32 z, spModelPointer mesh, int updateEdgeList )
+{
+	int count = 0;
+	Sint32 windowX = spGetWindowSurface()->w;
+	Sint32 windowY = spGetWindowSurface()->h;
+	Sint32 viewPortX = ( windowX >> 1 );
+	Sint32 viewPortY = ( windowY >> 1 );
+	//Project Points
+	int i;
+	for ( i = 0; i < mesh->pointCount; i++ )
+	{
+		Sint32 tw;
+		spMulModellView( mesh->point[i].x+x, mesh->point[i].y+y, mesh->point[i].z+z, &( mesh->point[i].tx ), &( mesh->point[i].ty ), &( mesh->point[i].tz ), &tw );
+		Sint32 x1 = spMul( spProjection[ 0], mesh->point[i].tx );
+		Sint32 y1 = spMul( spProjection[ 5], mesh->point[i].ty );
+		Sint32 w1 = spMul( spProjection[11], mesh->point[i].tz );
+		if ( w1 == 0 )
+			w1 = 1;
+		Sint32 nx1 = spDiv( x1, w1 );
+		Sint32 ny1 = spDiv( y1, w1 );
+		mesh->point[i].px = viewPortX + ( ( nx1 * windowX ) >> SP_ACCURACY + 1 );
+		mesh->point[i].py = viewPortY - ( ( ny1 * windowY ) >> SP_ACCURACY + 1 );
+		mesh->point[i].pz = mesh->point[i].tz;
+	}
+	for ( i = 0; i < mesh->texPointCount; i++ )
+	{
+		Sint32 tw;
+		spMulModellView( mesh->texPoint[i].x, mesh->texPoint[i].y, mesh->texPoint[i].z, &( mesh->texPoint[i].tx ), &( mesh->texPoint[i].ty ), &( mesh->texPoint[i].tz ), &tw );
+		Sint32 x1 = spMul( spProjection[ 0], mesh->texPoint[i].tx );
+		Sint32 y1 = spMul( spProjection[ 5], mesh->texPoint[i].ty );
+		Sint32 w1 = spMul( spProjection[11], mesh->texPoint[i].tz );
+		if ( w1 == 0 )
+			w1 = 1;
+		Sint32 nx1 = spDiv( x1, w1 );
+		Sint32 ny1 = spDiv( y1, w1 );
+		mesh->texPoint[i].px = viewPortX + ( ( nx1 * windowX ) >> SP_ACCURACY + 1 );
+		mesh->texPoint[i].py = viewPortY - ( ( ny1 * windowY ) >> SP_ACCURACY + 1 );
+		mesh->texPoint[i].pz = mesh->texPoint[i].tz;
+	}
+	//Draw Faces, if seeable
+	for ( i = 0; i < mesh->triangleCount; i++ )
+	{
+		count += ( 0 < ( mesh->triangle[i].was_drawn =
+							 spTriangle( mesh->point[mesh->triangle[i].point[0]].px,
+										 mesh->point[mesh->triangle[i].point[0]].py,
+										 mesh->point[mesh->triangle[i].point[0]].pz,
+										 mesh->point[mesh->triangle[i].point[1]].px,
+										 mesh->point[mesh->triangle[i].point[1]].py,
+										 mesh->point[mesh->triangle[i].point[1]].pz,
+										 mesh->point[mesh->triangle[i].point[2]].px,
+										 mesh->point[mesh->triangle[i].point[2]].py,
+										 mesh->point[mesh->triangle[i].point[2]].pz,
+										 rendererLightCalculation( mesh->color,
+												 mesh->point[mesh->triangle[i].point[0]].tx,
+												 mesh->point[mesh->triangle[i].point[0]].ty,
+												 mesh->point[mesh->triangle[i].point[0]].tz,
+												 mesh->point[mesh->triangle[i].point[1]].tx,
+												 mesh->point[mesh->triangle[i].point[1]].ty,
+												 mesh->point[mesh->triangle[i].point[1]].tz,
+												 mesh->point[mesh->triangle[i].point[2]].tx,
+												 mesh->point[mesh->triangle[i].point[2]].ty,
+												 mesh->point[mesh->triangle[i].point[2]].tz ) ) ) );
+	}
+	for ( i = 0; i < mesh->quadCount; i++ )
+	{
+		count += ( 0 < ( mesh->quad[i].was_drawn =
+							 spQuad( mesh->point[mesh->quad[i].point[0]].px,
+									 mesh->point[mesh->quad[i].point[0]].py,
+									 mesh->point[mesh->quad[i].point[0]].pz,
+									 mesh->point[mesh->quad[i].point[1]].px,
+									 mesh->point[mesh->quad[i].point[1]].py,
+									 mesh->point[mesh->quad[i].point[1]].pz,
+									 mesh->point[mesh->quad[i].point[2]].px,
+									 mesh->point[mesh->quad[i].point[2]].py,
+									 mesh->point[mesh->quad[i].point[2]].pz,
+									 mesh->point[mesh->quad[i].point[3]].px,
+									 mesh->point[mesh->quad[i].point[3]].py,
+									 mesh->point[mesh->quad[i].point[3]].pz,
+									 rendererLightCalculation( mesh->color,
+											 mesh->point[mesh->quad[i].point[0]].tx,
+											 mesh->point[mesh->quad[i].point[0]].ty,
+											 mesh->point[mesh->quad[i].point[0]].tz,
+											 mesh->point[mesh->quad[i].point[1]].tx,
+											 mesh->point[mesh->quad[i].point[1]].ty,
+											 mesh->point[mesh->quad[i].point[1]].tz,
+											 mesh->point[mesh->quad[i].point[2]].tx,
+											 mesh->point[mesh->quad[i].point[2]].ty,
+											 mesh->point[mesh->quad[i].point[2]].tz ) ) ) );
+	}
+	if ( mesh->texQuadCount + mesh->texTriangleCount > 0 )
+		spBindTexture( mesh->texture );
+	for ( i = 0; i < mesh->texTriangleCount; i++ )
+	{
+		count += ( 0 < ( mesh->texTriangle[i].was_drawn =
+							 spTriangle_tex( mesh->texPoint[mesh->texTriangle[i].point[0]].px,
+											 mesh->texPoint[mesh->texTriangle[i].point[0]].py,
+											 mesh->texPoint[mesh->texTriangle[i].point[0]].pz,
+											 mesh->texPoint[mesh->texTriangle[i].point[0]].u,
+											 mesh->texPoint[mesh->texTriangle[i].point[0]].v,
+											 mesh->texPoint[mesh->texTriangle[i].point[1]].px,
+											 mesh->texPoint[mesh->texTriangle[i].point[1]].py,
+											 mesh->texPoint[mesh->texTriangle[i].point[1]].pz,
+											 mesh->texPoint[mesh->texTriangle[i].point[1]].u,
+											 mesh->texPoint[mesh->texTriangle[i].point[1]].v,
+											 mesh->texPoint[mesh->texTriangle[i].point[2]].px,
+											 mesh->texPoint[mesh->texTriangle[i].point[2]].py,
+											 mesh->texPoint[mesh->texTriangle[i].point[2]].pz,
+											 mesh->texPoint[mesh->texTriangle[i].point[2]].u,
+											 mesh->texPoint[mesh->texTriangle[i].point[2]].v,
+											 rendererLightCalculation( mesh->color,
+													 mesh->texPoint[mesh->texTriangle[i].point[0]].tx,
+													 mesh->texPoint[mesh->texTriangle[i].point[0]].ty,
+													 mesh->texPoint[mesh->texTriangle[i].point[0]].tz,
+													 mesh->texPoint[mesh->texTriangle[i].point[1]].tx,
+													 mesh->texPoint[mesh->texTriangle[i].point[1]].ty,
+													 mesh->texPoint[mesh->texTriangle[i].point[1]].tz,
+													 mesh->texPoint[mesh->texTriangle[i].point[2]].tx,
+													 mesh->texPoint[mesh->texTriangle[i].point[2]].ty,
+													 mesh->texPoint[mesh->texTriangle[i].point[2]].tz ) ) ) );
+	}
+	for ( i = 0; i < mesh->texQuadCount; i++ )
+	{
+		count += ( 0 < ( mesh->texQuad[i].was_drawn =
+							 spQuad_tex( mesh->texPoint[mesh->texQuad[i].point[0]].px,
+										 mesh->texPoint[mesh->texQuad[i].point[0]].py,
+										 mesh->texPoint[mesh->texQuad[i].point[0]].pz,
+										 mesh->texPoint[mesh->texQuad[i].point[0]].u,
+										 mesh->texPoint[mesh->texQuad[i].point[0]].v,
+										 mesh->texPoint[mesh->texQuad[i].point[1]].px,
+										 mesh->texPoint[mesh->texQuad[i].point[1]].py,
+										 mesh->texPoint[mesh->texQuad[i].point[1]].pz,
+										 mesh->texPoint[mesh->texQuad[i].point[1]].u,
+										 mesh->texPoint[mesh->texQuad[i].point[1]].v,
+										 mesh->texPoint[mesh->texQuad[i].point[2]].px,
+										 mesh->texPoint[mesh->texQuad[i].point[2]].py,
+										 mesh->texPoint[mesh->texQuad[i].point[2]].pz,
+										 mesh->texPoint[mesh->texQuad[i].point[2]].u,
+										 mesh->texPoint[mesh->texQuad[i].point[2]].v,
+										 mesh->texPoint[mesh->texQuad[i].point[3]].px,
+										 mesh->texPoint[mesh->texQuad[i].point[3]].py,
+										 mesh->texPoint[mesh->texQuad[i].point[3]].pz,
+										 mesh->texPoint[mesh->texQuad[i].point[3]].u,
+										 mesh->texPoint[mesh->texQuad[i].point[3]].v,
+										 rendererLightCalculation( mesh->color,
+												 mesh->texPoint[mesh->texQuad[i].point[0]].tx,
+												 mesh->texPoint[mesh->texQuad[i].point[0]].ty,
+												 mesh->texPoint[mesh->texQuad[i].point[0]].tz,
+												 mesh->texPoint[mesh->texQuad[i].point[1]].tx,
+												 mesh->texPoint[mesh->texQuad[i].point[1]].ty,
+												 mesh->texPoint[mesh->texQuad[i].point[1]].tz,
+												 mesh->texPoint[mesh->texQuad[i].point[2]].tx,
+												 mesh->texPoint[mesh->texQuad[i].point[2]].ty,
+												 mesh->texPoint[mesh->texQuad[i].point[2]].tz ) ) ) );
+	}
+	if ( updateEdgeList )
+	{
+		for ( i = 0; i < mesh->edgeCount; i++ )
+			mesh->edge[i].status = -1;
+		for ( i = 0; i < mesh->texEdgeCount; i++ )
+			mesh->texEdge[i].status = -1;
+		for ( i = 0; i < mesh->triangleCount; i++ )
+		{
+			mesh->edge[mesh->triangle[i].edge[0]].status += mesh->triangle[i].was_drawn;
+			mesh->edge[mesh->triangle[i].edge[1]].status += mesh->triangle[i].was_drawn;
+			mesh->edge[mesh->triangle[i].edge[2]].status += mesh->triangle[i].was_drawn;
+		}
+		for ( i = 0; i < mesh->texTriangleCount; i++ )
+		{
+			mesh->texEdge[mesh->texTriangle[i].edge[0]].status += mesh->texTriangle[i].was_drawn;
+			mesh->texEdge[mesh->texTriangle[i].edge[1]].status += mesh->texTriangle[i].was_drawn;
+			mesh->texEdge[mesh->texTriangle[i].edge[2]].status += mesh->texTriangle[i].was_drawn;
+		}
+		for ( i = 0; i < mesh->quadCount; i++ )
+		{
+			mesh->edge[mesh->quad[i].edge[0]].status += mesh->quad[i].was_drawn;
+			mesh->edge[mesh->quad[i].edge[1]].status += mesh->quad[i].was_drawn;
+			mesh->edge[mesh->quad[i].edge[2]].status += mesh->quad[i].was_drawn;
+			mesh->edge[mesh->quad[i].edge[3]].status += mesh->quad[i].was_drawn;
+		}
+		for ( i = 0; i < mesh->texQuadCount; i++ )
+		{
+			mesh->texEdge[mesh->texQuad[i].edge[0]].status += mesh->texQuad[i].was_drawn;
+			mesh->texEdge[mesh->texQuad[i].edge[1]].status += mesh->texQuad[i].was_drawn;
+			mesh->texEdge[mesh->texQuad[i].edge[2]].status += mesh->texQuad[i].was_drawn;
+			mesh->texEdge[mesh->texQuad[i].edge[3]].status += mesh->texQuad[i].was_drawn;
+		}
+	}
+	return count;
+}
+
 PREFIX void spLine3D( Sint32 x1, Sint32 y1, Sint32 z1,
 					  Sint32 x2, Sint32 y2, Sint32 z2, Uint16 color )
 {

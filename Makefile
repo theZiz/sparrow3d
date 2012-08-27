@@ -112,7 +112,7 @@ endif
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
 
-all: sparrow3d sparrowSound sparrowNet testsparrow testsprite testmesh testtarget testtext testparallax testclient testserver
+all: sparrow3d sparrowSound sparrowNet testsparrow testsprite testmesh testtarget testtext testparallax
 
 targets:
 	@echo "gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora"

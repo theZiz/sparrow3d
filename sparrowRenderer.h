@@ -257,6 +257,9 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
  * (like e.g. the return value of spQuadTex3D). */
 PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList );
 
+/* like spMesh3D, but with a additional position */
+PREFIX int spMesh3DwithPos(Sint32 x,Sint32 y,Sint32 z, spModelPointer mesh, int updateEdgeList );
+
 /* Draws a line in the 3d space with the given color. No light
  * calculation is done. */
 PREFIX void spLine3D( Sint32 x1, Sint32 y1, Sint32 z1,
