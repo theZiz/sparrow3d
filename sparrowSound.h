@@ -26,8 +26,6 @@
 #ifndef _SPARROW_SOUND_H
 #define _SPARROW_SOUND_J
 
-#define SP_MAX_VOLUME 
-
 #include "sparrowDefines.h"
 #include <SDL_mixer.h>
 

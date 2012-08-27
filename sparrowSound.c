@@ -29,39 +29,41 @@ int spSoundInPause = 0;
 PREFIX int spSoundInit()
 {
 	// load support for the OGG and MOD sample/music formats
-	int result = Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3 | MIX_INIT_FLAC | MIX_INIT_MOD);
-	if(result & MIX_INIT_OGG)
-		printf("Support for ogg: Yes\n");
+	#if (SDL_MIXER_PATCHLEVEL >= 10)
+		int result = Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3 | MIX_INIT_FLAC | MIX_INIT_MOD);
+		if(result & MIX_INIT_OGG)
+			printf("Support for ogg: Yes\n");
+		else
+			printf("Support for ogg: No (%s)\n",Mix_GetError());
+		if(result & MIX_INIT_MP3)
+			printf("Support for mp3: Yes\n");
+		else
+			printf("Support for mp3: No (%s)\n",Mix_GetError());
+		if(result & MIX_INIT_FLAC)
+			printf("Support for flac: Yes\n");
+		else
+			printf("Support for flac: No (%s)\n",Mix_GetError());
+		if(result & MIX_INIT_MOD)
+			printf("Support for mod: Yes\n");
+		else
+			printf("Support for mod: No (%s)\n",Mix_GetError());
+	#endif
+	if (!
+	#ifdef F100
+		Mix_OpenAudio(44100,AUDIO_S16SYS,2,256)
+	#else
+		Mix_OpenAudio(44100,AUDIO_S16SYS,2,2048)
+	#endif
+	)
+	{
+		printf("Try to open Sound: Success\n");
+		printf("  %i channels are avaible as default\n",Mix_AllocateChannels(-1));
+		spNoSoundAvaible = 0;
+	}
 	else
-		printf("Support for ogg: No (%s)\n",Mix_GetError());
-	if(result & MIX_INIT_MP3)
-		printf("Support for mp3: Yes\n");
-	else
-		printf("Support for mp3: No (%s)\n",Mix_GetError());
-	if(result & MIX_INIT_FLAC)
-		printf("Support for flac: Yes\n");
-	else
-		printf("Support for flac: No (%s)\n",Mix_GetError());
-	if(result & MIX_INIT_MOD)
-		printf("Support for mod: Yes\n");
-	else
-		printf("Support for mod: No (%s)\n",Mix_GetError());
-  if (!
-  #ifdef F100
-    Mix_OpenAudio(44100,AUDIO_S16SYS,2,256)
-  #else
-    Mix_OpenAudio(44100,AUDIO_S16SYS,2,2048)
-  #endif
-  )
-  {
-    printf("Try to open Sound: Success\n");
-    printf("  %i channels are avaible as default\n",Mix_AllocateChannels(-1));
-    spNoSoundAvaible = 0;
-  }
-  else
-  {
-    printf("Try to open Sound: Failed\n");
-    spNoSoundAvaible = 1;
+	{
+		printf("Try to open Sound: Failed\n");
+		spNoSoundAvaible = 1;
 	}
 	spSoundSetMusicVolume(spMusicVolume);
 	spSoundSetVolume(spSoundVolume);
@@ -261,6 +263,8 @@ PREFIX void spSoundQuit()
 	if (spBackgroundMusic)
 		Mix_FreeMusic(spBackgroundMusic);
 	spBackgroundMusic = NULL;
-  Mix_CloseAudio();
-  Mix_Quit();
+	Mix_CloseAudio();
+	#if (SDL_MIXER_PATCHLEVEL >= 10)
+		Mix_Quit();
+	#endif
 }
