@@ -1288,3 +1288,38 @@ PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 	}
 	return ((r >> 3) << 11) + ((g >> 2) << 5) + (b >> 3);
 }
+
+/* AdvMAME2x
+ *   A    --\ 1 2
+ * C P B  --/ 3 4
+ *   D 
+ *  1=P; 2=P; 3=P; 4=P;
+ *  IF C==A AND C!=D AND A!=B => 1=A
+ *  IF A==B AND A!=C AND B!=D => 2=B
+ *  IF B==D AND B!=A AND D!=C => 4=D
+ *  IF D==C AND D!=B AND C!=A => 3=C */
+#define spSetScaledPixel(x,y) \
+{\
+	int X = x*2;\
+	int Y = y*2;\
+	dst[X   +(Y  )*destination->w] = src[x+y*source->w];\
+	dst[X+1 +(Y  )*destination->w] = src[x+y*source->w];\
+	dst[X   +(Y+1)*destination->w] = src[x+y*source->w];\
+	dst[X+1 +(Y+1)*destination->w] = src[x+y*source->w];\
+}
+
+PREFIX void spScale2X(SDL_Surface* source,SDL_Surface* destination)
+{
+	SDL_LockSurface( source );
+	SDL_LockSurface( destination );
+	Uint16* src = (Uint16*)(source->pixels);
+	Uint16* dst = (Uint16*)(destination->pixels);
+	int x,y;
+	for (x = 0; x < source->w; x++)
+		for (y = 0; y < source->h; y++)
+		{
+			spSetScaledPixel(x,y);
+		}
+	SDL_UnlockSurface( source );
+	SDL_UnlockSurface( destination );
+}

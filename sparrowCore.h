@@ -218,4 +218,9 @@ PREFIX Uint16 spGetRGB(int r, int g, int b );
 /* spGetHSV returns a 16 bit color defined by the HSV values */
 PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
 
+/* Copies and scales source to destination very fast. Attention! Destination
+ * HAVE TO HAVE the size source->w*2*source->h*2! Furthermore the pixel depth
+ * must be 2 (16 bit graphics)*/
+PREFIX void spScale2X(SDL_Surface* source,SDL_Surface* destination);
+
 #endif
