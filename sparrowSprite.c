@@ -18,6 +18,8 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 #include "sparrowSprite.h"
+#include <stdlib.h>
+#include <string.h>
 
 PREFIX spSpritePointer spNewSprite(char* name)
 {

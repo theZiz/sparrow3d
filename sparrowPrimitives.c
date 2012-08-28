@@ -19,6 +19,7 @@
 */
 #include "sparrowPrimitives.h"
 #include <stdlib.h>
+#include <string.h>
 SDL_Surface* spTarget = NULL;
 Uint16* spTargetPixel = NULL;
 SDL_Surface* spTexture = NULL;

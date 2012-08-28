@@ -24,6 +24,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <stdlib.h>
+#include <string.h>
 
 int spWindowX = 0;
 int spWindowY = 0;

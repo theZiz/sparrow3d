@@ -21,6 +21,8 @@
 #include "sparrowFile.h"
 #include <sys/stat.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 
 PREFIX int spFileExists( const char* filename )

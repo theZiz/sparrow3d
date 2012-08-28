@@ -18,6 +18,8 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 #include "sparrowText.h"
+#include <stdlib.h>
+#include <string.h>
 
 Uint16 spDefaultLanguage = SP_LANGUAGE_EN;
 spBundlePointer spUberBundle = NULL;
