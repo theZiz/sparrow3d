@@ -24,6 +24,8 @@
 #ifndef _SPARROW_MESH_H
 #define _SPARROW_MESH_H
 
+#include <SDL.h>
+#include "sparrowDefines.h"
 #include "sparrow3d.h"
 #include "sparrowRenderer.h"
 

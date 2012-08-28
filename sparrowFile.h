@@ -31,10 +31,6 @@
 #include "sparrow3d.h"
 #include <SDL.h>
 
-#ifndef getLastError
-#define getLastError GetLastError
-#endif
-
 typedef enum
 {
 	SP_FILE_EVERYTHING_OK = 0,

@@ -68,7 +68,11 @@ PREFIX spFileError spCreateDirectoryChain( const char* directories)
 {
 	//Creating copy:
 	int len = strlen(directories)+1;
-	char* directoriesCopy = (char*)malloc( len * sizeof(char) );
+	#ifdef __GNUC__
+		char directoriesCopy[len];
+	#else
+		char* directoriesCopy = (char*)malloc( len * sizeof(char) );
+	#endif
 	memcpy(directoriesCopy,directories,len);
 	//Splitting in subdirectories
 	char* subString = directoriesCopy;
@@ -85,7 +89,7 @@ PREFIX spFileError spCreateDirectoryChain( const char* directories)
 			if (CreateDirectory(directoriesCopy,NULL))
 				result = SP_FILE_EVERYTHING_OK;
 			else
-			if (getLastError() == ERROR_ALREADY_EXISTS)
+			if (GetLastError() == ERROR_ALREADY_EXISTS)
 				result = SP_FILE_ALREADY_EXISTS_ERROR;
 			else
 			{
@@ -114,7 +118,9 @@ PREFIX spFileError spCreateDirectoryChain( const char* directories)
 			endOfString = strchr(subString,0);
 	}
 	
-	free(directoriesCopy);
+	#ifndef __GNUC__
+		free(directoriesCopy);
+	#endif
 	return result;
 }
 
@@ -123,7 +129,7 @@ PREFIX spFileError spRemoveFile( const char* filename )
 #ifdef WIN32
 	if (DeleteFile(filename))
 		return SP_FILE_EVERYTHING_OK;
-	if (getLastError() == ERROR_FILE_NOT_FOUND)
+	if (GetLastError() == ERROR_FILE_NOT_FOUND)
 		return SP_FILE_NOT_FOUND_ERROR;
 	return SP_FILE_ACCESS_ERROR;
 #else
@@ -142,7 +148,7 @@ PREFIX spFileError spRemoveDirectory( const char* dirname )
 #ifdef WIN32
 	if (RemoveDirectory(dirname))
 		return SP_FILE_EVERYTHING_OK;
-	if (getLastError() == ERROR_PATH_NOT_FOUND)
+	if (GetLastError() == ERROR_PATH_NOT_FOUND)
 		return SP_FILE_NOT_FOUND_ERROR;
 	return SP_FILE_ACCESS_ERROR;
 #else
@@ -161,7 +167,7 @@ PREFIX spFileError spRenameFile( const char* filename , const char* newname)
 #ifdef WIN32
 	if (MoveFile(filename,newname))
 		return SP_FILE_EVERYTHING_OK;
-	if (getLastError() == ERROR_FILE_NOT_FOUND)
+	if (GetLastError() == ERROR_FILE_NOT_FOUND)
 		return SP_FILE_NOT_FOUND_ERROR;
 	return SP_FILE_ACCESS_ERROR;
 #else
