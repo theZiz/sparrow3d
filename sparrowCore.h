@@ -220,7 +220,9 @@ PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
 
 /* Copies and scales source to destination very fast. Attention! Destination
  * HAVE TO HAVE the size source->w*2*source->h*2! Furthermore the pixel depth
- * must be 2 (16 bit graphics)*/
-PREFIX void spScale2X(SDL_Surface* source,SDL_Surface* destination);
+ * must be 2 (16 bit graphics). Smooth is much slower and does not always look
+ * better.*/
+PREFIX void spScale2XFast(SDL_Surface* source,SDL_Surface* destination);
+PREFIX void spScale2XSmooth(SDL_Surface* source,SDL_Surface* destination);
 
 #endif
