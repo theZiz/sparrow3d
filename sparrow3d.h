@@ -26,6 +26,7 @@
 
 #include "sparrowCore.h"
 #include "sparrowDefines.h"
+#include "sparrowFile.h"
 #include "sparrowFont.h"
 #include "sparrowMath.h"
 #include "sparrowMesh.h"
@@ -36,7 +37,6 @@
 #include "sparrowText.h"
 
 #include "sparrowSound.h"
-#include "sparrowFile.h"
 #include "sparrowNet.h"
 
 #endif

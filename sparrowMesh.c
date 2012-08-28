@@ -18,6 +18,7 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 #include "sparrowMesh.h"
+#include "sparrowMath.h"
 #include <math.h>
 #include <stdlib.h>
 

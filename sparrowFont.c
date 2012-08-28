@@ -20,6 +20,8 @@
 #include "sparrowFont.h"
 #include "sparrowPrimitives.h"
 #include <stdlib.h>
+#include <string.h>
+
 
 Uint32 spFontButtonLeft = '[';
 Uint32 spFontButtonRight = ']';
