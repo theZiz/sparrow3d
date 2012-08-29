@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sparrow3D", "Sparrow3D.vcproj", "{E86CAE86-5691-4F48-8728-A8B82A32EC43}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SparrowSound", "SparrowSound.vcproj", "{1EECF7CA-C867-45F4-A42A-AEA7DE2488E0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SparrowNet", "SparrowNet.vcproj", "{606059EB-FFFE-48D6-9C9B-14F7A42CDF56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +17,14 @@ Global
 		{E86CAE86-5691-4F48-8728-A8B82A32EC43}.Debug|Win32.Build.0 = Debug|Win32
 		{E86CAE86-5691-4F48-8728-A8B82A32EC43}.Release|Win32.ActiveCfg = Release|Win32
 		{E86CAE86-5691-4F48-8728-A8B82A32EC43}.Release|Win32.Build.0 = Release|Win32
+		{1EECF7CA-C867-45F4-A42A-AEA7DE2488E0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1EECF7CA-C867-45F4-A42A-AEA7DE2488E0}.Debug|Win32.Build.0 = Debug|Win32
+		{1EECF7CA-C867-45F4-A42A-AEA7DE2488E0}.Release|Win32.ActiveCfg = Release|Win32
+		{1EECF7CA-C867-45F4-A42A-AEA7DE2488E0}.Release|Win32.Build.0 = Release|Win32
+		{606059EB-FFFE-48D6-9C9B-14F7A42CDF56}.Debug|Win32.ActiveCfg = Debug|Win32
+		{606059EB-FFFE-48D6-9C9B-14F7A42CDF56}.Debug|Win32.Build.0 = Debug|Win32
+		{606059EB-FFFE-48D6-9C9B-14F7A42CDF56}.Release|Win32.ActiveCfg = Release|Win32
+		{606059EB-FFFE-48D6-9C9B-14F7A42CDF56}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
