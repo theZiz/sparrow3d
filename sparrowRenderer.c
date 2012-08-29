@@ -504,8 +504,8 @@ PREFIX int spTriangle3D( Sint32 x1, Sint32 y1, Sint32 z1,
 						 Sint32 x2, Sint32 y2, Sint32 z2,
 						 Sint32 x3, Sint32 y3, Sint32 z3, Uint16 color )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
@@ -560,8 +560,8 @@ PREFIX int spQuad3D( Sint32 x1, Sint32 y1, Sint32 z1,
 					 Sint32 x3, Sint32 y3, Sint32 z3,
 					 Sint32 x4, Sint32 y4, Sint32 z4, Uint16 color )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
@@ -631,8 +631,8 @@ PREFIX int spTriangleTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v
 							Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2,
 							Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint16 color )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
@@ -688,8 +688,8 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 						Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3,
 						Sint32 x4, Sint32 y4, Sint32 z4, Sint32 u4, Sint32 v4, Uint16 color )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
@@ -758,8 +758,8 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 
 PREFIX void spBlit3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 	Sint32 tx1, ty1, tz1, tw1;
@@ -786,8 +786,8 @@ PREFIX void spBlit3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface )
 PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 {
 	int count = 0;
-	Sint32 windowX = spGetWindowSurface()->w;
-	Sint32 windowY = spGetWindowSurface()->h;
+	Sint32 windowX = spGetRenderTarget()->w;
+	Sint32 windowY = spGetRenderTarget()->h;
 	Sint32 viewPortX = ( windowX >> 1 );
 	Sint32 viewPortY = ( windowY >> 1 );
 	//Project Points
@@ -976,8 +976,8 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 PREFIX int spMesh3DwithPos(Sint32 x,Sint32 y,Sint32 z, spModelPointer mesh, int updateEdgeList )
 {
 	int count = 0;
-	Sint32 windowX = spGetWindowSurface()->w;
-	Sint32 windowY = spGetWindowSurface()->h;
+	Sint32 windowX = spGetRenderTarget()->w;
+	Sint32 windowY = spGetRenderTarget()->h;
 	Sint32 viewPortX = ( windowX >> 1 );
 	Sint32 viewPortY = ( windowY >> 1 );
 	//Project Points
@@ -1166,8 +1166,8 @@ PREFIX int spMesh3DwithPos(Sint32 x,Sint32 y,Sint32 z, spModelPointer mesh, int 
 PREFIX void spLine3D( Sint32 x1, Sint32 y1, Sint32 z1,
 					  Sint32 x2, Sint32 y2, Sint32 z2, Uint16 color )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
@@ -1255,8 +1255,8 @@ PREFIX void spSetAmbientLightColor( Uint32 r, Uint32 g, Uint32 b )
 
 PREFIX void spRectangle3D( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint16 color )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
@@ -1284,8 +1284,8 @@ PREFIX void spRectangle3D( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uin
 
 PREFIX void spEllipse3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint16 color )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
@@ -1313,8 +1313,8 @@ PREFIX void spEllipse3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uin
 
 PREFIX void spRectangleBorder3D( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Sint32 bx, Sint32 by, Uint16 color )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
@@ -1348,8 +1348,8 @@ PREFIX void spRectangleBorder3D( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 
 
 PREFIX void spEllipseBorder3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Sint32 bx, Sint32 by, Uint16 color )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
@@ -1385,8 +1385,8 @@ PREFIX void spEllipseBorder3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 r
 
 PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 withModelview )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
@@ -1423,8 +1423,8 @@ PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *
 
 PREFIX void spRotozoomSurface3D( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface, Sint32 zoomX, Sint32 zoomY, Sint32 angle )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
@@ -1451,8 +1451,8 @@ PREFIX void spRotozoomSurface3D( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surf
 
 PREFIX void spRotozoomSurfacePart3D( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, Sint32 zoomX, Sint32 zoomY, Sint32 angle )
 {
-	int windowX = spGetWindowSurface()->w;
-	int windowY = spGetWindowSurface()->h;
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 

@@ -1288,3 +1288,125 @@ PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 	}
 	return ((r >> 3) << 11) + ((g >> 2) << 5) + (b >> 3);
 }
+
+/* AdvMAME2x
+ *   A    --\ 1 2
+ * C P B  --/ 3 4
+ *   D 
+ *  1=P; 2=P; 3=P; 4=P;
+ *  IF C==A AND C!=D AND A!=B => 1=A
+ *  IF A==B AND A!=C AND B!=D => 2=B
+ *  IF B==D AND B!=A AND D!=C => 4=D
+ *  IF D==C AND D!=B AND C!=A => 3=C */
+#define spScaleP(x,y) src[x+ y   *src_w] 
+#define spScaleA(x,y) src[x+(y-1)*src_w]
+#define spScaleB(x,y) src[(x+1)+y*src_w]
+#define spScaleC(x,y) src[(x-1)+y*src_w]
+#define spScaleD(x,y) src[x+(y+1)*src_w]
+#define spScalePixel(X,Y) \
+	if (C == A && C!=D && A!=B) \
+		dst[X   +(Y  )*dst_w] = A; \
+	else \
+		dst[X   +(Y  )*dst_w] = P; \
+	\
+	if (A == B && A!=C && B!=D) \
+		dst[X+1 +(Y  )*dst_w] = B; \
+	else \
+		dst[X+1 +(Y  )*dst_w] = P; \
+	\
+	if (B == D && B!=A && D!=C) \
+		dst[X+1 +(Y+1)*dst_w] = D; \
+	else \
+		dst[X+1 +(Y+1)*dst_w] = P; \
+	\
+	if (D == C && D!=B && C!=A) \
+		dst[X   +(Y+1)*dst_w] = C; \
+	else \
+		dst[X   +(Y+1)*dst_w] = P;
+
+PREFIX void spScale2XSmooth(SDL_Surface* source,SDL_Surface* destination)
+{
+	SDL_LockSurface( source );
+	SDL_LockSurface( destination );
+	Uint16* src = (Uint16*)(source->pixels);
+	Uint16* dst = (Uint16*)(destination->pixels);
+	int src_w = source->pitch >> 1;
+	int dst_w = destination->pitch >> 1;
+	int x,y,A,B,C,D,P;
+	//Y=0
+	P = spScaleP(0,0);
+	A = P; B = spScaleB(0,0); C = P; D = spScaleD(0,0); 
+	spScalePixel(0,0);
+	for (x = 1; x < src_w-1; x++)
+	{
+		int X = x*2;
+		P = spScaleP(x,0);
+		A = P; B = spScaleB(x,0); C = spScaleC(x,0); D = spScaleD(x,0); 
+		spScalePixel(X,0);
+	}
+	P = spScaleP((src_w-1),0);
+	A = P; B = P; C = spScaleC((src_w-1),0); D = spScaleD((src_w-1),0); 
+	spScalePixel((src_w-1)*2,0);	
+
+	//Y=1..n-1
+	for (y = 1; y < source->h-1; y++)
+	{
+		int Y = y*2;		
+		P = spScaleP(0,y);
+		A = spScaleA(0,y); B = spScaleB(0,y); C = P; D = spScaleD(0,y); 
+		spScalePixel(0,Y);
+		for (x = 1; x < src_w-1; x++)
+		{
+			int X = x*2;
+			P = spScaleP(x,y);
+			A = spScaleA(x,y); B = spScaleB(x,y); C = spScaleC(x,y); D = spScaleD(x,y); 
+			spScalePixel(X,Y);
+		}
+		P = spScaleP((src_w-1),y);
+		A = spScaleA((src_w-1),y); B = P; C = spScaleC((src_w-1),y); D = spScaleD((src_w-1),y); 
+		spScalePixel((src_w-1)*2,Y);
+	}
+	//Y = n
+	P = spScaleP(0,(source->h-1));
+	A = spScaleA(0,(source->h-1)); B = spScaleB(0,(source->h-1)); C = P; D = P; 
+	spScalePixel(0,(source->h-1)*2);
+	for (x = 1; x < src_w-1; x++)
+	{
+		int X = x*2;
+		P = spScaleP(x,(source->h-1));
+		A = spScaleA(x,(source->h-1)); B = spScaleB(x,(source->h-1)); C = spScaleC(x,(source->h-1)); D = P; 
+		spScalePixel(X,(source->h-1)*2);
+	}
+	P = spScaleP((src_w-1),(source->h-1));
+	A = spScaleA((src_w-1),(source->h-1)); B = P; C = spScaleC((src_w-1),(source->h-1)); D = P; 
+	spScalePixel((src_w-1)*2,(source->h-1)*2);
+	
+	SDL_UnlockSurface( source );
+	SDL_UnlockSurface( destination );
+}
+
+PREFIX void spScale2XFast(SDL_Surface* source,SDL_Surface* destination)
+{
+	SDL_LockSurface( source );
+	SDL_LockSurface( destination );
+	int src_w = source->pitch >> 1;
+	int dst_w = destination->pitch >> 1;
+	Uint16* src = (Uint16*)(source->pixels);
+	Uint16* dst = (Uint16*)(destination->pixels);
+	int x,y;
+	for (y = 0; y < source->h; y++)
+	{
+		int Y = y*2;
+		for (x = 0; x < source->w; x++)
+		{
+			int X = x*2;
+			int P = spScaleP(x,y);
+			dst[X   +(Y  )*dst_w] = P;
+			dst[X+1 +(Y  )*dst_w] = P;
+			dst[X   +(Y+1)*dst_w] = P;
+			dst[X+1 +(Y+1)*dst_w] = P;
+		}
+	}
+	SDL_UnlockSurface( source );
+	SDL_UnlockSurface( destination );
+}

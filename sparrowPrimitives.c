@@ -2581,3 +2581,55 @@ PREFIX Sint32 spGetZFar()
 {
 	return -spZFar;
 }
+
+PREFIX void spAddWhiteLayer(int alpha)
+{
+  int i;
+  int goal = spTargetScanLine*spTargetY;
+  for (i=0;i<goal;i++)
+  {
+    int r=( spTargetPixel[i]>>11     )*8+alpha;
+    if (r>255)
+      r=255;
+    if (r<0)
+      r=0;
+    int g=((spTargetPixel[i]>>5) & 63)*4+alpha;
+    if (g>255)
+      g=255;
+    if (g<0)
+      g=0;
+    int b=( spTargetPixel[i]     & 31)*8+alpha;
+    if (b>255)
+      b=255;
+    if (b<0)
+      b=0;
+    spTargetPixel[i]=spGetFastRGB(r,g,b);
+  }
+  
+}
+
+PREFIX void spAddBlackLayer(int alpha)
+{
+  int i;
+  int goal = spTargetScanLine*spTargetY;
+  for (i=0;i<goal;i++)
+  {
+    int r=( spTargetPixel[i]>>11     )*8-alpha;
+    if (r>255)
+      r=255;
+    if (r<0)
+      r=0;
+    int g=((spTargetPixel[i]>>5) & 63)*4-alpha;
+    if (g>255)
+      g=255;
+    if (g<0)
+      g=0;
+    int b=( spTargetPixel[i]     & 31)*8-alpha;
+    if (b>255)
+      b=255;
+    if (b<0)
+      b=0;
+    spTargetPixel[i]=spGetFastRGB(r,g,b);
+  }
+  
+}
