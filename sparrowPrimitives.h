@@ -225,4 +225,8 @@ PREFIX void spSetZFar(Sint32 zfar);
 /* Gets the value, to which the zbuffer will be reseted */
 PREFIX Sint32 spGetZFar();
 
+PREFIX void spAddWhiteLayer(int alpha);
+
+PREFIX void spAddBlackLayer(int alpha);
+
 #endif

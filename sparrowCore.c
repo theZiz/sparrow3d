@@ -1308,18 +1308,21 @@ PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 		dst[X   +(Y  )*dst_w] = A; \
 	else \
 		dst[X   +(Y  )*dst_w] = P; \
+	\
 	if (A == B && A!=C && B!=D) \
 		dst[X+1 +(Y  )*dst_w] = B; \
 	else \
 		dst[X+1 +(Y  )*dst_w] = P; \
+	\
 	if (B == D && B!=A && D!=C) \
-		dst[X   +(Y+1)*dst_w] = D; \
+		dst[X+1 +(Y+1)*dst_w] = D; \
 	else \
-		dst[X   +(Y+1)*dst_w] = P; \
+		dst[X+1 +(Y+1)*dst_w] = P; \
+	\
 	if (D == C && D!=B && C!=A) \
-		dst[X+1 +(Y+1)*dst_w] = C; \
+		dst[X   +(Y+1)*dst_w] = C; \
 	else \
-		dst[X+1 +(Y+1)*dst_w] = P;
+		dst[X   +(Y+1)*dst_w] = P;
 
 PREFIX void spScale2XSmooth(SDL_Surface* source,SDL_Surface* destination)
 {
