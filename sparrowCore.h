@@ -26,8 +26,8 @@
 #ifndef _SPARROW_CORE_H
 #define _SPARROW_CORE_H
 
-#include "sparrowDefines.h"
 #include <SDL.h>
+#include "sparrowDefines.h"
 
 /* The minimal and maximal value of the analog axis */
 #define SP_ANALOG_AXIS_MIN -32768
