@@ -182,10 +182,10 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	SDL_FreeSurface( surface );
 #elif defined PANDORA
 	spScreen = NULL;
-	spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN );
+	spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
 #elif defined MAEMO
 	spScreen = NULL;
-	spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN );
+	spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
 #else
 	/*x=800;
 	y=480;*/
