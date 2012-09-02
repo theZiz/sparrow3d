@@ -70,6 +70,11 @@ PREFIX int spSoundInit()
 	return !spNoSoundAvaible;
 }
 
+PREFIX void spSoundSetChannels(int channels)
+{
+	Mix_AllocateChannels(channels);
+}
+
 PREFIX void spSoundPauseAll(int pause)
 {
 	if (spNoSoundAvaible)
