@@ -1410,3 +1410,24 @@ PREFIX void spScale2XFast(SDL_Surface* source,SDL_Surface* destination)
 	SDL_UnlockSurface( source );
 	SDL_UnlockSurface( destination );
 }
+
+PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgroundcolor)
+{
+	SDL_LockSurface( surface );
+	int width = surface->pitch >> 1;
+	Uint16* pixel = (Uint16*)(surface->pixels);
+	Uint16* copyPixel = (Uint16*)malloc(surface->h*width*sizeof(Uint16));
+	memcpy(copyPixel,pixel,surface->h*width*sizeof(Uint16));
+	int x,y;
+	for (x = 0; x < surface->w; x++)
+		for (y = 0; y < surface->h; y++)
+		{
+			if (copyPixel[x+y*width] == backgroundcolor && //pixel must be part of the background
+				((x > 0 && copyPixel[x-1+y*width] != backgroundcolor) ||
+				 (x < surface->w-1 && copyPixel[x+1+y*width] != backgroundcolor) ||
+				 (y > 0 && copyPixel[x+(y-1)*width] != backgroundcolor) ||
+				 (y < surface->h-1 && copyPixel[x+(y+1)*width] != backgroundcolor)))
+			pixel[x+y*width] = borderColor;
+		}
+	SDL_UnlockSurface( surface );	
+}
