@@ -41,6 +41,10 @@ typedef Mix_Chunk spSound;
  * work - there will just be no sound. Btw, SDL_mixer would crash ;-) */
 PREFIX int spSoundInit();
 
+/* Sets the maximum count of channels. More channels need more space and time
+ * to get handled. The default is 8 on most systems */
+PREFIX void spSoundSetChannels(int channels);
+
 /* This has to be called at the end of the program */
 PREFIX void spSoundQuit();
 
