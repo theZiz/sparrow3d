@@ -14,8 +14,6 @@ SDL_Surface *screen;
 SDL_Surface *garfield;
 SDL_Surface *pepper;
 SDL_Surface *scientist;
-SDL_Surface *surface;
-SDL_Surface *bigger_surface;
 spModelPointer mesh;
 spModelPointer wheel[15];
 spSpritePointer sprite;
@@ -404,11 +402,6 @@ void draw_test( void )
 		sprintf(buffer,"%sv",buffer);
 	}	
 	spFontDraw( 2, font->maxheight*2, -1, buffer, font );
-	spSetAlphaTest(0);
-	spSetHorizontalOrigin(SP_LEFT);
-	spSetVerticalOrigin(SP_TOP);
-	spScale2XSmooth(surface,bigger_surface);
-	spBlitSurface(0,-1500,-1,bigger_surface);
 	spFlip();
 }
 
@@ -502,8 +495,6 @@ int main( int argc, char **argv )
 	garfield = spLoadSurface( "./data/garfield.png" );
 	pepper = spLoadSurface( "./data/pepper.png" );
 	scientist = spLoadSurface( "./data/science_guy_frames01.png" );
-	surface = spLoadSurface( "wars-hexes-sprites.png" );
-	bigger_surface = spCreateSurface(surface->w*2,surface->h*2);
 	
 	spBindTexture( garfield );
 
