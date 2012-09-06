@@ -243,6 +243,7 @@
 		<Linker>
 			<Add option="-lSDL_ttf" />
 			<Add option="-lSDL_image" />
+			<Add option="-lSDL_mixer" />
 			<Add option="-lSDL" />
 		</Linker>
 		<Unit filename="Makefile">
@@ -253,6 +254,10 @@
 		</Unit>
 		<Unit filename="sparrowCore.h" />
 		<Unit filename="sparrowDefines.h" />
+		<Unit filename="sparrowFile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sparrowFile.h" />
 		<Unit filename="sparrowFont.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -265,6 +270,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="sparrowMesh.h" />
+		<Unit filename="sparrowNet.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sparrowNet.h" />
 		<Unit filename="sparrowPrimitives.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -276,6 +285,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="sparrowRenderer.h" />
+		<Unit filename="sparrowSound.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sparrowSound.h" />
 		<Unit filename="sparrowSprite.c">
 			<Option compilerVar="CC" />
 		</Unit>
