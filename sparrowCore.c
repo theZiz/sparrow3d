@@ -406,6 +406,9 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				spInput.button[event.jbutton.button] = 0;
 				break;
 			case SDL_KEYDOWN:
+				spHandleKeyboardInput(event.key.keysym);
+				spLastKey = event.key.keysym;
+				spLastKeyCountDown = SP_KEYBOARD_FIRST_WAIT;
 				switch ( event.key.keysym.sym )
 				{
 				case SDLK_LEFT:
@@ -543,12 +546,11 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					spInput.button[SP_BUTTON_R] = 1;
 					break;
 			#endif
-				case SDLK_m:
-					//spMuteKey=1;
-					break;
 				}
 				break;
 			case SDL_KEYUP:
+				spLastKey.unicode = 0;
+				spLastKeyCountDown = 0;
 				switch ( event.key.keysym.sym )
 				{
 				case SDLK_LEFT:
@@ -695,9 +697,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					spInput.button[SP_BUTTON_R] = 0;
 					break;
 			#endif
-				case SDLK_m:
-					//spMuteKey=0;
-					break;
 				}
 				break;
 			case SDL_JOYAXISMOTION:
@@ -727,18 +726,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				spResizeWindow( event.resize.w, event.resize.h, 0, (spWindow->flags & SDL_RESIZABLE ? 1 : 0) );
 				result = 1;
 				break;
-		}
-
-		if ( spInput.keyboard.buffer && event.type == SDL_KEYDOWN )
-		{
-			spHandleKeyboardInput(event.key.keysym);
-			spLastKey = event.key.keysym;
-			spLastKeyCountDown = SP_KEYBOARD_FIRST_WAIT;
-		}
-		if ( spInput.keyboard.buffer && event.type == SDL_KEYUP/* && spLastKey.unicode == event.key.keysym.unicode*/)
-		{
-			spLastKey.unicode = 0;
-			spLastKeyCountDown = 0;
 		}
 		if ( spEvent )
 			spEvent( &event );
