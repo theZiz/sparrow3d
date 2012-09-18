@@ -483,7 +483,7 @@ void eventHandling(SDL_Event *event)
 int main( int argc, char **argv )
 {
 	//sparrow3D Init
-	spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
+	//spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
 	spInitCore();
 
 	//Setup

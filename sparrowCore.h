@@ -43,8 +43,12 @@
 
 /* The size of the surface cache */
 #define SP_CACHE_SIZE 2048
+
 #define SP_INPUT_BUTTON_COUNT 20
 #define SP_INPUT_AXIS_COUNT 2
+
+#define SP_KEYBOARD_FIRST_WAIT 600
+#define SP_KEYBOARD_WAIT 100
 
 /* This struct contains information about the generic input device
  * sparrowCore provides, which is same on EVERY target */

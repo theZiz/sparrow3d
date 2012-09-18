@@ -220,6 +220,49 @@ PREFIX SDL_Surface* spGetWindowSurface( void )
 	return spWindow;
 }
 
+//for long pressing of a key
+SDL_keysym spLastKey = {0,0,0,0};
+int spLastKeyCountDown = 0;
+
+static void spHandleKeyboardInput( const SDL_keysym pressedKey)
+{
+	if ( pressedKey.sym == SDLK_BACKSPACE )
+	{
+		if ( spInput.keyboard.pos > 0 )
+		{
+			if ( spInput.keyboard.lastSize == 0 ) // need to determine size of last char in buffer
+			{
+				int I;
+				for ( I = strlen( spInput.keyboard.buffer ) - 1; I >= 0; --I )
+				{
+					++spInput.keyboard.lastSize;
+					if ( !((Uint8)(spInput.keyboard.buffer[I] & 128) == 128 && (Uint8)(spInput.keyboard.buffer[I] & 64) == 0)) //no follower bit
+						break;
+				}
+			}
+			if ( spInput.keyboard.lastSize > 0 )
+			{
+				spInput.keyboard.pos -= spInput.keyboard.lastSize;
+				spInput.keyboard.buffer[spInput.keyboard.pos] = '\0';
+				spInput.keyboard.lastSize = 0;
+			}
+		}
+	}
+	else if ( pressedKey.sym >= SDLK_SPACE)
+	{
+		Uint16 c = pressedKey.unicode;
+		char temp[5];
+		spFontGetUTF8FromUnicode( c, temp, 5 );
+		int s = strlen( temp );
+		if ( spInput.keyboard.pos + s <= spInput.keyboard.len )
+		{
+			strcat( spInput.keyboard.buffer, temp );
+			spInput.keyboard.lastSize = s;
+			spInput.keyboard.pos += s;
+		}
+	}
+}
+
 inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) ) 
 {
 	int result = 0;
@@ -688,43 +731,15 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 
 		if ( spInput.keyboard.buffer && event.type == SDL_KEYDOWN )
 		{
-			if ( event.key.keysym.sym == SDLK_BACKSPACE )
-			{
-				if ( spInput.keyboard.pos > 0 )
-				{
-					if ( spInput.keyboard.lastSize == 0 ) // need to determine size of last char in buffer
-					{
-						int I;
-						for ( I = strlen( spInput.keyboard.buffer ) - 1; I >= 0; --I )
-						{
-							++spInput.keyboard.lastSize;
-							if ( !((Uint8)(spInput.keyboard.buffer[I] & 128) == 128 && (Uint8)(spInput.keyboard.buffer[I] & 64) == 0)) //no follower bit
-								break;
-						}
-					}
-					if ( spInput.keyboard.lastSize > 0 )
-					{
-						spInput.keyboard.pos -= spInput.keyboard.lastSize;
-						spInput.keyboard.buffer[spInput.keyboard.pos] = '\0';
-						spInput.keyboard.lastSize = 0;
-					}
-				}
-			}
-			else if ( event.key.keysym.sym >= SDLK_SPACE/* && event.key.keysym.sym <= SDLK_z */)
-			{
-				Uint16 c = event.key.keysym.unicode;
-				char temp[5];
-				spFontGetUTF8FromUnicode( c, temp, 5 );
-				int s = strlen( temp );
-				if ( spInput.keyboard.pos + s <= spInput.keyboard.len )
-				{
-					strcat( spInput.keyboard.buffer, temp );
-					spInput.keyboard.lastSize = s;
-					spInput.keyboard.pos += s;
-				}
-			}
+			spHandleKeyboardInput(event.key.keysym);
+			spLastKey = event.key.keysym;
+			spLastKeyCountDown = SP_KEYBOARD_FIRST_WAIT;
 		}
-
+		if ( spInput.keyboard.buffer && event.type == SDL_KEYUP/* && spLastKey.unicode == event.key.keysym.unicode*/)
+		{
+			spLastKey.unicode = 0;
+			spLastKeyCountDown = 0;
+		}
 		if ( spEvent )
 			spEvent( &event );
 	}
@@ -778,6 +793,19 @@ inline void spUpdateAxis( int axis )
 		spInput.analog_axis[axis] = 0;
 	}
 #endif
+}
+
+void spHandleFakeKeybard( int steps )
+{
+	if (spLastKey.unicode != 0)
+	{
+		spLastKeyCountDown -= steps;
+		if (spLastKeyCountDown <= 0)
+		{
+			spLastKeyCountDown += SP_KEYBOARD_WAIT;
+			spHandleKeyboardInput(spLastKey);
+		}
+	}
 }
 
 Uint32 oldticks;
@@ -834,10 +862,16 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 #endif
 		//Calls with diffticks == 0 are possible!
 		if ( spCalc && diffticks)
+		{
 			back = spCalc( diffticks );
 #ifdef CORE_DEBUG
-		spPrintDebug( "  Did calc" );
+			spPrintDebug( "  Did calc" );
 #endif
+			spHandleFakeKeybard(diffticks);
+#ifdef CORE_DEBUG
+			spPrintDebug( "  Did fake keyboard events" );
+#endif
+		}
 		steps += diffticks;
 		if ( steps >= minwait )
 		{
