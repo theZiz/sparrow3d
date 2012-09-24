@@ -494,59 +494,56 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_RETURN:
 					spInput.button[SP_BUTTON_START] = 1;
 					break;
-				/*case SDLK_MODE:
-					spInput.button[SP_BUTTON_A] = 1;
-					break;
-				case SDLK_LCTRL:
-					spInput.button[SP_BUTTON_B] = 1;
-					break;
-				case SDLK_LALT:case SDLK_RALT:
-					spInput.button[SP_BUTTON_Y] = 1;
-					break;
-				case SDLK_LSUPER:case SDLK_RSUPER:
-					spInput.button[SP_BUTTON_X] = 1;
-					break;
-				case SDLK_ESCAPE:
-					spInput.button[SP_BUTTON_SELECT] = 1;
-					break;
+				#ifdef DO_USE_NOT_WASD_BUTTONS
+					case SDLK_MODE:
+						spInput.button[SP_BUTTON_A] = 1;
+						break;
+					case SDLK_LCTRL:
+						spInput.button[SP_BUTTON_B] = 1;
+						break;
+					case SDLK_LALT:case SDLK_RALT:
+						spInput.button[SP_BUTTON_Y] = 1;
+						break;
+					case SDLK_LSUPER:case SDLK_RSUPER:
+						spInput.button[SP_BUTTON_X] = 1;
+						break;
+					case SDLK_ESCAPE:
+						spInput.button[SP_BUTTON_SELECT] = 1;
+						break;
+					case SDLK_PAGEUP:
+						spInput.button[SP_BUTTON_L] = 1;
+						break;
+					case SDLK_PAGEDOWN:
+						spInput.button[SP_BUTTON_R] = 1;
+						break;
+				#else
+					case SDLK_a:
+						spInput.button[SP_BUTTON_A] = 1;
+						break;
+					case SDLK_d:
+						spInput.button[SP_BUTTON_B] = 1;
+						break;
+					case SDLK_w:
+						spInput.button[SP_BUTTON_Y] = 1;
+						break;
+					case SDLK_s:
+						spInput.button[SP_BUTTON_X] = 1;
+						break;
+					case SDLK_BACKSPACE:
+						spInput.button[SP_BUTTON_SELECT] = 1;
+						break;
+					case SDLK_q:
+						spInput.button[SP_BUTTON_L] = 1;
+						break;
+					case SDLK_e:
+						spInput.button[SP_BUTTON_R] = 1;
+						break;
+				#endif
 				case SDLK_PLUS:
 					spInput.button[SP_BUTTON_VOLPLUS] = 1;
 					break;
 				case SDLK_MINUS:
 					spInput.button[SP_BUTTON_VOLMINUS] = 1;
-					break;
-				case SDLK_PAGEUP:
-					spInput.button[SP_BUTTON_L] = 1;
-					break;
-				case SDLK_PAGEDOWN:
-					spInput.button[SP_BUTTON_R] = 1;
-					break;*/
-				case SDLK_a:
-					spInput.button[SP_BUTTON_A] = 1;
-					break;
-				case SDLK_d:
-					spInput.button[SP_BUTTON_B] = 1;
-					break;
-				case SDLK_w:
-					spInput.button[SP_BUTTON_Y] = 1;
-					break;
-				case SDLK_s:
-					spInput.button[SP_BUTTON_X] = 1;
-					break;
-				case SDLK_BACKSPACE:
-					spInput.button[SP_BUTTON_SELECT] = 1;
-					break;
-				case SDLK_PLUS:
-					spInput.button[SP_BUTTON_VOLPLUS] = 1;
-					break;
-				case SDLK_MINUS:
-					spInput.button[SP_BUTTON_VOLMINUS] = 1;
-					break;
-				case SDLK_q:
-					spInput.button[SP_BUTTON_L] = 1;
-					break;
-				case SDLK_e:
-					spInput.button[SP_BUTTON_R] = 1;
 					break;
 			#endif
 				}
@@ -648,60 +645,57 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_RETURN:
 					spInput.button[SP_BUTTON_START] = 0;
 					break;
-				/*case SDLK_MODE:
-					spInput.button[SP_BUTTON_A] = 0;
-					break;
-				case SDLK_LCTRL:
-					spInput.button[SP_BUTTON_B] = 0;
-					break;
-				case SDLK_LALT:case SDLK_RALT:
-					spInput.button[SP_BUTTON_Y] = 0;
-					break;
-				case SDLK_LSUPER:case SDLK_RSUPER:
-					spInput.button[SP_BUTTON_X] = 0;
-					break;
-				case SDLK_ESCAPE:
-					spInput.button[SP_BUTTON_SELECT] = 0;
-					break;
+				#ifdef DO_USE_NOT_WASD_BUTTONS
+					case SDLK_MODE:
+						spInput.button[SP_BUTTON_A] = 0;
+						break;
+					case SDLK_LCTRL:
+						spInput.button[SP_BUTTON_B] = 0;
+						break;
+					case SDLK_LALT:case SDLK_RALT:
+						spInput.button[SP_BUTTON_Y] = 0;
+						break;
+					case SDLK_LSUPER:case SDLK_RSUPER:
+						spInput.button[SP_BUTTON_X] = 0;
+						break;
+					case SDLK_ESCAPE:
+						spInput.button[SP_BUTTON_SELECT] = 0;
+						break;
+					case SDLK_PAGEUP:
+						spInput.button[SP_BUTTON_L] = 0;
+						break;
+					case SDLK_PAGEDOWN:
+						spInput.button[SP_BUTTON_R] = 0;
+						break;
+				#else
+					case SDLK_a:
+						spInput.button[SP_BUTTON_A] = 0;
+						break;
+					case SDLK_d:
+						spInput.button[SP_BUTTON_B] = 0;
+						break;
+					case SDLK_w:
+						spInput.button[SP_BUTTON_Y] = 0;
+						break;
+					case SDLK_s:
+						spInput.button[SP_BUTTON_X] = 0;
+						break;
+					case SDLK_BACKSPACE:
+						spInput.button[SP_BUTTON_SELECT] = 0;
+						break;
+					case SDLK_q:
+						spInput.button[SP_BUTTON_L] = 0;
+						break;
+					case SDLK_e:
+						spInput.button[SP_BUTTON_R] = 0;
+						break;
+				#endif
 				case SDLK_PLUS:
 					spInput.button[SP_BUTTON_VOLPLUS] = 0;
 					break;
 				case SDLK_MINUS:
 					spInput.button[SP_BUTTON_VOLMINUS] = 0;
-					break;
-				case SDLK_PAGEUP:
-					spInput.button[SP_BUTTON_L] = 0;
-					break;
-				case SDLK_PAGEDOWN:
-					spInput.button[SP_BUTTON_R] = 0;
-					break;*/
-				case SDLK_a:
-					spInput.button[SP_BUTTON_A] = 0;
-					break;
-				case SDLK_d:
-					spInput.button[SP_BUTTON_B] = 0;
-					break;
-				case SDLK_w:
-					spInput.button[SP_BUTTON_Y] = 0;
-					break;
-				case SDLK_s:
-					spInput.button[SP_BUTTON_X] = 0;
-					break;
-				case SDLK_BACKSPACE:
-					spInput.button[SP_BUTTON_SELECT] = 0;
-					break;
-				case SDLK_PLUS:
-					spInput.button[SP_BUTTON_VOLPLUS] = 0;
-					break;
-				case SDLK_MINUS:
-					spInput.button[SP_BUTTON_VOLMINUS] = 0;
-					break;
-				case SDLK_q:
-					spInput.button[SP_BUTTON_L] = 0;
-					break;
-				case SDLK_e:
-					spInput.button[SP_BUTTON_R] = 0;
-					break;
+					break;				
 			#endif
 				}
 				break;

@@ -4,6 +4,13 @@
 # === First of all some defines. If your compilation is slow or instable, check
 # === the defines and changes them for your Target.
 
+# -DDO_USE_NOT_WASD_BUTTONS enables other buttons instead of WASD for the
+# action buttons and QE for the shoulder buttons. For debugging and some
+# direction based games QWEASD is fine, but for release, ctrl, alt and
+# so one are better I think. More details in sparrowDefines.h. Of course
+# this defines makes only sense for PC. ;) However, it is a good idea
+# to use make OUTSIDE_FLAG=-DDO_USE_NOT_WASD_BUTTONS.
+
 # -DFAST_MULTIPLICATION enables a faster multiplication for fixed point
 # arithmetics, it may look ugly on bigger resolution or may be too inaccurate.
 
@@ -34,7 +41,7 @@ CFLAGS = -O2 -fsingle-precision-constant -fPIC
 # GENERAL_TWEAKS are some flags for gcc, which should make the compilation
 # faster, but some of them are just poinsoness snake oil - they may help a bit,
 # but could also kill you. ^^
-GENERAL_TWEAKS = -ffast-math
+GENERAL_TWEAKS = -ffast-math $(OUTSIDE_FLAG)
 
 # every device using SMALL_RESOLUTION_DEVICES in the compilation will enable
 # the faster multiplication and division
@@ -113,42 +120,42 @@ endif
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
 
-all: sparrow3d sparrowSound sparrowNet testsparrow testsprite testmesh testtarget testtext testparallax testserver testclient
+all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testsprite testmesh testtarget testtext testparallax testserver testclient
 
 targets:
-	@echo "gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora"
+	@echo "gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora."
 
-testsparrow: testsparrow.c sparrow3d
+testsparrow: testsparrow.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testsparrow
 
-testsprite: testsprite.c sparrow3d
+testsprite: testsprite.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testsprite.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testsprite
 
-testmesh: testmesh.c sparrow3d
+testmesh: testmesh.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testmesh.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testmesh
 
-testtarget: testtarget.c sparrow3d
+testtarget: testtarget.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testtarget.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testtarget
 
-testtext: testtext.c sparrow3d
+testtext: testtext.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testtext.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testtext
 
-testparallax: testparallax.c sparrow3d
+testparallax: testparallax.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testparallax.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testparallax
 
-testclient: testclient.c sparrow3d sparrowNet
+testclient: testclient.c libsparrow3d.so libsparrowNet.so
 	$(CPP_LINK) $(CFLAGS) testclient.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o testclient
 
-testserver: testserver.c sparrow3d sparrowNet
+testserver: testserver.c libsparrow3d.so libsparrowNet.so
 	$(CPP_LINK) $(CFLAGS) testserver.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o testserver
 
-sparrow3d: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o
+libsparrow3d.so: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o
 	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -rdynamic -o libsparrow3d.so sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
-sparrowSound: sparrowSound.o
+libsparrowSound.so: sparrowSound.o
 	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrowSound.so -rdynamic -o libsparrowSound.so sparrowSound.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
-sparrowNet: sparrowNet.o
+libsparrowNet.so: sparrowNet.o
 	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrowNet.so -rdynamic -o libsparrowNet.so sparrowNet.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
 sparrowCore.o: sparrowCore.c sparrowCore.h
