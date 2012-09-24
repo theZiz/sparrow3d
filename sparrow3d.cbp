@@ -46,7 +46,6 @@
 					<Add option="-lfreetype" />
 					<Add option="-lpng" />
 					<Add option="-lz" />
-					<Add option='-Wl,-soname=&quot;bin\Pandora\libsparrow.so&quot;' />
 					<Add directory="$(#pandora_sdk.lib)" />
 				</Linker>
 			</Target>

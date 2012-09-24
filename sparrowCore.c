@@ -248,7 +248,7 @@ static void spHandleKeyboardInput( const SDL_keysym pressedKey)
 			}
 		}
 	}
-	else if ( pressedKey.sym >= SDLK_SPACE)
+	else if ( pressedKey.sym >= SDLK_SPACE )
 	{
 		Uint16 c = pressedKey.unicode;
 		char temp[5];
@@ -263,7 +263,7 @@ static void spHandleKeyboardInput( const SDL_keysym pressedKey)
 	}
 }
 
-inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) ) 
+inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 {
 	int result = 0;
 #ifdef PANDORA
@@ -406,9 +406,12 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				spInput.button[event.jbutton.button] = 0;
 				break;
 			case SDL_KEYDOWN:
-				spHandleKeyboardInput(event.key.keysym);
-				spLastKey = event.key.keysym;
-				spLastKeyCountDown = SP_KEYBOARD_FIRST_WAIT;
+				if ( spInput.keyboard.buffer )
+				{
+					spHandleKeyboardInput(event.key.keysym);
+					spLastKey = event.key.keysym;
+					spLastKeyCountDown = SP_KEYBOARD_FIRST_WAIT;
+				}
 				switch ( event.key.keysym.sym )
 				{
 				case SDLK_LEFT:
@@ -549,8 +552,11 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				}
 				break;
 			case SDL_KEYUP:
-				spLastKey.unicode = 0;
-				spLastKeyCountDown = 0;
+				if ( spInput.keyboard.buffer )
+				{
+					spLastKey.unicode = 0;
+					spLastKeyCountDown = 0;
+				}
 				switch ( event.key.keysym.sym )
 				{
 				case SDLK_LEFT:
@@ -1312,13 +1318,13 @@ PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 /* AdvMAME2x
  *   A    --\ 1 2
  * C P B  --/ 3 4
- *   D 
+ *   D
  *  1=P; 2=P; 3=P; 4=P;
  *  IF C==A AND C!=D AND A!=B => 1=A
  *  IF A==B AND A!=C AND B!=D => 2=B
  *  IF B==D AND B!=A AND D!=C => 4=D
  *  IF D==C AND D!=B AND C!=A => 3=C */
-#define spScaleP(x,y) src[x+ y   *src_w] 
+#define spScaleP(x,y) src[x+ y   *src_w]
 #define spScaleA(x,y) src[x+(y-1)*src_w]
 #define spScaleB(x,y) src[(x+1)+y*src_w]
 #define spScaleC(x,y) src[(x-1)+y*src_w]
@@ -1355,52 +1361,52 @@ PREFIX void spScale2XSmooth(SDL_Surface* source,SDL_Surface* destination)
 	int x,y,A,B,C,D,P;
 	//Y=0
 	P = spScaleP(0,0);
-	A = P; B = spScaleB(0,0); C = P; D = spScaleD(0,0); 
+	A = P; B = spScaleB(0,0); C = P; D = spScaleD(0,0);
 	spScalePixel(0,0);
 	for (x = 1; x < src_w-1; x++)
 	{
 		int X = x*2;
 		P = spScaleP(x,0);
-		A = P; B = spScaleB(x,0); C = spScaleC(x,0); D = spScaleD(x,0); 
+		A = P; B = spScaleB(x,0); C = spScaleC(x,0); D = spScaleD(x,0);
 		spScalePixel(X,0);
 	}
 	P = spScaleP((src_w-1),0);
-	A = P; B = P; C = spScaleC((src_w-1),0); D = spScaleD((src_w-1),0); 
-	spScalePixel((src_w-1)*2,0);	
+	A = P; B = P; C = spScaleC((src_w-1),0); D = spScaleD((src_w-1),0);
+	spScalePixel((src_w-1)*2,0);
 
 	//Y=1..n-1
 	for (y = 1; y < source->h-1; y++)
 	{
-		int Y = y*2;		
+		int Y = y*2;
 		P = spScaleP(0,y);
-		A = spScaleA(0,y); B = spScaleB(0,y); C = P; D = spScaleD(0,y); 
+		A = spScaleA(0,y); B = spScaleB(0,y); C = P; D = spScaleD(0,y);
 		spScalePixel(0,Y);
 		for (x = 1; x < src_w-1; x++)
 		{
 			int X = x*2;
 			P = spScaleP(x,y);
-			A = spScaleA(x,y); B = spScaleB(x,y); C = spScaleC(x,y); D = spScaleD(x,y); 
+			A = spScaleA(x,y); B = spScaleB(x,y); C = spScaleC(x,y); D = spScaleD(x,y);
 			spScalePixel(X,Y);
 		}
 		P = spScaleP((src_w-1),y);
-		A = spScaleA((src_w-1),y); B = P; C = spScaleC((src_w-1),y); D = spScaleD((src_w-1),y); 
+		A = spScaleA((src_w-1),y); B = P; C = spScaleC((src_w-1),y); D = spScaleD((src_w-1),y);
 		spScalePixel((src_w-1)*2,Y);
 	}
 	//Y = n
 	P = spScaleP(0,(source->h-1));
-	A = spScaleA(0,(source->h-1)); B = spScaleB(0,(source->h-1)); C = P; D = P; 
+	A = spScaleA(0,(source->h-1)); B = spScaleB(0,(source->h-1)); C = P; D = P;
 	spScalePixel(0,(source->h-1)*2);
 	for (x = 1; x < src_w-1; x++)
 	{
 		int X = x*2;
 		P = spScaleP(x,(source->h-1));
-		A = spScaleA(x,(source->h-1)); B = spScaleB(x,(source->h-1)); C = spScaleC(x,(source->h-1)); D = P; 
+		A = spScaleA(x,(source->h-1)); B = spScaleB(x,(source->h-1)); C = spScaleC(x,(source->h-1)); D = P;
 		spScalePixel(X,(source->h-1)*2);
 	}
 	P = spScaleP((src_w-1),(source->h-1));
-	A = spScaleA((src_w-1),(source->h-1)); B = P; C = spScaleC((src_w-1),(source->h-1)); D = P; 
+	A = spScaleA((src_w-1),(source->h-1)); B = P; C = spScaleC((src_w-1),(source->h-1)); D = P;
 	spScalePixel((src_w-1)*2,(source->h-1)*2);
-	
+
 	SDL_UnlockSurface( source );
 	SDL_UnlockSurface( destination );
 }
@@ -1449,5 +1455,5 @@ PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgrou
 				 (y < surface->h-1 && copyPixel[x+(y+1)*width] != backgroundcolor)))
 			pixel[x+y*width] = borderColor;
 		}
-	SDL_UnlockSurface( surface );	
+	SDL_UnlockSurface( surface );
 }
