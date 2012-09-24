@@ -962,6 +962,8 @@ PREFIX void spStopKeyboardInput( void )
 	spInput.keyboard.len = 0;
 	spInput.keyboard.pos = 0;
 	spInput.keyboard.lastSize = 0;
+	spLastKey.unicode = 0;
+	spLastKeyCountDown = 0;
 	SDL_EnableUNICODE( 0 );
 }
 
