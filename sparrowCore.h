@@ -229,6 +229,7 @@ PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
 PREFIX void spScale2XFast(SDL_Surface* source,SDL_Surface* destination);
 PREFIX void spScale2XSmooth(SDL_Surface* source,SDL_Surface* destination);
 
+/* Adds a border to the surface with the background color backgroundcolor. */
 PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgroundcolor);
 
 #endif

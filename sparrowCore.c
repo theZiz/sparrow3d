@@ -737,7 +737,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 	return result;
 }
 
-
 inline void spUpdateAxis( int axis )
 {
 #ifdef GP2X
