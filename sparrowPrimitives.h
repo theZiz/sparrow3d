@@ -225,8 +225,23 @@ PREFIX void spSetZFar(Sint32 zfar);
 /* Gets the value, to which the zbuffer will be reseted */
 PREFIX Sint32 spGetZFar();
 
+/* Adds a transparent white layer to the target surface. Slow, but
+ * usefull for menu fade in and out */
 PREFIX void spAddWhiteLayer(int alpha);
 
+/* Adds a transparent black layer to the target surface. Slow, but 
+ * usefull for menu fade in and out */
 PREFIX void spAddBlackLayer(int alpha);
+
+/* The following 3 functions set the 64 Bit 8x8 pattern used for
+ * a dirty transparancy effect or scanline simulations. Default is
+ * all bits 1 */
+PREFIX void spSetPattern32(Uint32 first_32_bit,Uint32 last_32_bit);
+PREFIX void spSetPattern64(Uint64 pattern);
+PREFIX void spSetPattern8(Uint8 line1,Uint8 line2,Uint8 line3,Uint8 line4,Uint8 line5,Uint8 line6,Uint8 line7,Uint8 line8);
+
+/* spDeactivatePattern deactivates the pattern. They are reactivated
+ * again with a call of one of the 3 functions above. */
+PREFIX void spDeactivatePattern();
 
 #endif

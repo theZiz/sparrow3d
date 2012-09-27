@@ -23,26 +23,50 @@
  * alternative I used before was massive copy and paste, which is
  * bollocks. */
 
-#ifdef __SPARROW_INTERNAL_ZBOTH__
-	#ifdef __GNUC__
-	inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+#ifdef __SPARROW_INTERNAL_PATTERN__
+	#ifdef __SPARROW_INTERNAL_ZBOTH__
+		#ifdef __GNUC__
+		inline void draw_line_ztest_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+		#endif
+		inline void draw_line_ztest_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+	#elif defined __SPARROW_INTERNAL_ZTEST__
+		#ifdef __GNUC__
+		inline void draw_line_ztest_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+		#endif
+		inline void draw_line_ztest_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+	#elif defined __SPARROW_INTERNAL_ZSET__
+		#ifdef __GNUC__
+		inline void draw_line_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+		#endif
+		inline void draw_line_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+	#else
+		#ifdef __GNUC__
+		inline void draw_line_pattern( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color ) __attribute__((always_inline));
+		#endif
+		inline void draw_line_pattern( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color )
 	#endif
-	inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
-#elif defined __SPARROW_INTERNAL_ZTEST__
-	#ifdef __GNUC__
-	inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
-	#endif
-	inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
-#elif defined __SPARROW_INTERNAL_ZSET__
-	#ifdef __GNUC__
-	inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
-	#endif
-	inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
 #else
-	#ifdef __GNUC__
-	inline void draw_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color ) __attribute__((always_inline));
+	#ifdef __SPARROW_INTERNAL_ZBOTH__
+		#ifdef __GNUC__
+		inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+		#endif
+		inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+	#elif defined __SPARROW_INTERNAL_ZTEST__
+		#ifdef __GNUC__
+		inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+		#endif
+		inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+	#elif defined __SPARROW_INTERNAL_ZSET__
+		#ifdef __GNUC__
+		inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+		#endif
+		inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+	#else
+		#ifdef __GNUC__
+		inline void draw_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color ) __attribute__((always_inline));
+		#endif
+		inline void draw_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color )
 	#endif
-	inline void draw_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color )
 #endif
 {
 	if ( x1 >= spTargetX )
@@ -61,32 +85,63 @@
 	}
 	if ( x2 >= spTargetX )
 		x2 = spTargetX - 1;
-	#ifdef __SPARROW_INTERNAL_ZNOTHING__
-		spHorizentalLine( spTargetPixel, x1, y, x2 - x1, color, 1, spTargetX, spTargetY );
-	#else
+	#ifdef __SPARROW_INTERNAL_PATTERN__
 		int x;
 		for ( x = x1; x <= x2; x++ )
 		{
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				draw_pixel_ztest_zset( x, y, z, color )
+				draw_pixel_ztest_zset_pattern( x, y, z, color )
 			#elif defined __SPARROW_INTERNAL_ZTEST__
-				draw_pixel_ztest( x, y, z, color )
+				draw_pixel_ztest_pattern( x, y, z, color )
 			#elif defined __SPARROW_INTERNAL_ZSET__
-				draw_pixel_zset( x, y, z, color )
+				draw_pixel_zset_pattern( x, y, z, color )
+			#else
+				draw_pixel_pattern( x, y, color )
 			#endif
+			#ifndef __SPARROW_INTERNAL_ZNOTHING__			
 				z += sZ;
+			#endif
 		}
+	#else
+		#ifdef __SPARROW_INTERNAL_ZNOTHING__
+			spHorizentalLine( spTargetPixel, x1, y, x2 - x1, color, 1, spTargetX, spTargetY );
+		#else
+			int x;
+			for ( x = x1; x <= x2; x++ )
+			{
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					draw_pixel_ztest_zset( x, y, z, color )
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					draw_pixel_ztest( x, y, z, color )
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					draw_pixel_zset( x, y, z, color )
+				#endif
+					z += sZ;
+			}
+		#endif
 	#endif
 }
 
-#ifdef __SPARROW_INTERNAL_ZBOTH__
-	inline void sp_intern_Triangle_ztest_zset( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
-#elif defined __SPARROW_INTERNAL_ZTEST__
-	inline void sp_intern_Triangle_ztest( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
-#elif defined __SPARROW_INTERNAL_ZSET__	
-	inline void sp_intern_Triangle_zset( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+#ifdef __SPARROW_INTERNAL_PATTERN__
+	#ifdef __SPARROW_INTERNAL_ZBOTH__
+		inline void sp_intern_Triangle_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+	#elif defined __SPARROW_INTERNAL_ZTEST__
+		inline void sp_intern_Triangle_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#elif defined __SPARROW_INTERNAL_ZSET__	
+		inline void sp_intern_Triangle_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#else
+		inline void sp_intern_Triangle_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#endif
 #else
-	inline void sp_intern_Triangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#ifdef __SPARROW_INTERNAL_ZBOTH__
+		inline void sp_intern_Triangle_ztest_zset( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+	#elif defined __SPARROW_INTERNAL_ZTEST__
+		inline void sp_intern_Triangle_ztest( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#elif defined __SPARROW_INTERNAL_ZSET__	
+		inline void sp_intern_Triangle_zset( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#else
+		inline void sp_intern_Triangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#endif
 #endif
 {
 	int y;
@@ -186,18 +241,34 @@
 			{
 				//if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
 				//  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
-				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					draw_line_ztest_zset( xl >> SP_PRIM_ACCURACY, zl,
-					                      xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
-				#elif defined __SPARROW_INTERNAL_ZTEST__
-					draw_line_ztest( xl >> SP_PRIM_ACCURACY, zl,
-					                 xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
-				#elif defined __SPARROW_INTERNAL_ZSET__	
-					draw_line_zset( xl >> SP_PRIM_ACCURACY, zl,
-					                xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+				#ifdef __SPARROW_INTERNAL_PATTERN__
+					#ifdef __SPARROW_INTERNAL_ZBOTH__
+						draw_line_ztest_zset_pattern( xl >> SP_PRIM_ACCURACY, zl,
+											  xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+					#elif defined __SPARROW_INTERNAL_ZTEST__
+						draw_line_ztest_pattern( xl >> SP_PRIM_ACCURACY, zl,
+										 xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+					#elif defined __SPARROW_INTERNAL_ZSET__	
+						draw_line_zset_pattern( xl >> SP_PRIM_ACCURACY, zl,
+										xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+					#else
+						draw_line_pattern( xl >> SP_PRIM_ACCURACY, 
+								   xr >> SP_PRIM_ACCURACY, y, color);
+					#endif
 				#else
-					draw_line( xl >> SP_PRIM_ACCURACY, 
-					           xr >> SP_PRIM_ACCURACY, y, color);
+					#ifdef __SPARROW_INTERNAL_ZBOTH__
+						draw_line_ztest_zset( xl >> SP_PRIM_ACCURACY, zl,
+											  xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+					#elif defined __SPARROW_INTERNAL_ZTEST__
+						draw_line_ztest( xl >> SP_PRIM_ACCURACY, zl,
+										 xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+					#elif defined __SPARROW_INTERNAL_ZSET__	
+						draw_line_zset( xl >> SP_PRIM_ACCURACY, zl,
+										xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+					#else
+						draw_line( xl >> SP_PRIM_ACCURACY, 
+								   xr >> SP_PRIM_ACCURACY, y, color);
+					#endif
 				#endif
 				xl += sX_l;
 				xr += sX_r;
@@ -222,18 +293,34 @@
 			{
 				//if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
 				//  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
-				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					draw_line_ztest_zset( xr >> SP_PRIM_ACCURACY, zr,
-					                      xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
-				#elif defined __SPARROW_INTERNAL_ZTEST__
-					draw_line_ztest( xr >> SP_PRIM_ACCURACY, zr,
-					                 xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
-				#elif defined __SPARROW_INTERNAL_ZSET__	
-					draw_line_zset( xr >> SP_PRIM_ACCURACY, zr,
-					                xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+				#ifdef __SPARROW_INTERNAL_PATTERN__
+					#ifdef __SPARROW_INTERNAL_ZBOTH__
+						draw_line_ztest_zset_pattern( xr >> SP_PRIM_ACCURACY, zr,
+											  xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+					#elif defined __SPARROW_INTERNAL_ZTEST__
+						draw_line_ztest_pattern( xr >> SP_PRIM_ACCURACY, zr,
+										 xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+					#elif defined __SPARROW_INTERNAL_ZSET__	
+						draw_line_zset_pattern( xr >> SP_PRIM_ACCURACY, zr,
+										xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+					#else
+						draw_line_pattern( xr >> SP_PRIM_ACCURACY, 
+								   xl >> SP_PRIM_ACCURACY, y, color);
+					#endif
 				#else
-					draw_line( xr >> SP_PRIM_ACCURACY, 
-					           xl >> SP_PRIM_ACCURACY, y, color);
+					#ifdef __SPARROW_INTERNAL_ZBOTH__
+						draw_line_ztest_zset( xr >> SP_PRIM_ACCURACY, zr,
+											  xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+					#elif defined __SPARROW_INTERNAL_ZTEST__
+						draw_line_ztest( xr >> SP_PRIM_ACCURACY, zr,
+										 xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+					#elif defined __SPARROW_INTERNAL_ZSET__	
+						draw_line_zset( xr >> SP_PRIM_ACCURACY, zr,
+										xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+					#else
+						draw_line( xr >> SP_PRIM_ACCURACY, 
+								   xl >> SP_PRIM_ACCURACY, y, color);
+					#endif
 				#endif
 				xl += sX_l;
 				xr += sX_r;
@@ -290,18 +377,34 @@
 		{
 			//if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
 			//  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
-			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				draw_line_ztest_zset( xl >> SP_PRIM_ACCURACY, zl,
-									  xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
-			#elif defined __SPARROW_INTERNAL_ZTEST__
-				draw_line_ztest( xl >> SP_PRIM_ACCURACY, zl,
-								 xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
-			#elif defined __SPARROW_INTERNAL_ZSET__	
-				draw_line_zset( xl >> SP_PRIM_ACCURACY, zl,
-								xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+			#ifdef __SPARROW_INTERNAL_PATTERN__
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					draw_line_ztest_zset_pattern( xl >> SP_PRIM_ACCURACY, zl,
+										  xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					draw_line_ztest_pattern( xl >> SP_PRIM_ACCURACY, zl,
+									 xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+				#elif defined __SPARROW_INTERNAL_ZSET__	
+					draw_line_zset_pattern( xl >> SP_PRIM_ACCURACY, zl,
+									xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+				#else
+					draw_line_pattern( xl >> SP_PRIM_ACCURACY, 
+							   xr >> SP_PRIM_ACCURACY, y, color);
+				#endif
 			#else
-				draw_line( xl >> SP_PRIM_ACCURACY, 
-						   xr >> SP_PRIM_ACCURACY, y, color);
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					draw_line_ztest_zset( xl >> SP_PRIM_ACCURACY, zl,
+										  xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					draw_line_ztest( xl >> SP_PRIM_ACCURACY, zl,
+									 xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+				#elif defined __SPARROW_INTERNAL_ZSET__	
+					draw_line_zset( xl >> SP_PRIM_ACCURACY, zl,
+									xr >> SP_PRIM_ACCURACY, zr, y, color, sZ );
+				#else
+					draw_line( xl >> SP_PRIM_ACCURACY, 
+							   xr >> SP_PRIM_ACCURACY, y, color);
+				#endif
 			#endif
 			xl += sX_l;
 			xr += sX_r;
@@ -326,18 +429,34 @@
 		{
 			//if ((xl-xr>>SP_PRIM_ACCURACY)!=0)
 			//  sZ = z_div(zl-zr,xl-xr>>SP_PRIM_ACCURACY);
-			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				draw_line_ztest_zset( xr >> SP_PRIM_ACCURACY, zr,
-									  xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
-			#elif defined __SPARROW_INTERNAL_ZTEST__
-				draw_line_ztest( xr >> SP_PRIM_ACCURACY, zr,
-								 xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
-			#elif defined __SPARROW_INTERNAL_ZSET__	
-				draw_line_zset( xr >> SP_PRIM_ACCURACY, zr,
-								xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+			#ifdef __SPARROW_INTERNAL_PATTERN__
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					draw_line_ztest_zset_pattern( xr >> SP_PRIM_ACCURACY, zr,
+										  xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					draw_line_ztest_pattern( xr >> SP_PRIM_ACCURACY, zr,
+									 xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+				#elif defined __SPARROW_INTERNAL_ZSET__	
+					draw_line_zset_pattern( xr >> SP_PRIM_ACCURACY, zr,
+									xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+				#else
+					draw_line_pattern( xr >> SP_PRIM_ACCURACY, 
+							   xl >> SP_PRIM_ACCURACY, y, color);
+				#endif
 			#else
-				draw_line( xr >> SP_PRIM_ACCURACY, 
-						   xl >> SP_PRIM_ACCURACY, y, color);
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					draw_line_ztest_zset( xr >> SP_PRIM_ACCURACY, zr,
+										  xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					draw_line_ztest( xr >> SP_PRIM_ACCURACY, zr,
+									 xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+				#elif defined __SPARROW_INTERNAL_ZSET__	
+					draw_line_zset( xr >> SP_PRIM_ACCURACY, zr,
+									xl >> SP_PRIM_ACCURACY, zl, y, color, sZ );
+				#else
+					draw_line( xr >> SP_PRIM_ACCURACY, 
+							   xl >> SP_PRIM_ACCURACY, y, color);
+				#endif
 			#endif
 			xl += sX_l;
 			xr += sX_r;

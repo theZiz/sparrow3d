@@ -1,9 +1,25 @@
 Roadmap til next version (tag):
-- adding a virtual keyboard
+- Graphics:
+	- Possibility to define a 8x8 pattern with a 64 bit or two 32 bit
+	  numbers. Not set bits will NOT be drawn. Useful for lineskip stuff
+	  or alpha simulation
+	- a function, which returns one pattern for every alpha value from
+	  0 to 255.
+	- Implementing the pattern stuff. XD
+	  + flat 
+	  + texture
+	  + texture alpha
+	  - line
+	  - rectangles
+	  - ellipses
+	  - blit
+- Input:
+	- adding a virtual keyboard
+	- third device layer
+	- Changing the buttons on PC.
+
 
 general Roadmap:
-- third device layer
-- Changing the button on PC.
 - sparrowFont additional or own part, which allows to draw blocked text
   (e.g. text from sparrowText ;-) )
 - Network
