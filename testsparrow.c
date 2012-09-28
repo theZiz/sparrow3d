@@ -234,9 +234,30 @@ void draw_test( void )
 		break;
 	case 0:
 		spSetAlphaTest( 0 );
-		/*spSetPattern32(0b11001100001100111100110000110011,
-		               0b11001100001100111100110000110011);*/
-		//spSetPattern64(0b1100110000110011110011000011001111001100001100111100110000110011);
+		/*spSetPattern8(0b10101010,
+		              0b11011101,
+		              0b10101010,
+		              0b01010101,
+		              0b10101010,
+		              0b11011101,
+		              0b10101010,
+		              0b01010101);*/
+		spSetPattern8(170,//0b10101010, //0b doesn't work with older gcc versions
+		               85,//0b01010101,
+		              170,//0b10101010,
+		               85,//0b01010101,
+		              170,//0b10101010,
+		               85,//0b01010101,
+		              170,//0b10101010,
+		               85);//0b01010101);
+		/*spSetPattern8(0b11111111,
+		              0b11000111,
+		              0b10111011,
+		              0b01101101,
+		              0b01010101,
+		              0b01101101,
+		              0b10111011,
+		              0b11000111);*/
 		spTranslate( spSin( rotation / 3 ), spSin( rotation / 5 ), ( -7 << SP_ACCURACY ) );
 		spRotateX( rotation );
 		spRotateY( rotation );
@@ -282,7 +303,7 @@ void draw_test( void )
 					 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, garfield->w - 1, 0,
 					 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, garfield->h - 1, color6 );
 					 
-		//spDeactivatePattern();
+		spDeactivatePattern();
 		//Front / Back
 		spTranslate( -3 << SP_ACCURACY, 0, 0 );
 		spQuad3D( -SP_ONE, SP_ONE, SP_ONE,
@@ -495,15 +516,6 @@ int main( int argc, char **argv )
 	screen = spCreateDefaultWindow();
 	spSelectRenderTarget(screen);
 	resize( screen->w, screen->h );
-		spSetPattern8(0b11001100,
-		              0b00110011,
-		              0b11001100,
-		              0b00110011,
-		              0b11001100,
-		              0b00110011,
-		              0b11001100,
-		              0b00110011);
-
 	//Textures loading
 	garfield = spLoadSurface( "./data/garfield.png" );
 	pepper = spLoadSurface( "./data/pepper.png" );
