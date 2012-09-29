@@ -244,4 +244,18 @@ PREFIX void spSetPattern8(Uint8 line1,Uint8 line2,Uint8 line3,Uint8 line4,Uint8 
  * again with a call of one of the 3 functions above. */
 PREFIX void spDeactivatePattern();
 
+/* Sets the pattern in dependence of an alpha value to "emulate" alpha blending.
+ * The shift shifts the whole pattern. But keep one problem in mind: Two
+ * primitives drawn with the same pattern (== same alpha and shift value) will
+ * cover each other, because exactly the same pixel will not be drawn. Solution:
+ * Using alpha simulation just a bit, using very different alpha values for
+ * covering primitives or using different shift values for every primitive.
+ * alpha goes from 0 to 255, shift from 0 to 63.*/
+PREFIX void spSetAlphaPattern(int alpha,int shift);
+
+/* Works pretty like spSetAlphaPattern, but it uses 4x4 pattern internal. So
+ * there are only 16 different "alpha values", but it looks better most of
+ * the time. (And I think it is faster, too.) shift goes only from 0 to 15!*/
+PREFIX void spSetAlphaPattern4x4(int alpha,int shift);
+
 #endif

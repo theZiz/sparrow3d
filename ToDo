@@ -1,6 +1,4 @@
 Roadmap til next version (tag):
-- Graphics:
-	- a function, which returns a pattern for every alpha value from 0 to 255.
 - Input:
 	- adding a virtual keyboard
 	- third device layer

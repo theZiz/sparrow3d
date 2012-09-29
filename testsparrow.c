@@ -250,6 +250,7 @@ void draw_test( void )
 		               85,//0b01010101,
 		              170,//0b10101010,
 		               85);//0b01010101);
+		spSetAlphaPattern4x4((spSin(rotation) + SP_ONE) / 512 % 512,0);
 		/*spSetPattern8(0b11111111,
 		              0b11000111,
 		              0b10111011,
@@ -303,7 +304,7 @@ void draw_test( void )
 					 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, garfield->w - 1, 0,
 					 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, garfield->h - 1, color6 );
 					 
-		spDeactivatePattern();
+		spSetAlphaPattern4x4((spSin(rotation) + SP_ONE) / 512 % 512,8);
 		//Front / Back
 		spTranslate( -3 << SP_ACCURACY, 0, 0 );
 		spQuad3D( -SP_ONE, SP_ONE, SP_ONE,
@@ -332,6 +333,7 @@ void draw_test( void )
 				  -SP_ONE, -SP_ONE, -SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
 				  SP_ONE, -SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
+		spDeactivatePattern();
 		break;
 	}
 	spSetZSet( 0 );

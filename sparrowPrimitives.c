@@ -4319,3 +4319,161 @@ PREFIX void spDeactivatePattern()
 {
 	spUsePattern = 0;
 }
+
+PREFIX void spSetAlphaPattern(int alpha,int shift)
+{
+	alpha = alpha + 3 >> 2; //alpha = (alpha+3) / 4;
+	//now alpha is the count of bits, that should be set.
+	int pos = shift & 63; //pos = shift % 64;
+	int x,y;
+	int lastPos = -1;
+	int addend = alpha;
+	for (y = 0; y < 8; y++)
+	{
+		if (lastPos == pos)
+		{
+			pos+=addend;
+			addend = -addend;
+		}
+		lastPos = pos;
+		spPattern[y] = 0;
+		for (x = 0; x < 8; x++)
+		{
+			pos += alpha;
+			if (pos >= 64)
+			{
+				pos &= 63; //pos = pos % 64;
+				spPattern[y] |= 1 << x; //Setting bit
+			}
+		}
+	}
+}
+
+#define ringshift(left,shift) ((left << shift) | (left >> 32-shift))
+
+PREFIX void spSetAlphaPattern4x4(int alpha,int shift)
+{
+	alpha = alpha + 3 >> 4; //alpha = (alpha+3) / 16;
+	//now alpha is the count of bits, that should be set.
+	Uint32 left;
+	switch (alpha)
+	{
+		case 0:
+			left = 0;
+			break;
+		case 1:
+			/* 0000 0000
+			 * 0100 0100
+			 * 0000 0000
+			 * 0000 0000 */
+			left = 4456448;
+			break;
+		case 2:
+			/* 0000 0000
+			 * 0100 0100
+			 * 0000 0000
+			 * 0001 0001 */
+			left = 4456465;
+			break;
+		case 3:
+			/* 0000 0000
+			 * 0100 0100
+			 * 0000 0000
+			 * 0101 0101 */
+			left = 4456533;
+			break;
+		case 4:
+			/* 0000 0000
+			 * 0101 0101
+			 * 0000 0000
+			 * 0101 0101 */
+			left = 5570645;
+			break;
+		case 5:
+			/* 1000 1000
+			 * 0101 0101
+			 * 0000 0000
+			 * 0101 0101 */
+			left = 2287272021;
+			break;
+		case 6:
+			/* 1000 1000
+			 * 0101 0101
+			 * 0010 0010
+			 * 0101 0101 */
+			left = 2287280725;
+			break;
+		case 7:
+			/* 1000 1000
+			 * 0101 0101
+			 * 1010 1010
+			 * 0101 0101 */
+			left = 2287315541;
+			break;
+		case 8:
+			/* 1010 1010
+			 * 0101 0101
+			 * 1010 1010
+			 * 0101 0101 */
+			left = 2857740885;
+			break;
+		case 9:
+			/* 1010 1010
+			 * 0101 0101
+			 * 1110 1110
+			 * 0101 0101 */
+			left = 2857758293;
+			break;
+		case 10:
+			/* 1011 1011
+			 * 0101 0101
+			 * 1110 1110
+			 * 0101 0101 */
+			left = 3142970965;
+			break;
+		case 11:
+			/* 1011 1011
+			 * 0101 0101
+			 * 1111 1111
+			 * 0101 0101 */
+			left = 3142975317;
+			break;
+		case 12:
+			/* 1111 1111
+			 * 0101 0101
+			 * 1111 1111
+			 * 0101 0101 */
+			left = 4283826005;
+			break;
+		case 13:
+			/* 1111 1111
+			 * 0101 0101
+			 * 1111 1111
+			 * 1101 1101 */
+			left = 4283826141;
+			break;
+		case 14:
+			/* 1111 1111
+			 * 0111 0111
+			 * 1111 1111
+			 * 1101 1101 */
+			left = 4286054365;
+			break;
+		case 15:
+			/* 1111 1111
+			 * 0111 0111
+			 * 1111 1111
+			 * 1111 1111 */
+			left = 4286054399;
+		case 16:
+			/* 1111 1111
+			 * 1111 1111
+			 * 1111 1111
+			 * 1111 1111 */
+			left = 4294967295;
+			break;
+	}
+	shift = shift & 15;
+	left = ringshift(left,shift);
+	spSetPattern32(left,left);
+}
