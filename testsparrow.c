@@ -250,7 +250,7 @@ void draw_test( void )
 		               85,//0b01010101,
 		              170,//0b10101010,
 		               85);//0b01010101);
-		spSetAlphaPattern4x4((spSin(rotation) + SP_ONE) / 512 % 512,0);
+		spSetAlphaPattern4x4(127,0);
 		/*spSetPattern8(0b11111111,
 		              0b11000111,
 		              0b10111011,
