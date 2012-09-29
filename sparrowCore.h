@@ -250,7 +250,7 @@ PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgrou
  * You have to add a design, if you want to show something! The keyboard reacts
  * to input, too, if you don't pass something, but if you don't draw anything
  * nothing will be seeable... A reference design with the exact position of the
- * buttons is in the sparrow3d folder in data named "keyboard.png". This file
+ * buttons is in the sparrow3d folder in data named "keyboard.xcf". This file
  * is public domain. Use it, how ever you want. Internal a copy of the design
  * with this size (x,y) will be saved, so you can free the surface afterwars.
  * However don't forget to recall this function on resize. After that you can
