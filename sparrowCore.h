@@ -50,6 +50,11 @@
 #define SP_KEYBOARD_FIRST_WAIT 600
 #define SP_KEYBOARD_WAIT 100
 
+#define SP_VIRTUAL_KEYBOARD_NEVER 0
+#define SP_VIRTUAL_KEYBOARD_IF_NEEDED 1
+#define SP_VIRTUAL_KEYBOARD_ALWAYS_NOKEYBOARD 2
+#define SP_VIRTUAL_KEYBOARD_ALWAYS 3
+
 /* This struct contains information about the generic input device
  * sparrowCore provides, which is same on EVERY target */
 typedef struct SspInput *PspInput;
@@ -231,5 +236,30 @@ PREFIX void spScale2XSmooth(SDL_Surface* source,SDL_Surface* destination);
 
 /* Adds a border to the surface with the background color backgroundcolor. */
 PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgroundcolor);
+
+/* Sets up a virtual keyboard especially for systems without a keyboard like the
+ * gp2x, caanoo, etc. The keyboard uses the input devices for input. Only if
+ * Keyboard input is pulled, the keyboard is useable! state can be
+ * SP_VIRTUAL_KEYBOARD_NEVER = never showed. Default.
+ * SP_VIRTUAL_KEYBOARD_IF_NEEDED = Showed if keyboard input is polled on system
+ * without a hardware keyboard.
+ * SP_VIRTUAL_KEYBOARD_ALWAYS_NOKEYBOARD = Always showed on systems without a
+ * hardware keyboard.
+ * SP_VIRTUAL_KEYBOARD_ALWAYS = Always shown. Makes not much sense on systems
+ * with a hardware keyboard, but useful for developing and testing.
+ * You have to add a design, if you want to show something! The keyboard reacts
+ * to input, too, if you don't pass something, but if you don't draw anything
+ * nothing will be seeable... A reference design with the exact position of the
+ * buttons is in the sparrow3d folder in data named "keyboard.png". This file
+ * is public domain. Use it, how ever you want. Internal a copy of the design
+ * with this size (x,y) will be saved, so you can free the surface afterwars.
+ * However don't forget to recall this function on resize. After that you can
+ * use spGetVirtualKeyboard to get a SDL_Surface with the size (x,y), which
+ * can be drawn by you.*/
+PREFIX void spSetVirtualKeyboard(int state,int x,int y,SDL_Surface* design);
+
+/* This functions returns the precalculated and prescaled keyboard design.
+ * Returns 0, if the virtual keyboard is deactivated or not surface was passed*/
+PREFIX SDL_Surface* spGetVirtualKeyboard();
 
 #endif
