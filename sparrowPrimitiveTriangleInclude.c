@@ -104,7 +104,7 @@
 		}
 	#else
 		#ifdef __SPARROW_INTERNAL_ZNOTHING__
-			spHorizentalLine( spTargetPixel, x1, y, x2 - x1, color, 1, spTargetX, spTargetY );
+			spHorizentalLine( spTargetPixel, x1, y, x2 - x1, color, 1, spTargetScanLine, spTargetY );
 		#else
 			int x;
 			for ( x = x1; x <= x2; x++ )
