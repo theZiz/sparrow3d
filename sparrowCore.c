@@ -212,7 +212,7 @@ PREFIX SDL_Surface* spCreateWindow( int width, int height, int fullscreen, int a
 
 PREFIX SDL_Surface* spCreateDefaultWindow( void )
 {
-	#ifdef DX86CPU
+	#ifdef X86CPU
 		return spCreateWindow( 0, 0, 0, 1 );
 	#else
 		return spCreateWindow( 0, 0, 1, 1 );
