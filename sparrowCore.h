@@ -265,9 +265,9 @@ PREFIX void spSetVirtualKeyboard(int state,int x,int y,SDL_Surface* design);
  * Returns 0, if the virtual keyboard is deactivated or not surface was passed*/
 PREFIX SDL_Surface* spGetVirtualKeyboard();
 
-/* spIsInputLocked says, whether the input is locked by the virtual keyboard or
- * another process. However, the input data is still set to the generic input
- * device. It is up to you the check and ignore the data! */
-PREFIX spIsInputLocked();
+/* spIsInputLocked says, whether the input is locked by the virtual keyboard.
+ * However, the input data is still set to the generic input device. It is up to
+ * you the check and ignore the data! */
+PREFIX int spIsInputLocked();
 
 #endif

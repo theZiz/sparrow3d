@@ -1528,7 +1528,7 @@ PREFIX SDL_Surface* spGetVirtualKeyboard()
 	return spVirtualKeyboard;
 }
 
-PREFIX spIsInputLocked()
+PREFIX int spIsInputLocked()
 {
 	return spLockAll;
 }
