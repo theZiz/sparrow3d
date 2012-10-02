@@ -219,6 +219,12 @@ PREFIX void spSetHorizontalOrigin( Sint32 origin );
  * Possible is: SP_TOP, SP_BOTTOM and SP_CENTER. SP_CENTER is default*/
 PREFIX void spSetVerticalOrigin( Sint32 origin );
 
+/* Returns the horizontal origin */
+PREFIX Sint32 spGetHorizontalOrigin();
+
+/* Returns the vertical origin */
+PREFIX Sint32 spGetVerticalOrigin();
+
 /* Sets the value, to which the zbuffer will be reseted */
 PREFIX void spSetZFar(Sint32 zfar);
 

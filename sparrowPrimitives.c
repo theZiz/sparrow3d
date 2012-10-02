@@ -4211,6 +4211,17 @@ PREFIX void spSetVerticalOrigin( Sint32 origin )
 	spVerticalOrigin = origin;
 }
 
+PREFIX Sint32 spGetHorizontalOrigin()
+{
+	return spHorizontalOrigin;
+}
+
+PREFIX Sint32 spGetVerticalOrigin()
+{
+	return spVerticalOrigin;
+}
+
+
 PREFIX void spSetZFar(Sint32 zfar)
 {
 	spZFar = -zfar;

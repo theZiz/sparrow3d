@@ -44,6 +44,10 @@ int sp_touchscreen_dx;
 int sp_touchscreen_dy;
 char sp_caching = 1;
 int sp_axis_was_used[SP_INPUT_AXIS_COUNT];
+SDL_Surface* spVirtualKeyboard = NULL;
+int spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_NEVER;
+int spLockAll = 0;
+
 
 typedef struct sp_cache_struct *sp_cache_pointer;
 typedef struct sp_cache_struct {
@@ -125,7 +129,6 @@ PREFIX void spInitCore( void )
 	spInput.touchscreen.x = 0;
 	spInput.touchscreen.y = 0;
 	spInput.keyboard.buffer = NULL;
-	spInput.keyboard.filter = NULL;
 	spInput.keyboard.len = 0;
 	spInput.keyboard.pos = 0;
 	spInput.keyboard.lastSize = 0;
@@ -738,6 +741,11 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 	spInput.button[SP_BUTTON_VOLPLUS] = 0;
 	spInput.button[SP_BUTTON_VOLMINUS] = 0;
 #endif
+	if (spInput.keyboard.buffer && spLockAll && spInput.button[SP_BUTTON_START])
+	{
+		spInput.button[SP_BUTTON_START] = 0;
+		spStopKeyboardInput();
+	}
 	return result;
 }
 
@@ -936,15 +944,18 @@ PREFIX void spResetAxisState( void )
 	}
 }
 
-PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, char *filter )
+PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, int lockAll )
 {
 	if ( bufferSize > 0 )
 	{
 		spInput.keyboard.buffer = buffer;
-		spInput.keyboard.filter = filter;
 		spInput.keyboard.len = bufferSize;
 		spInput.keyboard.pos = strlen( buffer );
 		spInput.keyboard.lastSize = 0;
+		if (spVirtualKeyboardState != SP_VIRTUAL_KEYBOARD_NEVER)
+			spLockAll = 1;
+		else
+			spLockAll = lockAll;
 		SDL_EnableUNICODE( 1 );
 	}
 	else
@@ -956,7 +967,7 @@ PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, char *filter )
 PREFIX void spStopKeyboardInput( void )
 {
 	spInput.keyboard.buffer = NULL;
-	spInput.keyboard.filter = NULL;
+	spLockAll = 0;
 	spInput.keyboard.len = 0;
 	spInput.keyboard.pos = 0;
 	spInput.keyboard.lastSize = 0;
@@ -1456,4 +1467,68 @@ PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgrou
 			pixel[x+y*width] = borderColor;
 		}
 	SDL_UnlockSurface( surface );
+}
+
+PREFIX void spSetVirtualKeyboard(int state,int x,int y,SDL_Surface* design)
+{
+	spVirtualKeyboardState = state;
+	if (spVirtualKeyboard)
+		spDeleteSurface(spVirtualKeyboard);
+	if (design == NULL)
+	{
+		spVirtualKeyboard = design;
+		return;
+	}
+	spVirtualKeyboard = spCreateSurface(x,y);
+	SDL_LockSurface(design);
+	SDL_LockSurface(spVirtualKeyboard);
+	Uint16* des = (Uint16*)design->pixels;
+	Uint16* vir = (Uint16*)spVirtualKeyboard->pixels;
+	int design_w = (design->w/21)*20;
+	Sint32 add_x = (design_w  << SP_ACCURACY)/x;
+	Sint32 add_y = (design->h << SP_ACCURACY)/y;
+	int u,v;
+	Sint32 X,Y=0;
+	Sint32 vir_m = spVirtualKeyboard->pitch/spVirtualKeyboard->format->BytesPerPixel;
+	Sint32 des_m = design->pitch/design->format->BytesPerPixel;
+	for (v = 0; v < y; v++)
+	{
+		X = 0;
+		for (u = 0; u < x; u++)
+		{
+			vir[u+v*vir_m] = des[(X>>SP_ACCURACY)+(Y>>SP_ACCURACY)*des_m];
+			X+=add_x;
+		}
+		Y+=add_y;
+	}
+
+
+	SDL_UnlockSurface(design);
+	SDL_UnlockSurface(spVirtualKeyboard);
+	/*SDL_Surface *oldTarget = spGetRenderTarget();
+	spSelectRenderTarget(spVirtualKeyboard);
+	
+	Sint32 vert = spGetVerticalOrigin();
+	Sint32 hori = spGetHorizontalOrigin();
+	spSetVerticalOrigin(SP_TOP);
+	spSetHorizontalOrigin(SP_LEFT);
+	spSetZSet(0);
+	spSetZTest(0);
+	int design_w = (design->w/21)*20;
+	spRotozoomSurfacePart(0,0,0,design,0,0,design_w,design->h,(x<<SP_ACCURACY)/design_w,(y<<SP_ACCURACY)/design->h,0);
+	
+	spSetVerticalOrigin(vert);
+	spSetHorizontalOrigin(hori);
+	if (oldTarget)
+		spSelectRenderTarget(oldTarget);*/
+}
+
+PREFIX SDL_Surface* spGetVirtualKeyboard()
+{
+	return spVirtualKeyboard;
+}
+
+PREFIX spIsInputLocked()
+{
+	return spLockAll;
 }

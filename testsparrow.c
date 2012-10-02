@@ -382,10 +382,14 @@ void draw_test( void )
 		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set Off [Y]", font );
 
 	sprintf( buffer, "%02i:%02i", divisor / 60000, ( divisor / 1000 ) % 60 );
-	spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, buffer, font );
+	//spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, buffer, font );
 	sprintf( buffer, "fps: %i", spGetFPS() );
 	spFontDrawMiddle( screen->w/2, 1, -1, buffer, font );
-	spFontDrawRight( screen->w - 2, screen->h - font->maxheight, -1, "[S] Exit", font );
+	if (spIsInputLocked())
+		spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, "[S] Finish Text", font );
+	else
+		spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, "[S] Enter Text", font );
+	spFontDrawRight( screen->w - 2, screen->h - font->maxheight, -1, "[E] Exit", font );
 	char utf8buffer[5];
 	sprintf(buffer,"Pressing \"%s\"",spFontGetUTF8FromUnicode(lastKey,utf8buffer,5));
 	if (lastKey)
@@ -430,6 +434,8 @@ void draw_test( void )
 		sprintf(buffer,"%sv",buffer);
 	}	
 	spFontDraw( 2, font->maxheight*2, -1, buffer, font );
+	if (spIsInputLocked())
+		spBlitSurface(screen->w/2,screen->h-spGetVirtualKeyboard()->h/2,0,spGetVirtualKeyboard());
 	spFlip();
 }
 
@@ -447,6 +453,9 @@ int calc_test( Uint32 steps )
 		//return 1;
 	}
 	rotation += steps << SP_ACCURACY - 11;
+	
+	if ( spIsInputLocked())
+		return 0;
 	if ( spGetInput()->button[SP_BUTTON_A] )
 	{
 		spGetInput()->button[SP_BUTTON_A] = 0;
@@ -467,13 +476,29 @@ int calc_test( Uint32 steps )
 		spGetInput()->button[SP_BUTTON_Y] = 0;
 		zStuff = 1 - zStuff;
 	}
-	if ( spGetInput()->button[SP_BUTTON_START] )
+	if ( spGetInput()->button[SP_BUTTON_SELECT] )
 		return 1;
+	if ( spGetInput()->button[SP_BUTTON_START] )
+	{
+		spGetInput()->button[SP_BUTTON_START] = 0;
+		spPollKeyboardInput(input,32,1);
+	}
+
 	return 0;
 }
 
 void resize( Uint16 w, Uint16 h )
 {
+	//Settings up the onboard keyboard:
+	if (spGetSizeFactor() <= SP_ONE)
+		spSetVirtualKeyboard(SP_VIRTUAL_KEYBOARD_IF_NEEDED,w,w*48/320,spLoadSurface("./data/keyboard320.png"));
+	else
+	if (spGetSizeFactor() <= 2*SP_ONE)
+		spSetVirtualKeyboard(SP_VIRTUAL_KEYBOARD_IF_NEEDED,w,w*48/320,spLoadSurface("./data/keyboard640.png"));
+	else
+		spSetVirtualKeyboard(SP_VIRTUAL_KEYBOARD_IF_NEEDED,w,w*48/320,spLoadSurface("./data/keyboard1280.png"));
+	
+	
 	//Setup of the new/resized window
 	spSetPerspective( 50.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 0.1, 100 );
 
@@ -535,9 +560,6 @@ int main( int argc, char **argv )
 	sprite = spNewSprite(NULL);
 	spNewSubSpriteTilingRow( sprite, scientist, 1, 1, 22, 46, 24, 48, 9 ,100);
 	//spNewSubSpriteWithTiling(sprite,scientist,0,0,32,48,100);
-
-	//TODO: This should do sparrow3d ;-)
-	spPollKeyboardInput(input,32,NULL);
 
 	//All glory the main loop
 	spLoop( draw_test, calc_test, 10, resize, eventHandling );

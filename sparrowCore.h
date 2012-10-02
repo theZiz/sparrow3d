@@ -52,8 +52,7 @@
 
 #define SP_VIRTUAL_KEYBOARD_NEVER 0
 #define SP_VIRTUAL_KEYBOARD_IF_NEEDED 1
-#define SP_VIRTUAL_KEYBOARD_ALWAYS_NOKEYBOARD 2
-#define SP_VIRTUAL_KEYBOARD_ALWAYS 3
+#define SP_VIRTUAL_KEYBOARD_ALWAYS 2
 
 /* This struct contains information about the generic input device
  * sparrowCore provides, which is same on EVERY target */
@@ -80,7 +79,6 @@ typedef struct SspInput
 	struct {int pressed,x,y;} touchscreen;
 	struct {
 		char *buffer; //buffer, where the input goes into
-		char *filter; //filter, which signs are allowed (not implemented yet)
 		int pos,len,lastSize; //some internal variables about the input. Do not change!
 	} keyboard;
 	/* These analog axis is the SAME like above, but with more different states
@@ -138,15 +136,18 @@ PREFIX void spResetAxisState( void );
 /* Prints all following keyboard input (that is numbers, letters and symbols)
  * into the passed buffer.
  * buffersize sets the maximum size of the passed buffer
- * filter is a group of characters allowed for printing (so only chars in there
- * will be passed to the buffer) - NOT IMPLEMENTED YET!
+ * lockAll determines, whether all your keys should looked. Only Start will still
+ * work (on PC "Return") and end the text polling automaticly. If a virtual
+ * keyboard is activated, lockAll is always set to 1 internal. However: Your
+ * still get the button and axis movementes! You have to check for lockAll with
+ * spIsInputLocked() yourself!
  * Unicode might be used when necessary, your current locale will also be used.
  * This function does not halt execution, rather the buffer is filled over the
  * next frames until it is full or polling is stopped.
  * Only backspace is allowed for editing.
  * On devices without a physical keyboard you have to make sure to show some
  * kind of on-screen keyboard allowing for input. */
-PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, char *filter );
+PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, int lockAll);
 
 /* Stops keyboard input. Any input following this call will not be passed to a
  * buffer, rather will be ignored.
@@ -240,13 +241,12 @@ PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgrou
 /* Sets up a virtual keyboard especially for systems without a keyboard like the
  * gp2x, caanoo, etc. The keyboard uses the input devices for input. Only if
  * Keyboard input is pulled, the keyboard is useable! state can be
- * SP_VIRTUAL_KEYBOARD_NEVER = never showed. Default.
- * SP_VIRTUAL_KEYBOARD_IF_NEEDED = Showed if keyboard input is polled on system
+ * SP_VIRTUAL_KEYBOARD_NEVER = never used. Default.
+ * SP_VIRTUAL_KEYBOARD_IF_NEEDED = Used if keyboard input is polled on system
  * without a hardware keyboard.
- * SP_VIRTUAL_KEYBOARD_ALWAYS_NOKEYBOARD = Always showed on systems without a
- * hardware keyboard.
- * SP_VIRTUAL_KEYBOARD_ALWAYS = Always shown. Makes not much sense on systems
- * with a hardware keyboard, but useful for developing and testing.
+ * SP_VIRTUAL_KEYBOARD_ALWAYS = Always used if need. Even on system with
+ * hardware keyboards. Makes not much sense on systems with a hardware keyboard,
+ * but useful for developing and testing.
  * You have to add a design, if you want to show something! The keyboard reacts
  * to input, too, if you don't pass something, but if you don't draw anything
  * nothing will be seeable... A reference design with the exact position of the
@@ -255,11 +255,19 @@ PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgrou
  * with this size (x,y) will be saved, so you can free the surface afterwars.
  * However don't forget to recall this function on resize. After that you can
  * use spGetVirtualKeyboard to get a SDL_Surface with the size (x,y), which
- * can be drawn by you.*/
+ * can be drawn by you. All button input will be used for entering something if
+ * spPollKeyboardInput is activated and nothing will be responsed to your
+ * application. With pressing "Start" or the return key on the virtual keyboard
+ * spStopKeyboardInput will be called and you get back control.*/
 PREFIX void spSetVirtualKeyboard(int state,int x,int y,SDL_Surface* design);
 
 /* This functions returns the precalculated and prescaled keyboard design.
  * Returns 0, if the virtual keyboard is deactivated or not surface was passed*/
 PREFIX SDL_Surface* spGetVirtualKeyboard();
+
+/* spIsInputLocked says, whether the input is locked by the virtual keyboard or
+ * another process. However, the input data is still set to the generic input
+ * device. It is up to you the check and ignore the data! */
+PREFIX spIsInputLocked();
 
 #endif

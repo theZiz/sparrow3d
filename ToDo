@@ -1,10 +1,13 @@
 Roadmap til next version (tag):
 - Input:
 	- adding a virtual keyboard
-	- third device layer
-	- Changing the buttons on PC.
+		+ showing
+		- input with hardware buttons / axis
+		- input with touchscreen
 
 general Roadmap:
+- third device layer
+- Changing the buttons on PC.
 - sparrowFont additional or own part, which allows to draw blocked text
   (e.g. text from sparrowText ;-) )
 - Network
