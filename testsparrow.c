@@ -385,7 +385,7 @@ void draw_test( void )
 	//spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, buffer, font );
 	sprintf( buffer, "fps: %i", spGetFPS() );
 	spFontDrawMiddle( screen->w/2, 1, -1, buffer, font );
-	if (spIsInputLocked())
+	if (spIsKeyboardPolled())
 		spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, "[S] Finish Text", font );
 	else
 		spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, "[S] Enter Text", font );
@@ -434,7 +434,7 @@ void draw_test( void )
 		sprintf(buffer,"%sv",buffer);
 	}	
 	spFontDraw( 2, font->maxheight*2, -1, buffer, font );
-	if (spIsInputLocked())
+	if (spIsKeyboardPolled())
 		spBlitSurface(screen->w/2,screen->h-spGetVirtualKeyboard()->h/2,0,spGetVirtualKeyboard());
 	spFlip();
 }
@@ -454,8 +454,15 @@ int calc_test( Uint32 steps )
 	}
 	rotation += steps << SP_ACCURACY - 11;
 	
-	if ( spIsInputLocked())
+	if ( spIsKeyboardPolled())
+	{
+		if ( spGetInput()->button[SP_BUTTON_START] )
+		{
+			spGetInput()->button[SP_BUTTON_START] = 0;
+			spStopKeyboardInput();
+		}
 		return 0;
+	}
 	if ( spGetInput()->button[SP_BUTTON_A] )
 	{
 		spGetInput()->button[SP_BUTTON_A] = 0;
@@ -481,7 +488,7 @@ int calc_test( Uint32 steps )
 	if ( spGetInput()->button[SP_BUTTON_START] )
 	{
 		spGetInput()->button[SP_BUTTON_START] = 0;
-		spPollKeyboardInput(input,32,1);
+		spPollKeyboardInput(input,32,SP_BUTTON_RIGHT_MASK | SP_BUTTON_DOWN_MASK);
 	}
 
 	return 0;

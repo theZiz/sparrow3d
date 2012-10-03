@@ -46,8 +46,7 @@ char sp_caching = 1;
 int sp_axis_was_used[SP_INPUT_AXIS_COUNT];
 SDL_Surface* spVirtualKeyboard = NULL;
 int spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_NEVER;
-int spLockAll = 0;
-
+Sint32 spVirtualKeyboardMask = 0;
 
 typedef struct sp_cache_struct *sp_cache_pointer;
 typedef struct sp_cache_struct {
@@ -255,6 +254,15 @@ static void spHandleKeyboardInput( const SDL_keysym pressedKey)
 			}
 		}
 	}
+	/*else if ( pressedKey.sym == SDLK_RETURN )
+	{
+		if ( spInput.keyboard.pos + 1 <= spInput.keyboard.len )
+		{
+			strcat( spInput.keyboard.buffer, "\n" );
+			spInput.keyboard.lastSize = 1;
+			spInput.keyboard.pos += 1;
+		}
+	}*/
 	else if ( pressedKey.sym >= SDLK_SPACE )
 	{
 		Uint16 c = pressedKey.unicode;
@@ -741,11 +749,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 	spInput.button[SP_BUTTON_VOLPLUS] = 0;
 	spInput.button[SP_BUTTON_VOLMINUS] = 0;
 #endif
-	if (spInput.keyboard.buffer && spLockAll && spInput.button[SP_BUTTON_START])
-	{
-		spInput.button[SP_BUTTON_START] = 0;
-		spStopKeyboardInput();
-	}
 	return result;
 }
 
@@ -944,18 +947,15 @@ PREFIX void spResetAxisState( void )
 	}
 }
 
-PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, int lockAll )
+PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, Sint32 enter_key_mask)
 {
-	if ( bufferSize > 0 )
+	if ( bufferSize > 0 && buffer)
 	{
 		spInput.keyboard.buffer = buffer;
 		spInput.keyboard.len = bufferSize;
 		spInput.keyboard.pos = strlen( buffer );
 		spInput.keyboard.lastSize = 0;
-		if (spVirtualKeyboardState != SP_VIRTUAL_KEYBOARD_NEVER)
-			spLockAll = 1;
-		else
-			spLockAll = lockAll;
+		spVirtualKeyboardMask = enter_key_mask;
 		SDL_EnableUNICODE( 1 );
 	}
 	else
@@ -967,10 +967,10 @@ PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, int lockAll )
 PREFIX void spStopKeyboardInput( void )
 {
 	spInput.keyboard.buffer = NULL;
-	spLockAll = 0;
 	spInput.keyboard.len = 0;
 	spInput.keyboard.pos = 0;
 	spInput.keyboard.lastSize = 0;
+	spVirtualKeyboardMask = 0;
 	spLastKey.unicode = 0;
 	spLastKeyCountDown = 0;
 	SDL_EnableUNICODE( 0 );
@@ -1528,7 +1528,7 @@ PREFIX SDL_Surface* spGetVirtualKeyboard()
 	return spVirtualKeyboard;
 }
 
-PREFIX int spIsInputLocked()
+PREFIX int spIsKeyboardPolled()
 {
-	return spLockAll;
+	return (spInput.keyboard.buffer != NULL);
 }
