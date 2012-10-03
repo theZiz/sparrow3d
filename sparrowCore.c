@@ -228,7 +228,7 @@ PREFIX SDL_Surface* spGetWindowSurface( void )
 }
 
 //for long pressing of a key
-SDL_keysym spLastKey = {0,0,0,0};
+SDL_keysym spLastKey = {0,(SDLKey)0,(SDLMod)0,0};
 int spLastKeyCountDown = 0;
 
 static void spHandleKeyboardInput( const SDL_keysym pressedKey)
