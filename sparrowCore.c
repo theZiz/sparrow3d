@@ -52,6 +52,17 @@ int spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_NEVER;
 Sint32 spVirtualKeyboardMask = 0;
 Sint32 spVirtualKeyboardX = 5; //Q
 Sint32 spVirtualKeyboardY = 0; //Q
+Sint32 spVirtualKeyboardTime = 0;
+//for long pressing of a key
+SDL_keysym spLastKey = {0,(SDLKey)0,(SDLMod)0,0};
+SDL_keysym spVirtualLastKey = {0,(SDLKey)0,(SDLMod)0,0};
+int spLastKeyCountDown = 0;
+int spVirtualLastKeyCountDown = 0;
+int spVirtualKeyboardMap[3][20] =
+	{{'\"','#','$','%','!','q','w','e','r','t','y','u','i','o','p', SDLK_BACKSPACE,'7','8','9','-'},
+	 { '(',')','^','~','?','_','a','s','d','f','g','h','j','k','l',            '*','4','5','6','+'},
+	 { '_',';',':',',','.','z','x','c','v',' ',' ',' ','b','n','m',            '0','1','2','3','='}};
+
 
 typedef struct sp_cache_struct *sp_cache_pointer;
 typedef struct sp_cache_struct {
@@ -230,10 +241,6 @@ PREFIX SDL_Surface* spGetWindowSurface( void )
 {
 	return spWindow;
 }
-
-//for long pressing of a key
-SDL_keysym spLastKey = {0,(SDLKey)0,(SDLMod)0,0};
-int spLastKeyCountDown = 0;
 
 static void spInternalZoomBlit(SDL_Surface* source,int sx,int sy,int sw,int sh,SDL_Surface* dest,int dx,int dy,int dw,int dh)
 {
@@ -851,16 +858,95 @@ inline void spUpdateAxis( int axis )
 #endif
 }
 
-void spHandleFakeKeybard( int steps )
+void spHandleFakeKeyboard( int steps )
 {
 	if (spLastKey.unicode != 0)
 	{
 		spLastKeyCountDown -= steps;
-		if (spLastKeyCountDown <= 0)
+		while (spLastKeyCountDown <= 0)
 		{
 			spLastKeyCountDown += SP_KEYBOARD_WAIT;
 			spHandleKeyboardInput(spLastKey);
 		}
+	}
+}
+
+void spHandleVirtualKeyboard( int steps )
+{
+	int was_greater = spVirtualKeyboardTime > 0;
+	spVirtualKeyboardTime -= steps;
+	if (spVirtualKeyboardTime <= 0)
+	{
+		int change = 0;
+		if (spInput.axis[0] || spInput.axis[1])
+			spInternalCleanVirtualKeyboard();
+		if (spInput.axis[0] < 0)
+		{
+			spVirtualKeyboardX = (spVirtualKeyboardX+19) % 20;
+			change = 1;
+		}
+		else
+		if (spInput.axis[0] > 0)
+		{
+			spVirtualKeyboardX = (spVirtualKeyboardX+1) % 20;
+			change = 1;
+		}
+		if (spInput.axis[1] < 0)
+		{
+			spVirtualKeyboardY = (spVirtualKeyboardY+2) % 3;
+			change = 1;
+		}
+		else
+		if (spInput.axis[1] > 0)
+		{
+			spVirtualKeyboardY = (spVirtualKeyboardY+1) % 3;
+			change = 1;
+		}
+		
+		if (change)
+		{
+			spInternalUpdateVirtualKeyboard();
+			if (was_greater)
+				spVirtualKeyboardTime = SP_VIRTUAL_KEYBOARD_SPEED;
+			else
+				spVirtualKeyboardTime = SP_VIRTUAL_KEYBOARD_SPEED*2;
+		}
+		else
+			spVirtualKeyboardTime = 0;
+		
+	}
+	int b;
+	int noButton = 1;
+	for (b = 0; b < 31; b++)
+	{
+		if ((spVirtualKeyboardMask & (1 << b)) && spInput.button[b])
+		{
+			noButton = 0;
+			SDL_keysym key = {spVirtualKeyboardMap[spVirtualKeyboardY][spVirtualKeyboardX],
+				spVirtualKeyboardMap[spVirtualKeyboardY][spVirtualKeyboardX],0,
+				spVirtualKeyboardMap[spVirtualKeyboardY][spVirtualKeyboardX]};
+
+			if (spVirtualLastKey.unicode == key.unicode)
+			{
+				spVirtualLastKeyCountDown -= steps;
+				while (spVirtualLastKeyCountDown <= 0)
+				{
+					spVirtualLastKeyCountDown += SP_KEYBOARD_WAIT;
+					spHandleKeyboardInput(spVirtualLastKey);
+				}
+			}
+			else
+			{
+				spHandleKeyboardInput(key);
+				spVirtualLastKey = key;
+				spVirtualLastKeyCountDown = SP_KEYBOARD_FIRST_WAIT;
+			}
+		}
+	}
+	if (noButton)
+	{
+		spVirtualLastKey.unicode = 0;
+		spVirtualLastKeyCountDown = 0;
 	}
 }
 
@@ -923,9 +1009,13 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 #ifdef CORE_DEBUG
 			spPrintDebug( "  Did calc" );
 #endif
-			spHandleFakeKeybard(diffticks);
+			spHandleFakeKeyboard(diffticks);
 #ifdef CORE_DEBUG
 			spPrintDebug( "  Did fake keyboard events" );
+#endif
+			spHandleVirtualKeyboard(diffticks);
+#ifdef CORE_DEBUG
+			spPrintDebug( "  Did virtual keyboard events" );
 #endif
 		}
 		steps += diffticks;
