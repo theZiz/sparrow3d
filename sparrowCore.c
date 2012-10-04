@@ -45,8 +45,13 @@ int sp_touchscreen_dy;
 char sp_caching = 1;
 int sp_axis_was_used[SP_INPUT_AXIS_COUNT];
 SDL_Surface* spVirtualKeyboard = NULL;
+SDL_Surface* spVirtualKeyboardInternal = NULL;
+SDL_Surface* spVirtualKeyboardSelect = NULL;
+SDL_Surface* spVirtualKeyboardPress = NULL;
 int spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_NEVER;
 Sint32 spVirtualKeyboardMask = 0;
+Sint32 spVirtualKeyboardX = 5; //Q
+Sint32 spVirtualKeyboardY = 0; //Q
 
 typedef struct sp_cache_struct *sp_cache_pointer;
 typedef struct sp_cache_struct {
@@ -229,6 +234,56 @@ PREFIX SDL_Surface* spGetWindowSurface( void )
 //for long pressing of a key
 SDL_keysym spLastKey = {0,(SDLKey)0,(SDLMod)0,0};
 int spLastKeyCountDown = 0;
+
+static void spInternalZoomBlit(SDL_Surface* source,int sx,int sy,int sw,int sh,SDL_Surface* dest,int dx,int dy,int dw,int dh)
+{
+	SDL_LockSurface(source);
+	SDL_LockSurface(dest);
+	Uint16* src = (Uint16*)source->pixels;
+	Uint16* des = (Uint16*)dest->pixels;
+	Sint32 add_x = (sw  << SP_ACCURACY)/dw;
+	Sint32 add_y = (sh << SP_ACCURACY)/dh;
+	int u,v;
+	Sint32 X,Y=sy << SP_ACCURACY;
+	Sint32 src_m = source->pitch/source->format->BytesPerPixel;
+	Sint32 des_m = dest->pitch/dest->format->BytesPerPixel;
+	for (v = dy; v < dy+dh; v++)
+	{
+		X = sx << SP_ACCURACY;
+		for (u = dx; u < dx+dw; u++)
+		{
+			des[u+v*des_m] = src[(X>>SP_ACCURACY)+(Y>>SP_ACCURACY)*src_m];
+			X+=add_x;
+		}
+		Y+=add_y;
+	}
+	SDL_UnlockSurface(source);
+	SDL_UnlockSurface(dest);
+}
+
+static void spInternalUpdateVirtualKeyboard()
+{
+	SDL_Rect dest;
+	dest.x = spVirtualKeyboardX * spVirtualKeyboardInternal->w / 20;
+	dest.y = spVirtualKeyboardY * spVirtualKeyboardInternal->h / 3;
+	dest.w = spVirtualKeyboardInternal->w;
+	dest.h = spVirtualKeyboardInternal->h;
+	SDL_BlitSurface( spVirtualKeyboardSelect, NULL, spVirtualKeyboard, &dest );
+}
+
+static void spInternalCleanVirtualKeyboard()
+{
+	SDL_Rect src,dest;
+	dest.x = spVirtualKeyboardX * spVirtualKeyboardInternal->w / 20;
+	dest.y = spVirtualKeyboardY * spVirtualKeyboardInternal->h / 3;
+	dest.w = spVirtualKeyboardInternal->w;
+	dest.h = spVirtualKeyboardInternal->h;
+	src.x = spVirtualKeyboardX * spVirtualKeyboardInternal->w / 20;
+	src.y = spVirtualKeyboardY * spVirtualKeyboardInternal->h / 3;
+	src.w = spVirtualKeyboardInternal->w;
+	src.h = spVirtualKeyboardInternal->h;
+	SDL_BlitSurface( spVirtualKeyboardInternal, &src, spVirtualKeyboard, &dest );
+}
 
 static void spHandleKeyboardInput( const SDL_keysym pressedKey)
 {
@@ -1474,53 +1529,31 @@ PREFIX void spSetVirtualKeyboard(int state,int x,int y,SDL_Surface* design)
 	spVirtualKeyboardState = state;
 	if (spVirtualKeyboard)
 		spDeleteSurface(spVirtualKeyboard);
+	if (spVirtualKeyboardInternal)
+		spDeleteSurface(spVirtualKeyboardInternal);
+	if (spVirtualKeyboardSelect)
+		spDeleteSurface(spVirtualKeyboardSelect);
+	if (spVirtualKeyboardPress)
+		spDeleteSurface(spVirtualKeyboardPress);
 	if (design == NULL)
 	{
-		spVirtualKeyboard = design;
+		spVirtualKeyboard = NULL;
+		spVirtualKeyboardInternal = NULL;
 		return;
 	}
 	spVirtualKeyboard = spCreateSurface(x,y);
-	SDL_LockSurface(design);
-	SDL_LockSurface(spVirtualKeyboard);
-	Uint16* des = (Uint16*)design->pixels;
-	Uint16* vir = (Uint16*)spVirtualKeyboard->pixels;
-	int design_w = (design->w/21)*20;
-	Sint32 add_x = (design_w  << SP_ACCURACY)/x;
-	Sint32 add_y = (design->h << SP_ACCURACY)/y;
-	int u,v;
-	Sint32 X,Y=0;
-	Sint32 vir_m = spVirtualKeyboard->pitch/spVirtualKeyboard->format->BytesPerPixel;
-	Sint32 des_m = design->pitch/design->format->BytesPerPixel;
-	for (v = 0; v < y; v++)
-	{
-		X = 0;
-		for (u = 0; u < x; u++)
-		{
-			vir[u+v*vir_m] = des[(X>>SP_ACCURACY)+(Y>>SP_ACCURACY)*des_m];
-			X+=add_x;
-		}
-		Y+=add_y;
-	}
-
-
-	SDL_UnlockSurface(design);
-	SDL_UnlockSurface(spVirtualKeyboard);
-	/*SDL_Surface *oldTarget = spGetRenderTarget();
-	spSelectRenderTarget(spVirtualKeyboard);
+	spVirtualKeyboardInternal = spCreateSurface(x,y);
+	spVirtualKeyboardPress = spCreateSurface(x/20,y/3);
+	spVirtualKeyboardSelect = spCreateSurface(x/20,y/3);
 	
-	Sint32 vert = spGetVerticalOrigin();
-	Sint32 hori = spGetHorizontalOrigin();
-	spSetVerticalOrigin(SP_TOP);
-	spSetHorizontalOrigin(SP_LEFT);
-	spSetZSet(0);
-	spSetZTest(0);
-	int design_w = (design->w/21)*20;
-	spRotozoomSurfacePart(0,0,0,design,0,0,design_w,design->h,(x<<SP_ACCURACY)/design_w,(y<<SP_ACCURACY)/design->h,0);
+	spInternalZoomBlit(design,0,0,(design->w/21)*20,design->h,spVirtualKeyboardInternal,0,0,x,y);
+	spInternalZoomBlit(design,(design->w/21)*20,design->h/3*1,(design->w/21),design->h/3,spVirtualKeyboardPress,0,0,x/20,y/3);
+	spInternalZoomBlit(design,(design->w/21)*20,design->h/3*2,(design->w/21),design->h/3,spVirtualKeyboardSelect,0,0,x/20,y/3);
+	SDL_SetColorKey( spVirtualKeyboardPress, SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
+	SDL_SetColorKey( spVirtualKeyboardSelect, SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
 	
-	spSetVerticalOrigin(vert);
-	spSetHorizontalOrigin(hori);
-	if (oldTarget)
-		spSelectRenderTarget(oldTarget);*/
+	SDL_BlitSurface(spVirtualKeyboardInternal,NULL,spVirtualKeyboard,NULL);
+	spInternalUpdateVirtualKeyboard();
 }
 
 PREFIX SDL_Surface* spGetVirtualKeyboard()
