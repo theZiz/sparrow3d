@@ -498,12 +498,12 @@ void resize( Uint16 w, Uint16 h )
 {
 	//Settings up the onboard keyboard:
 	if (spGetSizeFactor() <= SP_ONE)
-		spSetVirtualKeyboard(SP_VIRTUAL_KEYBOARD_IF_NEEDED,w,w*48/320,spLoadSurface("./data/keyboard320.png"));
+		spSetVirtualKeyboard(SP_VIRTUAL_KEYBOARD_IF_NEEDED,0,h-w*48/320,w,w*48/320,spLoadSurface("./data/keyboard320.png"));
 	else
 	if (spGetSizeFactor() <= 2*SP_ONE)
-		spSetVirtualKeyboard(SP_VIRTUAL_KEYBOARD_IF_NEEDED,w,w*48/320,spLoadSurface("./data/keyboard640.png"));
+		spSetVirtualKeyboard(SP_VIRTUAL_KEYBOARD_IF_NEEDED,0,h-w*48/320,w,w*48/320,spLoadSurface("./data/keyboard640.png"));
 	else
-		spSetVirtualKeyboard(SP_VIRTUAL_KEYBOARD_IF_NEEDED,w,w*48/320,spLoadSurface("./data/keyboard1280.png"));
+		spSetVirtualKeyboard(SP_VIRTUAL_KEYBOARD_IF_NEEDED,0,h-w*48/320,w,w*48/320,spLoadSurface("./data/keyboard1280.png"));
 	
 	
 	//Setup of the new/resized window

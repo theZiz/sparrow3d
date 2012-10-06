@@ -3,7 +3,8 @@ Roadmap til next version (tag):
 	- adding a virtual keyboard
 		+ showing
 		+ input with hardware buttons / axis
-		- input with touchscreen
+		+ input with touchscreen
+		- Two keyboars with the two shifts states
 
 general Roadmap:
 - third device layer
