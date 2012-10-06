@@ -47,7 +47,6 @@ int sp_axis_was_used[SP_INPUT_AXIS_COUNT];
 SDL_Surface* spVirtualKeyboard = NULL;
 SDL_Surface* spVirtualKeyboardInternal = NULL;
 SDL_Surface* spVirtualKeyboardSelect = NULL;
-SDL_Surface* spVirtualKeyboardPress = NULL;
 int spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_NEVER;
 Sint32 spVirtualKeyboardMask = 0;
 Sint32 spVirtualKeyboardX = 5; //Q
@@ -1623,8 +1622,6 @@ PREFIX void spSetVirtualKeyboard(int state,int x,int y,SDL_Surface* design)
 		spDeleteSurface(spVirtualKeyboardInternal);
 	if (spVirtualKeyboardSelect)
 		spDeleteSurface(spVirtualKeyboardSelect);
-	if (spVirtualKeyboardPress)
-		spDeleteSurface(spVirtualKeyboardPress);
 	if (design == NULL)
 	{
 		spVirtualKeyboard = NULL;
@@ -1633,13 +1630,10 @@ PREFIX void spSetVirtualKeyboard(int state,int x,int y,SDL_Surface* design)
 	}
 	spVirtualKeyboard = spCreateSurface(x,y);
 	spVirtualKeyboardInternal = spCreateSurface(x,y);
-	spVirtualKeyboardPress = spCreateSurface(x/20,y/3);
 	spVirtualKeyboardSelect = spCreateSurface(x/20,y/3);
 	
 	spInternalZoomBlit(design,0,0,(design->w/21)*20,design->h,spVirtualKeyboardInternal,0,0,x,y);
-	spInternalZoomBlit(design,(design->w/21)*20,design->h/3*1,(design->w/21),design->h/3,spVirtualKeyboardPress,0,0,x/20,y/3);
-	spInternalZoomBlit(design,(design->w/21)*20,design->h/3*2,(design->w/21),design->h/3,spVirtualKeyboardSelect,0,0,x/20,y/3);
-	SDL_SetColorKey( spVirtualKeyboardPress, SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
+	spInternalZoomBlit(design,(design->w/21)*20,design->h/3*1,(design->w/21),design->h/3,spVirtualKeyboardSelect,0,0,x/20,y/3);
 	SDL_SetColorKey( spVirtualKeyboardSelect, SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
 	
 	SDL_BlitSurface(spVirtualKeyboardInternal,NULL,spVirtualKeyboard,NULL);
