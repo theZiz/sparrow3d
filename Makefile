@@ -55,10 +55,10 @@ CPP = gcc -march=native -DX86CPU -g $(GENERAL_TWEAKS)
 SDL = `sdl-config --cflags`
 
 # SPARROW_LIB determines, where the sparrow library is.
-SPARROW_LIB = -L../sparrow3d
+SPARROW_LIB = -L.
 
 # SPARROW_INCLUDE determines, where the sparrow includes are
-SPARROW_INCLUDE = -I../sparrow3d
+SPARROW_INCLUDE = -I.
 
 # SDL_PATH determines, where the SDL includes are (necessary if SDL is in subfolders)
 SDL_PATH = -I/usr/include/SDL
