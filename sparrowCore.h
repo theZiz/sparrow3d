@@ -53,7 +53,8 @@
 #define SP_VIRTUAL_KEYBOARD_NEVER 0
 #define SP_VIRTUAL_KEYBOARD_IF_NEEDED 1
 #define SP_VIRTUAL_KEYBOARD_ALWAYS 2
-#define SP_VIRTUAL_KEYBOARD_SPEED 150
+#define SP_VIRTUAL_KEYBOARD_FIRST_WAIT 300
+#define SP_VIRTUAL_KEYBOARD_WAIT 100
 
 /* This struct contains information about the generic input device
  * sparrowCore provides, which is same on EVERY target */

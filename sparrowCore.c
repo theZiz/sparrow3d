@@ -916,7 +916,10 @@ void spHandleVirtualKeyboard( int steps )
 	if (spInput.keyboard.buffer && spVirtualKeyboardState == SP_VIRTUAL_KEYBOARD_NEVER)
 		return;
 	int was_greater = spVirtualKeyboardTime > 0;
-	spVirtualKeyboardTime -= steps;
+	if (spInput.axis[0] == 0 && spInput.axis[1] == 0)
+		spVirtualKeyboardTime = 0;
+	else
+		spVirtualKeyboardTime -= steps;
 	if (spVirtualKeyboardTime <= 0)
 	{
 		int change = 0;
@@ -949,9 +952,9 @@ void spHandleVirtualKeyboard( int steps )
 		{
 			spInternalUpdateVirtualKeyboard();
 			if (was_greater)
-				spVirtualKeyboardTime = SP_VIRTUAL_KEYBOARD_SPEED;
+				spVirtualKeyboardTime = SP_VIRTUAL_KEYBOARD_WAIT;
 			else
-				spVirtualKeyboardTime = SP_VIRTUAL_KEYBOARD_SPEED*2;
+				spVirtualKeyboardTime = SP_VIRTUAL_KEYBOARD_FIRST_WAIT;
 		}
 		else
 			spVirtualKeyboardTime = 0;
