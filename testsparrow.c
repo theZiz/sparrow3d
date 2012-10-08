@@ -217,9 +217,9 @@ void draw_test( void )
 				else if ( ( y + a + 2 ) & 8 )
 					spEllipse3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 2, 3 << SP_ACCURACY - 2, -SDL_GetTicks() / 128 );
 				else if ( ( y + a + 3 ) & 8 )
-					spRectangleBorder3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, SP_ONE - 2, SP_ONE - 2, SDL_GetTicks() / 64 );
+					spRectangleBorder3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 1<<SP_ACCURACY - 2, 1<<SP_ACCURACY - 2, SDL_GetTicks() / 64 );
 				else if ( ( y + a + 4 ) & 8 )
-					spEllipseBorder3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 2, 3 << SP_ACCURACY - 2, SP_ONE - 2, SP_ONE - 2, -SDL_GetTicks() / 64 );
+					spEllipseBorder3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 2, 3 << SP_ACCURACY - 2, 1<<SP_ACCURACY - 2, 1<<SP_ACCURACY - 2, -SDL_GetTicks() / 64 );
 				else if ( ( y + a + 5 ) & 8 )
 					//spBlit3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,pepper);
 					spRotozoomSurface3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, pepper, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ), spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ), rotation );
