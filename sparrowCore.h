@@ -260,7 +260,7 @@ PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgrou
  * generic input device will be used for entering stuff. Use spIsInputLocked
  * to determine, whether a input is polled or not!
  * x and y are necessary for the touchscreen support (offset of input).*/
-PREFIX void spSetVirtualKeyboard(int state,int x,int y,int width,int height,SDL_Surface* design);
+PREFIX void spSetVirtualKeyboard(int state,int x,int y,int width,int height,SDL_Surface* design,SDL_Surface* shiftDesign);
 
 /* This functions returns the precalculated and prescaled keyboard design.
  * Returns 0, if the virtual keyboard is deactivated or not surface was passed*/

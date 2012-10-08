@@ -44,9 +44,9 @@ int sp_touchscreen_dx;
 int sp_touchscreen_dy;
 char sp_caching = 1;
 int sp_axis_was_used[SP_INPUT_AXIS_COUNT];
-SDL_Surface* spVirtualKeyboard = NULL;
-SDL_Surface* spVirtualKeyboardInternal = NULL;
-SDL_Surface* spVirtualKeyboardSelect = NULL;
+SDL_Surface* spVirtualKeyboard[2] = {NULL,NULL};
+SDL_Surface* spVirtualKeyboardInternal[2] = {NULL,NULL};
+SDL_Surface* spVirtualKeyboardSelect[2] = {NULL,NULL};
 int spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_NEVER;
 Sint32 spVirtualKeyboardMask = 0;
 Sint32 spVirtualKeyboardX = 5; //Q
@@ -224,7 +224,7 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 		spWindowX = x ;
 	spWindowY = y;
 	spZoom = spMin( ( spWindowX << SP_ACCURACY ) / 320, ( spWindowY << SP_ACCURACY ) / 240 ); //at 320x240 == 1.0
-	//SDL_ShowCursor( SDL_DISABLE );
+	SDL_ShowCursor( SDL_DISABLE );
 	if (recallSelectRenderTarget)
 	  spSelectRenderTarget(spGetWindowSurface());
 }
@@ -278,25 +278,25 @@ static void spInternalZoomBlit(SDL_Surface* source,int sx,int sy,int sw,int sh,S
 static void spInternalUpdateVirtualKeyboard()
 {
 	SDL_Rect dest;
-	dest.x = spVirtualKeyboardX * spVirtualKeyboardInternal->w / 20;
-	dest.y = spVirtualKeyboardY * spVirtualKeyboardInternal->h / 3;
-	dest.w = spVirtualKeyboardInternal->w;
-	dest.h = spVirtualKeyboardInternal->h;
-	SDL_BlitSurface( spVirtualKeyboardSelect, NULL, spVirtualKeyboard, &dest );
+	dest.x = spVirtualKeyboardX * spVirtualKeyboardInternal[spVirtualKeyboardShift]->w / 20;
+	dest.y = spVirtualKeyboardY * spVirtualKeyboardInternal[spVirtualKeyboardShift]->h / 3;
+	dest.w = spVirtualKeyboardInternal[spVirtualKeyboardShift]->w;
+	dest.h = spVirtualKeyboardInternal[spVirtualKeyboardShift]->h;
+	SDL_BlitSurface( spVirtualKeyboardSelect[0], NULL, spVirtualKeyboard[spVirtualKeyboardShift], &dest );
 }
 
 static void spInternalCleanVirtualKeyboard()
 {
 	SDL_Rect src,dest;
-	dest.x = spVirtualKeyboardX * spVirtualKeyboardInternal->w / 20;
-	dest.y = spVirtualKeyboardY * spVirtualKeyboardInternal->h / 3;
-	dest.w = spVirtualKeyboardInternal->w;
-	dest.h = spVirtualKeyboardInternal->h;
-	src.x = spVirtualKeyboardX * spVirtualKeyboardInternal->w / 20;
-	src.y = spVirtualKeyboardY * spVirtualKeyboardInternal->h / 3;
-	src.w = spVirtualKeyboardInternal->w;
-	src.h = spVirtualKeyboardInternal->h;
-	SDL_BlitSurface( spVirtualKeyboardInternal, &src, spVirtualKeyboard, &dest );
+	dest.x = spVirtualKeyboardX * spVirtualKeyboardInternal[spVirtualKeyboardShift]->w / 20;
+	dest.y = spVirtualKeyboardY * spVirtualKeyboardInternal[spVirtualKeyboardShift]->h / 3;
+	dest.w = spVirtualKeyboardInternal[spVirtualKeyboardShift]->w;
+	dest.h = spVirtualKeyboardInternal[spVirtualKeyboardShift]->h;
+	src.x = spVirtualKeyboardX * spVirtualKeyboardInternal[spVirtualKeyboardShift]->w / 20;
+	src.y = spVirtualKeyboardY * spVirtualKeyboardInternal[spVirtualKeyboardShift]->h / 3;
+	src.w = spVirtualKeyboardInternal[spVirtualKeyboardShift]->w;
+	src.h = spVirtualKeyboardInternal[spVirtualKeyboardShift]->h;
+	SDL_BlitSurface( spVirtualKeyboardInternal[spVirtualKeyboardShift], &src, spVirtualKeyboard[spVirtualKeyboardShift], &dest );
 }
 
 static void spHandleKeyboardInput( const SDL_keysym pressedKey)
@@ -878,11 +878,19 @@ void spHandleFakeKeyboard( int steps )
 	}
 }
 
+int spShiftStillPressed = 0;
+
 void spClickVirtualKey(int steps)
 {
 	if (spVirtualKeyboardMap[spVirtualKeyboardY][spVirtualKeyboardX] == 1)
 	{
-		spVirtualKeyboardShift = 1;
+		if (spShiftStillPressed == 0)
+		{
+			spInternalCleanVirtualKeyboard();
+			spVirtualKeyboardShift = 1-spVirtualKeyboardShift;
+			spInternalUpdateVirtualKeyboard();
+			spShiftStillPressed = 1;
+		}
 		return;
 	}
 	char* ptr = (char*)spVirtualKeyboardMap;
@@ -908,7 +916,12 @@ void spClickVirtualKey(int steps)
 		spVirtualLastKey = key;
 		spVirtualLastKeyCountDown = SP_KEYBOARD_FIRST_WAIT;
 	}
-	spVirtualKeyboardShift = 0;
+	if (spVirtualKeyboardShift)
+	{
+		spInternalCleanVirtualKeyboard();
+		spVirtualKeyboardShift = 0;
+		spInternalUpdateVirtualKeyboard();
+	}
 }
 
 void spHandleVirtualKeyboard( int steps )
@@ -974,16 +987,16 @@ void spHandleVirtualKeyboard( int steps )
 	//Touchscreen input
 	if ( spInput.touchscreen.pressed &&
 	    (spInput.touchscreen.x-spVirtualKeyboardPositionX) >= 0 &&
-	    (spInput.touchscreen.x-spVirtualKeyboardPositionX) < spVirtualKeyboard->w &&
+	    (spInput.touchscreen.x-spVirtualKeyboardPositionX) < spVirtualKeyboard[spVirtualKeyboardShift]->w &&
 	    (spInput.touchscreen.y-spVirtualKeyboardPositionY) >= 0 &&
-	    (spInput.touchscreen.y-spVirtualKeyboardPositionY) < spVirtualKeyboard->h)
+	    (spInput.touchscreen.y-spVirtualKeyboardPositionY) < spVirtualKeyboard[spVirtualKeyboardShift]->h)
 	{
 		spInternalCleanVirtualKeyboard();
 		Sint32 clickX = spInput.touchscreen.x-spVirtualKeyboardPositionX << SP_ACCURACY;
 		Sint32 clickY = spInput.touchscreen.y-spVirtualKeyboardPositionY << SP_ACCURACY;
-		Sint32 divisor = (spVirtualKeyboard->w << SP_ACCURACY)/20;
+		Sint32 divisor = (spVirtualKeyboard[spVirtualKeyboardShift]->w << SP_ACCURACY)/20;
 		spVirtualKeyboardX = spDivHigh(clickX,divisor) >> SP_ACCURACY;
-		       divisor = (spVirtualKeyboard->h << SP_ACCURACY)/3;
+		       divisor = (spVirtualKeyboard[spVirtualKeyboardShift]->h << SP_ACCURACY)/3;
 		spVirtualKeyboardY = spDivHigh(clickY,divisor) >> SP_ACCURACY;
 		spInternalUpdateVirtualKeyboard();
 		noButton = 0;
@@ -991,6 +1004,7 @@ void spHandleVirtualKeyboard( int steps )
 	}
 	if (noButton)
 	{
+		spShiftStillPressed = 0;
 		spVirtualLastKey.sym = 0;
 		spVirtualLastKeyCountDown = 0;
 	}
@@ -1660,7 +1674,7 @@ PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgrou
 	SDL_UnlockSurface( surface );
 }
 
-PREFIX void spSetVirtualKeyboard(int state,int x,int y,int width,int height,SDL_Surface* design)
+PREFIX void spSetVirtualKeyboard(int state,int x,int y,int width,int height,SDL_Surface* design,SDL_Surface* shiftDesign)
 {
 	spVirtualKeyboardPositionX = x;
 	spVirtualKeyboardPositionY = y;
@@ -1674,33 +1688,50 @@ PREFIX void spSetVirtualKeyboard(int state,int x,int y,int width,int height,SDL_
 		#endif
 		case SP_VIRTUAL_KEYBOARD_ALWAYS: spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_ALWAYS; break;
 	}
-	if (spVirtualKeyboard)
-		spDeleteSurface(spVirtualKeyboard);
-	if (spVirtualKeyboardInternal)
-		spDeleteSurface(spVirtualKeyboardInternal);
-	if (spVirtualKeyboardSelect)
-		spDeleteSurface(spVirtualKeyboardSelect);
-	if (design == NULL)
+	if (spVirtualKeyboard[0])
+		spDeleteSurface(spVirtualKeyboard[0]);
+	if (spVirtualKeyboard[1])
+		spDeleteSurface(spVirtualKeyboard[1]);
+	if (spVirtualKeyboardInternal[0])
+		spDeleteSurface(spVirtualKeyboardInternal[0]);
+	if (spVirtualKeyboardInternal[1])
+		spDeleteSurface(spVirtualKeyboardInternal[1]);
+	if (spVirtualKeyboardSelect[0])
+		spDeleteSurface(spVirtualKeyboardSelect[0]);
+	if (spVirtualKeyboardSelect[1])
+		spDeleteSurface(spVirtualKeyboardSelect[1]);
+	if (design == NULL || shiftDesign == NULL)
 	{
-		spVirtualKeyboard = NULL;
-		spVirtualKeyboardInternal = NULL;
+		spVirtualKeyboard[0] = NULL;
+		spVirtualKeyboardInternal[0] = NULL;
+		spVirtualKeyboardSelect[0] = NULL;
+		spVirtualKeyboard[1] = NULL;
+		spVirtualKeyboardInternal[1] = NULL;
+		spVirtualKeyboardSelect[1] = NULL;
 		return;
 	}
-	spVirtualKeyboard = spCreateSurface(width,height);
-	spVirtualKeyboardInternal = spCreateSurface(width,height);
-	spVirtualKeyboardSelect = spCreateSurface(width/20,height/3);
+	spVirtualKeyboard[0] = spCreateSurface(width,height);
+	spVirtualKeyboardInternal[0] = spCreateSurface(width,height);
+	spVirtualKeyboardSelect[0] = spCreateSurface(width/20,height/3);
+	spVirtualKeyboard[1] = spCreateSurface(width,height);
+	spVirtualKeyboardInternal[1] = spCreateSurface(width,height);
+	spVirtualKeyboardSelect[1] = spCreateSurface(width/20,height/3);
 	
-	spInternalZoomBlit(design,0,0,(design->w/21)*20,design->h,spVirtualKeyboardInternal,0,0,width,height);
-	spInternalZoomBlit(design,(design->w/21)*20,design->h/3*1,(design->w/21),design->h/3,spVirtualKeyboardSelect,0,0,width/20,height/3);
-	SDL_SetColorKey( spVirtualKeyboardSelect, SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
+	spInternalZoomBlit(design,0,0,(design->w/21)*20,design->h,spVirtualKeyboardInternal[0],0,0,width,height);
+	spInternalZoomBlit(design,(design->w/21)*20,design->h/3*1,(design->w/21),design->h/3,spVirtualKeyboardSelect[0],0,0,width/20,height/3);
+	SDL_SetColorKey( spVirtualKeyboardSelect[0], SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
+	spInternalZoomBlit(shiftDesign,0,0,(shiftDesign->w/21)*20,shiftDesign->h,spVirtualKeyboardInternal[1],0,0,width,height);
+	spInternalZoomBlit(shiftDesign,(shiftDesign->w/21)*20,shiftDesign->h/3*1,(shiftDesign->w/21),shiftDesign->h/3,spVirtualKeyboardSelect[1],0,0,width/20,height/3);
+	SDL_SetColorKey( spVirtualKeyboardSelect[1], SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
 	
-	SDL_BlitSurface(spVirtualKeyboardInternal,NULL,spVirtualKeyboard,NULL);
+	SDL_BlitSurface(spVirtualKeyboardInternal[0],NULL,spVirtualKeyboard[0],NULL);
+	SDL_BlitSurface(spVirtualKeyboardInternal[1],NULL,spVirtualKeyboard[1],NULL);
 	spInternalUpdateVirtualKeyboard();
 }
 
 PREFIX SDL_Surface* spGetVirtualKeyboard()
 {
-	return spVirtualKeyboard;
+	return spVirtualKeyboard[spVirtualKeyboardShift];
 }
 
 PREFIX int spIsKeyboardPolled()
