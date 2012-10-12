@@ -926,7 +926,7 @@ void spClickVirtualKey(int steps)
 
 void spHandleVirtualKeyboard( int steps )
 {
-	if (spInput.keyboard.buffer && spVirtualKeyboardState == SP_VIRTUAL_KEYBOARD_NEVER)
+	if (spInput.keyboard.buffer == NULL || spVirtualKeyboardState == SP_VIRTUAL_KEYBOARD_NEVER)
 		return;
 	int was_greater = spVirtualKeyboardTime > 0;
 	if (spInput.axis[0] == 0 && spInput.axis[1] == 0)
