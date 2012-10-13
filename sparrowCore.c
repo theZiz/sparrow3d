@@ -26,7 +26,6 @@
 #include <SDL_ttf.h>
 #include <stdlib.h>
 #include <string.h>
-#define GCW
 
 int spWindowX = 0;
 int spWindowY = 0;
@@ -212,7 +211,7 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	spWindow = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
 #elif defined GCW
-	spScreen = SDL_SetVideoMode( x, y, 32	, SDL_HWSURFACE | SDL_DOUBLEBUF);
+	spScreen = SDL_SetVideoMode( x, y, 32	, SDL_HWSURFACE | SDL_FULLSCREEN);
 	spWindow = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xF800, 0x07E0, 0x001F, 0 ); //16 Bit rrrrrggggggbbbbb
 #elif defined PANDORA
 	spScreen = NULL;
@@ -355,8 +354,6 @@ static void spHandleKeyboardInput( const SDL_keysym pressedKey)
 		}
 	}
 }
-
-#undef GCW
 
 inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 {
@@ -1176,8 +1173,6 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 	}
 	return back;
 }
-
-#define GCW
 
 PREFIX void spFlip( void )
 {
