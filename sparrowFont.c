@@ -295,7 +295,7 @@ static int spFontCorrectStrategy(char* button)
 {
   if (spFontStrategy != SP_FONT_INTELLIGENT)
     return spFontStrategy;
-  #if defined GP2X || defined CAANOO || defined DINGUX || defined PANDORA
+  #if defined GP2X || defined CAANOO || defined DINGUX || defined GCW || defined PANDORA
     if (strcmp(button,SP_BUTTON_A_NAME) == 0 ||
         strcmp(button,SP_BUTTON_B_NAME) == 0 ||
         strcmp(button,SP_BUTTON_X_NAME) == 0 ||
