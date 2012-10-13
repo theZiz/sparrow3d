@@ -211,8 +211,8 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	spWindow = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
 #elif defined GCW
-	spScreen = SDL_SetVideoMode( x, y, 32	, SDL_HWSURFACE | SDL_FULLSCREEN );
-	spWindow = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xF800, 0x07EF, 0x001F, 0 ); //16 Bit rrrrrggggggbbbbb
+	spScreen = SDL_SetVideoMode( x, y, 32	, SDL_HWSURFACE | SDL_FULLSCREEN);
+	spWindow = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0x001F, 0x07E0, 0xF800, 0 ); //16 Bit rrrrrggggggbbbbb
 #elif defined PANDORA
 	spScreen = NULL;
 	spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
@@ -1193,6 +1193,7 @@ PREFIX void spFlip( void )
 	//SDL_Flip(spWindow);
 #elif defined GCW
 	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
+	SDL_Flip(spScreen);
 #else //PC
 	SDL_Flip( spWindow );
 	//SDL_UpdateRect(spWindow, 0, 0, 0, 0);
@@ -1324,7 +1325,7 @@ SDL_Surface* spLoadUncachedSurface( char* name )
 		printf( "  Error was: \"%s\"\n", IMG_GetError() );
 		return NULL;
 	}
-	SDL_Surface* result = SDL_DisplayFormat( surface );
+	SDL_Surface* result = SDL_ConvertSurface( surface , spWindow->format, spWindow->flags);
 	SDL_FreeSurface( surface );
 	return result;
 }
@@ -1484,7 +1485,7 @@ PREFIX void spClearCache()
 PREFIX SDL_Surface* spCreateSurface(int width,int height)
 {
 	#ifdef GCW
-		SDL_Surface* result = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xF800, 0x07EF, 0x001F, 0 ); //16 Bit rrrrrggggggbbbbb	
+		SDL_Surface* result = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0x001F, 0x07E0, 0xF800, 0 ); //16 Bit rrrrrggggggbbbbb	
 	#else
 		SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
 		SDL_Surface* result = SDL_DisplayFormat( surface );
