@@ -1194,7 +1194,7 @@ PREFIX void spFlip( void )
 	SDL_Flip( spWindow );
 #elif defined DINGUX
 	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
-	SDL_Flip(spWindow);
+	SDL_Flip(spScreen);
 #elif defined GCW
 	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
 	SDL_Flip(spScreen);
