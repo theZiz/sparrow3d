@@ -211,8 +211,12 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	spWindow = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
 #elif defined GCW
-	spScreen = SDL_SetVideoMode( x, y, 32	, SDL_HWSURFACE | SDL_FULLSCREEN);
-	spWindow = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xF800, 0x07E0, 0x001F, 0 ); //16 Bit rrrrrggggggbbbbb
+	//spScreen = SDL_SetVideoMode( x, y, 32	, SDL_HWSURFACE | SDL_FULLSCREEN);
+	//spWindow = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xF800, 0x07E0, 0x001F, 0 ); //16 Bit rrrrrggggggbbbbb
+	spScreen = SDL_SetVideoMode( x, y, 16	, SDL_HWSURFACE | SDL_FULLSCREEN );
+	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
+	spWindow = SDL_DisplayFormat( surface );
+	SDL_FreeSurface( surface );
 #elif defined PANDORA
 	spScreen = NULL;
 	spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
@@ -1190,7 +1194,7 @@ PREFIX void spFlip( void )
 	SDL_Flip( spWindow );
 #elif defined DINGUX
 	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
-	//SDL_Flip(spWindow);
+	SDL_Flip(spWindow);
 #elif defined GCW
 	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
 	SDL_Flip(spScreen);
@@ -1484,7 +1488,7 @@ PREFIX void spClearCache()
 
 PREFIX SDL_Surface* spCreateSurface(int width,int height)
 {
-	#ifdef GCW
+	#ifdef GCW_FOOBAR
 		SDL_Surface* result = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xF800, 0x07E0, 0x001F, 0 ); //16 Bit rrrrrggggggbbbbb	
 	#else
 		SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
