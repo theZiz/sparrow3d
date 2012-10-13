@@ -80,8 +80,8 @@ GP2X		Second and third generation of GPH devices, use with one of the
 			following switches: F100, WIZ
 CAANOO		GPH Caanoo
 DINGUX		Dingoo with dingux Linux
+GCW	GCW
 PANDORA		Pandora
-MAEMO		Maemo device, specialize version with: MAEMO5 or MAEMO6 
 
 -------------------------------------------------------------------------------
 

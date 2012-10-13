@@ -117,6 +117,9 @@ PREFIX void spInitCore( void )
 #elif defined DINGUX
 	spWindowX = 320;
 	spWindowY = 240;
+#elif defined GCW
+	spWindowX = 320;
+	spWindowY = 240;
 #else
 	//only setting, if now default value set!
 	if ( !spWindowX )
@@ -162,6 +165,8 @@ PREFIX void spInitCore( void )
 	spInput.supports_keyboard = 0;
 #elif defined DINGUX
 	spInput.supports_keyboard = 0;
+#elif defined GCW
+	spInput.supports_keyboard = 0;
 #else // PANDORA and PCs
 	spInput.supports_keyboard = 1;
 #endif
@@ -201,10 +206,13 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	spWindow = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
 #elif defined DINGUX
-	spScreen = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_FULLSCREEN );
+	spScreen = SDL_SetVideoMode( x, y, 16	, SDL_HWSURFACE | SDL_FULLSCREEN );
 	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
 	spWindow = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
+#elif defined GCW
+	spScreen = SDL_SetVideoMode( x, y, 32	, SDL_HWSURFACE | SDL_FULLSCREEN );
+	spWindow = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xF800, 0x07EF, 0x001F, 0 ); //16 Bit rrrrrggggggbbbbb
 #elif defined PANDORA
 	spScreen = NULL;
 	spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
@@ -545,6 +553,37 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_u:
 					spInput.button[SP_BUTTON_VOLMINUS] = 1;
 					break;
+			#elif defined GCW
+				case SDLK_RETURN:
+					spInput.button[SP_BUTTON_START] = 1;
+					break;
+				case SDLK_SPACE:
+					spInput.button[SP_BUTTON_X] = 1;
+					break;
+				case SDLK_LSHIFT:
+					spInput.button[SP_BUTTON_Y] = 1;
+					break;
+				case SDLK_LCTRL:
+					spInput.button[SP_BUTTON_A] = 1;
+					break;
+				case SDLK_LALT:
+					spInput.button[SP_BUTTON_B] = 1;
+					break;
+				case SDLK_ESCAPE:
+					spInput.button[SP_BUTTON_SELECT] = 1;
+					break;
+				case SDLK_TAB:
+					spInput.button[SP_BUTTON_L] = 1;
+					break;
+				case SDLK_BACKSPACE:
+					spInput.button[SP_BUTTON_R] = 1;
+					break;
+				case SDLK_s:
+					spInput.button[SP_BUTTON_VOLPLUS] = 1;
+					break;
+				case SDLK_u:
+					spInput.button[SP_BUTTON_VOLMINUS] = 1;
+					break;
 			#elif defined PANDORA
 //				case SDLK_MENU:
 //					spDone=1;
@@ -669,6 +708,37 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					}
 					break;
 			#ifdef DINGUX
+				case SDLK_RETURN:
+					spInput.button[SP_BUTTON_START] = 0;
+					break;
+				case SDLK_SPACE:
+					spInput.button[SP_BUTTON_X] = 0;
+					break;
+				case SDLK_LSHIFT:
+					spInput.button[SP_BUTTON_Y] = 0;
+					break;
+				case SDLK_LCTRL:
+					spInput.button[SP_BUTTON_A] = 0;
+					break;
+				case SDLK_LALT:
+					spInput.button[SP_BUTTON_B] = 0;
+					break;
+				case SDLK_ESCAPE:
+					spInput.button[SP_BUTTON_SELECT] = 0;
+					break;
+				case SDLK_TAB:
+					spInput.button[SP_BUTTON_L] = 0;
+					break;
+				case SDLK_BACKSPACE:
+					spInput.button[SP_BUTTON_R] = 0;
+					break;
+				case SDLK_s:
+					spInput.button[SP_BUTTON_VOLPLUS] = 0;
+					break;
+				case SDLK_u:
+					spInput.button[SP_BUTTON_VOLMINUS] = 0;
+					break;
+			#elif defined GCW
 				case SDLK_RETURN:
 					spInput.button[SP_BUTTON_START] = 0;
 					break;
@@ -1121,6 +1191,8 @@ PREFIX void spFlip( void )
 #elif defined DINGUX
 	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
 	//SDL_Flip(spWindow);
+#elif defined GCW
+	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
 #else //PC
 	SDL_Flip( spWindow );
 	//SDL_UpdateRect(spWindow, 0, 0, 0, 0);
@@ -1411,9 +1483,13 @@ PREFIX void spClearCache()
 
 PREFIX SDL_Surface* spCreateSurface(int width,int height)
 {
-	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
-	SDL_Surface* result = SDL_DisplayFormat( surface );
-	SDL_FreeSurface( surface );
+	#ifdef GCW
+		SDL_Surface* result = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xF800, 0x07EF, 0x001F, 0 ); //16 Bit rrrrrggggggbbbbb	
+	#else
+		SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
+		SDL_Surface* result = SDL_DisplayFormat( surface );
+		SDL_FreeSurface( surface );
+	#endif
 	if (sp_caching)
 	{
 		sp_cache_pointer c = (sp_cache_pointer)malloc(sizeof(sp_cache));
