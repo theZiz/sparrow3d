@@ -1000,7 +1000,7 @@ PREFIX int spMesh3DwithPos(Sint32 x,Sint32 y,Sint32 z, spModelPointer mesh, int 
 	for ( i = 0; i < mesh->texPointCount; i++ )
 	{
 		Sint32 tw;
-		spMulModellView( mesh->texPoint[i].x, mesh->texPoint[i].y, mesh->texPoint[i].z, &( mesh->texPoint[i].tx ), &( mesh->texPoint[i].ty ), &( mesh->texPoint[i].tz ), &tw );
+		spMulModellView( mesh->texPoint[i].x+x, mesh->texPoint[i].y+y, mesh->texPoint[i].z+z, &( mesh->texPoint[i].tx ), &( mesh->texPoint[i].ty ), &( mesh->texPoint[i].tz ), &tw );
 		Sint32 x1 = spMul( spProjection[ 0], mesh->texPoint[i].tx );
 		Sint32 y1 = spMul( spProjection[ 5], mesh->texPoint[i].ty );
 		Sint32 w1 = spMul( spProjection[11], mesh->texPoint[i].tz );
