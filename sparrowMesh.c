@@ -237,6 +237,33 @@ static int meshParseFace( char* buffer, int* face, int max ) //3 triangle, 4 qua
 	}
 }
 
+static void meshCalcNormal(Sint32 *normal, Sint32 x1,Sint32 y1,Sint32 z1,
+                                            Sint32 x2,Sint32 y2,Sint32 z2,
+                                            Sint32 x3,Sint32 y3,Sint32 z3)
+{
+	normal[0] = spMulHigh( y1 - y2, z2 - z3 )
+	          - spMulHigh( z1 - z2, y2 - y3 );
+	normal[1] = spMulHigh( z1 - z2, x2 - x3 )
+	          - spMulHigh( x1 - x2, z2 - z3 );
+	normal[2] = spMulHigh( x1 - x2, y2 - y3 )
+	          - spMulHigh( y1 - y2, x2 - x3 );	
+	Sint32 l = spSqrt( spMulHigh( normal[0], normal[0] ) +
+	                   spMulHigh( normal[1], normal[1] ) +
+	                   spMulHigh( normal[2], normal[2] ) );
+	if (l == 0)
+	{
+		normal[0] = 0;
+		normal[1] = 0;
+		normal[2] = 0;
+	}
+	else
+	{
+		normal[0] = spDivHigh( normal[0], l );
+		normal[1] = spDivHigh( normal[1], l );
+		normal[2] = spDivHigh( normal[2], l );
+	}
+}
+
 PREFIX spModelPointer spMeshLoadObj( char* name, SDL_Surface* texture, Uint16 color )
 {
 	char buffer[256];
@@ -398,6 +425,7 @@ PREFIX spModelPointer spMeshLoadObj( char* name, SDL_Surface* texture, Uint16 co
 		uvCount = texTempPointer->nr + 1;
 		texPoints = ( spTexPointPointer )malloc( sizeof( spTexPoint ) * uvCount );
 	}
+	
 	while ( tempPointer )
 	{
 		points[tempPointer->nr].x = rawPoints[tempPointer->point].x;
@@ -421,7 +449,7 @@ PREFIX spModelPointer spMeshLoadObj( char* name, SDL_Surface* texture, Uint16 co
 	free( rawPoints );
 	free( rawUV );
 
-	//Creating Edgelist
+	//Creating Edgelist and Normals
 	tempPointer = NULL;
 	texTempPointer = NULL;
 	int i;
@@ -430,12 +458,18 @@ PREFIX spModelPointer spMeshLoadObj( char* name, SDL_Surface* texture, Uint16 co
 		triangles[i].edge[0] = meshGetNumberEdge( &tempPointer, triangles[i].point[0], triangles[i].point[1] );
 		triangles[i].edge[1] = meshGetNumberEdge( &tempPointer, triangles[i].point[1], triangles[i].point[2] );
 		triangles[i].edge[2] = meshGetNumberEdge( &tempPointer, triangles[i].point[2], triangles[i].point[0] );
+		meshCalcNormal(triangles[i].normal, points[triangles[i].point[0]].x, points[triangles[i].point[0]].y, points[triangles[i].point[0]].z,
+		                                    points[triangles[i].point[1]].x, points[triangles[i].point[1]].y, points[triangles[i].point[1]].z,
+		                                    points[triangles[i].point[2]].x, points[triangles[i].point[2]].y, points[triangles[i].point[2]].z);
 	}
 	for ( i = 0; i < triTexCount; i++ )
 	{
 		texTriangles[i].edge[0] = meshGetNumberEdge( &texTempPointer, texTriangles[i].point[0], texTriangles[i].point[1] );
 		texTriangles[i].edge[1] = meshGetNumberEdge( &texTempPointer, texTriangles[i].point[1], texTriangles[i].point[2] );
 		texTriangles[i].edge[2] = meshGetNumberEdge( &texTempPointer, texTriangles[i].point[2], texTriangles[i].point[0] );
+		meshCalcNormal(texTriangles[i].normal, texPoints[texTriangles[i].point[0]].x, texPoints[texTriangles[i].point[0]].y, texPoints[texTriangles[i].point[0]].z,
+		                                       texPoints[texTriangles[i].point[1]].x, texPoints[texTriangles[i].point[1]].y, texPoints[texTriangles[i].point[1]].z,
+		                                       texPoints[texTriangles[i].point[2]].x, texPoints[texTriangles[i].point[2]].y, texPoints[texTriangles[i].point[2]].z);
 	}
 	for ( i = 0; i < quadCount; i++ )
 	{
@@ -443,6 +477,9 @@ PREFIX spModelPointer spMeshLoadObj( char* name, SDL_Surface* texture, Uint16 co
 		quads[i].edge[1] = meshGetNumberEdge( &tempPointer, quads[i].point[1], quads[i].point[2] );
 		quads[i].edge[2] = meshGetNumberEdge( &tempPointer, quads[i].point[2], quads[i].point[3] );
 		quads[i].edge[3] = meshGetNumberEdge( &tempPointer, quads[i].point[3], quads[i].point[0] );
+		meshCalcNormal(quads[i].normal, points[quads[i].point[0]].x, points[quads[i].point[0]].y, points[quads[i].point[0]].z,
+		                                points[quads[i].point[1]].x, points[quads[i].point[1]].y, points[quads[i].point[1]].z,
+		                                points[quads[i].point[2]].x, points[quads[i].point[2]].y, points[quads[i].point[2]].z);
 	}
 	for ( i = 0; i < quadTexCount; i++ )
 	{
@@ -450,6 +487,9 @@ PREFIX spModelPointer spMeshLoadObj( char* name, SDL_Surface* texture, Uint16 co
 		texQuads[i].edge[1] = meshGetNumberEdge( &texTempPointer, texQuads[i].point[1], texQuads[i].point[2] );
 		texQuads[i].edge[2] = meshGetNumberEdge( &texTempPointer, texQuads[i].point[2], texQuads[i].point[3] );
 		texQuads[i].edge[3] = meshGetNumberEdge( &texTempPointer, texQuads[i].point[3], texQuads[i].point[0] );
+		meshCalcNormal(texQuads[i].normal, texPoints[texQuads[i].point[0]].x, texPoints[texQuads[i].point[0]].y, texPoints[texQuads[i].point[0]].z,
+		                                   texPoints[texQuads[i].point[1]].x, texPoints[texQuads[i].point[1]].y, texPoints[texQuads[i].point[1]].z,
+		                                   texPoints[texQuads[i].point[2]].x, texPoints[texQuads[i].point[2]].y, texPoints[texQuads[i].point[2]].z);
 	}
 	int edgeCount = 0;
 	spEdge* edges = NULL;

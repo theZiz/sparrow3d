@@ -449,6 +449,7 @@ static void spLetterAddBorder( spLetterPointer letter, Uint16 bordercolor )
 PREFIX void spFontAddBorder( spFontPointer font, Uint16 bordercolor )
 {
 	spLetterAddBorder( font->root, bordercolor );
+	spLetterAddBorder( font->buttonRoot, bordercolor );
 }
 
 static void spLetterReplaceColor( spLetterPointer letter, Uint16 oldcolor, Uint16 newcolor )

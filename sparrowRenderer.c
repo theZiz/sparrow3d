@@ -30,7 +30,7 @@ Sint32 spProjection[16];
 int spLightOn = -1;
 spLight spLightDiffuse[SP_MAX_LIGHTS];
 Uint32 spLightAmbient[3] = {1 << SP_ACCURACY-2,1 << SP_ACCURACY-2,1 << SP_ACCURACY-2};
-
+int spPreNormal = 0;
 
 inline void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
 							Sint32 znear, Sint32 zfar )
@@ -335,6 +335,19 @@ inline void spMulModellView( Sint32 x, Sint32 y, Sint32 z, Sint32 *tx, Sint32 *t
 			  + spModelView[15];
 }
 
+inline void spMulModellView3x3( Sint32* p, Sint32* t)
+{
+	t[0] = spMul( spModelView[ 0], p[0] )
+	     + spMul( spModelView[ 4], p[1] )
+	     + spMul( spModelView[ 8], p[2] );
+	t[1] = spMul( spModelView[ 1], p[0] )
+	     + spMul( spModelView[ 5], p[1] )
+	     + spMul( spModelView[ 9], p[2] );
+	t[2] = spMul( spModelView[ 2], p[0] )
+	     + spMul( spModelView[ 6], p[1] )
+	     + spMul( spModelView[10], p[2] );
+}
+
 //senquack - credit for this fast sqrt goes to Wilco Dijkstra http://www.finesse.demon.co.uk/steven/sqrt.html
 #define iter1(N) \
 	tryv = root + (1 << (N));\
@@ -492,6 +505,65 @@ inline Uint16 rendererLightCalculation( Uint16 color, Sint32 x1, Sint32 y1, Sint
 	if ( g < 0 )
 		g = 0;
 	b = b >> SP_LIGHT_ACCURACY;
+	if ( b > 31 )
+		b = 31;
+	if ( b < 0 )
+		b = 0;
+	color = ( r << 11 ) + ( g << 5 ) + b;
+	return color;
+}
+
+inline Uint16 rendererLightCalculationKnowNormal( Uint16 color, Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3 , Sint32* normal)
+{
+	if ( spLightOn <= 0)
+		return color;
+	Sint32 or = ( color >> 11 ); //0..31
+	Sint32 og = ( ( color & 2047 ) >> 5 ); //0..63
+	Sint32 ob = ( color & 31 ); //0..31
+	//globale light:
+
+	SP_LIGHT_TYPE r = spLightAmbient[0] * or;
+	SP_LIGHT_TYPE g = spLightAmbient[1] * og;
+	SP_LIGHT_TYPE b = spLightAmbient[2] * ob;
+
+	//the other lights
+	int i;
+	for ( i = 0; i < SP_MAX_LIGHTS; i++ )
+	{
+		if ( !spLightDiffuse[i].active )
+			continue;
+		Sint32 direction[3];
+		direction[0] = spLightDiffuse[i].tx - ( x1 + x2 >> 1 );
+		direction[1] = spLightDiffuse[i].ty - ( y1 + y2 >> 1 );
+		direction[2] = spLightDiffuse[i].tz - ( z1 + z2 >> 1 );
+		Sint32 direction_length = spSqrt( spMulHigh( direction[0], direction[0] ) +
+		                                  spMulHigh( direction[1], direction[1] ) +
+		                                  spMulHigh( direction[2], direction[2] ) );
+		if ( direction_length == 0 )
+			direction_length = 1;
+		Sint32 ac = spDivHigh( spMulHigh( direction[0], normal[0] ) +
+		                       spMulHigh( direction[1], normal[1] ) +
+		                       spMulHigh( direction[2], normal[2] ) , direction_length );
+		if ( ac < 0 )
+			ac = 0;
+		if ( ac > SP_ONE )
+			ac = SP_ONE;
+		r += spMulHigh( ac, spLightDiffuse[i].r ) * or;
+		g += spMulHigh( ac, spLightDiffuse[i].g ) * og;
+		b += spMulHigh( ac, spLightDiffuse[i].b ) * ob;
+	}
+
+	r = r >> SP_ACCURACY;
+	if ( r > 31 )
+		r = 31;
+	if ( r < 0 )
+		r = 0;
+	g = g >> SP_ACCURACY;
+	if ( g > 63 )
+		g = 63;
+	if ( g < 0 )
+		g = 0;
+	b = b >> SP_ACCURACY;
 	if ( b > 31 )
 		b = 31;
 	if ( b < 0 )
@@ -822,9 +894,46 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 		mesh->texPoint[i].py = viewPortY - ( ( ny1 * windowY ) >> SP_ACCURACY + 1 );
 		mesh->texPoint[i].pz = mesh->texPoint[i].tz;
 	}
+	//Project Normals
+	if (spPreNormal)
+	{
+		for ( i = 0; i < mesh->triangleCount; i++ )
+			spMulModellView3x3( mesh->triangle[i].normal, mesh->triangle[i].pNormal );
+		for ( i = 0; i < mesh->quadCount; i++ )
+			spMulModellView3x3( mesh->quad[i].normal, mesh->quad[i].pNormal );
+		for ( i = 0; i < mesh->texTriangleCount; i++ )
+			spMulModellView3x3( mesh->texTriangle[i].normal, mesh->texTriangle[i].pNormal );
+		for ( i = 0; i < mesh->texQuadCount; i++ )
+			spMulModellView3x3( mesh->texQuad[i].normal, mesh->texQuad[i].pNormal );
+	}
+	
+	Uint16 lightColor;
 	//Draw Faces, if seeable
 	for ( i = 0; i < mesh->triangleCount; i++ )
 	{
+		if (spPreNormal)
+			lightColor = rendererLightCalculationKnowNormal( mesh->color,
+				mesh->point[mesh->triangle[i].point[0]].tx,
+				mesh->point[mesh->triangle[i].point[0]].ty,
+				mesh->point[mesh->triangle[i].point[0]].tz,
+				mesh->point[mesh->triangle[i].point[1]].tx,
+				mesh->point[mesh->triangle[i].point[1]].ty,
+				mesh->point[mesh->triangle[i].point[1]].tz,
+				mesh->point[mesh->triangle[i].point[2]].tx,
+				mesh->point[mesh->triangle[i].point[2]].ty,
+				mesh->point[mesh->triangle[i].point[2]].tz,
+				mesh->triangle[i].pNormal );
+		else
+			lightColor = rendererLightCalculation( mesh->color,
+				mesh->point[mesh->triangle[i].point[0]].tx,
+				mesh->point[mesh->triangle[i].point[0]].ty,
+				mesh->point[mesh->triangle[i].point[0]].tz,
+				mesh->point[mesh->triangle[i].point[1]].tx,
+				mesh->point[mesh->triangle[i].point[1]].ty,
+				mesh->point[mesh->triangle[i].point[1]].tz,
+				mesh->point[mesh->triangle[i].point[2]].tx,
+				mesh->point[mesh->triangle[i].point[2]].ty,
+				mesh->point[mesh->triangle[i].point[2]].tz );		
 		count += ( 0 < ( mesh->triangle[i].was_drawn =
 							 spTriangle( mesh->point[mesh->triangle[i].point[0]].px,
 										 mesh->point[mesh->triangle[i].point[0]].py,
@@ -835,19 +944,33 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 										 mesh->point[mesh->triangle[i].point[2]].px,
 										 mesh->point[mesh->triangle[i].point[2]].py,
 										 mesh->point[mesh->triangle[i].point[2]].pz,
-										 rendererLightCalculation( mesh->color,
-												 mesh->point[mesh->triangle[i].point[0]].tx,
-												 mesh->point[mesh->triangle[i].point[0]].ty,
-												 mesh->point[mesh->triangle[i].point[0]].tz,
-												 mesh->point[mesh->triangle[i].point[1]].tx,
-												 mesh->point[mesh->triangle[i].point[1]].ty,
-												 mesh->point[mesh->triangle[i].point[1]].tz,
-												 mesh->point[mesh->triangle[i].point[2]].tx,
-												 mesh->point[mesh->triangle[i].point[2]].ty,
-												 mesh->point[mesh->triangle[i].point[2]].tz ) ) ) );
+										 lightColor ) ) );
 	}
 	for ( i = 0; i < mesh->quadCount; i++ )
 	{
+		if (spPreNormal)
+			lightColor = rendererLightCalculationKnowNormal( mesh->color,
+				mesh->point[mesh->quad[i].point[0]].tx,
+				mesh->point[mesh->quad[i].point[0]].ty,
+				mesh->point[mesh->quad[i].point[0]].tz,
+				mesh->point[mesh->quad[i].point[1]].tx,
+				mesh->point[mesh->quad[i].point[1]].ty,
+				mesh->point[mesh->quad[i].point[1]].tz,
+				mesh->point[mesh->quad[i].point[2]].tx,
+				mesh->point[mesh->quad[i].point[2]].ty,
+				mesh->point[mesh->quad[i].point[2]].tz,
+				mesh->quad[i].pNormal );
+		else
+			lightColor = rendererLightCalculation( mesh->color,
+				mesh->point[mesh->quad[i].point[0]].tx,
+				mesh->point[mesh->quad[i].point[0]].ty,
+				mesh->point[mesh->quad[i].point[0]].tz,
+				mesh->point[mesh->quad[i].point[1]].tx,
+				mesh->point[mesh->quad[i].point[1]].ty,
+				mesh->point[mesh->quad[i].point[1]].tz,
+				mesh->point[mesh->quad[i].point[2]].tx,
+				mesh->point[mesh->quad[i].point[2]].ty,
+				mesh->point[mesh->quad[i].point[2]].tz );
 		count += ( 0 < ( mesh->quad[i].was_drawn =
 							 spQuad( mesh->point[mesh->quad[i].point[0]].px,
 									 mesh->point[mesh->quad[i].point[0]].py,
@@ -861,21 +984,35 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 									 mesh->point[mesh->quad[i].point[3]].px,
 									 mesh->point[mesh->quad[i].point[3]].py,
 									 mesh->point[mesh->quad[i].point[3]].pz,
-									 rendererLightCalculation( mesh->color,
-											 mesh->point[mesh->quad[i].point[0]].tx,
-											 mesh->point[mesh->quad[i].point[0]].ty,
-											 mesh->point[mesh->quad[i].point[0]].tz,
-											 mesh->point[mesh->quad[i].point[1]].tx,
-											 mesh->point[mesh->quad[i].point[1]].ty,
-											 mesh->point[mesh->quad[i].point[1]].tz,
-											 mesh->point[mesh->quad[i].point[2]].tx,
-											 mesh->point[mesh->quad[i].point[2]].ty,
-											 mesh->point[mesh->quad[i].point[2]].tz ) ) ) );
+									 lightColor ) ) );
 	}
 	if ( mesh->texQuadCount + mesh->texTriangleCount > 0 )
 		spBindTexture( mesh->texture );
 	for ( i = 0; i < mesh->texTriangleCount; i++ )
 	{
+		if (spPreNormal)
+			lightColor = rendererLightCalculationKnowNormal( mesh->color,
+				mesh->texPoint[mesh->texTriangle[i].point[0]].tx,
+				mesh->texPoint[mesh->texTriangle[i].point[0]].ty,
+				mesh->texPoint[mesh->texTriangle[i].point[0]].tz,
+				mesh->texPoint[mesh->texTriangle[i].point[1]].tx,
+				mesh->texPoint[mesh->texTriangle[i].point[1]].ty,
+				mesh->texPoint[mesh->texTriangle[i].point[1]].tz,
+				mesh->texPoint[mesh->texTriangle[i].point[2]].tx,
+				mesh->texPoint[mesh->texTriangle[i].point[2]].ty,
+				mesh->texPoint[mesh->texTriangle[i].point[2]].tz,
+				mesh->texTriangle[i].pNormal );
+		else
+			lightColor = rendererLightCalculation( mesh->color,
+				mesh->texPoint[mesh->texTriangle[i].point[0]].tx,
+				mesh->texPoint[mesh->texTriangle[i].point[0]].ty,
+				mesh->texPoint[mesh->texTriangle[i].point[0]].tz,
+				mesh->texPoint[mesh->texTriangle[i].point[1]].tx,
+				mesh->texPoint[mesh->texTriangle[i].point[1]].ty,
+				mesh->texPoint[mesh->texTriangle[i].point[1]].tz,
+				mesh->texPoint[mesh->texTriangle[i].point[2]].tx,
+				mesh->texPoint[mesh->texTriangle[i].point[2]].ty,
+				mesh->texPoint[mesh->texTriangle[i].point[2]].tz );
 		count += ( 0 < ( mesh->texTriangle[i].was_drawn =
 							 spTriangle_tex( mesh->texPoint[mesh->texTriangle[i].point[0]].px,
 											 mesh->texPoint[mesh->texTriangle[i].point[0]].py,
@@ -892,19 +1029,33 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 											 mesh->texPoint[mesh->texTriangle[i].point[2]].pz,
 											 mesh->texPoint[mesh->texTriangle[i].point[2]].u,
 											 mesh->texPoint[mesh->texTriangle[i].point[2]].v,
-											 rendererLightCalculation( mesh->color,
-													 mesh->texPoint[mesh->texTriangle[i].point[0]].tx,
-													 mesh->texPoint[mesh->texTriangle[i].point[0]].ty,
-													 mesh->texPoint[mesh->texTriangle[i].point[0]].tz,
-													 mesh->texPoint[mesh->texTriangle[i].point[1]].tx,
-													 mesh->texPoint[mesh->texTriangle[i].point[1]].ty,
-													 mesh->texPoint[mesh->texTriangle[i].point[1]].tz,
-													 mesh->texPoint[mesh->texTriangle[i].point[2]].tx,
-													 mesh->texPoint[mesh->texTriangle[i].point[2]].ty,
-													 mesh->texPoint[mesh->texTriangle[i].point[2]].tz ) ) ) );
+											 lightColor ) ) );
 	}
 	for ( i = 0; i < mesh->texQuadCount; i++ )
 	{
+		if (spPreNormal)
+			lightColor = rendererLightCalculationKnowNormal( mesh->color,
+				mesh->texPoint[mesh->texQuad[i].point[0]].tx,
+				mesh->texPoint[mesh->texQuad[i].point[0]].ty,
+				mesh->texPoint[mesh->texQuad[i].point[0]].tz,
+				mesh->texPoint[mesh->texQuad[i].point[1]].tx,
+				mesh->texPoint[mesh->texQuad[i].point[1]].ty,
+				mesh->texPoint[mesh->texQuad[i].point[1]].tz,
+				mesh->texPoint[mesh->texQuad[i].point[2]].tx,
+				mesh->texPoint[mesh->texQuad[i].point[2]].ty,
+				mesh->texPoint[mesh->texQuad[i].point[2]].tz,
+				mesh->texQuad[i].pNormal );
+		else
+			lightColor = rendererLightCalculation( mesh->color,
+				mesh->texPoint[mesh->texQuad[i].point[0]].tx,
+				mesh->texPoint[mesh->texQuad[i].point[0]].ty,
+				mesh->texPoint[mesh->texQuad[i].point[0]].tz,
+				mesh->texPoint[mesh->texQuad[i].point[1]].tx,
+				mesh->texPoint[mesh->texQuad[i].point[1]].ty,
+				mesh->texPoint[mesh->texQuad[i].point[1]].tz,
+				mesh->texPoint[mesh->texQuad[i].point[2]].tx,
+				mesh->texPoint[mesh->texQuad[i].point[2]].ty,
+				mesh->texPoint[mesh->texQuad[i].point[2]].tz );
 		count += ( 0 < ( mesh->texQuad[i].was_drawn =
 							 spQuad_tex( mesh->texPoint[mesh->texQuad[i].point[0]].px,
 										 mesh->texPoint[mesh->texQuad[i].point[0]].py,
@@ -926,16 +1077,7 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 										 mesh->texPoint[mesh->texQuad[i].point[3]].pz,
 										 mesh->texPoint[mesh->texQuad[i].point[3]].u,
 										 mesh->texPoint[mesh->texQuad[i].point[3]].v,
-										 rendererLightCalculation( mesh->color,
-												 mesh->texPoint[mesh->texQuad[i].point[0]].tx,
-												 mesh->texPoint[mesh->texQuad[i].point[0]].ty,
-												 mesh->texPoint[mesh->texQuad[i].point[0]].tz,
-												 mesh->texPoint[mesh->texQuad[i].point[1]].tx,
-												 mesh->texPoint[mesh->texQuad[i].point[1]].ty,
-												 mesh->texPoint[mesh->texQuad[i].point[1]].tz,
-												 mesh->texPoint[mesh->texQuad[i].point[2]].tx,
-												 mesh->texPoint[mesh->texQuad[i].point[2]].ty,
-												 mesh->texPoint[mesh->texQuad[i].point[2]].tz ) ) ) );
+										 lightColor ) ) );
 	}
 	if ( updateEdgeList )
 	{
@@ -975,191 +1117,9 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 
 PREFIX int spMesh3DwithPos(Sint32 x,Sint32 y,Sint32 z, spModelPointer mesh, int updateEdgeList )
 {
-	int count = 0;
-	Sint32 windowX = spGetRenderTarget()->w;
-	Sint32 windowY = spGetRenderTarget()->h;
-	Sint32 viewPortX = ( windowX >> 1 );
-	Sint32 viewPortY = ( windowY >> 1 );
-	//Project Points
-	int i;
-	for ( i = 0; i < mesh->pointCount; i++ )
-	{
-		Sint32 tw;
-		spMulModellView( mesh->point[i].x+x, mesh->point[i].y+y, mesh->point[i].z+z, &( mesh->point[i].tx ), &( mesh->point[i].ty ), &( mesh->point[i].tz ), &tw );
-		Sint32 x1 = spMul( spProjection[ 0], mesh->point[i].tx );
-		Sint32 y1 = spMul( spProjection[ 5], mesh->point[i].ty );
-		Sint32 w1 = spMul( spProjection[11], mesh->point[i].tz );
-		if ( w1 == 0 )
-			w1 = 1;
-		Sint32 nx1 = spDiv( x1, w1 );
-		Sint32 ny1 = spDiv( y1, w1 );
-		mesh->point[i].px = viewPortX + ( ( nx1 * windowX ) >> SP_ACCURACY + 1 );
-		mesh->point[i].py = viewPortY - ( ( ny1 * windowY ) >> SP_ACCURACY + 1 );
-		mesh->point[i].pz = mesh->point[i].tz;
-	}
-	for ( i = 0; i < mesh->texPointCount; i++ )
-	{
-		Sint32 tw;
-		spMulModellView( mesh->texPoint[i].x+x, mesh->texPoint[i].y+y, mesh->texPoint[i].z+z, &( mesh->texPoint[i].tx ), &( mesh->texPoint[i].ty ), &( mesh->texPoint[i].tz ), &tw );
-		Sint32 x1 = spMul( spProjection[ 0], mesh->texPoint[i].tx );
-		Sint32 y1 = spMul( spProjection[ 5], mesh->texPoint[i].ty );
-		Sint32 w1 = spMul( spProjection[11], mesh->texPoint[i].tz );
-		if ( w1 == 0 )
-			w1 = 1;
-		Sint32 nx1 = spDiv( x1, w1 );
-		Sint32 ny1 = spDiv( y1, w1 );
-		mesh->texPoint[i].px = viewPortX + ( ( nx1 * windowX ) >> SP_ACCURACY + 1 );
-		mesh->texPoint[i].py = viewPortY - ( ( ny1 * windowY ) >> SP_ACCURACY + 1 );
-		mesh->texPoint[i].pz = mesh->texPoint[i].tz;
-	}
-	//Draw Faces, if seeable
-	for ( i = 0; i < mesh->triangleCount; i++ )
-	{
-		count += ( 0 < ( mesh->triangle[i].was_drawn =
-							 spTriangle( mesh->point[mesh->triangle[i].point[0]].px,
-										 mesh->point[mesh->triangle[i].point[0]].py,
-										 mesh->point[mesh->triangle[i].point[0]].pz,
-										 mesh->point[mesh->triangle[i].point[1]].px,
-										 mesh->point[mesh->triangle[i].point[1]].py,
-										 mesh->point[mesh->triangle[i].point[1]].pz,
-										 mesh->point[mesh->triangle[i].point[2]].px,
-										 mesh->point[mesh->triangle[i].point[2]].py,
-										 mesh->point[mesh->triangle[i].point[2]].pz,
-										 rendererLightCalculation( mesh->color,
-												 mesh->point[mesh->triangle[i].point[0]].tx,
-												 mesh->point[mesh->triangle[i].point[0]].ty,
-												 mesh->point[mesh->triangle[i].point[0]].tz,
-												 mesh->point[mesh->triangle[i].point[1]].tx,
-												 mesh->point[mesh->triangle[i].point[1]].ty,
-												 mesh->point[mesh->triangle[i].point[1]].tz,
-												 mesh->point[mesh->triangle[i].point[2]].tx,
-												 mesh->point[mesh->triangle[i].point[2]].ty,
-												 mesh->point[mesh->triangle[i].point[2]].tz ) ) ) );
-	}
-	for ( i = 0; i < mesh->quadCount; i++ )
-	{
-		count += ( 0 < ( mesh->quad[i].was_drawn =
-							 spQuad( mesh->point[mesh->quad[i].point[0]].px,
-									 mesh->point[mesh->quad[i].point[0]].py,
-									 mesh->point[mesh->quad[i].point[0]].pz,
-									 mesh->point[mesh->quad[i].point[1]].px,
-									 mesh->point[mesh->quad[i].point[1]].py,
-									 mesh->point[mesh->quad[i].point[1]].pz,
-									 mesh->point[mesh->quad[i].point[2]].px,
-									 mesh->point[mesh->quad[i].point[2]].py,
-									 mesh->point[mesh->quad[i].point[2]].pz,
-									 mesh->point[mesh->quad[i].point[3]].px,
-									 mesh->point[mesh->quad[i].point[3]].py,
-									 mesh->point[mesh->quad[i].point[3]].pz,
-									 rendererLightCalculation( mesh->color,
-											 mesh->point[mesh->quad[i].point[0]].tx,
-											 mesh->point[mesh->quad[i].point[0]].ty,
-											 mesh->point[mesh->quad[i].point[0]].tz,
-											 mesh->point[mesh->quad[i].point[1]].tx,
-											 mesh->point[mesh->quad[i].point[1]].ty,
-											 mesh->point[mesh->quad[i].point[1]].tz,
-											 mesh->point[mesh->quad[i].point[2]].tx,
-											 mesh->point[mesh->quad[i].point[2]].ty,
-											 mesh->point[mesh->quad[i].point[2]].tz ) ) ) );
-	}
-	if ( mesh->texQuadCount + mesh->texTriangleCount > 0 )
-		spBindTexture( mesh->texture );
-	for ( i = 0; i < mesh->texTriangleCount; i++ )
-	{
-		count += ( 0 < ( mesh->texTriangle[i].was_drawn =
-							 spTriangle_tex( mesh->texPoint[mesh->texTriangle[i].point[0]].px,
-											 mesh->texPoint[mesh->texTriangle[i].point[0]].py,
-											 mesh->texPoint[mesh->texTriangle[i].point[0]].pz,
-											 mesh->texPoint[mesh->texTriangle[i].point[0]].u,
-											 mesh->texPoint[mesh->texTriangle[i].point[0]].v,
-											 mesh->texPoint[mesh->texTriangle[i].point[1]].px,
-											 mesh->texPoint[mesh->texTriangle[i].point[1]].py,
-											 mesh->texPoint[mesh->texTriangle[i].point[1]].pz,
-											 mesh->texPoint[mesh->texTriangle[i].point[1]].u,
-											 mesh->texPoint[mesh->texTriangle[i].point[1]].v,
-											 mesh->texPoint[mesh->texTriangle[i].point[2]].px,
-											 mesh->texPoint[mesh->texTriangle[i].point[2]].py,
-											 mesh->texPoint[mesh->texTriangle[i].point[2]].pz,
-											 mesh->texPoint[mesh->texTriangle[i].point[2]].u,
-											 mesh->texPoint[mesh->texTriangle[i].point[2]].v,
-											 rendererLightCalculation( mesh->color,
-													 mesh->texPoint[mesh->texTriangle[i].point[0]].tx,
-													 mesh->texPoint[mesh->texTriangle[i].point[0]].ty,
-													 mesh->texPoint[mesh->texTriangle[i].point[0]].tz,
-													 mesh->texPoint[mesh->texTriangle[i].point[1]].tx,
-													 mesh->texPoint[mesh->texTriangle[i].point[1]].ty,
-													 mesh->texPoint[mesh->texTriangle[i].point[1]].tz,
-													 mesh->texPoint[mesh->texTriangle[i].point[2]].tx,
-													 mesh->texPoint[mesh->texTriangle[i].point[2]].ty,
-													 mesh->texPoint[mesh->texTriangle[i].point[2]].tz ) ) ) );
-	}
-	for ( i = 0; i < mesh->texQuadCount; i++ )
-	{
-		count += ( 0 < ( mesh->texQuad[i].was_drawn =
-							 spQuad_tex( mesh->texPoint[mesh->texQuad[i].point[0]].px,
-										 mesh->texPoint[mesh->texQuad[i].point[0]].py,
-										 mesh->texPoint[mesh->texQuad[i].point[0]].pz,
-										 mesh->texPoint[mesh->texQuad[i].point[0]].u,
-										 mesh->texPoint[mesh->texQuad[i].point[0]].v,
-										 mesh->texPoint[mesh->texQuad[i].point[1]].px,
-										 mesh->texPoint[mesh->texQuad[i].point[1]].py,
-										 mesh->texPoint[mesh->texQuad[i].point[1]].pz,
-										 mesh->texPoint[mesh->texQuad[i].point[1]].u,
-										 mesh->texPoint[mesh->texQuad[i].point[1]].v,
-										 mesh->texPoint[mesh->texQuad[i].point[2]].px,
-										 mesh->texPoint[mesh->texQuad[i].point[2]].py,
-										 mesh->texPoint[mesh->texQuad[i].point[2]].pz,
-										 mesh->texPoint[mesh->texQuad[i].point[2]].u,
-										 mesh->texPoint[mesh->texQuad[i].point[2]].v,
-										 mesh->texPoint[mesh->texQuad[i].point[3]].px,
-										 mesh->texPoint[mesh->texQuad[i].point[3]].py,
-										 mesh->texPoint[mesh->texQuad[i].point[3]].pz,
-										 mesh->texPoint[mesh->texQuad[i].point[3]].u,
-										 mesh->texPoint[mesh->texQuad[i].point[3]].v,
-										 rendererLightCalculation( mesh->color,
-												 mesh->texPoint[mesh->texQuad[i].point[0]].tx,
-												 mesh->texPoint[mesh->texQuad[i].point[0]].ty,
-												 mesh->texPoint[mesh->texQuad[i].point[0]].tz,
-												 mesh->texPoint[mesh->texQuad[i].point[1]].tx,
-												 mesh->texPoint[mesh->texQuad[i].point[1]].ty,
-												 mesh->texPoint[mesh->texQuad[i].point[1]].tz,
-												 mesh->texPoint[mesh->texQuad[i].point[2]].tx,
-												 mesh->texPoint[mesh->texQuad[i].point[2]].ty,
-												 mesh->texPoint[mesh->texQuad[i].point[2]].tz ) ) ) );
-	}
-	if ( updateEdgeList )
-	{
-		for ( i = 0; i < mesh->edgeCount; i++ )
-			mesh->edge[i].status = -1;
-		for ( i = 0; i < mesh->texEdgeCount; i++ )
-			mesh->texEdge[i].status = -1;
-		for ( i = 0; i < mesh->triangleCount; i++ )
-		{
-			mesh->edge[mesh->triangle[i].edge[0]].status += mesh->triangle[i].was_drawn;
-			mesh->edge[mesh->triangle[i].edge[1]].status += mesh->triangle[i].was_drawn;
-			mesh->edge[mesh->triangle[i].edge[2]].status += mesh->triangle[i].was_drawn;
-		}
-		for ( i = 0; i < mesh->texTriangleCount; i++ )
-		{
-			mesh->texEdge[mesh->texTriangle[i].edge[0]].status += mesh->texTriangle[i].was_drawn;
-			mesh->texEdge[mesh->texTriangle[i].edge[1]].status += mesh->texTriangle[i].was_drawn;
-			mesh->texEdge[mesh->texTriangle[i].edge[2]].status += mesh->texTriangle[i].was_drawn;
-		}
-		for ( i = 0; i < mesh->quadCount; i++ )
-		{
-			mesh->edge[mesh->quad[i].edge[0]].status += mesh->quad[i].was_drawn;
-			mesh->edge[mesh->quad[i].edge[1]].status += mesh->quad[i].was_drawn;
-			mesh->edge[mesh->quad[i].edge[2]].status += mesh->quad[i].was_drawn;
-			mesh->edge[mesh->quad[i].edge[3]].status += mesh->quad[i].was_drawn;
-		}
-		for ( i = 0; i < mesh->texQuadCount; i++ )
-		{
-			mesh->texEdge[mesh->texQuad[i].edge[0]].status += mesh->texQuad[i].was_drawn;
-			mesh->texEdge[mesh->texQuad[i].edge[1]].status += mesh->texQuad[i].was_drawn;
-			mesh->texEdge[mesh->texQuad[i].edge[2]].status += mesh->texQuad[i].was_drawn;
-			mesh->texEdge[mesh->texQuad[i].edge[3]].status += mesh->texQuad[i].was_drawn;
-		}
-	}
+	spTranslate(x,y,z);
+	int count = spMesh3D(mesh,updateEdgeList);
+	spTranslate(-x,-y,-z);
 	return count;
 }
 
@@ -1483,4 +1443,9 @@ PREFIX void spUpdateLight(int number)
 		return;
 	Sint32 tw_dummy;
 	spMulModellView( spLightDiffuse[number].x, spLightDiffuse[number].y, spLightDiffuse[number].z, &(spLightDiffuse[number].tx), &(spLightDiffuse[number].ty), &(spLightDiffuse[number].tz), &tw_dummy );
+}
+
+PREFIX void spUsePrecalculatedNormals(int value)
+{
+	spPreNormal = value;
 }

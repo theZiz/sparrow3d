@@ -82,6 +82,8 @@ typedef struct spTriangleStruct
 	 * 256 leftbottom */
 	int was_drawn;
 	int edge[3]; //the update of the Edges status flag is optional!
+	Sint32 normal[3];
+	Sint32 pNormal[3];
 } spTriangleS;
 
 /* A quad struct for meshes */
@@ -95,6 +97,8 @@ typedef struct spQuadStruct
 	 * 256 leftbottom */
 	int was_drawn;
 	int edge[4]; //the update of the Edges status flag is optional!
+	Sint32 normal[3];
+	Sint32 pNormal[3];
 } spQuadS;
 
 /* spModelSturct contains a mesh. You can fill it on your own (have fun,
@@ -300,5 +304,12 @@ PREFIX void spBlit3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface );
  * perspective correct width, you don't want the rotation. In this case
  * set it to 0. Most of the time you should be fine with 1. */
 PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 withModelview );
+
+/* spUsePrecalculatedNormals desides, whether the precalculated normal
+ * values of meshes are used or not. So this works only with spMesh3D*
+ * functions. Be carefull! You can use this optimization only, if you
+ * don't scale! Translation and rotations are okay. At default this
+ * feature is disabled */
+PREFIX void spUsePrecalculatedNormals(int value);
 
 #endif

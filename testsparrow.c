@@ -125,11 +125,10 @@ void draw_test( void )
 		break;
 	case 3:
 		spSetAlphaTest( 0 );
-		spTranslate( 0, 0, (-12 << SP_ACCURACY)/*+spSin(rotation)*4*/ );
+		spTranslate( 0, 0, (-12 << SP_ACCURACY)+spSin(rotation)*8 );
 		spRotateX( rotation );
 		spRotateY( rotation );
 		spRotateZ( rotation );
-		spScale(spSin(rotation) + 3*SP_ONE/2,spSin(rotation) + 3*SP_ONE/2,spSin(rotation) + 3*SP_ONE/2);
 		count = spMesh3D( mesh, 1 );
 		break;
 	case 2:
@@ -549,6 +548,7 @@ int main( int argc, char **argv )
 	//Setup
 	screen = spCreateDefaultWindow();
 	spSelectRenderTarget(screen);
+	spUsePrecalculatedNormals(1);
 	resize( screen->w, screen->h );
 	//Textures loading
 	garfield = spLoadSurface( "./data/garfield.png" );
