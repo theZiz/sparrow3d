@@ -551,12 +551,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_BACKSPACE:
 					spInput.button[SP_BUTTON_R] = 1;
 					break;
-				case SDLK_s:
-					spInput.button[SP_BUTTON_VOLPLUS] = 1;
-					break;
-				case SDLK_u:
-					spInput.button[SP_BUTTON_VOLMINUS] = 1;
-					break;
 			#elif defined GCW
 				case SDLK_RETURN:
 					spInput.button[SP_BUTTON_START] = 1;
@@ -581,12 +575,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					break;
 				case SDLK_BACKSPACE:
 					spInput.button[SP_BUTTON_R] = 1;
-					break;
-				case SDLK_s:
-					spInput.button[SP_BUTTON_VOLPLUS] = 1;
-					break;
-				case SDLK_u:
-					spInput.button[SP_BUTTON_VOLMINUS] = 1;
 					break;
 			#elif defined PANDORA
 //				case SDLK_MENU:
@@ -666,12 +654,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 						spInput.button[SP_BUTTON_R] = 1;
 						break;
 				#endif
-				case SDLK_PLUS:
-					spInput.button[SP_BUTTON_VOLPLUS] = 1;
-					break;
-				case SDLK_MINUS:
-					spInput.button[SP_BUTTON_VOLMINUS] = 1;
-					break;
 			#endif
 				}
 				break;
@@ -736,12 +718,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_BACKSPACE:
 					spInput.button[SP_BUTTON_R] = 0;
 					break;
-				case SDLK_s:
-					spInput.button[SP_BUTTON_VOLPLUS] = 0;
-					break;
-				case SDLK_u:
-					spInput.button[SP_BUTTON_VOLMINUS] = 0;
-					break;
 			#elif defined GCW
 				case SDLK_RETURN:
 					spInput.button[SP_BUTTON_START] = 0;
@@ -766,12 +742,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					break;
 				case SDLK_BACKSPACE:
 					spInput.button[SP_BUTTON_R] = 0;
-					break;
-				case SDLK_s:
-					spInput.button[SP_BUTTON_VOLPLUS] = 0;
-					break;
-				case SDLK_u:
-					spInput.button[SP_BUTTON_VOLMINUS] = 0;
 					break;
 			#elif defined PANDORA
 				case SDLK_PAGEDOWN:
@@ -848,12 +818,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 						spInput.button[SP_BUTTON_R] = 0;
 						break;
 				#endif
-				case SDLK_PLUS:
-					spInput.button[SP_BUTTON_VOLPLUS] = 0;
-					break;
-				case SDLK_MINUS:
-					spInput.button[SP_BUTTON_VOLMINUS] = 0;
-					break;				
 			#endif
 				}
 				break;
@@ -888,10 +852,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 		if ( spEvent )
 			spEvent( &event );
 	}
-#ifdef CAANOO
-	spInput.button[SP_BUTTON_VOLPLUS] = 0;
-	spInput.button[SP_BUTTON_VOLMINUS] = 0;
-#endif
 	return result;
 }
 

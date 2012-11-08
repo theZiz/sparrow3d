@@ -20,6 +20,7 @@ Roadmap til next version (tag):
 - sparrowFont additional or own part, which allows to draw blocked text
   (e.g. text from sparrowText ;-) )
 - Network (with threads)
+- sparrowRenderer: Camera definieren und "laden".
 
 general Roadmap:
 - GUI
