@@ -6,7 +6,7 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Windows x86">
+			<Target title="Sparrow (Win x86)">
 				<Option output="bin\W32\libsparrow3d" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj\W32\" />
 				<Option type="3" />
@@ -26,7 +26,7 @@
 					<Add directory="$(#mingw.lib)" />
 				</Linker>
 			</Target>
-			<Target title="Pandora">
+			<Target title="Sparrow (Pandora)">
 				<Option output="bin\Pandora\libsparrow3d.so" prefix_auto="1" extension_auto="0" />
 				<Option object_output="obj\Pandora\" />
 				<Option type="3" />
@@ -41,6 +41,96 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-ldl" />
+					<Add option="-lpthread" />
+					<Add option="-lfreetype" />
+					<Add option="-lpng" />
+					<Add option="-lz" />
+					<Add directory="$(#pandora_sdk.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Sound (Win x86)">
+				<Option output="bin\W32\libsparrowSound" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\W32\" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DX86CPU" />
+					<Add option="-DBUILDING_DLL" />
+					<Add directory="$(#mingw.include)" />
+					<Add directory="$(#mingw.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lSDLmain" />
+					<Add option="-lSDL_mixer" />
+					<Add directory="$(#mingw.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Sound (Pandora)">
+				<Option output="bin\Pandora\libsparrowSound.so" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj\Pandora\" />
+				<Option type="3" />
+				<Option compiler="armelfgcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DMOBILE_DEVICE" />
+					<Add option="-DARMCPU" />
+					<Add option="-DPANDORA" />
+					<Add directory="$(#pandora_sdk.include)" />
+					<Add directory="$(#pandora_sdk.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lSDL_mixer" />
+					<Add option="-ldl" />
+					<Add option="-lpthread" />
+					<Add option="-lfreetype" />
+					<Add option="-lpng" />
+					<Add option="-lz" />
+					<Add directory="$(#pandora_sdk.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Net (Win x86)">
+				<Option output="bin\W32\libsparrowNet" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\W32\" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DX86CPU" />
+					<Add option="-DBUILDING_DLL" />
+					<Add directory="$(#mingw.include)" />
+					<Add directory="$(#mingw.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lSDLmain" />
+					<Add option="-lSDL_net" />
+					<Add directory="$(#mingw.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Net (Pandora)">
+				<Option output="bin\Pandora\libsparrowNet.so" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj\Pandora\" />
+				<Option type="3" />
+				<Option compiler="armelfgcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DMOBILE_DEVICE" />
+					<Add option="-DARMCPU" />
+					<Add option="-DPANDORA" />
+					<Add directory="$(#pandora_sdk.include)" />
+					<Add directory="$(#pandora_sdk.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lSDL_net" />
 					<Add option="-ldl" />
 					<Add option="-lpthread" />
 					<Add option="-lfreetype" />
@@ -225,6 +315,94 @@
 					<Add directory="$(#pandora_sdk.lib)" />
 				</Linker>
 			</Target>
+			<Target title="Testparallax (Win x86)">
+				<Option output="bin\W32\testparallax" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\W32\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DX86CPU" />
+					<Add option="-DBUILDING_DLL" />
+					<Add directory="$(#mingw.include)" />
+					<Add directory="$(#mingw.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lmingw32" />
+					<Add option="-lSDLmain" />
+					<Add directory="$(#mingw.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testparallax (Pandora)">
+				<Option output="bin\Pandora\testparallax" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj\Pandora\" />
+				<Option type="0" />
+				<Option compiler="armelfgcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DMOBILE_DEVICE" />
+					<Add option="-DARMCPU" />
+					<Add option="-DPANDORA" />
+					<Add directory="$(#pandora_sdk.include)" />
+					<Add directory="$(#pandora_sdk.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-ldl" />
+					<Add option="-lpthread" />
+					<Add option="-lfreetype" />
+					<Add option="-lpng" />
+					<Add option="-lz" />
+					<Add option="-lts" />
+					<Add directory="$(#pandora_sdk.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testtarget (Win x86)">
+				<Option output="bin\W32\testtarget" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\W32\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DX86CPU" />
+					<Add option="-DBUILDING_DLL" />
+					<Add directory="$(#mingw.include)" />
+					<Add directory="$(#mingw.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lmingw32" />
+					<Add option="-lSDLmain" />
+					<Add directory="$(#mingw.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testtarget (Pandora)">
+				<Option output="bin\Pandora\testtarget" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj\Pandora\" />
+				<Option type="0" />
+				<Option compiler="armelfgcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DMOBILE_DEVICE" />
+					<Add option="-DARMCPU" />
+					<Add option="-DPANDORA" />
+					<Add directory="$(#pandora_sdk.include)" />
+					<Add directory="$(#pandora_sdk.include)\SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-ldl" />
+					<Add option="-lpthread" />
+					<Add option="-lfreetype" />
+					<Add option="-lpng" />
+					<Add option="-lz" />
+					<Add option="-lts" />
+					<Add directory="$(#pandora_sdk.lib)" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-ffast-math" />
@@ -242,7 +420,6 @@
 		<Linker>
 			<Add option="-lSDL_ttf" />
 			<Add option="-lSDL_image" />
-			<Add option="-lSDL_mixer" />
 			<Add option="-lSDL" />
 		</Linker>
 		<Unit filename="Makefile">
@@ -250,56 +427,361 @@
 		</Unit>
 		<Unit filename="sparrowCore.c">
 			<Option compilerVar="CC" />
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
 		</Unit>
-		<Unit filename="sparrowCore.h" />
-		<Unit filename="sparrowDefines.h" />
+		<Unit filename="sparrowCore.h">
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
+		</Unit>
+		<Unit filename="sparrowDefines.h">
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
+		</Unit>
 		<Unit filename="sparrowFile.c">
 			<Option compilerVar="CC" />
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
 		</Unit>
-		<Unit filename="sparrowFile.h" />
+		<Unit filename="sparrowFile.h">
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
+		</Unit>
 		<Unit filename="sparrowFont.c">
 			<Option compilerVar="CC" />
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
 		</Unit>
-		<Unit filename="sparrowFont.h" />
+		<Unit filename="sparrowFont.h">
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
+		</Unit>
 		<Unit filename="sparrowMath.c">
 			<Option compilerVar="CC" />
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
 		</Unit>
-		<Unit filename="sparrowMath.h" />
+		<Unit filename="sparrowMath.h">
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
+		</Unit>
 		<Unit filename="sparrowMesh.c">
 			<Option compilerVar="CC" />
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
 		</Unit>
-		<Unit filename="sparrowMesh.h" />
+		<Unit filename="sparrowMesh.h">
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
+		</Unit>
 		<Unit filename="sparrowNet.c">
 			<Option compilerVar="CC" />
+			<Option target="Net (Win x86)" />
+			<Option target="Net (Pandora)" />
 		</Unit>
-		<Unit filename="sparrowNet.h" />
+		<Unit filename="sparrowNet.h">
+			<Option target="Net (Win x86)" />
+			<Option target="Net (Pandora)" />
+		</Unit>
 		<Unit filename="sparrowPrimitives.c">
 			<Option compilerVar="CC" />
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
 		</Unit>
-		<Unit filename="sparrowPrimitives.h" />
+		<Unit filename="sparrowPrimitives.h">
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
+		</Unit>
 		<Unit filename="sparrowPrimitivesAsm.c">
 			<Option compilerVar="CC" />
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowRenderer.c">
 			<Option compilerVar="CC" />
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
 		</Unit>
-		<Unit filename="sparrowRenderer.h" />
+		<Unit filename="sparrowRenderer.h">
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
+		</Unit>
 		<Unit filename="sparrowSound.c">
 			<Option compilerVar="CC" />
+			<Option target="Sound (Win x86)" />
+			<Option target="Sound (Pandora)" />
 		</Unit>
-		<Unit filename="sparrowSound.h" />
+		<Unit filename="sparrowSound.h">
+			<Option target="Sound (Win x86)" />
+			<Option target="Sound (Pandora)" />
+		</Unit>
 		<Unit filename="sparrowSprite.c">
 			<Option compilerVar="CC" />
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
 		</Unit>
-		<Unit filename="sparrowSprite.h" />
+		<Unit filename="sparrowSprite.h">
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
+		</Unit>
 		<Unit filename="sparrowText.c">
 			<Option compilerVar="CC" />
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
 		</Unit>
-		<Unit filename="sparrowText.h" />
+		<Unit filename="sparrowText.h">
+			<Option target="Sparrow (Win x86)" />
+			<Option target="Sparrow (Pandora)" />
+			<Option target="Testsparrow (Win x86)" />
+			<Option target="Testsparrow (Pandora)" />
+			<Option target="Testsprite (Win x86)" />
+			<Option target="Testsprite (Pandora)" />
+			<Option target="Testtext (Win x86)" />
+			<Option target="Testtext (Pandora)" />
+			<Option target="Testmesh (Win x86)" />
+			<Option target="Testmesh (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
+			<Option target="Testtarget (Pandora)" />
+		</Unit>
 		<Unit filename="testmesh.c">
 			<Option compilerVar="CC" />
 			<Option target="Testmesh (Win x86)" />
 			<Option target="Testmesh (Pandora)" />
+		</Unit>
+		<Unit filename="testparallax.c">
+			<Option compilerVar="CC" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testparallax (Win x86)" />
 		</Unit>
 		<Unit filename="testsparrow.c">
 			<Option compilerVar="CC" />
@@ -310,6 +792,12 @@
 			<Option compilerVar="CC" />
 			<Option target="Testsprite (Win x86)" />
 			<Option target="Testsprite (Pandora)" />
+		</Unit>
+		<Unit filename="testtarget.c">
+			<Option compilerVar="CC" />
+			<Option target="Testparallax (Pandora)" />
+			<Option target="Testtarget (Pandora)" />
+			<Option target="Testtarget (Win x86)" />
 		</Unit>
 		<Unit filename="testtext.c">
 			<Option compilerVar="CC" />
