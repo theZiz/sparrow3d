@@ -63,6 +63,14 @@ SPARROW_INCLUDE = -I.
 # SDL_PATH determines, where the SDL includes are (necessary if SDL is in subfolders)
 SDL_PATH = -I/usr/include/SDL
 
+# Uncomment one of this lines to create or use profile files for
+# compiling. You can compile with -fprofile-generate for ANY target,
+# copy the *.gcda files to the source code folder and recompile
+# (complete!) with -fprofile-use again. This uses some in runtime found
+# possibilities to improve sparrow3d.
+# CFLAGS += -fprofile-generate
+# CFLAGS += -fprofile-use
+
 # INCLUDE determines, where all the other includes are
 # INCLUDE = -I/usr/include
 
