@@ -27,7 +27,7 @@ Uint32 spFontButtonLeft = '[';
 Uint32 spFontButtonRight = ']';
 int spFontStrategy = SP_FONT_INTELLIGENT;
 int spFontLastUTF8Length = 0;
-int spFontBackgroundColor = 0;//SP_FONT_NO_BORDER;
+int spFontBackgroundColor = SP_FONT_NO_BORDER;
 
 PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size )
 {
