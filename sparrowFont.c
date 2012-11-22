@@ -27,6 +27,7 @@ Uint32 spFontButtonLeft = '[';
 Uint32 spFontButtonRight = ']';
 int spFontStrategy = SP_FONT_INTELLIGENT;
 int spFontLastUTF8Length = 0;
+int spFontBackgroundColor = 0;//SP_FONT_NO_BORDER;
 
 PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size )
 {
@@ -132,7 +133,14 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 	buffer[0] = character;
 	buffer[1] = 0;
 	SDL_Color sdlcolor = {( color >> 11 ) << 3, ( ( color << 5 ) >> 10 ) << 2, ( ( color & 31 ) << 3 )};
-	SDL_Surface* surface = TTF_RenderUNICODE_Solid( font->font, buffer, sdlcolor );
+	SDL_Surface* surface;
+	if (spFontBackgroundColor == SP_FONT_NO_BORDER)
+		surface = TTF_RenderUNICODE_Solid( font->font, buffer, sdlcolor );
+	else
+	{
+		SDL_Color background =  {( spFontBackgroundColor >> 11 ) << 3, ( ( spFontBackgroundColor << 5 ) >> 10 ) << 2, ( ( spFontBackgroundColor & 31 ) << 3 )};
+		surface = TTF_RenderUNICODE_Shaded( font->font, buffer, sdlcolor ,background );
+	}
 	int width = surface->w + SP_FONT_EXTRASPACE * 2;
 	if ( width & 1 )
 		width++;
@@ -145,8 +153,18 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 	DestR.w = surface->w;
 	DestR.h = surface->h;
 	SDL_BlitSurface( surface, NULL, letter->surface, &DestR );
-
 	SDL_FreeSurface( surface );
+
+	//Setting every spFontBackgroundColor to the alpha color
+	SDL_LockSurface( letter->surface );
+	Uint16* pixel = ( Uint16* )( letter->surface->pixels );
+	int scanline = letter->surface->pitch/letter->surface->format->BytesPerPixel;
+	int x, y;
+	for ( x = 0; x < letter->surface->w; x++ )
+		for ( y = 0; y < letter->surface->h; y++ )
+			if ( pixel[x + y * scanline] == spFontBackgroundColor )
+				pixel[x + y * scanline] = SP_ALPHA_COLOR;
+	SDL_UnlockSurface( letter->surface );		
 
 	TTF_SizeUNICODE( font->font, buffer, &( letter->width ), &( letter->height ) );
 	if ( font->maxheight < letter->height )
@@ -314,10 +332,12 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
 {
 	letter->color = fgColor;
 	SDL_Color sdlcolor = {( fgColor >> 11 ) << 3, ( ( fgColor << 5 ) >> 10 ) << 2, ( ( fgColor & 31 ) << 3 )};
+	SDL_Color background =  {( bgColor >> 11 ) << 3, ( ( bgColor << 5 ) >> 10 ) << 2, ( ( bgColor & 31 ) << 3 )};
+	SDL_Surface* surface;
+	surface = TTF_RenderUTF8_Shaded( font->font, caption, sdlcolor ,background );
   int width;
   if (spFontCorrectStrategy(caption) == SP_FONT_BUTTON)
   {
-    SDL_Surface* surface = TTF_RenderUTF8_Solid( font->font, caption, sdlcolor );
     width = font->maxheight + SP_FONT_EXTRASPACE * 2;
     if ( width & 1 )
       width++;
@@ -347,14 +367,11 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
     DestR.w = surface->w;
     DestR.h = surface->h;
     SDL_BlitSurface( surface, NULL, letter->surface, &DestR );
-
-    SDL_FreeSurface( surface );
   }
   else
   {
     int buttonWidth = font->maxheight + SP_FONT_EXTRASPACE * 2;
     int border = buttonWidth/14;
-    SDL_Surface* surface = TTF_RenderUTF8_Solid( font->font, caption, sdlcolor );
     width = surface->w+2*SP_FONT_EXTRASPACE+2*border;
     if ( width & 1 )
       width++;
@@ -380,10 +397,8 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
     DestR.w = surface->w;
     DestR.h = surface->h;
     SDL_BlitSurface( surface, NULL, letter->surface, &DestR );
-
-    SDL_FreeSurface( surface );
   }
-
+  SDL_FreeSurface( surface );
   letter->height = font->maxheight;
   letter->width = width;
 }
@@ -728,3 +743,7 @@ PREFIX Sint32 spFontGetCacheStart( spFontPointer font )
 	return font->cacheOffset;
 }
 
+PREFIX void spFontSetShadeColor(int value)
+{
+	spFontBackgroundColor = value;
+}

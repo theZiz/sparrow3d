@@ -56,6 +56,8 @@
 #define SP_FONT_GROUP_ALPHABET " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 #define SP_FONT_GROUP_NUMBERS "0123456789.,-"
 
+/* Use this in spFontSetShadeColor, if you don't want / need aliasing */
+#define SP_FONT_NO_BORDER -1
 /*a letter in a binary tree of a font*/
 typedef struct spLetterStruct_ *spLetterPointer;
 typedef struct spLetterStruct_
@@ -216,5 +218,12 @@ PREFIX void spFontSetCacheStart( spFontPointer font, Sint32 letter );
 
 /* spFontGetCacheStart returns the start of the cache */
 PREFIX Sint32 spFontGetCacheStart( spFontPointer font );
+
+/* spFontSetShadeColor sets the "background" color, if you want to shade
+ * smoothy. It is still no alpha blending, but the blended font will be look
+ * better. However, it could be, that the font looks ugly at least with a
+ * shitty background color. So the default is SP_FONT_NO_BORDER, which means,
+ * that no shading is done and the font looks normal pixelize. */
+PREFIX void spFontSetShadeColor(int value);
 
 #endif
