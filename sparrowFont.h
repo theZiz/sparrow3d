@@ -226,4 +226,10 @@ PREFIX Sint32 spFontGetCacheStart( spFontPointer font );
  * that no shading is done and the font looks normal pixelize. */
 PREFIX void spFontSetShadeColor(int value);
 
+/* spFontShadeButtons desides, whether the button font should be shaded
+ * or not. For compatibility (especially with transparent background
+ * color of the button) the default is false (0). But in most cases
+ * true (1) should look much better. :) */
+PREFIX void spFontShadeButtons(int value);
+
 #endif
