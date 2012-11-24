@@ -27,6 +27,7 @@ int count;
 int zStuff = 1;
 Uint16 lastKey = 0;
 char input[32] = "";
+char no_movement = 0;
 
 void draw_test( void )
 {
@@ -450,7 +451,10 @@ int calc_test( Uint32 steps )
 		//if (divisor == 60000)
 		//return 1;
 	}
-	rotation += steps << SP_ACCURACY - 11;
+	if (no_movement)
+		rotation = 8000;
+	else
+		rotation += steps << SP_ACCURACY - 11;
 	
 	if ( spIsKeyboardPolled())
 	{
@@ -542,6 +546,8 @@ void eventHandling(SDL_Event *event)
 
 int main( int argc, char **argv )
 {
+	if (argc > 1)
+		no_movement = 1;
 	//sparrow3D Init
 	//spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
 	spInitCore();
