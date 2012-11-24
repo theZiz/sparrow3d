@@ -50,8 +50,7 @@ void draw_test( void )
 	spSetLightPosition(0,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3);
 	spSetLightColor(0,SP_ONE,SP_ONE,SP_ONE);
 	switch ( test )
-	{
-	case 6:
+	{	case 6:
 		spSetAlphaTest( 0 );
 		spTranslate( 0, 0, (-8 << SP_ACCURACY));
 		spRotateX(rotation);
@@ -509,6 +508,7 @@ void resize( Uint16 w, Uint16 h )
 	spSetPerspective( 50.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 0.1, 100 );
 
 	//Font Loading
+	spFontShadeButtons(1);
 	if ( font )
 		spFontDelete( font );
 	font = spFontLoad( "./font/StayPuft.ttf", 17 * spGetSizeFactor() >> SP_ACCURACY );
