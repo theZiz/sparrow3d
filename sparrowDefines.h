@@ -95,9 +95,11 @@
 #define spDivHigh(a,b) (((Sint64)(a)<<SP_ACCURACY)/(Sint64)(b))
 
 #define spFixedToFloat(x) ((float)(x)/SP_ACCURACY_FACTOR)
-#define spFloatToFixed(x) ((Sint32)((float)x*SP_ACCURACY_FACTOR))
-#define spIntToFixed(x) ((Sint32)(((int)x)<<SP_ACCURACY))
-#define spFixedToInt(x) ((int)(((Sint32)x)>>SP_ACCURACY))
+#define spFloatToFixed(x) ((Sint32)((float)(x)*SP_ACCURACY_FACTOR))
+#define spIntToFixed(x) ((Sint32)(((int)(x))<<SP_ACCURACY))
+#define spFixedToInt(x) ((int)(((Sint32)(x))>>SP_ACCURACY))
+
+#define spFixedRoundInt(x) ((int)(((Sint32)(x)+(1 << SP_ACCURACY-1))>>SP_ACCURACY))
 
 /* The following (long) list of #defines gives you the numbers and names
  * of the generic device buttons or of the buttons on the explizit
