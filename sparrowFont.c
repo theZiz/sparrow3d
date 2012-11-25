@@ -10,7 +10,7 @@
  under the License.
 
  Alternatively, the contents of this file may be used under the terms
- of the GNU Lesser General Public license (the  "LGPL License"), in which case the
+ of the GNU Lesser General Public license (the	"LGPL License"), in which case the
  provisions of LGPL License are applicable instead of those
  above.
 
@@ -28,6 +28,7 @@ Uint32 spFontButtonRight = ']';
 int spFontStrategy = SP_FONT_INTELLIGENT;
 int spFontLastUTF8Length = 0;
 int spFontBackgroundColor = SP_FONT_NO_BORDER;
+int spFontButtonShade = 0;
 
 PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size )
 {
@@ -35,13 +36,13 @@ PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size )
 	if ( !ttf )
 	{
 		printf( "Failed to load Font \"%s\", dude...\n", fontname );
-		printf( "  Error was: \"%s\"\n", TTF_GetError() );
+		printf( "	Error was: \"%s\"\n", TTF_GetError() );
 		return NULL;
 	}
 	spFontPointer font = ( spFontPointer )malloc( sizeof( spFontStruct ) );
 	font->font = ttf;
 	font->root = NULL;
-  font->buttonRoot = NULL;
+	font->buttonRoot = NULL;
 	font->size = size;
 	font->maxheight = 0;
 	font->cacheOffset = 0;
@@ -64,7 +65,7 @@ static spLetterPointer spLetterRotateLeft( spLetterPointer K2 )
 	K1->right = K2;
 
 	K2->binary_height = spMax( spLetterGetHeight( K2->left ), spLetterGetHeight( K2->right ) ) + 1;
-	K1->binary_height = spMax( spLetterGetHeight( K1->left ), spLetterGetHeight( K2        ) ) + 1;
+	K1->binary_height = spMax( spLetterGetHeight( K1->left ), spLetterGetHeight( K2				) ) + 1;
 
 	return K1;
 }
@@ -77,8 +78,8 @@ static spLetterPointer spLetterRotateRight( spLetterPointer K1 )
 	K1->right = K2->left;
 	K2->left = K1;
 
-	K1->binary_height = spMax( spLetterGetHeight( K1->left  ), spLetterGetHeight( K1->right ) ) + 1;
-	K2->binary_height = spMax( spLetterGetHeight( K2->right ), spLetterGetHeight( K1        ) ) + 1;
+	K1->binary_height = spMax( spLetterGetHeight( K1->left	), spLetterGetHeight( K1->right ) ) + 1;
+	K2->binary_height = spMax( spLetterGetHeight( K2->right ), spLetterGetHeight( K1				) ) + 1;
 
 	return K2;
 }
@@ -138,7 +139,7 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 		surface = TTF_RenderUNICODE_Solid( font->font, buffer, sdlcolor );
 	else
 	{
-		SDL_Color background =  {( spFontBackgroundColor >> 11 ) << 3, ( ( spFontBackgroundColor << 5 ) >> 10 ) << 2, ( ( spFontBackgroundColor & 31 ) << 3 )};
+		SDL_Color background =	{( spFontBackgroundColor >> 11 ) << 3, ( ( spFontBackgroundColor << 5 ) >> 10 ) << 2, ( ( spFontBackgroundColor & 31 ) << 3 )};
 		surface = TTF_RenderUNICODE_Shaded( font->font, buffer, sdlcolor ,background );
 	}
 	int width = surface->w + SP_FONT_EXTRASPACE * 2;
@@ -280,7 +281,7 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
 	if (sign < (1 << 11)) //2 Byte UTF8
 	{
 		buffer[0] = 128+64+(sign >> 6);
-		buffer[1] = 128+   (sign & 63);
+		buffer[1] = 128+	 (sign & 63);
 		buffer[2] = 0;
 		return buffer;
 	}
@@ -290,8 +291,8 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
 	if (sign < (1 << 16)) //3 Byte UTF8
 	{
 		buffer[0] = 128+64+32+ (sign >> 12);
-		buffer[1] = 128+      ((sign >>  6) & 63);
-		buffer[2] = 128+      ( sign        & 63);
+		buffer[1] = 128+			((sign >>	6) & 63);
+		buffer[2] = 128+			( sign				& 63);
 		buffer[3] = 0;
 		return buffer;
 	}
@@ -301,9 +302,9 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
 	if (sign < (1 << 21)) //4 Byte UTF8
 	{
 		buffer[0] = 128+64+32+16+ (sign >> 18);
-		buffer[1] = 128+         ((sign >> 12) & 63);
-		buffer[2] = 128+         ((sign >>  6) & 63);
-		buffer[3] = 128+         ( sign        & 63);
+		buffer[1] = 128+				 ((sign >> 12) & 63);
+		buffer[2] = 128+				 ((sign >>	6) & 63);
+		buffer[3] = 128+				 ( sign				& 63);
 		buffer[4] = 0;
 	}
 	return buffer;
@@ -311,102 +312,105 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
 
 static int spFontCorrectStrategy(char* button)
 {
-  if (spFontStrategy != SP_FONT_INTELLIGENT)
-    return spFontStrategy;
-  #if defined GP2X || defined CAANOO || defined DINGUX || defined GCW || defined PANDORA
-    if (strcmp(button,SP_BUTTON_A_NAME) == 0 ||
-        strcmp(button,SP_BUTTON_B_NAME) == 0 ||
-        strcmp(button,SP_BUTTON_X_NAME) == 0 ||
-        strcmp(button,SP_BUTTON_Y_NAME) == 0 ||
-        strcmp(button,SP_BUTTON_L_NAME) == 0 ||
-        strcmp(button,SP_BUTTON_R_NAME) == 0)
-        return SP_FONT_BUTTON;
-    else
-      return SP_FONT_KEY;
-  #else
-    return SP_FONT_KEY;
-  #endif
+	if (spFontStrategy != SP_FONT_INTELLIGENT)
+		return spFontStrategy;
+	#if defined GP2X || defined CAANOO || defined DINGUX || defined GCW || defined PANDORA
+		if (strcmp(button,SP_BUTTON_A_NAME) == 0 ||
+				strcmp(button,SP_BUTTON_B_NAME) == 0 ||
+				strcmp(button,SP_BUTTON_X_NAME) == 0 ||
+				strcmp(button,SP_BUTTON_Y_NAME) == 0 ||
+				strcmp(button,SP_BUTTON_L_NAME) == 0 ||
+				strcmp(button,SP_BUTTON_R_NAME) == 0)
+				return SP_FONT_BUTTON;
+		else
+			return SP_FONT_KEY;
+	#else
+		return SP_FONT_KEY;
+	#endif
 }
 
 PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint32 character, char* caption, Uint16 fgColor, Uint16 bgColor )
 {
 	letter->color = fgColor;
 	SDL_Color sdlcolor = {( fgColor >> 11 ) << 3, ( ( fgColor << 5 ) >> 10 ) << 2, ( ( fgColor & 31 ) << 3 )};
-	SDL_Color background =  {( bgColor >> 11 ) << 3, ( ( bgColor << 5 ) >> 10 ) << 2, ( ( bgColor & 31 ) << 3 )};
+	SDL_Color background =	{( bgColor >> 11 ) << 3, ( ( bgColor << 5 ) >> 10 ) << 2, ( ( bgColor & 31 ) << 3 )};
 	SDL_Surface* surface;
-	surface = TTF_RenderUTF8_Shaded( font->font, caption, sdlcolor ,background );
-  int width;
-  if (spFontCorrectStrategy(caption) == SP_FONT_BUTTON)
-  {
-    width = font->maxheight + SP_FONT_EXTRASPACE * 2;
-    if ( width & 1 )
-      width++;
-    letter->surface = spCreateSurface(width, width);
-    SDL_LockSurface(letter->surface);
-    int x,y;
-    Uint16* pixel = (Uint16*)letter->surface->pixels;
-    int w = letter->surface->pitch/letter->surface->format->BytesPerPixel;
-    for (x = 0; x < letter->surface->w; x++)
-      for (y = 0; y < letter->surface->h; y++)
-      {
-        if ((x-width/2)*(x-width/2)+(y-width/2)*(y-width/2) <= width*width/4)
-        {
-          if ((x-width/2)*(x-width/2)+(y-width/2)*(y-width/2) <= width*width/5)
-            pixel[x+y*w] = bgColor;
-          else
-            pixel[x+y*w] = fgColor;
-        }
-        else
-          pixel[x+y*w] = SP_ALPHA_COLOR;
-      }
-    SDL_UnlockSurface(letter->surface);
+	if (spFontButtonShade)
+		surface = TTF_RenderUTF8_Shaded( font->font, caption, sdlcolor ,background );
+	else
+		surface = TTF_RenderUTF8_Solid( font->font, caption, sdlcolor );
+	int width;
+	if (spFontCorrectStrategy(caption) == SP_FONT_BUTTON)
+	{
+		width = font->maxheight + SP_FONT_EXTRASPACE * 2;
+		if ( width & 1 )
+			width++;
+		letter->surface = spCreateSurface(width, width);
+		SDL_LockSurface(letter->surface);
+		int x,y;
+		Uint16* pixel = (Uint16*)letter->surface->pixels;
+		int w = letter->surface->pitch/letter->surface->format->BytesPerPixel;
+		for (x = 0; x < letter->surface->w; x++)
+			for (y = 0; y < letter->surface->h; y++)
+			{
+				if ((x-width/2)*(x-width/2)+(y-width/2)*(y-width/2) <= width*width/4)
+				{
+					if ((x-width/2)*(x-width/2)+(y-width/2)*(y-width/2) <= width*width/5)
+						pixel[x+y*w] = bgColor;
+					else
+						pixel[x+y*w] = fgColor;
+				}
+				else
+					pixel[x+y*w] = SP_ALPHA_COLOR;
+			}
+		SDL_UnlockSurface(letter->surface);
 
-    SDL_Rect DestR;
-    DestR.x = width/2-surface->w/2;
-    DestR.y = font->maxheight/2+SP_FONT_EXTRASPACE-surface->h/2;
-    DestR.w = surface->w;
-    DestR.h = surface->h;
-    SDL_BlitSurface( surface, NULL, letter->surface, &DestR );
-  }
-  else
-  {
-    int buttonWidth = font->maxheight + SP_FONT_EXTRASPACE * 2;
-    int border = buttonWidth/14;
-    width = surface->w+2*SP_FONT_EXTRASPACE+2*border;
-    if ( width & 1 )
-      width++;
-    letter->surface = spCreateSurface(width, font->maxheight+SP_FONT_EXTRASPACE*2);
-    SDL_LockSurface(letter->surface);
-    int x,y;
-    Uint16* pixel = (Uint16*)letter->surface->pixels;
-    int w = letter->surface->pitch/letter->surface->format->BytesPerPixel;
-    for (x = 0; x < letter->surface->w; x++)
-      for (y = 0; y < letter->surface->h; y++)
-      {
-        if (x < border        || y < border ||
-            x >= width-border || y >= letter->surface->h-border)
-          pixel[x+y*w] = fgColor;
-        else
-          pixel[x+y*w] = bgColor;
-      }
-    SDL_UnlockSurface(letter->surface);
+		SDL_Rect DestR;
+		DestR.x = width/2-surface->w/2;
+		DestR.y = font->maxheight/2+SP_FONT_EXTRASPACE-surface->h/2;
+		DestR.w = surface->w;
+		DestR.h = surface->h;
+		SDL_BlitSurface( surface, NULL, letter->surface, &DestR );
+	}
+	else
+	{
+		int buttonWidth = font->maxheight + SP_FONT_EXTRASPACE * 2;
+		int border = buttonWidth/14;
+		width = surface->w+2*SP_FONT_EXTRASPACE+2*border;
+		if ( width & 1 )
+			width++;
+		letter->surface = spCreateSurface(width, font->maxheight+SP_FONT_EXTRASPACE*2);
+		SDL_LockSurface(letter->surface);
+		int x,y;
+		Uint16* pixel = (Uint16*)letter->surface->pixels;
+		int w = letter->surface->pitch/letter->surface->format->BytesPerPixel;
+		for (x = 0; x < letter->surface->w; x++)
+			for (y = 0; y < letter->surface->h; y++)
+			{
+				if (x < border				|| y < border ||
+						x >= width-border || y >= letter->surface->h-border)
+					pixel[x+y*w] = fgColor;
+				else
+					pixel[x+y*w] = bgColor;
+			}
+		SDL_UnlockSurface(letter->surface);
 
-    SDL_Rect DestR;
-    DestR.x = SP_FONT_EXTRASPACE+border;
-    DestR.y = font->maxheight/2+SP_FONT_EXTRASPACE-surface->h/2;
-    DestR.w = surface->w;
-    DestR.h = surface->h;
-    SDL_BlitSurface( surface, NULL, letter->surface, &DestR );
-  }
-  SDL_FreeSurface( surface );
-  letter->height = font->maxheight;
-  letter->width = width;
+		SDL_Rect DestR;
+		DestR.x = SP_FONT_EXTRASPACE+border;
+		DestR.y = font->maxheight/2+SP_FONT_EXTRASPACE-surface->h/2;
+		DestR.w = surface->w;
+		DestR.h = surface->h;
+		SDL_BlitSurface( surface, NULL, letter->surface, &DestR );
+	}
+	SDL_FreeSurface( surface );
+	letter->height = font->maxheight;
+	letter->width = width;
 }
 
 
 PREFIX void spFontAddButton( spFontPointer font, Uint32 character, char* caption, Uint16 fgColor, Uint16 bgColor )
 {
-  spLetterPointer letter = ( spLetterPointer )malloc( sizeof( spLetterStruct ) );
+	spLetterPointer letter = ( spLetterPointer )malloc( sizeof( spLetterStruct ) );
 
 	spFontChangeButton( font, letter, character, caption, fgColor, bgColor );
 	letter->character = character;
@@ -417,13 +421,13 @@ PREFIX void spFontAddButton( spFontPointer font, Uint32 character, char* caption
 
 PREFIX void spFontSetButtonBorderSigns(Uint32 left,Uint32 right)
 {
-  spFontButtonLeft = left;
-  spFontButtonRight = right;
+	spFontButtonLeft = left;
+	spFontButtonRight = right;
 }
 
 PREFIX void spFontSetButtonStrategy(int strategy)
 {
-  spFontStrategy = strategy;
+	spFontStrategy = strategy;
 }
 
 static void spLetterAddBorder( spLetterPointer letter, Uint16 bordercolor )
@@ -547,15 +551,15 @@ PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPo
 			l++;
 			continue;
 		}
-    spLetterPointer letter;
-    //first we look for buttons
-    if (text[l]==spFontButtonLeft && (letter = spLetterFind( font->buttonRoot, text[l+1])) && text[l+2]==spFontButtonRight)
-      l+=2;
-    else
-    {
+		spLetterPointer letter;
+		//first we look for buttons
+		if (text[l]==spFontButtonLeft && (letter = spLetterFind( font->buttonRoot, text[l+1])) && text[l+2]==spFontButtonRight)
+			l+=2;
+		else
+		{
 			Uint32 sign = spFontGetUnicodeFromUTF8(&(text[l]));
-      letter = spFontGetLetter( font, sign );
-    }
+			letter = spFontGetLetter( font, sign );
+		}
 		if ( letter )
 		{
 			pos += letter->width >> 1;
@@ -746,4 +750,9 @@ PREFIX Sint32 spFontGetCacheStart( spFontPointer font )
 PREFIX void spFontSetShadeColor(int value)
 {
 	spFontBackgroundColor = value;
+}
+
+PREFIX void spFontShadeButtons(int value)
+{
+	spFontButtonShade = value;
 }

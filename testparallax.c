@@ -107,12 +107,14 @@ int calc_function( Uint32 steps )
 
 void resize(Uint16 w,Uint16 h)
 {
-	//Font Loading
+	spFontShadeButtons(1);
 	if ( font )
 		spFontDelete( font );
 	font = spFontLoad( "./font/StayPuft.ttf", 17 * spGetSizeFactor() >> SP_ACCURACY );
-	spFontAdd( font, SP_FONT_GROUP_ASCII, 0 ); //whole ASCII
-	spFontAddBorder( font, 65535 );
+	spFontSetShadeColor(0);
+	spFontAdd( font, SP_FONT_GROUP_ASCII, 65535 ); //whole ASCII
+	spFontAdd( font, "äüöÄÜÖßẞ", 65535 ); //German stuff (same like spFontAdd( font, SP_FONT_GROUP_GERMAN, 0 ); )
+	spFontAddBorder( font, 0 );
 	spFontAddButton( font, 'A', SP_BUTTON_A_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 	spFontAddButton( font, 'B', SP_BUTTON_B_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 	spFontAddButton( font, 'X', SP_BUTTON_X_NAME, 65535, spGetRGB( 64, 64, 64 ) );

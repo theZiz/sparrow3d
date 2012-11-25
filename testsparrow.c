@@ -27,6 +27,7 @@ int count;
 int zStuff = 1;
 Uint16 lastKey = 0;
 char input[32] = "";
+char no_movement = 0;
 
 void draw_test( void )
 {
@@ -50,8 +51,7 @@ void draw_test( void )
 	spSetLightPosition(0,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3);
 	spSetLightColor(0,SP_ONE,SP_ONE,SP_ONE);
 	switch ( test )
-	{
-	case 6:
+	{	case 6:
 		spSetAlphaTest( 0 );
 		spTranslate( 0, 0, (-8 << SP_ACCURACY));
 		spRotateX(rotation);
@@ -451,7 +451,10 @@ int calc_test( Uint32 steps )
 		//if (divisor == 60000)
 		//return 1;
 	}
-	rotation += steps << SP_ACCURACY - 11;
+	if (no_movement)
+		rotation = SP_PI;
+	else
+		rotation += steps << SP_ACCURACY - 11;
 	
 	if ( spIsKeyboardPolled())
 	{
@@ -509,6 +512,7 @@ void resize( Uint16 w, Uint16 h )
 	spSetPerspective( 50.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 0.1, 100 );
 
 	//Font Loading
+	spFontShadeButtons(1);
 	if ( font )
 		spFontDelete( font );
 	font = spFontLoad( "./font/StayPuft.ttf", 17 * spGetSizeFactor() >> SP_ACCURACY );
@@ -542,6 +546,8 @@ void eventHandling(SDL_Event *event)
 
 int main( int argc, char **argv )
 {
+	if (argc > 1)
+		no_movement = 1;
 	//sparrow3D Init
 	//spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
 	spInitCore();
