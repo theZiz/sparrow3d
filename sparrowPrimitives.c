@@ -58,7 +58,7 @@ PREFIX void spInitPrimitives()
 {
 	int i;
 	for ( i = 1; i < ( 1 << SP_PRIM_ACCURACY ); i++ )
-		spOne_over_x_look_up[i] = ( 1 << SP_PRIM_ACCURACY ) / i;
+		spOne_over_x_look_up[i] = (( 1 << SP_PRIM_ACCURACY )+(i >> 1)) / i;
 	spOne_over_x_look_up[0] = 0;
 	spSetZBufferCache( spZBufferCacheCount );
 }
@@ -158,7 +158,7 @@ inline Sint32 z_div( Sint32 z, Sint32 d )
 #else
 	if ( d == 0 )
 		return 0;
-	return z / d;
+	return (z+(d>>1)) / d;
 #endif
 }
 

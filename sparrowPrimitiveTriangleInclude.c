@@ -23,6 +23,9 @@
  * alternative I used before was massive copy and paste, which is
  * bollocks. */
 
+//#define SP_TRY
+#ifndef SP_TRY
+
 #ifdef __SPARROW_INTERNAL_PATTERN__
 	#ifdef __SPARROW_INTERNAL_ZBOTH__
 		#ifdef __GNUC__
@@ -331,7 +334,7 @@
 			}
 		}
 	}
-
+	
 	xr = x3 << SP_PRIM_ACCURACY;
 	sX_r = 0;
 	#ifndef __SPARROW_INTERNAL_ZNOTHING__
@@ -469,3 +472,327 @@
 	SDL_UnlockSurface( spTarget );
 }
 
+#else
+
+#ifdef __SPARROW_INTERNAL_PATTERN__
+	#ifdef __SPARROW_INTERNAL_ZBOTH__
+		#ifdef __GNUC__
+		inline void draw_line_ztest_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color) __attribute__((always_inline));
+		#endif
+		inline void draw_line_ztest_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color)
+	#elif defined __SPARROW_INTERNAL_ZTEST__
+		#ifdef __GNUC__
+		inline void draw_line_ztest_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color) __attribute__((always_inline));
+		#endif
+		inline void draw_line_ztest_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color)
+	#elif defined __SPARROW_INTERNAL_ZSET__
+		#ifdef __GNUC__
+		inline void draw_line_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color) __attribute__((always_inline));
+		#endif
+		inline void draw_line_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color)
+	#else
+		#ifdef __GNUC__
+		inline void draw_line_pattern( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color ) __attribute__((always_inline));
+		#endif
+		inline void draw_line_pattern( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color )
+	#endif
+#else
+	#ifdef __SPARROW_INTERNAL_ZBOTH__
+		#ifdef __GNUC__
+		inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color) __attribute__((always_inline));
+		#endif
+		inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color)
+	#elif defined __SPARROW_INTERNAL_ZTEST__
+		#ifdef __GNUC__
+		inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color) __attribute__((always_inline));
+		#endif
+		inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color)
+	#elif defined __SPARROW_INTERNAL_ZSET__
+		#ifdef __GNUC__
+		inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color) __attribute__((always_inline));
+		#endif
+		inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color)
+	#else
+		#ifdef __GNUC__
+		inline void draw_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color ) __attribute__((always_inline));
+		#endif
+		inline void draw_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color )
+	#endif
+#endif
+{
+#ifdef __SPARROW_INTERNAL_ZNOTHING__
+	#ifdef __SPARROW_INTERNAL_PATTERN__
+		if (x1 < 0)
+			x1 = 0;
+		if (x2 >= spTargetX)
+			x2 = spTargetX-1;
+		for (;x1 <= x2; x1++)
+			draw_pixel_pattern(x1,y,color);
+	#else
+		if (x1 < 0)
+			x1 = 0;
+		if (x2 >= spTargetX)
+			x2 = spTargetX-1;
+		spHorizentalLine( spTargetPixel, x1, y, x2 - x1, color, 1, spTargetScanLine, spTargetY );
+	#endif
+#else
+	Sint32 line[x2-x1+1]; //z
+	Sint32 stack_l[x2-x1+1];
+	Sint32 stack_r[x2-x1+1];
+	
+	int stack_counter = -1;
+	//Init line
+	line[0] = z1;
+	line[x2-x1] = z2;
+
+	if (x2-x1 != 0)
+	{
+		stack_counter++;
+		stack_l[stack_counter] = 0;
+		stack_r[stack_counter] = x2-x1;
+	}
+	while (stack_counter >= 0)
+	{
+		//stack pop
+		Sint32 l = stack_l[stack_counter];
+		Sint32 r = stack_r[stack_counter];
+		stack_counter--;
+		if (l+1 == r)
+			continue;
+		//Calculating the middle
+		Sint32 m = l + r >> 1; //(l + r) / 2
+		line[m] = line[l] + line[r] >> 1; //(z[l] + z[r]) / 2
+		if (l+2 == r)
+			continue;
+		//left stack push
+		stack_counter++;
+		stack_l[stack_counter] = l;
+		stack_r[stack_counter] = m;
+		//right stack push
+		stack_counter++;
+		stack_l[stack_counter] = m;
+		stack_r[stack_counter] = r;
+	}
+	if (x1 < 0)
+		stack_counter = -x1;
+	else
+		stack_counter = 0;
+	Sint32 end = x2-x1;
+	if (x1 + end >= spTargetX)
+		end = spTargetX-x1-1;
+	for (; stack_counter <= end; stack_counter++)
+	{
+		Sint32 x = x1+stack_counter;
+		Sint32 z = line[stack_counter];
+		#ifdef __SPARROW_INTERNAL_PATTERN__
+			#ifdef __SPARROW_INTERNAL_ZBOTH__
+				draw_pixel_ztest_zset_pattern(x,y,z,color);
+			#elif defined __SPARROW_INTERNAL_ZTEST__
+				draw_pixel_ztest_pattern(x,y,z,color);
+			#elif defined __SPARROW_INTERNAL_ZSET__
+				draw_pixel_zset_pattern(x,y,z,color);
+			#endif
+		#else
+			#ifdef __SPARROW_INTERNAL_ZBOTH__
+				draw_pixel_ztest_zset(x,y,z,color);
+			#elif defined __SPARROW_INTERNAL_ZTEST__
+				draw_pixel_ztest(x,y,z,color);
+			#elif defined __SPARROW_INTERNAL_ZSET__
+				draw_pixel_zset(x,y,z,color);
+			#endif
+		#endif
+	}	
+#endif
+}
+
+
+#ifdef __SPARROW_INTERNAL_PATTERN__
+	#ifdef __SPARROW_INTERNAL_ZBOTH__
+		inline void sp_intern_Triangle_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+	#elif defined __SPARROW_INTERNAL_ZTEST__
+		inline void sp_intern_Triangle_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#elif defined __SPARROW_INTERNAL_ZSET__	
+		inline void sp_intern_Triangle_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#else
+		inline void sp_intern_Triangle_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#endif
+#else
+	#ifdef __SPARROW_INTERNAL_ZBOTH__
+		inline void sp_intern_Triangle_ztest_zset( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+	#elif defined __SPARROW_INTERNAL_ZTEST__
+		inline void sp_intern_Triangle_ztest( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#elif defined __SPARROW_INTERNAL_ZSET__	
+		inline void sp_intern_Triangle_zset( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#else
+		inline void sp_intern_Triangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+	#endif
+#endif
+{
+	//Locking the Target
+	SDL_LockSurface( spTarget );
+
+	Sint32  long_line_x[y2-y1+1]; //x
+	Sint32 short_line_x[y2-y1+1]; //x
+#ifndef __SPARROW_INTERNAL_ZNOTHING__
+	Sint32  long_line_z[y2-y1+1]; //z
+	Sint32 short_line_z[y2-y1+1]; //z
+#endif
+	Sint32 stack_l[y2-y1+1];
+	Sint32 stack_r[y2-y1+1];
+	
+	int stack_counter = -1;
+	//Init long line
+	long_line_x[0] = x1;
+	long_line_x[y2-y1] = x2;
+#ifndef __SPARROW_INTERNAL_ZNOTHING__
+	long_line_z[0] = z1;
+	long_line_z[y2-y1] = z2;
+#endif
+
+	if (y2 != y1)
+	{
+		stack_counter++;
+		stack_l[stack_counter] = 0;
+		stack_r[stack_counter] = y2-y1;
+	}
+	while (stack_counter >= 0)
+	{
+		//stack pop
+		Sint32 l = stack_l[stack_counter];
+		Sint32 r = stack_r[stack_counter];
+		stack_counter--;
+		if (l+1 == r)
+			continue;
+		//Calculating the middle
+		Sint32 m = l + r >> 1; //(l + r) / 2
+		long_line_x[m] = long_line_x[l] + long_line_x[r] >> 1; //(x[l] + x[r]) / 2
+	#ifndef __SPARROW_INTERNAL_ZNOTHING__
+		long_line_z[m] = long_line_z[l] + long_line_z[r] >> 1; //(z[l] + z[r]) / 2
+	#endif
+		if (l+2 == r)
+			continue;
+		//left stack push
+		stack_counter++;
+		stack_l[stack_counter] = l;
+		stack_r[stack_counter] = m;
+		//right stack push
+		stack_counter++;
+		stack_l[stack_counter] = m;
+		stack_r[stack_counter] = r;
+	}
+	
+	//Init short lines
+	short_line_x[0] = x1;
+	short_line_x[y3-y1] = x3;
+#ifndef __SPARROW_INTERNAL_ZNOTHING__	
+	short_line_z[0]= z1;
+	short_line_z[y3-y1] = z3;
+#endif
+	stack_counter = -1;
+	if (y3 != y1)
+	{
+		stack_counter++;
+		stack_l[stack_counter] = 0;
+		stack_r[stack_counter] = y3-y1;
+	}
+	if (y2 != y3)
+	{
+		stack_counter++;
+		stack_l[stack_counter] = y3-y1;
+		stack_r[stack_counter] = y2-y1;
+		short_line_x[y2-y1] = x2;
+	#ifndef __SPARROW_INTERNAL_ZNOTHING__	
+		short_line_z[y2-y1] = z2;
+	#endif
+	}
+	while (stack_counter >= 0)
+	{
+		//stack pop
+		Sint32 l = stack_l[stack_counter];
+		Sint32 r = stack_r[stack_counter];
+		stack_counter--;
+		if (l+1 == r)
+			continue;
+		//Calculating the middle
+		Sint32 m = l + r >> 1; //(l + r) / 2
+		short_line_x[m] = short_line_x[l] + short_line_x[r] >> 1; //(x[l] + x[r]) / 2
+	#ifndef __SPARROW_INTERNAL_ZNOTHING__
+		short_line_z[m] = short_line_z[l] + short_line_z[r] >> 1; //(x[l] + x[r]) / 2
+	#endif
+		if (l+2 == r)
+			continue;
+		//left stack push
+		stack_counter++;
+		stack_l[stack_counter] = l;
+		stack_r[stack_counter] = m;
+		//right stack push
+		stack_counter++;
+		stack_l[stack_counter] = m;
+		stack_r[stack_counter] = r;
+	}
+	
+	if (y1 < 0)
+		stack_counter = -y1;
+	else
+		stack_counter = 0;
+	Sint32 end = y2-y1;
+	if (y1 + end >= spTargetY)
+		end = spTargetY-y1-1;
+	for (; stack_counter <= end; stack_counter++)
+	{
+		Sint32 y = y1+stack_counter;
+		Sint32 xl = long_line_x[stack_counter];
+		Sint32 xr = short_line_x[stack_counter];
+	#ifndef __SPARROW_INTERNAL_ZNOTHING__
+		Sint32 zl = long_line_z[stack_counter];
+		Sint32 zr = short_line_z[stack_counter];
+	#endif
+		#ifdef __SPARROW_INTERNAL_PATTERN__
+			#ifdef __SPARROW_INTERNAL_ZBOTH__
+				if (xl < xr)
+					draw_line_ztest_zset_pattern(xl,zl,xr,zr,y,color);
+				else
+					draw_line_ztest_zset_pattern(xr,zr,xl,zl,y,color);
+			#elif defined __SPARROW_INTERNAL_ZTEST__
+				if (xl < xr)
+					draw_line_ztest_pattern(xl,zl,xr,zr,y,color);
+				else
+					draw_line_ztest_pattern(xr,zr,xl,zl,y,color);
+			#elif defined __SPARROW_INTERNAL_ZSET__	
+				if (xl < xr)
+					draw_line_zset_pattern(xl,zl,xr,zr,y,color);
+				else
+					draw_line_zset_pattern(xr,zr,xl,zl,y,color);
+			#else
+				if (xl < xr)
+					draw_line_pattern(xl,xr,y,color);
+				else
+					draw_line_pattern(xr,xl,y,color);
+			#endif
+		#else
+			#ifdef __SPARROW_INTERNAL_ZBOTH__
+				if (xl < xr)
+					draw_line_ztest_zset(xl,zl,xr,zr,y,color);
+				else
+					draw_line_ztest_zset(xr,zr,xl,zl,y,color);
+			#elif defined __SPARROW_INTERNAL_ZTEST__
+				if (xl < xr)
+					draw_line_ztest(xl,zl,xr,zr,y,color);
+				else
+					draw_line_ztest(xr,zr,xl,zl,y,color);
+			#elif defined __SPARROW_INTERNAL_ZSET__	
+				if (xl < xr)
+					draw_line_zset(xl,zl,xr,zr,y,color);
+				else
+					draw_line_zset(xr,zr,xl,zl,y,color);
+			#else
+				if (xl < xr)
+					draw_line(xl,xr,y,color);
+				else
+					draw_line(xr,xl,y,color);
+			#endif
+		#endif
+	}
+	SDL_UnlockSurface( spTarget );
+}
+#endif
