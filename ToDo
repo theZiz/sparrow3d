@@ -1,4 +1,6 @@
 Roadmap til next version (tag):
+- Try:
+	- recursive horizental line without Z division needed.
 - File management
 	+ Reading stuff per line
 	+ creating folder

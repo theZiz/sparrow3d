@@ -452,7 +452,7 @@ int calc_test( Uint32 steps )
 		//return 1;
 	}
 	if (no_movement)
-		rotation = SP_PI;
+		rotation = 20000;//SP_PI;
 	else
 		rotation += steps << SP_ACCURACY - 11;
 	

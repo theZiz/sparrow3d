@@ -520,6 +520,15 @@
 	#endif
 #endif
 {
+/*	if (x1 == x2 || x1+1 == x2)
+		return;
+#ifndef __SPARROW_INTERNAL_ZNOTHING__
+	Sint32 xm = x1+x2 >> 1;
+	Sint32 zm = z1+z2 >> 1;
+	draw_pixel_ztest_zset(xm,y,zm,color);
+	draw_line_ztest_zset(x1,z1,xm,zm,y,color);
+	draw_line_ztest_zset(xm,zm,x2,z2,y,color);
+#endif*/
 #ifdef __SPARROW_INTERNAL_ZNOTHING__
 	#ifdef __SPARROW_INTERNAL_PATTERN__
 		if (x1 < 0)
