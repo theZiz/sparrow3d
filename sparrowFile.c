@@ -189,6 +189,12 @@ PREFIX spFileError spRenameFile( const char* filename , const char* newname)
 #endif
 }
 
+#ifdef WIN32
+spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointer* last,char* directory,int recursive,int no_hidden_files)
+{
+	return SP_FILE_EVERYTHING_OK;
+}
+#else
 spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointer* last,char* directory,int recursive,int no_hidden_files)
 {
 	struct stat stat_buf;
@@ -263,17 +269,13 @@ spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointe
 	closedir(d);
 	return SP_FILE_EVERYTHING_OK;
 }
+#endif
 
 PREFIX spFileError spFileGetDirectory(spFileListPointer* pointer,char* directory,int recursive,int no_hidden_files)
 {
-	#ifdef WIN32
-	*pointer = NULL;
-	return SP_FILE_EVERYTHING_OK;
-	#else
 	spFileListPointer last = NULL;
 	*pointer = NULL;
 	return internalFileGetDirectory(pointer,&last,directory,recursive,no_hidden_files);
-	#endif	
 }
 
 PREFIX void spFileDeleteList(spFileListPointer list)
