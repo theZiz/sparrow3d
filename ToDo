@@ -5,9 +5,8 @@ Roadmap til next version (tag):
 	+ removing files and folders
 	+ renaming files and folders
 	- Searching files
-	  - Search first & search next
-	  - Give file list with extension / pattern (like replay*.rep)
-	- testing under windows
+	  + Linux
+	  - Windows
 - third device layer (controlled by sparrowCore)
   - axis are exactly the same
   - as much buttons createable as you want

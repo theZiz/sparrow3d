@@ -135,7 +135,7 @@ endif
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
 
-all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testsprite testmesh testtarget testtext testparallax testserver testclient
+all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testsprite testmesh testtarget testtext testfile testparallax testserver testclient
 
 targets:
 	@echo "gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora, gcw"
@@ -154,6 +154,9 @@ testtarget: testtarget.c libsparrow3d.so
 
 testtext: testtext.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testtext.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testtext
+
+testfile: testfile.c libsparrow3d.so
+	$(CPP_LINK) $(CFLAGS) testfile.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testfile
 
 testparallax: testparallax.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testparallax.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testparallax

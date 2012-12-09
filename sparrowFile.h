@@ -36,11 +36,38 @@ typedef enum
 	SP_FILE_EVERYTHING_OK = 0,
 	SP_FILE_ACCESS_ERROR = 1,
 	SP_FILE_NOT_FOUND_ERROR = 2,
-	SP_FILE_ALREADY_EXISTS_ERROR = 3
+	SP_FILE_ALREADY_EXISTS_ERROR = 3,
+	SP_FILE_INVALID_PARAMETER_ERROR = 4,
+	SP_FILE_UNKNOWN_ERROR = 5
 } spFileError;
+
+typedef enum
+{
+	SP_FILE_FILE = 0,
+	SP_FILE_DIRECTORY = 1,
+	SP_FILE_LINK = 2,
+} spFileType;
+
+typedef enum
+{
+	SP_FILE_SORT_BY_NAME = 0,
+	SP_FILE_SORT_BY_TYPE = 1,
+	SP_FILE_SORT_BY_TYPE_AND_NAME = 2,
+	SP_FILE_SORT_BACKWARDS = 4
+} spFileSortType;
+	
 
 //Just because it looks better :)
 typedef SDL_RWops *spFilePointer;
+
+typedef struct spFileListStruct *spFileListPointer;
+typedef struct spFileListStruct {
+	char name[256];
+	spFileType type;
+	spFileListPointer prev;
+	spFileListPointer next;
+	int count; //only valid for the first element!
+} spFileList;
 
 /* spFileExists tests, whether the file "filename" exists ;-) */
 PREFIX int spFileExists( const char* filename );
@@ -72,10 +99,29 @@ PREFIX spFileError spRemoveFile( const char* filename );
  * spFileError */
 PREFIX spFileError spRemoveDirectory( const char* dirname );
 
-/* Rename the file filename the newname. Returns 0 at success, otherwise see
+/* Renames the file filename to newname. Returns 0 at success, otherwise see
  * spFileError. You can use the same function for files and directories. That
  * is the reason, why I just defined another name for the same function. ;-) */
 PREFIX spFileError spRenameFile( const char* filename , const char* newname);
 #define spRenameDirectory spRenameFile
+
+/* Searching in given directory (recursive = 0) or given directory and all
+ * subdirectories (recursives = 1). Be carefull with infinite directory-loops!
+ * Returns a double linked lists of files names with file names based on the
+ * given directory. Set no_hidden_files to 1, if you don't want hidden files to
+ * be in the list like .git directoriews... However: The functions sets pointer
+ * to NULL, if the directory is empty. Returns spFileError.*/
+PREFIX spFileError spFileGetDirectory(spFileListPointer* pointer, char* directory,int recursive,int no_hidden_files);
+
+/* Deletes a list created by spFileGetDirectory.*/
+PREFIX void spFileDeleteList(spFileListPointer list);
+
+/* Sorts the file list like you want. The possible sort pattern are
+ * (self-explanatory):
+ * - SP_FILE_SORT_BY_NAME
+ * - SP_FILE_SORT_BY_TYPE
+ * - SP_FILE_SORT_BY_TYPE_AND_NAME
+ * Add SP_FILE_SORT_BACKWARDS to sort backwards */
+PREFIX void spFileSortList(spFileListPointer* list,spFileSortType sortBy);
 
 #endif

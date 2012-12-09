@@ -19,11 +19,17 @@
 */
 
 #include "sparrowFile.h"
-#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#ifdef WIN32
+#else
+	#include <dirent.h>
+	#include <sys/types.h>
+	#include <sys/stat.h>
+	#include <unistd.h>
+#endif
 
 PREFIX int spFileExists( const char* filename )
 {
@@ -181,4 +187,197 @@ PREFIX spFileError spRenameFile( const char* filename , const char* newname)
 	}
 	return SP_FILE_EVERYTHING_OK;	
 #endif
+}
+
+spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointer* last,char* directory,int recursive,int no_hidden_files)
+{
+	struct stat stat_buf;
+	DIR* d = opendir(directory);
+	if (d)
+	{
+		struct dirent *dir;
+		while ((dir = readdir(d)) != NULL)
+		{
+			if (strcmp(dir->d_name,".") == 0 || strcmp(dir->d_name,"..") == 0)
+				continue;
+			if (no_hidden_files && dir->d_name[0]=='.')
+				continue;
+			spFileListPointer newOne = (spFileListPointer)malloc(sizeof(spFileList));
+			sprintf(newOne->name,"%s/%s",directory,dir->d_name);
+			switch (dir->d_type)
+			{
+				case DT_DIR: newOne->type = SP_FILE_DIRECTORY; break;
+				case DT_LNK:
+					newOne->type = SP_FILE_LINK;
+					stat(dir->d_name,&stat_buf);
+					if (S_ISDIR(stat_buf.st_mode))
+						newOne->type |= SP_FILE_DIRECTORY;
+					else
+						newOne->type |= SP_FILE_FILE;
+					break;
+				default: newOne->type = SP_FILE_FILE;
+			}
+			if (*last)
+			{
+				(*last)->next = newOne;
+				newOne->prev = *last;
+				newOne->next = NULL;
+				*last = newOne;
+			}
+			else
+			{
+				newOne->prev = NULL;
+				newOne->next = NULL;
+				*pointer = newOne;
+				*last = newOne;
+				(*pointer)->count = 0;
+			}
+			(*pointer)->count++;
+			if ((newOne->type & SP_FILE_DIRECTORY) && recursive)
+			{
+				spFileError error = internalFileGetDirectory(pointer,last,newOne->name,1,no_hidden_files);
+				if (error != SP_FILE_EVERYTHING_OK)
+				{
+					closedir(d);
+					return error;
+				}
+			}
+		}
+		if (errno == EBADF)
+			return SP_FILE_UNKNOWN_ERROR;
+	}
+	else
+	{
+		switch (errno)
+		{
+			case EACCES:
+				return SP_FILE_ACCESS_ERROR;
+			case ENOENT:
+				return SP_FILE_NOT_FOUND_ERROR;
+			case ENOTDIR:
+				return SP_FILE_INVALID_PARAMETER_ERROR;
+			default:
+				return SP_FILE_UNKNOWN_ERROR;
+		}
+	}
+	closedir(d);
+	return SP_FILE_EVERYTHING_OK;
+}
+
+PREFIX spFileError spFileGetDirectory(spFileListPointer* pointer,char* directory,int recursive,int no_hidden_files)
+{
+	#ifdef WIN32
+	*pointer = NULL;
+	return SP_FILE_EVERYTHING_OK;
+	#else
+	spFileListPointer last = NULL;
+	*pointer = NULL;
+	return internalFileGetDirectory(pointer,&last,directory,recursive,no_hidden_files);
+	#endif	
+}
+
+PREFIX void spFileDeleteList(spFileListPointer list)
+{
+	while (list)
+	{
+		spFileListPointer next = list->next;
+		free(list);
+		list = next;
+	}
+}
+
+int internalCompareByName ( const void * elem1, const void * elem2 )
+{
+	spFileListPointer left  = *((spFileListPointer*)(elem1));
+	spFileListPointer right = *((spFileListPointer*)(elem2));
+	return strcmp(left->name,right->name);
+}
+
+int internalCompareByNameBackwards ( const void * elem1, const void * elem2 )
+{
+	spFileListPointer left  = *((spFileListPointer*)(elem1));
+	spFileListPointer right = *((spFileListPointer*)(elem2));
+	return -strcmp(left->name,right->name);
+}
+
+int internalCompareByType ( const void * elem1, const void * elem2 )
+{
+	spFileListPointer left  = *((spFileListPointer*)(elem1));
+	spFileListPointer right = *((spFileListPointer*)(elem2));
+	return left->type < right->type?-1:(left->type > right->type?1:0);
+}
+
+int internalCompareByTypeBackwards ( const void * elem1, const void * elem2 )
+{
+	spFileListPointer left  = *((spFileListPointer*)(elem1));
+	spFileListPointer right = *((spFileListPointer*)(elem2));
+	return left->type < right->type?1:(left->type > right->type?-1:0);
+}
+
+int internalCompareByTypeName ( const void * elem1, const void * elem2 )
+{
+	int result = internalCompareByType(elem1,elem2);
+	if (result == 0)
+	{
+		return internalCompareByName(elem1,elem2);
+	}
+	return result;
+}
+
+int internalCompareByTypeNameBackwards ( const void * elem1, const void * elem2 )
+{
+	int result = internalCompareByTypeBackwards(elem1,elem2);
+	if (result == 0)
+	{
+		return internalCompareByNameBackwards(elem1,elem2);
+	}
+	return result;
+}
+
+PREFIX void spFileSortList(spFileListPointer* list,spFileSortType sortBy)
+{
+	if (!(*list))
+		return;
+	//Creating quick sort array
+	int count = (*list)->count;
+	spFileListPointer array[count];
+	int i;
+	spFileListPointer mom = *list;
+	for (i = 0; i < count; i++)
+	{
+		array[i] = mom;
+		mom = mom->next;
+	}
+	switch (sortBy)
+	{
+		case SP_FILE_SORT_BY_NAME:
+			qsort(array,count,sizeof(spFileListPointer),internalCompareByName);
+			break;
+		case SP_FILE_SORT_BY_NAME | SP_FILE_SORT_BACKWARDS:
+			qsort(array,count,sizeof(spFileListPointer),internalCompareByNameBackwards);
+			break;
+		case SP_FILE_SORT_BY_TYPE:
+			qsort(array,count,sizeof(spFileListPointer),internalCompareByType);
+			break;
+		case SP_FILE_SORT_BY_TYPE | SP_FILE_SORT_BACKWARDS:
+			qsort(array,count,sizeof(spFileListPointer),internalCompareByTypeBackwards);
+			break;
+		case SP_FILE_SORT_BY_TYPE_AND_NAME:
+			qsort(array,count,sizeof(spFileListPointer),internalCompareByTypeName);
+			break;
+		case SP_FILE_SORT_BY_TYPE_AND_NAME | SP_FILE_SORT_BACKWARDS:
+			qsort(array,count,sizeof(spFileListPointer),internalCompareByTypeNameBackwards);
+			break;
+	}
+		
+	*list = array[0];
+	(*list)->prev = NULL;
+	(*list)->count = count;
+	for (i = 1; i < count; i++)
+	{
+		array[i  ]->prev = array[i-1];
+		array[i-1]->next = array[  i];
+	}
+	array[count-1]->next = NULL;
+	
 }
