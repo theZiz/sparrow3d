@@ -152,6 +152,7 @@
 		return;
 	if ( y1 >= spTargetY )
 		return;
+		
 	SDL_LockSurface( spTarget );
 
 	Sint32 x4 = x1;
@@ -536,71 +537,62 @@
 		spHorizentalLine( spTargetPixel, x1, y, x2 - x1, color, 1, spTargetScanLine, spTargetY );
 	#endif
 #else
-	Sint32 line[x2-x1+1]; //z
-	Sint32 stack_l[x2-x1+1];
-	Sint32 stack_r[x2-x1+1];
+	Sint32 stack[x2-x1+1 << 2];
 	
 	int stack_counter = -1;
 	//Init line
-	line[0] = z1;
-	line[x2-x1] = z2;
-
 	if (x2-x1 != 0)
 	{
-		stack_counter++;
-		stack_l[stack_counter] = 0;
-		stack_r[stack_counter] = x2-x1;
+		stack[++stack_counter] = x1;
+		stack[++stack_counter] = z1;
+		stack[++stack_counter] = x2;
+		stack[++stack_counter] = z2;
 	}
 	while (stack_counter >= 0)
 	{
-		//stack pop
-		Sint32 l = stack_l[stack_counter];
-		Sint32 r = stack_r[stack_counter];
-		stack_counter--;
-		if (l+1 == r)
+		//stack pop backwards!
+		Sint32 zr = stack[stack_counter--];
+		Sint32 xr = stack[stack_counter--];
+		Sint32 zl = stack[stack_counter--];
+		Sint32 xl = stack[stack_counter--];
+		if (xl+1 == xr)
 			continue;
 		//Calculating the middle
-		Sint32 m = l + r >> 1; //(l + r) / 2
-		line[m] = line[l] + line[r] >> 1; //(z[l] + z[r]) / 2
-		if (l+2 == r)
-			continue;
-		//left stack push
-		stack_counter++;
-		stack_l[stack_counter] = l;
-		stack_r[stack_counter] = m;
-		//right stack push
-		stack_counter++;
-		stack_l[stack_counter] = m;
-		stack_r[stack_counter] = r;
-	}
-	if (x1 < 0)
-		stack_counter = -x1;
-	else
-		stack_counter = 0;
-	Sint32 end = x2-x1;
-	if (x1 + end >= spTargetX)
-		end = spTargetX-x1-1;
-	for (; stack_counter <= end; stack_counter++)
-	{
-		Sint32 x = x1+stack_counter;
-		Sint32 z = line[stack_counter];
+		Sint32 xm = xl + xr >> 1; //(l + r) / 2
+		Sint32 zm = zl + zr >> 1; //(z[l] + z[r]) / 2
+		//putpixel
+		if (xm >= 0 && xm < spTargetX)
 		#ifdef __SPARROW_INTERNAL_PATTERN__
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				draw_pixel_ztest_zset_pattern(x,y,z,color);
+				draw_pixel_ztest_zset_pattern(xm,y,zm,color);
 			#elif defined __SPARROW_INTERNAL_ZTEST__
-				draw_pixel_ztest_pattern(x,y,z,color);
+				draw_pixel_ztest_pattern(xm,y,zm,color);
 			#elif defined __SPARROW_INTERNAL_ZSET__
-				draw_pixel_zset_pattern(x,y,z,color);
+				draw_pixel_zset_pattern(xm,y,zm,color);
 			#endif
 		#else
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				draw_pixel_ztest_zset(x,y,z,color);
+				draw_pixel_ztest_zset(xm,y,zm,color);
 			#elif defined __SPARROW_INTERNAL_ZTEST__
-				draw_pixel_ztest(x,y,z,color);
+				draw_pixel_ztest(xm,y,zm,color);
 			#elif defined __SPARROW_INTERNAL_ZSET__
-				draw_pixel_zset(x,y,z,color);
+				draw_pixel_zset(xm,y,zm,color);
 			#endif
 		#endif
+
+		if (xl+2 == xr)
+			continue;
+		//left stack push
+		//stack[++stack_counter] = xl;
+		//stack[++stack_counter] = zl;
+		stack_counter+=2;
+		stack[++stack_counter] = xm;
+		stack[++stack_counter] = zm;
+		//right stack push
+		stack[++stack_counter] = xm;
+		stack[++stack_counter] = zm;
+		stack[++stack_counter] = xr;
+		stack[++stack_counter] = zr;
 	}	
 #endif
 }

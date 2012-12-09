@@ -542,7 +542,7 @@ PREFIX void spResetZBuffer()
 	int i;
 	if ( spZBuffer )
 		for ( i = 0; i < spTargetScanLine * spTargetY; i++ )
-		spZBuffer[i] = spZFar;
+			spZBuffer[i] = spZFar;
 }
 
 PREFIX Sint32* spGetZBuffer()
