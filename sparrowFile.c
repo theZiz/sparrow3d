@@ -24,6 +24,8 @@
 #include <string.h>
 #include <errno.h>
 #ifdef WIN32
+	#include <windows.h>
+	#include <tchar.h>
 #else
 	#include <dirent.h>
 	#include <sys/types.h>
@@ -189,13 +191,23 @@ PREFIX spFileError spRenameFile( const char* filename , const char* newname)
 #endif
 }
 
-#ifdef WIN32
 spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointer* last,char* directory,int recursive,int no_hidden_files)
+#ifndef __GNUC__
 {
+	#pragma message("Please implement this function for native Windows ;)")
+	//Use this stuff to implement this function... ;)
+	/*WIN32_FIND_DATA FindFileData;
+	HANDLE hFind;
+	while
+	hFind = FindFirstFile(directory,&FindFileData);
+	if (hFind == INVALID_HANDLE_VALUE)
+		return SP_FILE_UNKNOWN_ERROR;
+	
+	
+	FindClose(hFind);*/
 	return SP_FILE_EVERYTHING_OK;
 }
 #else
-spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointer* last,char* directory,int recursive,int no_hidden_files)
 {
 	struct stat stat_buf;
 	DIR* d = opendir(directory);
