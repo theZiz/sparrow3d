@@ -12,6 +12,7 @@
 #include <string.h>
 SDL_Surface *screen;
 SDL_Surface *garfield;
+SDL_Surface *check;
 SDL_Surface *pepper;
 SDL_Surface *scientist;
 spModelPointer mesh;
@@ -276,6 +277,7 @@ void draw_test( void )
 		Uint16 color4 = 0xFFFF;
 		Uint16 color5 = 0xFFFF;
 		Uint16 color6 = 0xFFFF;
+		spBindTexture( garfield );
 		spQuadTex3D( -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, garfield->h - 1,
 					 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, 0,
 					 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, 0,
@@ -289,6 +291,7 @@ void draw_test( void )
 					 -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, 0,
 					 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, garfield->w - 1, 0,
 					 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, garfield->h - 1, color3 );
+		spBindTexture( check );
 		spQuadTex3D( 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, garfield->h - 1,
 					 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, 0,
 					 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, garfield->w - 1, 0,
@@ -559,6 +562,7 @@ int main( int argc, char **argv )
 	resize( screen->w, screen->h );
 	//Textures loading
 	garfield = spLoadSurface( "./data/garfield.png" );
+	check = spLoadSurface( "./data/check.png" );
 	pepper = spLoadSurface( "./data/pepper.png" );
 	scientist = spLoadSurface( "./data/science_guy_frames01.png" );
 	
@@ -574,6 +578,8 @@ int main( int argc, char **argv )
 	sprite = spNewSprite(NULL);
 	spNewSubSpriteTilingRow( sprite, scientist, 1, 1, 22, 46, 24, 48, 9 ,100);
 	//spNewSubSpriteWithTiling(sprite,scientist,0,0,32,48,100);
+	
+	spSetAffineTextureHack(0);
 
 	//All glory the main loop
 	spLoop( draw_test, calc_test, 10, resize, eventHandling );
@@ -586,6 +592,7 @@ int main( int argc, char **argv )
 		spMeshDelete( wheel[i] );
 	spDeleteSprite( sprite );
 	spDeleteSurface( garfield );
+	spDeleteSurface( check );
 	spDeleteSurface( pepper );
 	spDeleteSurface( scientist );
 	spQuitCore();
