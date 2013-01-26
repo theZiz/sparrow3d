@@ -49,6 +49,12 @@ PREFIX Sint32 spAsin(Sint32 value);
 /* spSqrt fast square root*/
 PREFIX Sint32 spSqrt ( Sint32 n );
 
+/* This functions returns the square root of a number between 0 and
+ * 1 << SP_SQRT_ACCURACY. If you give a number outside this range
+ * IT WILL CRASH! So just use spSqrt to be safe. This function is
+ * necessary for a good looking light calculation */
+PREFIX Sint32 spUnsave_Small_Sqrt(Sint32 n);
+
 /* spMin return the smallest of 2 numbers */
 PREFIX Sint32 spMin( Sint32 a, Sint32 b );
 
@@ -58,11 +64,5 @@ PREFIX Sint32 spMax( Sint32 a, Sint32 b );
 /* Converts a string to a Sint32 fixed point number like atof. Be careful, it
  * is slow, especially on devices without FPU. But perfect for loading stuff. */
 PREFIX Sint32 spAtof( char* buffer );
-
-/* This functions returns the square root of a number between 0 and
- * 1 << SP_SQRT_ACCURACY. If you give a number outside this range
- * IT WILL CRASH! So just use spSqrt to be safe. This function is
- * necessary for a good looking ligh calculation */
-PREFIX Sint32 spUnsave_Small_Sqrt(Sint32 n);
 
 #endif

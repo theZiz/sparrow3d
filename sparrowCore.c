@@ -86,6 +86,8 @@ sp_cache_pointer sp_cache_name[SP_CACHE_SIZE];
 sp_cache_pointer sp_cache_surface[SP_CACHE_SIZE];
 sp_cache_pointer sp_first_cache_line = NULL;
 
+int spCoreIsInitialized = 0;
+
 PREFIX void spSetDefaultWindowSize( int w, int h )
 {
 	spWindowX = w;
@@ -94,6 +96,9 @@ PREFIX void spSetDefaultWindowSize( int w, int h )
 
 PREFIX void spInitCore( void )
 {
+	if (spCoreIsInitialized)
+		return;
+	spCoreIsInitialized = 1;
 	int i;
 
 	debug_time = 0;

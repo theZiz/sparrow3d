@@ -24,7 +24,7 @@
  * http://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_frame.html */
 
 #ifndef _SPARROW_SOUND_H
-#define _SPARROW_SOUND_J
+#define _SPARROW_SOUND_H
 
 #include "sparrowDefines.h"
 #include <SDL_mixer.h>

@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+int spMathIsInitialized = 0;
 Sint32 spCosvalue[(2 * SP_PI) >> SP_MATH_ACCURACY];
 Sint32 spTanvalue[(    SP_PI) >> SP_MATH_ACCURACY];
 Sint32 spAcosvalue[(2 << SP_ACCURACY)+1];
@@ -28,6 +29,9 @@ Sint32 spSqrtvalue[(1 << SP_SQRT_ACCURACY)+1];
 
 PREFIX void spInitMath(void)
 {
+	if (spMathIsInitialized)
+		return;
+	spMathIsInitialized = 1;
 	int a;
 	for (a = 0; a < ((SP_PI << 1) >> SP_MATH_ACCURACY); a++)
 		spCosvalue[a] = (Sint32)(cos((float)(a << SP_MATH_ACCURACY) / SP_ACCURACY_FACTOR) * SP_ACCURACY_FACTOR);

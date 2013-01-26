@@ -21,9 +21,6 @@
 #ifndef _SPARROW_NET_H
 #define _SPARROW_NET_H
 
-
-
-
-
+/* ToDo Make me working :( */
 
 #endif

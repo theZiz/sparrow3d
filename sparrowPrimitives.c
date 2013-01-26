@@ -48,6 +48,7 @@ Sint32 spVerticalOrigin = SP_CENTER;
 Sint32 spHorizontalOrigin = SP_CENTER;
 Uint8 spPattern[8] = {255,255,255,255,255,255,255,255}; //64 Bit, 8 Bytes, 4 Halfwords, 2 words, 1 long word
 Sint32 spUsePattern = 0;
+int spPrimitivesIsInitialized = 0;
 
 PREFIX Sint32* spGetOne_over_x_pointer()
 {
@@ -56,6 +57,9 @@ PREFIX Sint32* spGetOne_over_x_pointer()
 
 PREFIX void spInitPrimitives()
 {
+	if (spPrimitivesIsInitialized)
+		return;
+	spPrimitivesIsInitialized = 1;
 	int i;
 	for ( i = 1; i < ( 1 << SP_PRIM_ACCURACY ); i++ )
 		spOne_over_x_look_up[i] = (( 1 << SP_PRIM_ACCURACY )+(i >> 1)) / i;

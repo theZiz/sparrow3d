@@ -20,6 +20,7 @@
 
 #include "sparrowSound.h"
 
+int spSoundIsInitialized = 0;
 int spNoSoundAvaible = 1;
 Mix_Music *spBackgroundMusic = NULL;
 int spMusicVolume = SP_VOLUME_MAX;
@@ -28,6 +29,9 @@ int spSoundInPause = 0;
 
 PREFIX int spSoundInit()
 {
+	if (spSoundIsInitialized)
+		return !spNoSoundAvaible;
+	spSoundIsInitialized = 1;
 	// load support for the OGG and MOD sample/music formats
 	#if (SDL_MIXER_PATCHLEVEL >= 10)
 		int result = Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3 | MIX_INIT_FLAC | MIX_INIT_MOD);
