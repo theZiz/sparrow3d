@@ -1,13 +1,10 @@
 Roadmap til next version (tag):
 - File management
-	+ Reading stuff per line
-	+ creating folder
-	+ removing files and folders
-	+ renaming files and folders
-	+ Sorting and Deleting searched lists
 	- Searching files
-	  + Linux
 	  - Windows
+- perspect texture mapping
+
+general Roadmap:
 - third device layer (controlled by sparrowCore)
   - axis are exactly the same
   - as much buttons createable as you want
@@ -20,9 +17,6 @@ Roadmap til next version (tag):
 - sparrowFont additional or own part, which allows to draw blocked text
   (e.g. text from sparrowText ;-) )
 - Network (with threads)
-- sparrowRenderer: Camera definieren und "laden".
-
-general Roadmap:
 - GUI
 
 Nice to have:

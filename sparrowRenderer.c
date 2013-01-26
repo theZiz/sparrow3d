@@ -40,21 +40,21 @@ inline void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bo
 	temp2 = right - left;
 	temp3 = top - bottom;
 	temp4 = zfar - znear;
-	matrix[0] = spDiv( temp, temp2 );
+	matrix[0] = spDivHigh( temp, temp2 );
 	matrix[1] = 0 << SP_ACCURACY;
 	matrix[2] = 0 << SP_ACCURACY;
 	matrix[3] = 0 << SP_ACCURACY;
 	matrix[4] = 0 << SP_ACCURACY;
-	matrix[5] = spDiv( temp, temp3 );
+	matrix[5] = spDivHigh( temp, temp3 );
 	matrix[6] = 0 << SP_ACCURACY;
 	matrix[7] = 0 << SP_ACCURACY;
-	matrix[8] = spDiv( right + left, temp2 );
-	matrix[9] = spDiv( top + bottom, temp3 );
-	matrix[10] = spDiv( -zfar - znear, temp4 );
+	matrix[8] = spDivHigh( right + left, temp2 );
+	matrix[9] = spDivHigh( top + bottom, temp3 );
+	matrix[10] = spDivHigh( -zfar - znear, temp4 );
 	matrix[11] = -SP_ONE;
 	matrix[12] = 0 << SP_ACCURACY;
 	matrix[13] = 0 << SP_ACCURACY;
-	matrix[14] = spDiv( spMul( -temp, zfar ), temp4 );
+	matrix[14] = spDivHigh( spMulHigh( -temp, zfar ), temp4 );
 	matrix[15] = 0 << SP_ACCURACY;
 }
 
@@ -768,54 +768,47 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 	Sint32 tx1, ty1, tz1, tw1;
 	Sint32 tx2, ty2, tz2, tw2;
 	Sint32 tx3, ty3, tz3, tw3;
+	Sint32 tx4, ty4, tz4, tw4;
+	
+	//object space ===> homogenous world space
 	spMulModellView( x1, y1, z1, &tx1, &ty1, &tz1, &tw1 );
 	spMulModellView( x2, y2, z2, &tx2, &ty2, &tz2, &tw2 );
 	spMulModellView( x3, y3, z3, &tx3, &ty3, &tz3, &tw3 );
-
-
-	Sint32 tx4, ty4, tz4, tw4;
 	spMulModellView( x4, y4, z4, &tx4, &ty4, &tz4, &tw4 );
 
+	//homogenous world space ===> w space ==(w-clip)=> device space
 	x1 = spMul( spProjection[ 0], tx1 ); // + spMul(spProjection[ 8],tz1);
 	y1 = spMul( spProjection[ 5], ty1 ); // + spMul(spProjection[ 9],tz1);
-//         z1 = spMul(spProjection[10],tz1) + spMul(spProjection[14],tw1);
 	Sint32 w1 = spMul( spProjection[11], tz1 );
 	if ( w1 == 0 )
 		w1 = 1;
 
 	Sint32 nx1 = spDiv( x1, w1 ) >> SP_HALF_ACCURACY;
 	Sint32 ny1 = spDiv( y1, w1 ) >> SP_HALF_ACCURACY;
-//  Sint32 nz1 = spDiv(z1,w1)>>SP_HALF_ACCURACY;
-
 	x2 = spMul( spProjection[ 0], tx2 ); // + spMul(spProjection[ 8],tz2);
 	y2 = spMul( spProjection[ 5], ty2 ); // + spMul(spProjection[ 9],tz2);
-//         z2 = spMul(spProjection[10],tz2) + spMul(spProjection[14],tw2);
 	Sint32 w2 = spMul( spProjection[11], tz2 );
 	if ( w2 == 0 )
 		w2 = 1;
 	Sint32 nx2 = spDiv( x2, w2 ) >> SP_HALF_ACCURACY;
 	Sint32 ny2 = spDiv( y2, w2 ) >> SP_HALF_ACCURACY;
-//  Sint32 nz2 = spDiv(z2,w2)>>SP_HALF_ACCURACY;
 
 	x3 = spMul( spProjection[ 0], tx3 ); // + spMul(spProjection[ 8],tz3);
 	y3 = spMul( spProjection[ 5], ty3 ); // + spMul(spProjection[ 9],tz3);
-//         z3 = spMul(spProjection[10],tz3) + spMul(spProjection[14],tw3);
 	Sint32 w3 = spMul( spProjection[11], tz3 );
 	if ( w3 == 0 )
 		w3 = 1;
 	Sint32 nx3 = spDiv( x3, w3 ) >> SP_HALF_ACCURACY;
 	Sint32 ny3 = spDiv( y3, w3 ) >> SP_HALF_ACCURACY;
-//  Sint32 nz3 = spDiv(z3,w3)>>SP_HALF_ACCURACY;
 
 	x4 = spMul( spProjection[ 0], tx4 ); // + spMul(spProjection[ 8],tz4);
 	y4 = spMul( spProjection[ 5], ty4 ); // + spMul(spProjection[ 9],tz4);
-//         z4 = spMul(spProjection[10],tz4) + spMul(spProjection[14],tw4);
 	Sint32 w4 = spMul( spProjection[11], tz4 );
 	if ( w4 == 0 )
 		w4 = 1;
 	Sint32 nx4 = spDiv( x4, w4 ) >> SP_HALF_ACCURACY;
 	Sint32 ny4 = spDiv( y4, w4 ) >> SP_HALF_ACCURACY;
-//  Sint32 nz4 = spDiv(z4,w4)>>SP_HALF_ACCURACY;
+	
 
 	return
 		spQuad_tex( viewPortX + ( ( nx1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),

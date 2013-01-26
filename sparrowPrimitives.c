@@ -493,27 +493,71 @@ PREFIX int spQuad( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32
 PREFIX int spQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 x4, Sint32 y4, Sint32 z4, Sint32 u4, Sint32 v4, Uint32 color )
 {
 	int result = 0;
-	if ( spQuadQuali )
+	switch (spQuadQuali)
 	{
-		Sint32 mx = x1 + x2 + x3 + x4 >> 2;
-		Sint32 my = y1 + y2 + y3 + y4 >> 2;
-		Sint32 mu = u1 + u2 + u3 + u4 >> 2;
-		Sint32 mv = v1 + v2 + v3 + v4 >> 2;
-		Sint32 mz = ( z1 >> 2 ) + ( z2 >> 2 ) + ( z3 >> 2 ) + ( z4 >> 2 );
-		if ( result = spTriangle_tex( mx, my, mz, mu, mv, x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, color ) )
-		{
-			result |= spTriangle_tex( mx, my, mz, mu, mv, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
-			result |= spTriangle_tex( mx, my, mz, mu, mv, x3, y3, z3, u3, v3, x4, y4, z4, u4, v4, color );
-			return result | spTriangle_tex( mx, my, mz, mu, mv, x4, y4, z4, u4, v4, x1, y1, z1, u1, v1, color );
-		}
-		return 0;
+		case 2:
+			{
+				Sint32 mx = x1 + x2 + x3 + x4 >> 2;
+				Sint32 my = y1 + y2 + y3 + y4 >> 2;
+				Sint32 mu = u1 + u2 + u3 + u4 >> 2;
+				Sint32 mv = v1 + v2 + v3 + v4 >> 2;
+				Sint32 mz = ( z1 >> 2 ) + ( z2 >> 2 ) + ( z3 >> 2 ) + ( z4 >> 2 );
+				
+				Sint32 wx = x1 + x2 >> 1;
+				Sint32 wy = y1 + y2 >> 1;
+				Sint32 wu = u1 + u2 >> 1;
+				Sint32 wv = v1 + v2 >> 1;
+				Sint32 wz = ( z1 >> 1 ) + ( z2 >> 1 );
+				if ( result = spTriangle_tex( mx, my, mz, mu, mv, x1, y1, z1, u1, v1, wx, wy, wz, wu, wv, color ) )
+				{
+					result |= spTriangle_tex( mx, my, mz, mu, mv, wx, wy, wz, wu, wv, x2, y2, z2, u2, v2, color );
+					wx = x2 + x3 >> 1;
+					wy = y2 + y3 >> 1;
+					wu = u2 + u3 >> 1;
+					wv = v2 + v3 >> 1;
+					wz = ( z2 >> 1 ) + ( z3 >> 1 );
+					result |= spTriangle_tex( mx, my, mz, mu, mv, x2, y2, z2, u2, v2, wx, wy, wz, wu, wv, color );
+					result |= spTriangle_tex( mx, my, mz, mu, mv, wx, wy, wz, wu, wv, x3, y3, z3, u3, v3, color );
+					wx = x3 + x4 >> 1;
+					wy = y3 + y4 >> 1;
+					wu = u3 + u4 >> 1;
+					wv = v3 + v4 >> 1;
+					wz = ( z3 >> 1 ) + ( z4 >> 1 );
+					result |= spTriangle_tex( mx, my, mz, mu, mv, x3, y3, z3, u3, v3, wx, wy, wz, wu, wv, color );
+					result |= spTriangle_tex( mx, my, mz, mu, mv, wx, wy, wz, wu, wv, x4, y4, z4, u4, v4, color );
+					wx = x4 + x1 >> 1;
+					wy = y4 + y1 >> 1;
+					wu = u4 + u1 >> 1;
+					wv = v4 + v1 >> 1;
+					wz = ( z4 >> 1 ) + ( z1 >> 1 );
+					result |= spTriangle_tex( mx, my, mz, mu, mv, x4, y4, z4, u4, v4, wx, wy, wz, wu, wv, color );
+					return result | spTriangle_tex( mx, my, mz, mu, mv, wx, wy, wz, wu, wv, x1, y1, z1, u1, v1, color );
+				}
+			}
+			return 0;
+		case 1:
+			{
+				Sint32 mx = x1 + x2 + x3 + x4 >> 2;
+				Sint32 my = y1 + y2 + y3 + y4 >> 2;
+				Sint32 mu = u1 + u2 + u3 + u4 >> 2;
+				Sint32 mv = v1 + v2 + v3 + v4 >> 2;
+				Sint32 mz = ( z1 >> 2 ) + ( z2 >> 2 ) + ( z3 >> 2 ) + ( z4 >> 2 );
+				if ( result = spTriangle_tex( mx, my, mz, mu, mv, x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, color ) )
+				{
+					result |= spTriangle_tex( mx, my, mz, mu, mv, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					result |= spTriangle_tex( mx, my, mz, mu, mv, x3, y3, z3, u3, v3, x4, y4, z4, u4, v4, color );
+					return result | spTriangle_tex( mx, my, mz, mu, mv, x4, y4, z4, u4, v4, x1, y1, z1, u1, v1, color );
+				}
+			}
+			return 0;
+		default:
+			if ( result = spTriangle_tex( x1, y1, z1, u1, v1,
+											x2, y2, z2, u2, v2,
+											x3, y3, z3, u3, v3, color ) )
+			return spTriangle_tex( x1, y1, z1, u1, v1,
+									 x3, y3, z3, u3, v3,
+									 x4, y4, z4, u4, v4, color ) | result;
 	}
-	if ( result = spTriangle_tex( x1, y1, z1, u1, v1,
-								  x2, y2, z2, u2, v2,
-								  x3, y3, z3, u3, v3, color ) )
-		return spTriangle_tex( x1, y1, z1, u1, v1,
-							   x3, y3, z3, u3, v3,
-							   x4, y4, z4, u4, v4, color ) | result;
 	return 0;
 }
 
