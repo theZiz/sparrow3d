@@ -69,7 +69,7 @@ PREFIX int spReadUntil( spFilePointer file , char* buffer, int buffer_len, char 
 				return 1; //EOF
 			if ( buffer[pos] == end_sign )
 				break;
-		}	
+		}
 	buffer[pos] = 0;
 	return 0; //not EOF
 }
@@ -127,7 +127,7 @@ PREFIX spFileError spCreateDirectoryChain( const char* directories)
 		if (endOfString == NULL)
 			endOfString = strchr(subString,0);
 	}
-	
+
 	#ifndef __GNUC__
 		free(directoriesCopy);
 	#endif
@@ -187,12 +187,12 @@ PREFIX spFileError spRenameFile( const char* filename , const char* newname)
 			return SP_FILE_NOT_FOUND_ERROR;
 		return SP_FILE_ACCESS_ERROR;
 	}
-	return SP_FILE_EVERYTHING_OK;	
+	return SP_FILE_EVERYTHING_OK;
 #endif
 }
 
 spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointer* last,char* directory,int recursive,int no_hidden_files)
-#ifndef __GNUC__
+#ifdef WIN32
 {
 	#pragma message("Please implement this function for native Windows ;)")
 	//Use this stuff to implement this function... ;)
@@ -202,8 +202,8 @@ spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointe
 	hFind = FindFirstFile(directory,&FindFileData);
 	if (hFind == INVALID_HANDLE_VALUE)
 		return SP_FILE_UNKNOWN_ERROR;
-	
-	
+
+
 	FindClose(hFind);*/
 	return SP_FILE_EVERYTHING_OK;
 }
@@ -383,7 +383,7 @@ PREFIX void spFileSortList(spFileListPointer* list,spFileSortType sortBy)
 			qsort(array,count,sizeof(spFileListPointer),internalCompareByTypeNameBackwards);
 			break;
 	}
-		
+
 	*list = array[0];
 	(*list)->prev = NULL;
 	(*list)->count = count;
@@ -393,5 +393,5 @@ PREFIX void spFileSortList(spFileListPointer* list,spFileSortType sortBy)
 		array[i-1]->next = array[  i];
 	}
 	array[count-1]->next = NULL;
-	
+
 }
