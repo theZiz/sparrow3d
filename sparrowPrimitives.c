@@ -882,7 +882,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 					for ( ; u < maxu; u++ )
 						for ( v = minv; v < maxv; v++ )
 							if ((spPattern[(y +v) & 7] >> ((x + u) & 7)) & 1)
-							if ( pixel[( u + addu ) + ( v + addv )*(surface->pitch>>1)] != SP_ALPHA_COLOR && z > spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
+							if ( pixel[( u + addu ) + ( v + addv )*(surface->pitch>>1)] != SP_ALPHA_COLOR && (Uint32)(z) < spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
 							{
 								spTargetPixel[( x + u ) + ( y + v )*spTargetScanLine] = pixel[( u + addu ) + ( v + addv ) * (surface->pitch>>1)];
 								spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] = z;
@@ -959,7 +959,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 					for ( ; u < maxu; u++ )
 						for ( v = minv; v < maxv; v++ )
 							if ((spPattern[(y +v) & 7] >> ((x + u) & 7)) & 1)
-							if ( pixel[( u + addu ) + ( v + addv )*(surface->pitch>>1)] != SP_ALPHA_COLOR && z > spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
+							if ( pixel[( u + addu ) + ( v + addv )*(surface->pitch>>1)] != SP_ALPHA_COLOR && (Uint32)(z) < spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
 								spTargetPixel[( x + u ) + ( y + v )*spTargetScanLine] = pixel[( u + addu ) + ( v + addv ) * (surface->pitch>>1)];
 					SDL_UnlockSurface( spTarget );
 				}
@@ -1036,7 +1036,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 					for ( ; u < maxu; u++ )
 						for ( v = minv; v < maxv; v++ )
 							if ((spPattern[(y +v) & 7] >> ((x + u) & 7)) & 1)
-							if ( z > spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
+							if ( (Uint32)(z) < spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
 							{
 								spTargetPixel[( x + u ) + ( y + v )*spTargetScanLine] = pixel[( u + addu ) + ( v + addv ) * (surface->pitch>>1)];
 								spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] = z;
@@ -1116,7 +1116,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 					for ( ; u < maxu; u++ )
 						for ( v = minv; v < maxv; v++ )
 							if ((spPattern[(y +v) & 7] >> ((x + u) & 7)) & 1)
-							if ( z > spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
+							if ( (Uint32)(z) < spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
 								spTargetPixel[( x + u ) + ( y + v )*spTargetScanLine] = pixel[( u + addu ) + ( v + addv ) * (surface->pitch>>1)];
 					SDL_UnlockSurface( spTarget );
 				}
@@ -1195,7 +1195,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 					int v;
 					for ( ; u < maxu; u++ )
 						for ( v = minv; v < maxv; v++ )
-							if ( pixel[( u + addu ) + ( v + addv )*(surface->pitch>>1)] != SP_ALPHA_COLOR && z > spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
+							if ( pixel[( u + addu ) + ( v + addv )*(surface->pitch>>1)] != SP_ALPHA_COLOR && (Uint32)(z) < spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
 							{
 								spTargetPixel[( x + u ) + ( y + v )*spTargetScanLine] = pixel[( u + addu ) + ( v + addv ) * (surface->pitch>>1)];
 								spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] = z;
@@ -1273,7 +1273,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 					int v;
 					for ( ; u < maxu; u++ )
 						for ( v = minv; v < maxv; v++ )
-							if ( pixel[( u + addu ) + ( v + addv )*(surface->pitch>>1)] != SP_ALPHA_COLOR && z > spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
+							if ( pixel[( u + addu ) + ( v + addv )*(surface->pitch>>1)] != SP_ALPHA_COLOR && (Uint32)(z) < spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
 								spTargetPixel[( x + u ) + ( y + v )*spTargetScanLine] = pixel[( u + addu ) + ( v + addv ) * (surface->pitch>>1)];
 					SDL_UnlockSurface( spTarget );
 				}
@@ -1335,7 +1335,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 					int v;
 					for ( ; u < maxu; u++ )
 						for ( v = minv; v < maxv; v++ )
-							if ( z > spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
+							if ( (Uint32)(z) < spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
 							{
 								spTargetPixel[( x + u ) + ( y + v )*spTargetScanLine] = pixel[( u + addu ) + ( v + addv ) * (surface->pitch>>1)];
 								spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] = z;
@@ -1413,7 +1413,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 					int v;
 					for ( ; u < maxu; u++ )
 						for ( v = minv; v < maxv; v++ )
-							if ( z > spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
+							if ( (Uint32)(z) < spZBuffer[( x + u ) + ( y + v )*spTargetScanLine] )
 								spTargetPixel[( x + u ) + ( y + v )*spTargetScanLine] = pixel[( u + addu ) + ( v + addv ) * (surface->pitch>>1)];
 					SDL_UnlockSurface( spTarget );
 				}

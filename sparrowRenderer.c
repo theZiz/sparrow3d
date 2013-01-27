@@ -1363,7 +1363,7 @@ PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *
 		y = spMul( spProjection[ 5], y );
 		z = spMul( spProjection[10], tz1 ) + spProjection[14];
 	}
-	Sint32 w1 = spMul( spProjection[11], *pz );
+	Sint32 w1 = spMul( spProjection[11], tz1 );
 	if ( w1 == 0 )
 		w1 = 1;
 	Sint32 nx1 = spDiv( x, w1 ) >> SP_HALF_ACCURACY;
