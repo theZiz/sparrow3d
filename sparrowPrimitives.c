@@ -29,7 +29,8 @@ Uint32 spZSet = 1;
 Uint32 spAlphaTest = 1;
 Uint32 spQuadQuali = 1;
 Sint32* spZBuffer = NULL;
-Sint32 spZFar = 6553600; //100.0f
+Sint32 spZFar = -6553600; //-100.0f
+Sint32 spZNear = -7000; //-0.1f
 Sint32 spTargetScanLine = 0; //if the surface is even, same as spTargetX, else +1.
 Sint32 spTargetX = 0;
 Sint32 spTargetY = 0;
@@ -206,6 +207,8 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 		return 0;
 	if ( spCulling && ( x2 - x1 ) * ( y3 - y1 ) - ( y2 - y1 ) * ( x3 - x1 ) > 0 )
 		return 0;
+	if (spZTest && z1 < 0 && z2 < 0 && z3 < 0)
+		return 0;
 	if ( y1 > y2 )
 	{
 		Sint32 temp = x1;
@@ -283,33 +286,35 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 }
 
 /* ************ Include of the texture triangle functions *********** */
-#define __SPARROW_INTERNAL_ALPHA___
-	#define __SPARROW_INTERNAL_ZBOTH__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZBOTH__
-	#define __SPARROW_INTERNAL_ZTEST__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZTEST__
-	#define __SPARROW_INTERNAL_ZSET__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZSET__
-	#define __SPARROW_INTERNAL_ZNOTHING__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZNOTHING__
+#define __SPARROW_INTERNAL_PERSPECT__
+	#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ZBOTH__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZBOTH__
+		#define __SPARROW_INTERNAL_ZTEST__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZTEST__
+		#define __SPARROW_INTERNAL_ZSET__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZSET__
+		#define __SPARROW_INTERNAL_ZNOTHING__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZNOTHING__
 
-#undef __SPARROW_INTERNAL_ALPHA___
-	#define __SPARROW_INTERNAL_ZBOTH__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZBOTH__
-	#define __SPARROW_INTERNAL_ZTEST__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZTEST__
-	#define __SPARROW_INTERNAL_ZSET__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZSET__
-	#define __SPARROW_INTERNAL_ZNOTHING__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZNOTHING__
+	#undef __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ZBOTH__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZBOTH__
+		#define __SPARROW_INTERNAL_ZTEST__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZTEST__
+		#define __SPARROW_INTERNAL_ZSET__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZSET__
+		#define __SPARROW_INTERNAL_ZNOTHING__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZNOTHING__
+#undef __SPARROW_INTERNAL_PERSPECT__
 
 // with pattern
 #define __SPARROW_INTERNAL_PATTERN__
@@ -343,6 +348,148 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 #undef __SPARROW_INTERNAL_PATTERN__
 
 PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color )
+{
+	if ( spAlphaTest && color == SP_ALPHA_COLOR )
+		return 0;
+	if ( spCulling && ( x2 - x1 ) * ( y3 - y1 ) - ( y2 - y1 ) * ( x3 - x1 ) > 0 )
+		return 0;
+	if (spZTest && z1 < 0 && z2 < 0 && z3 < 0)
+		return 0;
+	if ( y1 > y2 )
+	{
+		Sint32 temp = x1;
+		x1 = x2;
+		x2 = temp;
+		temp = y1;
+		y1 = y2;
+		y2 = temp;
+		temp = z1;
+		z1 = z2;
+		z2 = temp;
+		temp = u1;
+		u1 = u2;
+		u2 = temp;
+		temp = v1;
+		v1 = v2;
+		v2 = temp;
+	}
+	if ( y1 > y3 )
+	{
+		Sint32 temp = x1;
+		x1 = x3;
+		x3 = temp;
+		temp = y1;
+		y1 = y3;
+		y3 = temp;
+		temp = z1;
+		z1 = z3;
+		z3 = temp;
+		temp = u1;
+		u1 = u3;
+		u3 = temp;
+		temp = v1;
+		v1 = v3;
+		v3 = temp;
+	}
+	if ( y2 < y3 )
+	{
+		Sint32 temp = x2;
+		x2 = x3;
+		x3 = temp;
+		temp = y2;
+		y2 = y3;
+		y3 = temp;
+		temp = z2;
+		z2 = z3;
+		z3 = temp;
+		temp = u2;
+		u2 = u3;
+		u3 = temp;
+		temp = v2;
+		v2 = v3;
+		v3 = temp;
+	}
+	int result = spGetPixelPosition( x1, y1 ) | spGetPixelPosition( x2, y2 ) | spGetPixelPosition( x3, y3 );
+	if ( !result )
+		return 0;
+	if ( spUsePattern )
+	{
+		if ( spAlphaTest )
+		{
+			if ( spZSet )
+			{
+				if ( spZTest )
+					sp_intern_Triangle_tex_ztest_zset_alpha_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+				else
+					sp_intern_Triangle_tex_zset_alpha_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+			}
+			else
+			{
+				if ( spZTest )
+					sp_intern_Triangle_tex_ztest_alpha_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+				else
+					sp_intern_Triangle_tex_alpha_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+			}
+		}
+		else
+		{
+			if ( spZSet )
+			{
+				if ( spZTest )
+					sp_intern_Triangle_tex_ztest_zset_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+				else
+					sp_intern_Triangle_tex_zset_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+			}
+			else
+			{
+				if ( spZTest )
+					sp_intern_Triangle_tex_ztest_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+				else
+					sp_intern_Triangle_tex_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+			}
+		}
+	}
+	else
+	{
+		if ( spAlphaTest )
+		{
+			if ( spZSet )
+			{
+				if ( spZTest )
+					sp_intern_Triangle_tex_ztest_zset_alpha( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+				else
+					sp_intern_Triangle_tex_zset_alpha      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+			}
+			else
+			{
+				if ( spZTest )
+					sp_intern_Triangle_tex_ztest_alpha     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+				else
+					sp_intern_Triangle_tex_alpha           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+			}
+		}
+		else
+		{
+			if ( spZSet )
+			{
+				if ( spZTest )
+					sp_intern_Triangle_tex_ztest_zset( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+				else
+					sp_intern_Triangle_tex_zset      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+			}
+			else
+			{
+				if ( spZTest )
+					sp_intern_Triangle_tex_ztest     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+				else
+					sp_intern_Triangle_tex           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+			}
+		}
+	}
+	return result;
+}
+
+PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 w1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 w2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 w3, Uint32 color )
 {
 	if ( spAlphaTest && color == SP_ALPHA_COLOR )
 		return 0;
@@ -561,6 +708,18 @@ PREFIX int spQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Si
 	return 0;
 }
 
+PREFIX int spPerspectiveQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 w1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 w2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 w3, Sint32 x4, Sint32 y4, Sint32 z4, Sint32 u4, Sint32 v4, Sint32 w4, Uint32 color )
+{
+	int result = 0;
+	if ( result = spPerspectiveTriangle_tex( x1, y1, z1, u1, v1, w1,
+									x2, y2, z2, u2, v2, w2,
+									x3, y3, z3, u3, v3, w3, color ) )
+	return spPerspectiveTriangle_tex( x1, y1, z1, u1, v1, w1,
+							 x3, y3, z3, u3, v3, w3,
+							 x4, y4, z4, u4, v4, w4, color ) | result;
+	return 0;
+}
+
 PREFIX void spReAllocateZBuffer()
 {	
 	//in Cache?
@@ -588,9 +747,10 @@ PREFIX void spReAllocateZBuffer()
 PREFIX void spResetZBuffer()
 {
 	int i;
+	Sint32 s = spZFar-spZNear;
 	if ( spZBuffer )
 		for ( i = 0; i < spTargetScanLine * spTargetY; i++ )
-			spZBuffer[i] = spZFar;
+			spZBuffer[i] = s;
 }
 
 PREFIX Sint32* spGetZBuffer()
@@ -692,7 +852,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					SDL_LockSurface( spTarget );
 					Uint16 *pixel = ( Uint16* )( surface->pixels );
@@ -769,7 +929,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					SDL_LockSurface( spTarget );
 					Uint16 *pixel = ( Uint16* )( surface->pixels );
@@ -845,7 +1005,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					SDL_LockSurface( spTarget );
 					Uint16 *pixel;
@@ -925,7 +1085,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					SDL_LockSurface( spTarget );
 					Uint16 *pixel;
@@ -1005,7 +1165,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					SDL_LockSurface( spTarget );
 					Uint16 *pixel;
@@ -1083,7 +1243,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					SDL_LockSurface( spTarget );
 					Uint16 *pixel;
@@ -1145,7 +1305,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					SDL_LockSurface( spTarget );
 					Uint16 *pixel;
@@ -1223,7 +1383,7 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					SDL_LockSurface( spTarget );
 					Uint16 *pixel;
@@ -1306,7 +1466,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					int x1 = x - addu;
 					if ( x1 >= spTargetX )
@@ -1417,7 +1577,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					int x1 = x - addu;
 					if ( x1 >= spTargetX )
@@ -1531,7 +1691,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					int x1 = x - addu;
 					if ( x1 >= spTargetX )
@@ -1642,7 +1802,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					int x1 = x - addu;
 					if ( x1 >= spTargetX )
@@ -1759,7 +1919,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					int x1 = x - addu;
 					if ( x1 >= spTargetX )
@@ -1870,7 +2030,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					int x1 = x - addu;
 					if ( x1 >= spTargetX )
@@ -1946,7 +2106,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					int x1 = x - addu;
 					if ( x1 >= spTargetX )
@@ -2057,7 +2217,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 			{
 				if ( spZTest )
 				{
-					if ( z >= 0 )
+					if ( z < 0 )
 						return;
 					int x1 = x - addu;
 					if ( x1 >= spTargetX )
@@ -2293,6 +2453,8 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 {
 	if ( spAlphaTest && color == SP_ALPHA_COLOR )
 		return;	
+	if (spZTest && z1 < 0 && z2 < 0)
+		return 0;
 #ifndef NEVER_DEFINED
 	if ( x1 > x2 )
 	{
@@ -2590,6 +2752,8 @@ PREFIX void spRectangle( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint3
 {
 	if ( spAlphaTest && color == SP_ALPHA_COLOR )
 		return;
+	if (spZTest && z < 0)
+		return;
 	int addu = w >> 1;
 	if ( spHorizontalOrigin == SP_LEFT )
 		addu = 0;
@@ -2754,6 +2918,8 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 		return;
 	}
 	if ( spAlphaTest && color == SP_ALPHA_COLOR )
+		return;
+	if (spZTest && z < 0)
 		return;
 	int addu = w >> 1;
 	if ( spHorizontalOrigin == SP_LEFT )
@@ -2962,6 +3128,8 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 	  return;
 	if ( spAlphaTest && color == SP_ALPHA_COLOR )
 		return;
+	if (spZTest && z < 0)
+		return;
 	if ( x - rx >= spTargetX ) return;
 	if ( y - ry >= spTargetY ) return;
 	if ( x + rx < 0 )          return;
@@ -3142,6 +3310,8 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 	if (ry <= 0)
 	  return;
 	if ( spAlphaTest && color == SP_ALPHA_COLOR )
+		return;
+	if (spZTest && z < 0)
 		return;
 
 	if ( x - rx >= spTargetX ) return;
@@ -3890,12 +4060,22 @@ PREFIX Sint32 spGetVerticalOrigin()
 
 PREFIX void spSetZFar(Sint32 zfar)
 {
-	spZFar = -zfar;
+	spZFar = zfar;
 }
 
 PREFIX Sint32 spGetZFar()
 {
-	return -spZFar;
+	return spZFar;
+}
+
+PREFIX void spSetZNear(Sint32 znear)
+{
+	spZNear = znear;
+}
+
+PREFIX Sint32 spGetZNear()
+{
+	return spZNear;
 }
 
 PREFIX void spAddWhiteLayer(int alpha)

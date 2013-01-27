@@ -52,7 +52,8 @@ void draw_test( void )
 	spSetLightPosition(0,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3);
 	spSetLightColor(0,SP_ONE,SP_ONE,SP_ONE);
 	switch ( test )
-	{	case 6:
+	{
+	case 6:
 		spSetAlphaTest( 0 );
 		spTranslate( 0, 0, (-8 << SP_ACCURACY));
 		spRotateX(rotation);
@@ -95,38 +96,38 @@ void draw_test( void )
 		spEnableLight(1,0);
 		break;
 	case 5:
-		spRotozoomSurface( screen->w / 4, screen->h / 4, -1, garfield, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ) >> 2, spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ) >> 2, rotation );
-		spRotozoomSurfacePart( 3 * screen->w / 4, screen->h / 4, -1, garfield, garfield->w / 4, garfield->h / 4, garfield->w / 2, garfield->w / 2, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ) >> 1, spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ) >> 1, rotation );
+		spRotozoomSurface( screen->w / 4, screen->h / 4, 0, garfield, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ) >> 2, spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ) >> 2, rotation );
+		spRotozoomSurfacePart( 3 * screen->w / 4, screen->h / 4, 0, garfield, garfield->w / 4, garfield->h / 4, garfield->w / 2, garfield->w / 2, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ) >> 1, spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ) >> 1, rotation );
 		sprite->rotation = 0;
-		spDrawSprite( screen->w / 5, 5 * screen->h / 8, -1, sprite );
+		spDrawSprite( screen->w / 5, 5 * screen->h / 8, 0, sprite );
 		sprite->zoomX = spSin( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 );
 		sprite->zoomY = spCos( rotation * 6 ) + ( 3 << SP_ACCURACY - 1 );
-		spDrawSprite( 2 * screen->w / 5, 5 * screen->h / 8, -1, sprite );
+		spDrawSprite( 2 * screen->w / 5, 5 * screen->h / 8, 0, sprite );
 		sprite->rotation = rotation * 4;
-		spDrawSprite( 3 * screen->w / 5, 5 * screen->h / 8, -1, sprite );
+		spDrawSprite( 3 * screen->w / 5, 5 * screen->h / 8, 0, sprite );
 		sprite->zoomX = SP_ONE;
 		sprite->zoomY = SP_ONE;
-		spDrawSprite( 4 * screen->w / 5, 5 * screen->h / 8, -1, sprite );
+		spDrawSprite( 4 * screen->w / 5, 5 * screen->h / 8, 0, sprite );
 		break;
 	case 4:
 		srand( 0 );
 		for ( i = 0; i < 5; i++ )
-			spEllipseBorder( rand() % screen->w, rand() % screen->h, -1, rand() % screen->w / 4, rand() % screen->h / 4, 10, 20, rand() % 65536 );
+			spEllipseBorder( rand() % screen->w, rand() % screen->h, 0, rand() % screen->w / 4, rand() % screen->h / 4, 10, 20, rand() % 65536 );
 		for ( i = 0; i < 5; i++ )
-			spEllipse( rand() % screen->w, rand() % screen->h, -1, rand() % screen->w / 4, rand() % screen->h / 4, rand() % 65536 );
+			spEllipse( rand() % screen->w, rand() % screen->h, 0, rand() % screen->w / 4, rand() % screen->h / 4, rand() % 65536 );
 		for ( i = 0; i < 5; i++ )
-			spRectangleBorder( rand() % screen->w, rand() % screen->h, -1,
+			spRectangleBorder( rand() % screen->w, rand() % screen->h, 0,
 							   rand() % screen->w / 2, rand() % screen->h / 2, 12, 6, rand() % 65536 );
 		for ( i = 0; i < 5; i++ )
-			spRectangle( rand() % screen->w, rand() % screen->h, -1,
+			spRectangle( rand() % screen->w, rand() % screen->h, 0,
 						 rand() % screen->w / 2, rand() % screen->h / 2, rand() % 65536 );
 		for ( i = 0; i < 100; i++ )
-			spLine( rand() % screen->w, rand() % screen->h, -1,
-					rand() % screen->w, rand() % screen->h, -1, rand() % 65536 );
+			spLine( rand() % screen->w, rand() % screen->h, 0,
+					rand() % screen->w, rand() % screen->h, 0, rand() % 65536 );
 		break;
 	case 3:
 		spSetAlphaTest( 0 );
-		spTranslate( 0, 0, (-12 << SP_ACCURACY)+spSin(rotation)*8 );
+		spTranslate( 0, 0, (-6 << SP_ACCURACY)+spSin(rotation)*6 );
 		spRotateX( rotation );
 		spRotateY( rotation );
 		spRotateZ( rotation );
@@ -344,60 +345,60 @@ void draw_test( void )
 	//testing touchscreen
 	if (spGetInput()->touchscreen.pressed)
 	{
-		spBlitSurface(spGetInput()->touchscreen.x,spGetInput()->touchscreen.y,-1,pepper);
+		spBlitSurface(spGetInput()->touchscreen.x,spGetInput()->touchscreen.y,0,pepper);
 	}
 
-	spFontDraw( 0, 2, -1, "Previous [L]", font );
-	spFontDrawRight( screen->w - 2, 2, -1, "[R] next", font );
+	spFontDraw( 0, 2, 0, "Previous [L]", font );
+	spFontDrawRight( screen->w - 2, 2, 0, "[R] next", font );
 	switch ( test )
 	{
 	case 0:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 1:\nRotating Cube", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 1:\nRotating Cube", font );
 		break;
 	case 1:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 2:\n3D Tube", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 2:\n3D Tube", font );
 		break;
 	case 2:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 3:\nFulfilling", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 3:\nFulfilling", font );
 		break;
 	case 3:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 4:\nMesh Loading", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 4:\nMesh Loading", font );
 		break;
 	case 4:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 5:\nPrimitives", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 5:\nPrimitives", font );
 		break;
 	case 5:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 6:\nSprites & Rotozoom", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 6:\nSprites & Rotozoom", font );
 		break;
 	case 6:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, -1, "Test 7:\nMAKE IT STOP!", font );
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 7:\nMAKE IT STOP!", font );
 		break;
 	}
 	if ( quality )
-		spFontDraw( 0, screen->h - font->maxheight, -1, "Light On [A]", font );
+		spFontDraw( 0, screen->h - font->maxheight, 0, "Light On [A]", font );
 	else
-		spFontDraw( 0, screen->h - font->maxheight, -1, "Light Off [A]", font );
+		spFontDraw( 0, screen->h - font->maxheight, 0, "Light Off [A]", font );
 	char buffer[256];
 	if ( zStuff )
-		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set On [Y]", font );
+		spFontDraw( 0, screen->h - font->maxheight * 2, 0, "Z Test/Set On [Y]", font );
 	else
-		spFontDraw( 0, screen->h - font->maxheight * 2, -1, "Z Test/Set Off [Y]", font );
+		spFontDraw( 0, screen->h - font->maxheight * 2, 0, "Z Test/Set Off [Y]", font );
 
 	sprintf( buffer, "%02i:%02i", divisor / 60000, ( divisor / 1000 ) % 60 );
-	//spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, buffer, font );
+	//spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, 0, buffer, font );
 	sprintf( buffer, "fps: %i", spGetFPS() );
-	spFontDrawMiddle( screen->w/2, 1, -1, buffer, font );
+	spFontDrawMiddle( screen->w/2, 1, 0, buffer, font );
 	if (spIsKeyboardPolled())
-		spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, "[S] Finish Text", font );
+		spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, 0, "[S] Finish Text", font );
 	else
-		spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, -1, "[S] Enter Text", font );
-	spFontDrawRight( screen->w - 2, screen->h - font->maxheight, -1, "[E] Exit", font );
+		spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, 0, "[S] Enter Text", font );
+	spFontDrawRight( screen->w - 2, screen->h - font->maxheight, 0, "[E] Exit", font );
 	char utf8buffer[5];
 	sprintf(buffer,"Pressing \"%s\"",spFontGetUTF8FromUnicode(lastKey,utf8buffer,5));
 	if (lastKey)
-		spFontDrawMiddle( screen->w / 2, screen->h /2 - font->maxheight/2, -1, buffer, font );
+		spFontDrawMiddle( screen->w / 2, screen->h /2 - font->maxheight/2, 0, buffer, font );
 	if (input[0])
-		spFontDrawMiddle( screen->w / 2, screen->h /2 + font->maxheight/2, -1, input, font );
+		spFontDrawMiddle( screen->w / 2, screen->h /2 + font->maxheight/2, 0, input, font );
 
 	if (spGetInput()->analog_axis[0] < 0)
 	{
@@ -416,7 +417,7 @@ void draw_test( void )
 			sprintf(buffer,"%s-",buffer);
 		sprintf(buffer,"%s>",buffer);
 	}	
-	spFontDraw( 2, font->maxheight, -1, buffer, font );
+	spFontDraw( 2, font->maxheight, 0, buffer, font );
 
 	if (spGetInput()->analog_axis[1] < 0)
 	{
@@ -435,7 +436,7 @@ void draw_test( void )
 			sprintf(buffer,"%s|\n",buffer);
 		sprintf(buffer,"%sv",buffer);
 	}	
-	spFontDraw( 2, font->maxheight*2, -1, buffer, font );
+	spFontDraw( 2, font->maxheight*2, 0, buffer, font );
 	if (spIsKeyboardPolled())
 		spBlitSurface(screen->w/2,screen->h-spGetVirtualKeyboard()->h/2,0,spGetVirtualKeyboard());
 	spFlip();
@@ -512,7 +513,7 @@ void resize( Uint16 w, Uint16 h )
 	
 	
 	//Setup of the new/resized window
-	spSetPerspective( 50.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 0.1, 100 );
+	spSetPerspective( 130.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 0.1f, 100.0f );
 
 	//Font Loading
 	spFontShadeButtons(1);

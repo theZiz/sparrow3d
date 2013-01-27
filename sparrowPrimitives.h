@@ -135,6 +135,8 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Si
  * 64 rightbottom, 128 bottom, 256 leftbottom */
 PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color );
 
+PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 w1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 w2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 w3, Uint32 color );
+
 /* Draws a Quad without texture and without alpha value. Returns 0
  * if not drawn (culling) or different bits, where the edges are:
  * 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right,
@@ -146,6 +148,8 @@ PREFIX int spQuad( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32
  * 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right,
  * 64 rightbottom, 128 bottom, 256 leftbottom */
 PREFIX int spQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 x4, Sint32 y4, Sint32 z4, Sint32 u4, Sint32 v4, Uint32 color );
+
+PREFIX int spPerspectiveQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 w1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 w2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 w3, Sint32 x4, Sint32 y4, Sint32 z4, Sint32 u4, Sint32 v4, Sint32 w4, Uint32 color );
 
 /* Cache ZBuffers. If you use many Render Targets every time you switch
  * it the old ZBuffer will be destroyed and a new one created, which is
@@ -230,6 +234,12 @@ PREFIX void spSetZFar(Sint32 zfar);
 
 /* Gets the value, to which the zbuffer will be reseted */
 PREFIX Sint32 spGetZFar();
+
+/* Sets the znear value for z test*/
+PREFIX void spSetZNear(Sint32 znear);
+
+/* Gets the znear value for z test*/
+PREFIX Sint32 spGetZNear();
 
 /* Adds a transparent white layer to the target surface. Slow, but
  * usefull for menu fade in and out */
