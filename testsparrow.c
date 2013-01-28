@@ -30,6 +30,7 @@ Uint16 lastKey = 0;
 char input[32] = "";
 char no_movement = 0;
 int perspective = 0;
+int pause = 0;
 
 void draw_test( void )
 {
@@ -351,10 +352,16 @@ void draw_test( void )
 
 	spFontDraw( 0, 2, 0, "Previous [L]", font );
 	spFontDrawRight( screen->w - 2, 2, 0, "[R] next", font );
-	if (perspective)
-		spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective on", font );
+	switch (perspective)
+	{
+		case 0: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective off", font ); break;
+		case 1: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective work around", font ); break;
+		case 2: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective on", font ); break;
+	}
+	if (pause)
+		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] play", font );
 	else
-		spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective off", font );
+		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] pause", font );
 	switch ( test )
 	{
 	case 0:
@@ -482,9 +489,22 @@ int calc_test( Uint32 steps )
 	if ( spGetInput()->button[SP_BUTTON_X] )
 	{
 		spGetInput()->button[SP_BUTTON_X] = 0;
-		perspective = 1 - perspective;
-		spSetPerspectiveTextureMapping(perspective);
+		perspective = (perspective+1) % 3;
+		switch (perspective)
+		{
+			case 0: spSetPerspectiveTextureMapping(0); spSetAffineTextureHack(0); break;
+			case 1: spSetAffineTextureHack(1); break;
+			case 2: spSetPerspectiveTextureMapping(1); break;
+		}
 	}
+	if ( spGetInput()->button[SP_BUTTON_B] )
+	{
+		spGetInput()->button[SP_BUTTON_B] = 0;
+		pause = 1-pause;
+	}
+	if (pause)
+		rotation -= steps << SP_ACCURACY - 11;
+
 	if ( spGetInput()->button[SP_BUTTON_R] )
 	{
 		spGetInput()->button[SP_BUTTON_R] = 0;
