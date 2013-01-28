@@ -119,7 +119,7 @@ PREFIX void spBindTexture( SDL_Surface* texture )
 		return;
 	spTexture = texture;
 	spTextureScanLine = texture->pitch/texture->format->BytesPerPixel;
-	spTextureX = texture->w;  
+	spTextureX = texture->w;
 	spTextureY = texture->h;
 	spTextureXY = spTextureScanLine * spTextureY;
 	spTexturePixel = ( Uint16* )texture->pixels;
@@ -729,7 +729,7 @@ PREFIX int spQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Si
 				Sint32 mu = u1 + u2 + u3 + u4 >> 2;
 				Sint32 mv = v1 + v2 + v3 + v4 >> 2;
 				Sint32 mz = ( z1 >> 2 ) + ( z2 >> 2 ) + ( z3 >> 2 ) + ( z4 >> 2 );
-				
+
 				Sint32 wx = x1 + x2 >> 1;
 				Sint32 wy = y1 + y2 >> 1;
 				Sint32 wu = u1 + u2 >> 1;
@@ -801,7 +801,7 @@ PREFIX int spPerspectiveQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Si
 }
 
 PREFIX void spReAllocateZBuffer()
-{	
+{
 	//in Cache?
 	int cacheline;
 	for ( cacheline = 0; cacheline < spZBufferCacheCount; cacheline++ )
@@ -1530,7 +1530,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 		case SP_LEFT: addu = 0; break;
 		case SP_RIGHT: addu = w - 1; break;
 		default: addu = w >> 1;
-	}	
+	}
 	int addv;
 	switch (spVerticalOrigin)
 	{
@@ -2447,7 +2447,7 @@ inline void spInternalHorizentalLine(Sint32 xl,Sint32 zl,Sint32 xr,Sint32 zr,Sin
 		}
 	}
 }
-	
+
 inline void spInternalLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Uint32 color )
 {
 	spInternalLinePoint stack[abs(y1-y2)*2+2];
@@ -2526,15 +2526,15 @@ inline void spInternalLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y
 				stack[++stack_counter] = point;
 				stack[++stack_counter] = right;
 			}
-		}	
+		}
 }
 
 PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Uint32 color )
 {
 	if ( spAlphaTest && color == SP_ALPHA_COLOR )
-		return;	
+		return;
 	if (spZTest && z1 < 0 && z2 < 0)
-		return 0;
+		return;
 #ifndef NEVER_DEFINED
 	if ( x1 > x2 )
 	{
@@ -2548,7 +2548,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 		z1 = z2;
 		z2 = t;
 	}
-	
+
 	SDL_LockSurface( spTarget );
 	Sint32 dx = abs( x2 - x1 );
 	Sint32 dy = abs( y2 - y1 );
@@ -2824,7 +2824,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 	}
 	SDL_UnlockSurface( spTarget );
 	#else
-		spInternalLine(x1,y1,z1,x2,y2,z2,color);	
+		spInternalLine(x1,y1,z1,x2,y2,z2,color);
 	#endif
 }
 
@@ -3467,7 +3467,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color )
 					for (x = RX_in;x < RX_out; x++)
 						draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color )
-				}			
+				}
 				//down
 				for (; y <= ryr; y++ )
 				{
@@ -3480,7 +3480,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						RX = rxr;
 					for (x = LX;x <= RX; x++)
 						draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color )
-				}			
+				}
 			}
 			else
 			{
@@ -3520,7 +3520,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						draw_pixel_zset_pattern( x1 + x, y1 + y, z, color )
 					for (x = RX_in;x < RX_out; x++)
 						draw_pixel_zset_pattern( x1 + x, y1 + y, z, color )
-				}			
+				}
 				//down
 				for (; y <= ryr; y++ )
 				{
@@ -3533,7 +3533,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						RX = rxr;
 					for (x = LX;x <= RX; x++)
 						draw_pixel_zset_pattern( x1 + x, y1 + y, z, color )
-				}			
+				}
 			}
 		}
 		else
@@ -3576,7 +3576,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color )
 					for (x = RX_in;x < RX_out; x++)
 						draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color )
-				}			
+				}
 				//down
 				for (; y <= ryr; y++ )
 				{
@@ -3589,7 +3589,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						RX = rxr;
 					for (x = LX;x <= RX; x++)
 						draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color )
-				}			
+				}
 			}
 			else
 			{
@@ -3629,7 +3629,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						draw_pixel_pattern( x1 + x, y1 + y, color )
 					for (x = RX_in;x < RX_out; x++)
 						draw_pixel_pattern( x1 + x, y1 + y, color )
-				}			
+				}
 				//down
 				for (; y <= ryr; y++ )
 				{
@@ -3642,7 +3642,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						RX = rxr;
 					for (x = LX;x <= RX; x++)
 						draw_pixel_pattern( x1 + x, y1 + y, color )
-				}			
+				}
 			}
 		}
 	}
@@ -3688,7 +3688,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						draw_pixel_ztest_zset( x1 + x, y1 + y, z, color )
 					for (x = RX_in;x < RX_out; x++)
 						draw_pixel_ztest_zset( x1 + x, y1 + y, z, color )
-				}			
+				}
 				//down
 				for (; y <= ryr; y++ )
 				{
@@ -3701,7 +3701,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						RX = rxr;
 					for (x = LX;x <= RX; x++)
 						draw_pixel_ztest_zset( x1 + x, y1 + y, z, color )
-				}			
+				}
 			}
 			else
 			{
@@ -3741,7 +3741,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						draw_pixel_zset( x1 + x, y1 + y, z, color )
 					for (x = RX_in;x < RX_out; x++)
 						draw_pixel_zset( x1 + x, y1 + y, z, color )
-				}			
+				}
 				//down
 				for (; y <= ryr; y++ )
 				{
@@ -3754,7 +3754,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						RX = rxr;
 					for (x = LX;x <= RX; x++)
 						draw_pixel_zset( x1 + x, y1 + y, z, color )
-				}			
+				}
 			}
 		}
 		else
@@ -3797,7 +3797,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						draw_pixel_ztest( x1 + x, y1 + y, z, color )
 					for (x = RX_in;x < RX_out; x++)
 						draw_pixel_ztest( x1 + x, y1 + y, z, color )
-				}			
+				}
 				//down
 				for (; y <= ryr; y++ )
 				{
@@ -3810,7 +3810,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						RX = rxr;
 					for (x = LX;x <= RX; x++)
 						draw_pixel_ztest( x1 + x, y1 + y, z, color )
-				}			
+				}
 			}
 			else
 			{
@@ -3850,7 +3850,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						draw_pixel( x1 + x, y1 + y, color )
 					for (x = RX_in;x < RX_out; x++)
 						draw_pixel( x1 + x, y1 + y, color )
-				}			
+				}
 				//down
 				for (; y <= ryr; y++ )
 				{
@@ -3863,7 +3863,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						RX = rxr;
 					for (x = LX;x <= RX; x++)
 						draw_pixel( x1 + x, y1 + y, color )
-				}			
+				}
 			}
 		}
 	}
@@ -4181,7 +4181,7 @@ PREFIX void spAddWhiteLayer(int alpha)
       b=0;
     spTargetPixel[i]=spGetFastRGB(r,g,b);
   }
-  
+
 }
 
 PREFIX void spAddBlackLayer(int alpha)
@@ -4207,7 +4207,7 @@ PREFIX void spAddBlackLayer(int alpha)
       b=0;
     spTargetPixel[i]=spGetFastRGB(r,g,b);
   }
-  
+
 }
 
 PREFIX void spSetPattern32(Uint32 first_32_bit,Uint32 last_32_bit)
@@ -4249,7 +4249,7 @@ PREFIX void spSetPattern8(Uint8 line1,Uint8 line2,Uint8 line3,Uint8 line4,Uint8 
 	spUsePattern = line1 != 255 || line2 != 255 || line3 != 255 ||
 	               line4 != 255 || line5 != 255 || line6 != 255 ||
 	               line7 != 255 || line8 != 255;
-	
+
 }
 
 PREFIX void spDeactivatePattern()
