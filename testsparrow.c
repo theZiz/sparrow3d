@@ -29,6 +29,7 @@ int zStuff = 1;
 Uint16 lastKey = 0;
 char input[32] = "";
 char no_movement = 0;
+int perspective = 0;
 
 void draw_test( void )
 {
@@ -350,6 +351,10 @@ void draw_test( void )
 
 	spFontDraw( 0, 2, 0, "Previous [L]", font );
 	spFontDrawRight( screen->w - 2, 2, 0, "[R] next", font );
+	if (perspective)
+		spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective on", font );
+	else
+		spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective off", font );
 	switch ( test )
 	{
 	case 0:
@@ -474,6 +479,12 @@ int calc_test( Uint32 steps )
 		spGetInput()->button[SP_BUTTON_A] = 0;
 		quality = 1 - quality;
 	}
+	if ( spGetInput()->button[SP_BUTTON_X] )
+	{
+		spGetInput()->button[SP_BUTTON_X] = 0;
+		perspective = 1 - perspective;
+		spSetPerspectiveTextureMapping(perspective);
+	}
 	if ( spGetInput()->button[SP_BUTTON_R] )
 	{
 		spGetInput()->button[SP_BUTTON_R] = 0;
@@ -519,7 +530,7 @@ void resize( Uint16 w, Uint16 h )
 	spFontShadeButtons(1);
 	if ( font )
 		spFontDelete( font );
-	font = spFontLoad( "./font/StayPuft.ttf", 17 * spGetSizeFactor() >> SP_ACCURACY );
+	font = spFontLoad( "./font/StayPuft.ttf", 13 * spGetSizeFactor() >> SP_ACCURACY );
 	spFontSetShadeColor(0);
 	spFontAdd( font, SP_FONT_GROUP_ASCII, 65535 ); //whole ASCII
 	spFontAdd( font, "äüöÄÜÖßẞ", 65535 ); //German stuff (same like spFontAdd( font, SP_FONT_GROUP_GERMAN, 0 ); )

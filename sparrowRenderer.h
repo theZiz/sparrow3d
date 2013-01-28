@@ -60,7 +60,7 @@ typedef struct spTexPointStruct
 	Sint32 x, y, z;    //space coordinates
 	Sint32 tx, ty, tz; //multiplied with modelview
 	Sint32 px, py, pz; //projected
-	Sint32 u, v;
+	Sint32 u, v, w; //texture coordinates + w clip
 } spTexPoint;
 
 /* An edge with a status-flag, e.g. for borderlines */
@@ -219,6 +219,11 @@ PREFIX void spUpdateLight(int number);
 PREFIX void spSetAmbientLightColor( Uint32 r, Uint32 g, Uint32 b );
 
 //--- "Real" 3D functions, where the primitives is correct rotated ---
+
+/* every 3D function with textures can be rendered with affine texture mapping,
+ * what may look a bit "wobly" or perspectivly correct, which looks the best,
+ * but may be slower! */
+PREFIX void spSetPerspectiveTextureMapping(int value);
 
 /* Draws a triangle in 3D space. Returns 0
  * if not drawn (culling) or different bits, where the edges are:

@@ -163,7 +163,7 @@ inline Sint32 z_div( Sint32 z, Sint32 d )
 #else
 	if ( d == 0 )
 		return 0;
-	return (z+(d>>1)) / d;
+	return ((z)+((d)>>1)) / (d);
 #endif
 }
 
@@ -314,38 +314,98 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 		#define __SPARROW_INTERNAL_ZNOTHING__
 		#include "sparrowPrimitiveTexTriangleInclude.c"
 		#undef __SPARROW_INTERNAL_ZNOTHING__
+
+	// with pattern
+	#define __SPARROW_INTERNAL_PATTERN__
+	#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ZBOTH__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZBOTH__
+		#define __SPARROW_INTERNAL_ZTEST__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZTEST__
+		#define __SPARROW_INTERNAL_ZSET__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZSET__
+		#define __SPARROW_INTERNAL_ZNOTHING__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZNOTHING__
+
+	#undef __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ZBOTH__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZBOTH__
+		#define __SPARROW_INTERNAL_ZTEST__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZTEST__
+		#define __SPARROW_INTERNAL_ZSET__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZSET__
+		#define __SPARROW_INTERNAL_ZNOTHING__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZNOTHING__
+	#undef __SPARROW_INTERNAL_PATTERN__
+
 #undef __SPARROW_INTERNAL_PERSPECT__
+	#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ZBOTH__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZBOTH__
+		#define __SPARROW_INTERNAL_ZTEST__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZTEST__
+		#define __SPARROW_INTERNAL_ZSET__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZSET__
+		#define __SPARROW_INTERNAL_ZNOTHING__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZNOTHING__
 
-// with pattern
-#define __SPARROW_INTERNAL_PATTERN__
-#define __SPARROW_INTERNAL_ALPHA___
-	#define __SPARROW_INTERNAL_ZBOTH__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZBOTH__
-	#define __SPARROW_INTERNAL_ZTEST__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZTEST__
-	#define __SPARROW_INTERNAL_ZSET__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZSET__
-	#define __SPARROW_INTERNAL_ZNOTHING__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZNOTHING__
+	#undef __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ZBOTH__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZBOTH__
+		#define __SPARROW_INTERNAL_ZTEST__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZTEST__
+		#define __SPARROW_INTERNAL_ZSET__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZSET__
+		#define __SPARROW_INTERNAL_ZNOTHING__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZNOTHING__
 
-#undef __SPARROW_INTERNAL_ALPHA___
-	#define __SPARROW_INTERNAL_ZBOTH__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZBOTH__
-	#define __SPARROW_INTERNAL_ZTEST__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZTEST__
-	#define __SPARROW_INTERNAL_ZSET__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZSET__
-	#define __SPARROW_INTERNAL_ZNOTHING__
-	#include "sparrowPrimitiveTexTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZNOTHING__
-#undef __SPARROW_INTERNAL_PATTERN__
+	// with pattern
+	#define __SPARROW_INTERNAL_PATTERN__
+	#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ZBOTH__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZBOTH__
+		#define __SPARROW_INTERNAL_ZTEST__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZTEST__
+		#define __SPARROW_INTERNAL_ZSET__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZSET__
+		#define __SPARROW_INTERNAL_ZNOTHING__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZNOTHING__
+
+	#undef __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ZBOTH__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZBOTH__
+		#define __SPARROW_INTERNAL_ZTEST__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZTEST__
+		#define __SPARROW_INTERNAL_ZSET__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZSET__
+		#define __SPARROW_INTERNAL_ZNOTHING__
+		#include "sparrowPrimitiveTexTriangleInclude.c"
+		#undef __SPARROW_INTERNAL_ZNOTHING__
+	#undef __SPARROW_INTERNAL_PATTERN__
+
 
 PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color )
 {
@@ -512,6 +572,9 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 		temp = v1;
 		v1 = v2;
 		v2 = temp;
+		temp = w1;
+		w1 = w2;
+		w2 = temp;
 	}
 	if ( y1 > y3 )
 	{
@@ -530,6 +593,9 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 		temp = v1;
 		v1 = v3;
 		v3 = temp;
+		temp = w1;
+		w1 = w3;
+		w3 = temp;
 	}
 	if ( y2 < y3 )
 	{
@@ -548,7 +614,21 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 		temp = v2;
 		v2 = v3;
 		v3 = temp;
+		temp = w2;
+		w2 = w3;
+		w3 = temp;
 	}
+	//w clip of u and v:
+	u1 = spDiv(u1 << SP_ACCURACY,w1);
+	u2 = spDiv(u2 << SP_ACCURACY,w2);
+	u3 = spDiv(u3 << SP_ACCURACY,w3);
+	v1 = spDiv(v1 << SP_ACCURACY,w1);
+	v2 = spDiv(v2 << SP_ACCURACY,w2);
+	v3 = spDiv(v3 << SP_ACCURACY,w3);
+	//reciprocal:
+	w1 = spDiv(SP_ONE,w1);
+	w2 = spDiv(SP_ONE,w2);
+	w3 = spDiv(SP_ONE,w3);
 	int result = spGetPixelPosition( x1, y1 ) | spGetPixelPosition( x2, y2 ) | spGetPixelPosition( x3, y3 );
 	if ( !result )
 		return 0;
@@ -559,16 +639,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 			if ( spZSet )
 			{
 				if ( spZTest )
-					sp_intern_Triangle_tex_ztest_zset_alpha_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					sp_intern_Triangle_tex_ztest_zset_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
 				else
-					sp_intern_Triangle_tex_zset_alpha_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					sp_intern_Triangle_tex_zset_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
 			}
 			else
 			{
 				if ( spZTest )
-					sp_intern_Triangle_tex_ztest_alpha_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					sp_intern_Triangle_tex_ztest_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
 				else
-					sp_intern_Triangle_tex_alpha_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+					sp_intern_Triangle_tex_alpha_pattern_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color );
 			}
 		}
 		else
@@ -576,16 +656,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 			if ( spZSet )
 			{
 				if ( spZTest )
-					sp_intern_Triangle_tex_ztest_zset_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					sp_intern_Triangle_tex_ztest_zset_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
 				else
-					sp_intern_Triangle_tex_zset_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					sp_intern_Triangle_tex_zset_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
 			}
 			else
 			{
 				if ( spZTest )
-					sp_intern_Triangle_tex_ztest_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					sp_intern_Triangle_tex_ztest_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
 				else
-					sp_intern_Triangle_tex_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+					sp_intern_Triangle_tex_pattern_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color );
 			}
 		}
 	}
@@ -596,16 +676,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 			if ( spZSet )
 			{
 				if ( spZTest )
-					sp_intern_Triangle_tex_ztest_zset_alpha( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					sp_intern_Triangle_tex_ztest_zset_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
 				else
-					sp_intern_Triangle_tex_zset_alpha      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					sp_intern_Triangle_tex_zset_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
 			}
 			else
 			{
 				if ( spZTest )
-					sp_intern_Triangle_tex_ztest_alpha     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					sp_intern_Triangle_tex_ztest_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
 				else
-					sp_intern_Triangle_tex_alpha           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+					sp_intern_Triangle_tex_alpha_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color );
 			}
 		}
 		else
@@ -613,16 +693,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 			if ( spZSet )
 			{
 				if ( spZTest )
-					sp_intern_Triangle_tex_ztest_zset( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					sp_intern_Triangle_tex_ztest_zset_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
 				else
-					sp_intern_Triangle_tex_zset      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					sp_intern_Triangle_tex_zset_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
 			}
 			else
 			{
 				if ( spZTest )
-					sp_intern_Triangle_tex_ztest     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+					sp_intern_Triangle_tex_ztest_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
 				else
-					sp_intern_Triangle_tex           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+					sp_intern_Triangle_tex_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color );
 			}
 		}
 	}
