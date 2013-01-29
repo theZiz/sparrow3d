@@ -308,8 +308,7 @@ PREFIX void spBlit3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface );
  * the ModelViewMatrix should be involved. E.g. if you want to get a
  * perspective correct width, you don't want the rotation. In this case
  * set it to 0. Most of the time you should be fine with 1. */
-PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 withModelview );
-
+PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 *w,Sint32 withModelview );
 /* spUsePrecalculatedNormals desides, whether the precalculated normal
  * values of meshes are used or not. So this works only with spMesh3D*
  * functions. Be carefull! You can use this optimization only, if you

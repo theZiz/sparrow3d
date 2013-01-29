@@ -1402,7 +1402,7 @@ PREFIX void spEllipseBorder3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 r
 	spEllipseBorder( x, y, z, rx, ry, bx, by, color );
 }
 
-PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 withModelview )
+PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 *w,Sint32 withModelview )
 {
 	int windowX = spGetRenderTarget()->w;
 	int windowY = spGetRenderTarget()->h;
@@ -1423,11 +1423,11 @@ PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *
 		y = spMul( spProjection[ 5], y );
 		z = spMul( spProjection[10], tz1 ) + spProjection[14];
 	}
-	Sint32 w1 = spMul( spProjection[11], tz1 );
-	if ( w1 == 0 )
-		w1 = 1;
-	Sint32 nx1 = spDiv( x, w1 ) >> SP_HALF_ACCURACY;
-	Sint32 ny1 = spDiv( y, w1 ) >> SP_HALF_ACCURACY;
+	*w = spMul( spProjection[11], tz1 );
+	if ( *w == 0 )
+		*w = 1;
+	Sint32 nx1 = spDiv( x, *w ) >> SP_HALF_ACCURACY;
+	Sint32 ny1 = spDiv( y, *w ) >> SP_HALF_ACCURACY;
 
 
 	if ( withModelview )

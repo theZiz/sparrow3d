@@ -50,7 +50,7 @@ void draw_test( void )
 	spSetZTest( zStuff );
 	int i;
 	Sint32 matrix[16];
-	Sint32 px, py, pz;
+	Sint32 px, py, pz, w;
 	spSetLightPosition(0,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3);
 	spSetLightColor(0,SP_ONE,SP_ONE,SP_ONE);
 	switch ( test )
@@ -66,7 +66,7 @@ void draw_test( void )
 		spTranslate(0,2 << SP_ACCURACY,0);
 		spSetLightPosition(0,0,0,0);
 		spSetLightColor(0,0,SP_ONE,SP_ONE);
-		spProjectPoint3D( 0,0,0, &px,&py,&pz, 1);
+		spProjectPoint3D( 0,0,0, &px,&py,&pz, &w, 1);
 		spEllipse3D(0,0,0,1 << SP_ACCURACY-3,1 << SP_ACCURACY-3,spGetFastRGB(0,255,255));
 		spSetAlphaTest(1);
 		spFontDrawMiddle( px,py-font->maxheight/2,pz, "light", font );
@@ -75,7 +75,7 @@ void draw_test( void )
 		spEnableLight(1,1);
 		spSetLightPosition(1,0,0,0);
 		spSetLightColor(1,SP_ONE,SP_ONE,0);
-		spProjectPoint3D( 0,0,0, &px,&py,&pz, 1);
+		spProjectPoint3D( 0,0,0, &px,&py,&pz, &w, 1);
 		spEllipse3D(0,0,0,1 << SP_ACCURACY-3,1 << SP_ACCURACY-3,spGetFastRGB(255,255,0));
 		spSetAlphaTest(1);
 		spFontDrawMiddle( px,py-font->maxheight/2,pz, "light", font );

@@ -157,7 +157,8 @@
 
 //Perspective
 
-#define reciprocal_w_clip(parameter,w) (parameter)/(w)
+//#define reciprocal_w_clip(parameter,w) (spMulLow(parameter,spDiv(SP_ONE,(w>>spMaxWLogDiff))>>spMaxWLogDiff) >> SP_ACCURACY)
+#define reciprocal_w_clip(parameter,w) (spMulLow(parameter,spOne_over_x_look_up_fixed[(w>>spMaxWLogDiff) & (SP_ONE-1)]>>spMaxWLogDiff) >> SP_ACCURACY)
 
 #ifdef FAST_BUT_UGLY
 	#define draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color) \

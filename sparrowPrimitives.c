@@ -30,6 +30,7 @@ Uint32 spAlphaTest = 1;
 Uint32 spQuadQuali = 1;
 Sint32* spZBuffer = NULL;
 Sint32 spZFar = -6553600; //-100.0f
+Sint32 spMaxWLogDiff = 3;
 Sint32 spZNear = -7000; //-0.1f
 Sint32 spTargetScanLine = 0; //if the surface is even, same as spTargetX, else +1.
 Sint32 spTargetX = 0;
@@ -38,7 +39,8 @@ Sint32 spTextureX = 0;
 Sint32 spTextureScanLine = 0; //if the surface is even, same as spTextureX, else +1.
 Sint32 spTextureY = 0;
 Sint32 spTextureXY = 0;
-Sint32 spOne_over_x_look_up[1 << SP_PRIM_ACCURACY];
+Sint32 spOne_over_x_look_up[1 << SP_ACCURACY];
+Sint32 spOne_over_x_look_up_fixed[1 << SP_ACCURACY];
 Uint32 spZBufferCacheCount = 16;
 Uint32 spZBufferCacheLast;
 Sint32** spZBufferCache = NULL;
@@ -62,9 +64,13 @@ PREFIX void spInitPrimitives()
 		return;
 	spPrimitivesIsInitialized = 1;
 	int i;
-	for ( i = 1; i < ( 1 << SP_PRIM_ACCURACY ); i++ )
-		spOne_over_x_look_up[i] = (( 1 << SP_PRIM_ACCURACY )+(i >> 1)) / i;
+	for ( i = 1; i < ( 1 << SP_ACCURACY ); i++ )
+	{
+		spOne_over_x_look_up      [i] = (SP_ONE+(i >> 1)) / i;
+		spOne_over_x_look_up_fixed[i] = spDivHigh(SP_ONE,i);
+	}
 	spOne_over_x_look_up[0] = 0;
+	spOne_over_x_look_up_fixed[0] = 0;
 	spSetZBufferCache( spZBufferCacheCount );
 }
 
@@ -140,15 +146,15 @@ inline Sint32 one_over_x( Sint32 x )
 {
 	if ( x > 0 )
 	{
-		if ( x < ( 1 << SP_PRIM_ACCURACY ) )
+		if ( x < ( 1 << SP_ACCURACY ) )
 			return spOne_over_x_look_up[x];
-		if ( x == ( 1 << SP_PRIM_ACCURACY ) )
+		if ( x == ( 1 << SP_ACCURACY ) )
 			return 1;
 		return 0;
 	}
-	if ( x > ( -1 << SP_PRIM_ACCURACY ) )
+	if ( x > ( -1 << SP_ACCURACY ) )
 		return -spOne_over_x_look_up[-x];
-	if ( x == ( -1 << SP_PRIM_ACCURACY ) )
+	if ( x == ( -1 << SP_ACCURACY ) )
 		return -1;
 	return 0;
 }
@@ -3234,7 +3240,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 				Sint32 factor = one_over_x(ry);
 				for ( y = ryl; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3250,7 +3256,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 				Sint32 factor = one_over_x(ry);
 				for ( y = ryl; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3269,7 +3275,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 				Sint32 factor = one_over_x(ry);
 				for ( y = ryl; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3285,7 +3291,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 				Sint32 factor = one_over_x(ry);
 				for ( y = ryl; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3307,7 +3313,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 				Sint32 factor = one_over_x(ry);
 				for ( y = ryl; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3323,7 +3329,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 				Sint32 factor = one_over_x(ry);
 				for ( y = ryl; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3342,7 +3348,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 				Sint32 factor = one_over_x(ry);
 				for ( y = ryl; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3358,7 +3364,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 				Sint32 factor = one_over_x(ry);
 				for ( y = ryl; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3436,7 +3442,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//up
 				for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3449,8 +3455,8 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//middle
 				for (; y < ry - by && y <= ryr; y++ )
 				{
-					Sint32 angel_out = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
-					Sint32 angel_in  = spAsin(y*factor_in >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel_out = spAsin(y*factor_out);
+					Sint32 angel_in  = spAsin(y*factor_in);
 					Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
 					Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
 					Sint32 LX_in  = -RX_in;
@@ -3471,7 +3477,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//down
 				for (; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3489,7 +3495,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//up
 				for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3502,8 +3508,8 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//middle
 				for (; y < ry - by && y <= ryr; y++ )
 				{
-					Sint32 angel_out = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
-					Sint32 angel_in  = spAsin(y*factor_in >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel_out = spAsin(y*factor_out);
+					Sint32 angel_in  = spAsin(y*factor_in);
 					Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
 					Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
 					Sint32 LX_in  = -RX_in;
@@ -3524,7 +3530,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//down
 				for (; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3545,7 +3551,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//up
 				for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3558,8 +3564,8 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//middle
 				for (; y < ry - by && y <= ryr; y++ )
 				{
-					Sint32 angel_out = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
-					Sint32 angel_in  = spAsin(y*factor_in >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel_out = spAsin(y*factor_out);
+					Sint32 angel_in  = spAsin(y*factor_in);
 					Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
 					Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
 					Sint32 LX_in  = -RX_in;
@@ -3580,7 +3586,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//down
 				for (; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3598,7 +3604,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//up
 				for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3611,8 +3617,8 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//middle
 				for (; y < ry - by && y <= ryr; y++ )
 				{
-					Sint32 angel_out = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
-					Sint32 angel_in  = spAsin(y*factor_in >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel_out = spAsin(y*factor_out);
+					Sint32 angel_in  = spAsin(y*factor_in);
 					Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
 					Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
 					Sint32 LX_in  = -RX_in;
@@ -3633,7 +3639,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//down
 				for (; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3657,7 +3663,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//up
 				for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3670,8 +3676,8 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//middle
 				for (; y < ry - by && y <= ryr; y++ )
 				{
-					Sint32 angel_out = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
-					Sint32 angel_in  = spAsin(y*factor_in >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel_out = spAsin(y*factor_out);
+					Sint32 angel_in  = spAsin(y*factor_in);
 					Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
 					Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
 					Sint32 LX_in  = -RX_in;
@@ -3692,7 +3698,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//down
 				for (; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3710,7 +3716,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//up
 				for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3723,8 +3729,8 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//middle
 				for (; y < ry - by && y <= ryr; y++ )
 				{
-					Sint32 angel_out = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
-					Sint32 angel_in  = spAsin(y*factor_in >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel_out = spAsin(y*factor_out);
+					Sint32 angel_in  = spAsin(y*factor_in);
 					Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
 					Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
 					Sint32 LX_in  = -RX_in;
@@ -3745,7 +3751,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//down
 				for (; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3766,7 +3772,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//up
 				for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3779,8 +3785,8 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//middle
 				for (; y < ry - by && y <= ryr; y++ )
 				{
-					Sint32 angel_out = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
-					Sint32 angel_in  = spAsin(y*factor_in >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel_out = spAsin(y*factor_out);
+					Sint32 angel_in  = spAsin(y*factor_in);
 					Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
 					Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
 					Sint32 LX_in  = -RX_in;
@@ -3801,7 +3807,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//down
 				for (; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3819,7 +3825,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//up
 				for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -3832,8 +3838,8 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//middle
 				for (; y < ry - by && y <= ryr; y++ )
 				{
-					Sint32 angel_out = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
-					Sint32 angel_in  = spAsin(y*factor_in >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel_out = spAsin(y*factor_out);
+					Sint32 angel_in  = spAsin(y*factor_in);
 					Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
 					Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
 					Sint32 LX_in  = -RX_in;
@@ -3854,7 +3860,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				//down
 				for (; y <= ryr; y++ )
 				{
-					Sint32 angel = spAsin(y*factor_out >> SP_PRIM_ACCURACY-SP_ACCURACY);
+					Sint32 angel = spAsin(y*factor_out);
 					Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
 					Sint32 LX = -RX;
 					if (LX < rxl)
@@ -4137,10 +4143,25 @@ PREFIX Sint32 spGetVerticalOrigin()
 	return spVerticalOrigin;
 }
 
+int log_2(int x)
+{
+	int mom = 1 << 31;
+	int l = 31;
+	while ((x & mom) == 0)
+	{
+		mom >>= 1;
+		l--;
+	}
+	return l;
+}
 
 PREFIX void spSetZFar(Sint32 zfar)
 {
 	spZFar = zfar;
+	Sint32 x,y,z,w;
+	spProjectPoint3D(0,0,-zfar,&x,&y,&z,&w,1);
+	int l = log_2(w)+1;
+	spMaxWLogDiff = l - SP_ACCURACY;
 }
 
 PREFIX Sint32 spGetZFar()

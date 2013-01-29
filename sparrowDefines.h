@@ -73,12 +73,14 @@
 /* These are some #defines for fast multiplication and division of
  * fixed point numbers. Use them like normal functions, e.g.
  * Sint32 a = spMul(b,c); //a = b * c */
-#ifdef FAST_MULTIPLICATION
-	#define spMul(a,b) (((a)>>SP_HALF_ACCURACY)*((b)>>SP_HALF_ACCURACY))
-#else
-	#define spMul(a,b) ((Sint64)(a)*(Sint64)(b)>>SP_ACCURACY)
-#endif
 #define spMulHigh(a,b) ((Sint64)(a)*(Sint64)(b)>>SP_ACCURACY)
+#define spMulLow(a,b) (((a)>>SP_HALF_ACCURACY)*((b)>>SP_HALF_ACCURACY))
+
+#ifdef FAST_MULTIPLICATION
+	#define spMul(a,b) spMulLow(a,b)
+#else
+	#define spMul(a,b) spMulHigh(a,b)
+#endif
 
 #ifdef FAST_DIVISION
 	#define spDiv(a,b) ((b>=0 && b<(1<<SP_PRIM_ACCURACY))? \

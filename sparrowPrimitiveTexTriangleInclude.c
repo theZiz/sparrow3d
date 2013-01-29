@@ -292,45 +292,45 @@
 			#ifdef __SPARROW_INTERNAL_PATTERN__
 				#ifdef __SPARROW_INTERNAL_ALPHA___
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
-						draw_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#elif defined __SPARROW_INTERNAL_ZTEST__
-						draw_pixel_tex_ztest_alpha_pattern( x, y, z, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_ztest_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#elif defined __SPARROW_INTERNAL_ZSET__
-						draw_pixel_tex_zset_alpha_pattern( x, y, z, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_zset_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#else
-						draw_pixel_tex_alpha_pattern( x, y, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_alpha_pattern( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#endif
 				#else
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
-						draw_pixel_tex_ztest_zset_pattern( x, y, z, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_ztest_zset_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#elif defined __SPARROW_INTERNAL_ZTEST__
-						draw_pixel_tex_ztest_pattern( x, y, z, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_ztest_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#elif defined __SPARROW_INTERNAL_ZSET__
-						draw_pixel_tex_zset_pattern( x, y, z, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_zset_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#else
-						draw_pixel_tex_pattern( x, y, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_pattern( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#endif
 				#endif
 			#else
 				#ifdef __SPARROW_INTERNAL_ALPHA___
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
-						draw_pixel_tex_ztest_zset_alpha( x, y, z, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_ztest_zset_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#elif defined __SPARROW_INTERNAL_ZTEST__
-						draw_pixel_tex_ztest_alpha( x, y, z, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_ztest_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#elif defined __SPARROW_INTERNAL_ZSET__
-						draw_pixel_tex_zset_alpha( x, y, z, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_zset_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#else
-						draw_pixel_tex_alpha( x, y, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_alpha( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#endif
 				#else
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
-						draw_pixel_tex_ztest_zset( x, y, z, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_ztest_zset( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#elif defined __SPARROW_INTERNAL_ZTEST__
-						draw_pixel_tex_ztest( x, y, z, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_ztest( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#elif defined __SPARROW_INTERNAL_ZSET__
-						draw_pixel_tex_zset( x, y, z, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex_zset( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#else
-						draw_pixel_tex( x, y, u >> SP_PRIM_ACCURACY, v >> SP_PRIM_ACCURACY, color );
+						draw_pixel_tex( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color );
 					#endif
 				#endif
 			#endif
@@ -450,7 +450,7 @@
 	int div = y2 - y1;
 	Sint32 mul = y3 - y1;
 	Sint32 mul32 = mul * one_over_x( div );
-	Sint32 x4 = x1 + ( ( x2 - x1 ) * mul32 >> SP_PRIM_ACCURACY );
+	Sint32 x4 = x1 + ( ( x2 - x1 ) * mul32 >> SP_ACCURACY );
 	#ifndef __SPARROW_INTERNAL_ZNOTHING__
 		Sint32 z4 = z1 + mul * z_div( z2 - z1, div );
 	#endif
@@ -460,18 +460,18 @@
 		Sint32 u4 = u1 + mul * z_div( u2 - u1, div );
 		Sint32 v4 = v1 + mul * z_div( v2 - v1, div );
 	#else
-		Sint32 u4 = u1 + ( ( u2 - u1 ) * mul32 >> SP_PRIM_ACCURACY );
-		Sint32 v4 = v1 + ( ( v2 - v1 ) * mul32 >> SP_PRIM_ACCURACY );	
+		Sint32 u4 = u1 + ( ( u2 - u1 ) * mul32 >> SP_ACCURACY );
+		Sint32 v4 = v1 + ( ( v2 - v1 ) * mul32 >> SP_ACCURACY );	
 	#endif
 
-	Sint32 xl = x1 << SP_PRIM_ACCURACY;
+	Sint32 xl = x1 << SP_ACCURACY;
 	#ifdef __SPARROW_INTERNAL_PERSPECT__
 		Sint32 ul = u1;
 		Sint32 vl = v1;	
 		Sint32 wl = w1;
 	#else
-		Sint32 ul = u1 << SP_PRIM_ACCURACY;
-		Sint32 vl = v1 << SP_PRIM_ACCURACY;	
+		Sint32 ul = u1 << SP_ACCURACY;
+		Sint32 vl = v1 << SP_ACCURACY;	
 	#endif
 	#ifndef __SPARROW_INTERNAL_ZNOTHING__
 		Sint32 zl = z1;
@@ -584,61 +584,61 @@
 					#ifdef __SPARROW_INTERNAL_PATTERN__
 						#ifdef __SPARROW_INTERNAL_ALPHA___
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_alpha_pattern_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-																xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
+								draw_line_tex_ztest_zset_alpha_pattern_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+																xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_alpha_pattern_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-															 xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
+								draw_line_tex_ztest_alpha_pattern_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+															 xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_alpha_pattern_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-															xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
+								draw_line_tex_zset_alpha_pattern_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+															xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
 							#else
-								draw_line_tex_alpha_pattern_perspect( xl >> SP_PRIM_ACCURACY, ul, vl, wl,
-													 xr >> SP_PRIM_ACCURACY, ur, vr, wr, y, color, sU, sV ,sW);
+								draw_line_tex_alpha_pattern_perspect( xl >> SP_ACCURACY, ul, vl, wl,
+													 xr >> SP_ACCURACY, ur, vr, wr, y, color, sU, sV ,sW);
 							#endif
 						#else
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_pattern_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-															xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
+								draw_line_tex_ztest_zset_pattern_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+															xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_pattern_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-													 xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
+								draw_line_tex_ztest_pattern_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+													 xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_pattern_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-													xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
+								draw_line_tex_zset_pattern_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+													xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
 							#else
-								draw_line_tex_pattern_perspect( xl >> SP_PRIM_ACCURACY, ul, vl, wl,
-												 xr >> SP_PRIM_ACCURACY, ur, vr, wr, y, color, sU, sV ,sW);
+								draw_line_tex_pattern_perspect( xl >> SP_ACCURACY, ul, vl, wl,
+												 xr >> SP_ACCURACY, ur, vr, wr, y, color, sU, sV ,sW);
 							#endif
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ALPHA___
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_alpha_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-																xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
+								draw_line_tex_ztest_zset_alpha_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+																xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_alpha_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-															 xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
+								draw_line_tex_ztest_alpha_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+															 xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_alpha_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-															xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
+								draw_line_tex_zset_alpha_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+															xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
 							#else
-								draw_line_tex_alpha_perspect( xl >> SP_PRIM_ACCURACY, ul, vl, wl,
-													 xr >> SP_PRIM_ACCURACY, ur, vr, wr, y, color, sU, sV ,sW);
+								draw_line_tex_alpha_perspect( xl >> SP_ACCURACY, ul, vl, wl,
+													 xr >> SP_ACCURACY, ur, vr, wr, y, color, sU, sV ,sW);
 							#endif
 						#else
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-															xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
+								draw_line_tex_ztest_zset_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+															xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-													 xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
+								draw_line_tex_ztest_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+													 xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-													xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
+								draw_line_tex_zset_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+													xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV ,sW ,sZ );
 							#else
-								draw_line_tex_perspect( xl >> SP_PRIM_ACCURACY, ul, vl, wl,
-												 xr >> SP_PRIM_ACCURACY, ur, vr, wr, y, color, sU, sV ,sW);
+								draw_line_tex_perspect( xl >> SP_ACCURACY, ul, vl, wl,
+												 xr >> SP_ACCURACY, ur, vr, wr, y, color, sU, sV ,sW);
 							#endif
 						#endif
 					#endif
@@ -646,61 +646,61 @@
 					#ifdef __SPARROW_INTERNAL_PATTERN__
 						#ifdef __SPARROW_INTERNAL_ALPHA___
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_alpha_pattern( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-																xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_zset_alpha_pattern( xl >> SP_ACCURACY, zl, ul, vl,
+																xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_alpha_pattern( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-															 xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_alpha_pattern( xl >> SP_ACCURACY, zl, ul, vl,
+															 xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_alpha_pattern( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-															xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+								draw_line_tex_zset_alpha_pattern( xl >> SP_ACCURACY, zl, ul, vl,
+															xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 							#else
-								draw_line_tex_alpha_pattern( xl >> SP_PRIM_ACCURACY, ul, vl,
-													 xr >> SP_PRIM_ACCURACY, ur, vr, y, color, sU, sV );
+								draw_line_tex_alpha_pattern( xl >> SP_ACCURACY, ul, vl,
+													 xr >> SP_ACCURACY, ur, vr, y, color, sU, sV );
 							#endif
 						#else
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_pattern( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-															xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_zset_pattern( xl >> SP_ACCURACY, zl, ul, vl,
+															xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_pattern( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-													 xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_pattern( xl >> SP_ACCURACY, zl, ul, vl,
+													 xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_pattern( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-													xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+								draw_line_tex_zset_pattern( xl >> SP_ACCURACY, zl, ul, vl,
+													xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 							#else
-								draw_line_tex_pattern( xl >> SP_PRIM_ACCURACY, ul, vl,
-												 xr >> SP_PRIM_ACCURACY, ur, vr, y, color, sU, sV );
+								draw_line_tex_pattern( xl >> SP_ACCURACY, ul, vl,
+												 xr >> SP_ACCURACY, ur, vr, y, color, sU, sV );
 							#endif
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ALPHA___
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_alpha( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-																xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_zset_alpha( xl >> SP_ACCURACY, zl, ul, vl,
+																xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_alpha( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-															 xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_alpha( xl >> SP_ACCURACY, zl, ul, vl,
+															 xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_alpha( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-															xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+								draw_line_tex_zset_alpha( xl >> SP_ACCURACY, zl, ul, vl,
+															xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 							#else
-								draw_line_tex_alpha( xl >> SP_PRIM_ACCURACY, ul, vl,
-													 xr >> SP_PRIM_ACCURACY, ur, vr, y, color, sU, sV );
+								draw_line_tex_alpha( xl >> SP_ACCURACY, ul, vl,
+													 xr >> SP_ACCURACY, ur, vr, y, color, sU, sV );
 							#endif
 						#else
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-															xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_zset( xl >> SP_ACCURACY, zl, ul, vl,
+															xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-													 xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+								draw_line_tex_ztest( xl >> SP_ACCURACY, zl, ul, vl,
+													 xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-													xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+								draw_line_tex_zset( xl >> SP_ACCURACY, zl, ul, vl,
+													xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 							#else
-								draw_line_tex( xl >> SP_PRIM_ACCURACY, ul, vl,
-												 xr >> SP_PRIM_ACCURACY, ur, vr, y, color, sU, sV );
+								draw_line_tex( xl >> SP_ACCURACY, ul, vl,
+												 xr >> SP_ACCURACY, ur, vr, y, color, sU, sV );
 							#endif
 						#endif
 					#endif
@@ -733,61 +733,61 @@
 					#ifdef __SPARROW_INTERNAL_PATTERN__
 						#ifdef __SPARROW_INTERNAL_ALPHA___
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_alpha_pattern_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-																xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+								draw_line_tex_ztest_zset_alpha_pattern_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+																xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_alpha_pattern_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-															 xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+								draw_line_tex_ztest_alpha_pattern_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+															 xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_alpha_pattern_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-															xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+								draw_line_tex_zset_alpha_pattern_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+															xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 							#else
-								draw_line_tex_alpha_pattern_perspect( xr >> SP_PRIM_ACCURACY, ur, vr, wr,
-													 xl >> SP_PRIM_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
+								draw_line_tex_alpha_pattern_perspect( xr >> SP_ACCURACY, ur, vr, wr,
+													 xl >> SP_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
 							#endif
 						#else
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_pattern_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-															xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+								draw_line_tex_ztest_zset_pattern_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+															xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_pattern_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-													 xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+								draw_line_tex_ztest_pattern_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+													 xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_pattern_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-													xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+								draw_line_tex_zset_pattern_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+													xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 							#else
-								draw_line_tex_pattern_perspect( xr >> SP_PRIM_ACCURACY, ur, vr, wr,
-												 xl >> SP_PRIM_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
+								draw_line_tex_pattern_perspect( xr >> SP_ACCURACY, ur, vr, wr,
+												 xl >> SP_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
 							#endif
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ALPHA___
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_alpha_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-																xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+								draw_line_tex_ztest_zset_alpha_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+																xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_alpha_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-															 xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+								draw_line_tex_ztest_alpha_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+															 xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_alpha_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-															xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+								draw_line_tex_zset_alpha_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+															xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 							#else
-								draw_line_tex_alpha_perspect( xr >> SP_PRIM_ACCURACY, ur, vr, wr,
-													 xl >> SP_PRIM_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
+								draw_line_tex_alpha_perspect( xr >> SP_ACCURACY, ur, vr, wr,
+													 xl >> SP_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
 							#endif
 						#else
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-															xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+								draw_line_tex_ztest_zset_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+															xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-													 xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+								draw_line_tex_ztest_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+													 xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-													xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+								draw_line_tex_zset_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+													xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 							#else
-								draw_line_tex_perspect( xr >> SP_PRIM_ACCURACY, ur, vr, wr,
-												 xl >> SP_PRIM_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
+								draw_line_tex_perspect( xr >> SP_ACCURACY, ur, vr, wr,
+												 xl >> SP_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
 							#endif
 						#endif
 					#endif
@@ -795,61 +795,61 @@
 					#ifdef __SPARROW_INTERNAL_PATTERN__
 						#ifdef __SPARROW_INTERNAL_ALPHA___
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_alpha_pattern( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-																xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_zset_alpha_pattern( xr >> SP_ACCURACY, zr, ur, vr,
+																xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_alpha_pattern( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-															 xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_alpha_pattern( xr >> SP_ACCURACY, zr, ur, vr,
+															 xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_alpha_pattern( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-															xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+								draw_line_tex_zset_alpha_pattern( xr >> SP_ACCURACY, zr, ur, vr,
+															xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 							#else
-								draw_line_tex_alpha_pattern( xr >> SP_PRIM_ACCURACY, ur, vr,
-													 xl >> SP_PRIM_ACCURACY, ul, vl, y, color, sU, sV );
+								draw_line_tex_alpha_pattern( xr >> SP_ACCURACY, ur, vr,
+													 xl >> SP_ACCURACY, ul, vl, y, color, sU, sV );
 							#endif
 						#else
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_pattern( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-															xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_zset_pattern( xr >> SP_ACCURACY, zr, ur, vr,
+															xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_pattern( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-													 xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_pattern( xr >> SP_ACCURACY, zr, ur, vr,
+													 xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_pattern( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-													xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+								draw_line_tex_zset_pattern( xr >> SP_ACCURACY, zr, ur, vr,
+													xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 							#else
-								draw_line_tex_pattern( xr >> SP_PRIM_ACCURACY, ur, vr,
-												 xl >> SP_PRIM_ACCURACY, ul, vl, y, color, sU, sV );
+								draw_line_tex_pattern( xr >> SP_ACCURACY, ur, vr,
+												 xl >> SP_ACCURACY, ul, vl, y, color, sU, sV );
 							#endif
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ALPHA___
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset_alpha( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-																xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_zset_alpha( xr >> SP_ACCURACY, zr, ur, vr,
+																xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest_alpha( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-															 xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_alpha( xr >> SP_ACCURACY, zr, ur, vr,
+															 xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset_alpha( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-															xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+								draw_line_tex_zset_alpha( xr >> SP_ACCURACY, zr, ur, vr,
+															xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 							#else
-								draw_line_tex_alpha( xr >> SP_PRIM_ACCURACY, ur, vr,
-													 xl >> SP_PRIM_ACCURACY, ul, vl, y, color, sU, sV );
+								draw_line_tex_alpha( xr >> SP_ACCURACY, ur, vr,
+													 xl >> SP_ACCURACY, ul, vl, y, color, sU, sV );
 							#endif
 						#else
 							#ifdef __SPARROW_INTERNAL_ZBOTH__
-								draw_line_tex_ztest_zset( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-															xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+								draw_line_tex_ztest_zset( xr >> SP_ACCURACY, zr, ur, vr,
+															xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZTEST__
-								draw_line_tex_ztest( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-													 xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+								draw_line_tex_ztest( xr >> SP_ACCURACY, zr, ur, vr,
+													 xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 							#elif defined __SPARROW_INTERNAL_ZSET__
-								draw_line_tex_zset( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-													xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+								draw_line_tex_zset( xr >> SP_ACCURACY, zr, ur, vr,
+													xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 							#else
-								draw_line_tex( xr >> SP_PRIM_ACCURACY, ur, vr,
-												 xl >> SP_PRIM_ACCURACY, ul, vl, y, color, sU, sV );
+								draw_line_tex( xr >> SP_ACCURACY, ur, vr,
+												 xl >> SP_ACCURACY, ul, vl, y, color, sU, sV );
 							#endif
 						#endif
 					#endif
@@ -876,14 +876,14 @@
 		}
 	}
 
-	xr = x3 << SP_PRIM_ACCURACY;
+	xr = x3 << SP_ACCURACY;
 	#ifdef __SPARROW_INTERNAL_PERSPECT__
 		wr = w3;
 		ur = u3;
 		vr = v3;
 	#else
-		ur = u3 << SP_PRIM_ACCURACY;
-		vr = v3 << SP_PRIM_ACCURACY;
+		ur = u3 << SP_ACCURACY;
+		vr = v3 << SP_ACCURACY;
 	#endif
 	#ifndef __SPARROW_INTERNAL_ZNOTHING__
 		zr = z3;
@@ -948,61 +948,61 @@
 				#ifdef __SPARROW_INTERNAL_PATTERN__
 					#ifdef __SPARROW_INTERNAL_ALPHA___
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_alpha_pattern_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-															xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_zset_alpha_pattern_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+															xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_alpha_pattern_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-														 xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_alpha_pattern_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+														 xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_alpha_pattern_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-														xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
+							draw_line_tex_zset_alpha_pattern_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+														xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
 						#else
-							draw_line_tex_alpha_pattern_perspect( xl >> SP_PRIM_ACCURACY, ul, vl, wl,
-												 xr >> SP_PRIM_ACCURACY, ur, vr, wr, y, color, sU, sV, sW );
+							draw_line_tex_alpha_pattern_perspect( xl >> SP_ACCURACY, ul, vl, wl,
+												 xr >> SP_ACCURACY, ur, vr, wr, y, color, sU, sV, sW );
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_pattern_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-														xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_zset_pattern_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+														xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_pattern_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-												 xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_pattern_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+												 xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_pattern_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-												xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
+							draw_line_tex_zset_pattern_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+												xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
 						#else
-							draw_line_tex_pattern_perspect( xl >> SP_PRIM_ACCURACY, ul, vl, wl,
-											 xr >> SP_PRIM_ACCURACY, ur, vr, wr, y, color, sU, sV, sW );
+							draw_line_tex_pattern_perspect( xl >> SP_ACCURACY, ul, vl, wl,
+											 xr >> SP_ACCURACY, ur, vr, wr, y, color, sU, sV, sW );
 						#endif
 					#endif
 				#else
 					#ifdef __SPARROW_INTERNAL_ALPHA___
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_alpha_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-															xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_zset_alpha_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+															xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_alpha_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-														 xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_alpha_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+														 xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_alpha_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-														xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
+							draw_line_tex_zset_alpha_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+														xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
 						#else
-							draw_line_tex_alpha_perspect( xl >> SP_PRIM_ACCURACY, ul, vl, wl,
-												 xr >> SP_PRIM_ACCURACY, ur, vr, wr, y, color, sU, sV, sW );
+							draw_line_tex_alpha_perspect( xl >> SP_ACCURACY, ul, vl, wl,
+												 xr >> SP_ACCURACY, ur, vr, wr, y, color, sU, sV, sW );
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-														xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_zset_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+														xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-												 xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+												 xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_perspect( xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl,
-												xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
+							draw_line_tex_zset_perspect( xl >> SP_ACCURACY, zl, ul, vl, wl,
+												xr >> SP_ACCURACY, zr, ur, vr, wr, y, color, sU, sV, sW, sZ );
 						#else
-							draw_line_tex_perspect( xl >> SP_PRIM_ACCURACY, ul, vl, wl,
-											 xr >> SP_PRIM_ACCURACY, ur, vr, wr, y, color, sU, sV, sW );
+							draw_line_tex_perspect( xl >> SP_ACCURACY, ul, vl, wl,
+											 xr >> SP_ACCURACY, ur, vr, wr, y, color, sU, sV, sW );
 						#endif
 					#endif
 				#endif
@@ -1010,61 +1010,61 @@
 				#ifdef __SPARROW_INTERNAL_PATTERN__
 					#ifdef __SPARROW_INTERNAL_ALPHA___
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_alpha_pattern( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-															xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_zset_alpha_pattern( xl >> SP_ACCURACY, zl, ul, vl,
+															xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_alpha_pattern( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-														 xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_alpha_pattern( xl >> SP_ACCURACY, zl, ul, vl,
+														 xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_alpha_pattern( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-														xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+							draw_line_tex_zset_alpha_pattern( xl >> SP_ACCURACY, zl, ul, vl,
+														xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 						#else
-							draw_line_tex_alpha_pattern( xl >> SP_PRIM_ACCURACY, ul, vl,
-												 xr >> SP_PRIM_ACCURACY, ur, vr, y, color, sU, sV );
+							draw_line_tex_alpha_pattern( xl >> SP_ACCURACY, ul, vl,
+												 xr >> SP_ACCURACY, ur, vr, y, color, sU, sV );
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_pattern( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-														xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_zset_pattern( xl >> SP_ACCURACY, zl, ul, vl,
+														xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_pattern( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-												 xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_pattern( xl >> SP_ACCURACY, zl, ul, vl,
+												 xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_pattern( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-												xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+							draw_line_tex_zset_pattern( xl >> SP_ACCURACY, zl, ul, vl,
+												xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 						#else
-							draw_line_tex_pattern( xl >> SP_PRIM_ACCURACY, ul, vl,
-											 xr >> SP_PRIM_ACCURACY, ur, vr, y, color, sU, sV );
+							draw_line_tex_pattern( xl >> SP_ACCURACY, ul, vl,
+											 xr >> SP_ACCURACY, ur, vr, y, color, sU, sV );
 						#endif
 					#endif
 				#else
 					#ifdef __SPARROW_INTERNAL_ALPHA___
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_alpha( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-															xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_zset_alpha( xl >> SP_ACCURACY, zl, ul, vl,
+															xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_alpha( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-														 xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_alpha( xl >> SP_ACCURACY, zl, ul, vl,
+														 xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_alpha( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-														xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+							draw_line_tex_zset_alpha( xl >> SP_ACCURACY, zl, ul, vl,
+														xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 						#else
-							draw_line_tex_alpha( xl >> SP_PRIM_ACCURACY, ul, vl,
-												 xr >> SP_PRIM_ACCURACY, ur, vr, y, color, sU, sV );
+							draw_line_tex_alpha( xl >> SP_ACCURACY, ul, vl,
+												 xr >> SP_ACCURACY, ur, vr, y, color, sU, sV );
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-														xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_zset( xl >> SP_ACCURACY, zl, ul, vl,
+														xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-												 xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+							draw_line_tex_ztest( xl >> SP_ACCURACY, zl, ul, vl,
+												 xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset( xl >> SP_PRIM_ACCURACY, zl, ul, vl,
-												xr >> SP_PRIM_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
+							draw_line_tex_zset( xl >> SP_ACCURACY, zl, ul, vl,
+												xr >> SP_ACCURACY, zr, ur, vr, y, color, sU, sV, sZ );
 						#else
-							draw_line_tex( xl >> SP_PRIM_ACCURACY, ul, vl,
-											 xr >> SP_PRIM_ACCURACY, ur, vr, y, color, sU, sV );
+							draw_line_tex( xl >> SP_ACCURACY, ul, vl,
+											 xr >> SP_ACCURACY, ur, vr, y, color, sU, sV );
 						#endif
 					#endif
 				#endif
@@ -1097,61 +1097,61 @@
 				#ifdef __SPARROW_INTERNAL_PATTERN__
 					#ifdef __SPARROW_INTERNAL_ALPHA___
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_alpha_pattern_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-															xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_zset_alpha_pattern_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+															xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_alpha_pattern_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-														 xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_alpha_pattern_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+														 xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_alpha_pattern_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-														xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+							draw_line_tex_zset_alpha_pattern_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+														xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 						#else
-							draw_line_tex_alpha_pattern_perspect( xr >> SP_PRIM_ACCURACY, ur, vr, wr,
-												 xl >> SP_PRIM_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
+							draw_line_tex_alpha_pattern_perspect( xr >> SP_ACCURACY, ur, vr, wr,
+												 xl >> SP_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_pattern_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-														xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_zset_pattern_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+														xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_pattern_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-												 xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_pattern_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+												 xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_pattern_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-												xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+							draw_line_tex_zset_pattern_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+												xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 						#else
-							draw_line_tex_pattern_perspect( xr >> SP_PRIM_ACCURACY, ur, vr, wr,
-											 xl >> SP_PRIM_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
+							draw_line_tex_pattern_perspect( xr >> SP_ACCURACY, ur, vr, wr,
+											 xl >> SP_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
 						#endif
 					#endif
 				#else
 					#ifdef __SPARROW_INTERNAL_ALPHA___
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_alpha_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-															xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_zset_alpha_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+															xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_alpha_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-														 xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_alpha_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+														 xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_alpha_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-														xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+							draw_line_tex_zset_alpha_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+														xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 						#else
-							draw_line_tex_alpha_perspect( xr >> SP_PRIM_ACCURACY, ur, vr, wr,
-												 xl >> SP_PRIM_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
+							draw_line_tex_alpha_perspect( xr >> SP_ACCURACY, ur, vr, wr,
+												 xl >> SP_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-														xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_zset_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+														xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-												 xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+							draw_line_tex_ztest_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+												 xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_perspect( xr >> SP_PRIM_ACCURACY, zr, ur, vr, wr,
-												xl >> SP_PRIM_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
+							draw_line_tex_zset_perspect( xr >> SP_ACCURACY, zr, ur, vr, wr,
+												xl >> SP_ACCURACY, zl, ul, vl, wl, y, color, sU, sV, sW, sZ );
 						#else
-							draw_line_tex_perspect( xr >> SP_PRIM_ACCURACY, ur, vr, wr,
-											 xl >> SP_PRIM_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
+							draw_line_tex_perspect( xr >> SP_ACCURACY, ur, vr, wr,
+											 xl >> SP_ACCURACY, ul, vl, wl, y, color, sU, sV, sW );
 						#endif
 					#endif
 				#endif
@@ -1159,61 +1159,61 @@
 				#ifdef __SPARROW_INTERNAL_PATTERN__
 					#ifdef __SPARROW_INTERNAL_ALPHA___
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_alpha_pattern( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-															xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_zset_alpha_pattern( xr >> SP_ACCURACY, zr, ur, vr,
+															xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_alpha_pattern( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-														 xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_alpha_pattern( xr >> SP_ACCURACY, zr, ur, vr,
+														 xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_alpha_pattern( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-														xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+							draw_line_tex_zset_alpha_pattern( xr >> SP_ACCURACY, zr, ur, vr,
+														xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 						#else
-							draw_line_tex_alpha_pattern( xr >> SP_PRIM_ACCURACY, ur, vr,
-												 xl >> SP_PRIM_ACCURACY, ul, vl, y, color, sU, sV );
+							draw_line_tex_alpha_pattern( xr >> SP_ACCURACY, ur, vr,
+												 xl >> SP_ACCURACY, ul, vl, y, color, sU, sV );
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_pattern( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-														xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_zset_pattern( xr >> SP_ACCURACY, zr, ur, vr,
+														xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_pattern( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-												 xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_pattern( xr >> SP_ACCURACY, zr, ur, vr,
+												 xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_pattern( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-												xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+							draw_line_tex_zset_pattern( xr >> SP_ACCURACY, zr, ur, vr,
+												xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 						#else
-							draw_line_tex_pattern( xr >> SP_PRIM_ACCURACY, ur, vr,
-											 xl >> SP_PRIM_ACCURACY, ul, vl, y, color, sU, sV );
+							draw_line_tex_pattern( xr >> SP_ACCURACY, ur, vr,
+											 xl >> SP_ACCURACY, ul, vl, y, color, sU, sV );
 						#endif
 					#endif
 				#else
 					#ifdef __SPARROW_INTERNAL_ALPHA___
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset_alpha( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-															xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_zset_alpha( xr >> SP_ACCURACY, zr, ur, vr,
+															xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest_alpha( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-														 xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_alpha( xr >> SP_ACCURACY, zr, ur, vr,
+														 xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset_alpha( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-														xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+							draw_line_tex_zset_alpha( xr >> SP_ACCURACY, zr, ur, vr,
+														xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 						#else
-							draw_line_tex_alpha( xr >> SP_PRIM_ACCURACY, ur, vr,
-												 xl >> SP_PRIM_ACCURACY, ul, vl, y, color, sU, sV );
+							draw_line_tex_alpha( xr >> SP_ACCURACY, ur, vr,
+												 xl >> SP_ACCURACY, ul, vl, y, color, sU, sV );
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_tex_ztest_zset( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-														xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+							draw_line_tex_ztest_zset( xr >> SP_ACCURACY, zr, ur, vr,
+														xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_tex_ztest( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-												 xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+							draw_line_tex_ztest( xr >> SP_ACCURACY, zr, ur, vr,
+												 xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_line_tex_zset( xr >> SP_PRIM_ACCURACY, zr, ur, vr,
-												xl >> SP_PRIM_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
+							draw_line_tex_zset( xr >> SP_ACCURACY, zr, ur, vr,
+												xl >> SP_ACCURACY, zl, ul, vl, y, color, sU, sV, sZ );
 						#else
-							draw_line_tex( xr >> SP_PRIM_ACCURACY, ur, vr,
-											 xl >> SP_PRIM_ACCURACY, ul, vl, y, color, sU, sV );
+							draw_line_tex( xr >> SP_ACCURACY, ur, vr,
+											 xl >> SP_ACCURACY, ul, vl, y, color, sU, sV );
 						#endif
 					#endif
 				#endif
