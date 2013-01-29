@@ -67,7 +67,7 @@ PREFIX void spInitPrimitives()
 	for ( i = 1; i < ( 1 << SP_ACCURACY ); i++ )
 	{
 		spOne_over_x_look_up      [i] = (SP_ONE+(i >> 1)) / i;
-		spOne_over_x_look_up_fixed[i] = spDivHigh(SP_ONE,i);
+		spOne_over_x_look_up_fixed[i] = (((Sint64)SP_ONE)<<SP_HALF_ACCURACY)/(Sint64)i;
 	}
 	spOne_over_x_look_up[0] = 0;
 	spOne_over_x_look_up_fixed[0] = 0;
