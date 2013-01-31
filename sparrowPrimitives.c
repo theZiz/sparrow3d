@@ -4041,6 +4041,11 @@ inline void sp_intern_Triangle_tex_inter( Sint32 x1, Sint32 y1, Sint32 z1, Sint3
 
 PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, Sint32 zoomX, Sint32 zoomY, Sint32 angle )
 {
+	if (zoomX == SP_ONE && zoomY == SP_ONE && angle == 0)
+	{
+		spBlitSurfacePart(x,y,z,surface,sx,sy,w,h);
+		return;
+	}
 	Sint32 x1;
 	Sint32 x2;
 	Sint32 x3;
