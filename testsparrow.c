@@ -29,6 +29,8 @@ int zStuff = 1;
 Uint16 lastKey = 0;
 char input[32] = "";
 char no_movement = 0;
+int perspective = 0;
+int pause = 0;
 
 void draw_test( void )
 {
@@ -48,7 +50,7 @@ void draw_test( void )
 	spSetZTest( zStuff );
 	int i;
 	Sint32 matrix[16];
-	Sint32 px, py, pz;
+	Sint32 px, py, pz, w;
 	spSetLightPosition(0,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3);
 	spSetLightColor(0,SP_ONE,SP_ONE,SP_ONE);
 	switch ( test )
@@ -64,7 +66,7 @@ void draw_test( void )
 		spTranslate(0,2 << SP_ACCURACY,0);
 		spSetLightPosition(0,0,0,0);
 		spSetLightColor(0,0,SP_ONE,SP_ONE);
-		spProjectPoint3D( 0,0,0, &px,&py,&pz, 1);
+		spProjectPoint3D( 0,0,0, &px,&py,&pz, &w, 1);
 		spEllipse3D(0,0,0,1 << SP_ACCURACY-3,1 << SP_ACCURACY-3,spGetFastRGB(0,255,255));
 		spSetAlphaTest(1);
 		spFontDrawMiddle( px,py-font->maxheight/2,pz, "light", font );
@@ -73,7 +75,7 @@ void draw_test( void )
 		spEnableLight(1,1);
 		spSetLightPosition(1,0,0,0);
 		spSetLightColor(1,SP_ONE,SP_ONE,0);
-		spProjectPoint3D( 0,0,0, &px,&py,&pz, 1);
+		spProjectPoint3D( 0,0,0, &px,&py,&pz, &w, 1);
 		spEllipse3D(0,0,0,1 << SP_ACCURACY-3,1 << SP_ACCURACY-3,spGetFastRGB(255,255,0));
 		spSetAlphaTest(1);
 		spFontDrawMiddle( px,py-font->maxheight/2,pz, "light", font );
@@ -350,6 +352,16 @@ void draw_test( void )
 
 	spFontDraw( 0, 2, 0, "Previous [L]", font );
 	spFontDrawRight( screen->w - 2, 2, 0, "[R] next", font );
+	switch (perspective)
+	{
+		case 0: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective off", font ); break;
+		case 1: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective work around", font ); break;
+		case 2: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective on", font ); break;
+	}
+	if (pause)
+		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] play", font );
+	else
+		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] pause", font );
 	switch ( test )
 	{
 	case 0:
@@ -474,6 +486,25 @@ int calc_test( Uint32 steps )
 		spGetInput()->button[SP_BUTTON_A] = 0;
 		quality = 1 - quality;
 	}
+	if ( spGetInput()->button[SP_BUTTON_X] )
+	{
+		spGetInput()->button[SP_BUTTON_X] = 0;
+		perspective = (perspective+1) % 3;
+		switch (perspective)
+		{
+			case 0: spSetPerspectiveTextureMapping(0); spSetAffineTextureHack(0); break;
+			case 1: spSetAffineTextureHack(1); break;
+			case 2: spSetPerspectiveTextureMapping(1); break;
+		}
+	}
+	if ( spGetInput()->button[SP_BUTTON_B] )
+	{
+		spGetInput()->button[SP_BUTTON_B] = 0;
+		pause = 1-pause;
+	}
+	if (pause)
+		rotation -= steps << SP_ACCURACY - 11;
+
 	if ( spGetInput()->button[SP_BUTTON_R] )
 	{
 		spGetInput()->button[SP_BUTTON_R] = 0;
@@ -519,7 +550,7 @@ void resize( Uint16 w, Uint16 h )
 	spFontShadeButtons(1);
 	if ( font )
 		spFontDelete( font );
-	font = spFontLoad( "./font/StayPuft.ttf", 17 * spGetSizeFactor() >> SP_ACCURACY );
+	font = spFontLoad( "./font/StayPuft.ttf", 13 * spGetSizeFactor() >> SP_ACCURACY );
 	spFontSetShadeColor(0);
 	spFontAdd( font, SP_FONT_GROUP_ASCII, 65535 ); //whole ASCII
 	spFontAdd( font, "äüöÄÜÖßẞ", 65535 ); //German stuff (same like spFontAdd( font, SP_FONT_GROUP_GERMAN, 0 ); )

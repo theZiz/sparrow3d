@@ -1533,6 +1533,7 @@ PREFIX Uint16 spGetRGB(int r, int g, int b )
 
 PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 {
+	h = h % (SP_PI*2);
 	int hi = h / (SP_PI/3);
 	Sint32 S = s;
 	Sint32 V = v;

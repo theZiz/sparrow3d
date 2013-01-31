@@ -38,7 +38,7 @@ void draw_function( void )
 			int addy = spCos(rotation*(2<<layer)>>3)>>SP_ACCURACY-5;
 			for (x = -16; x <= spGetWindowSurface()->w+16; x+=32)
 				for (y = -16; y <= spGetWindowSurface()->h+16; y+=32)
-						spDrawSprite(x+addx,y+addy,-l-1,sprite[rand()&7][rand()&3]);
+						spDrawSprite(x+addx,y+addy,l,sprite[rand()&7][rand()&3]);
 		}
 	else
 		for (l=0; l < layer_count; l++)
@@ -47,7 +47,7 @@ void draw_function( void )
 			int addy = spCos(rotation*(2<<l)>>3)>>SP_ACCURACY-5;
 			for (x = -16; x <= spGetWindowSurface()->w+16; x+=32)
 				for (y = -16; y <= spGetWindowSurface()->h+16; y+=32)
-						spDrawSprite(x+addx,y+addy,-l-1,sprite[rand()&7][rand()&3]);
+						spDrawSprite(x+addx,y+addy,l,sprite[rand()&7][rand()&3]);
 		}
 	
 	

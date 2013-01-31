@@ -155,6 +155,115 @@
 	}
 #endif
 
+//Perspective
+
+//#define reciprocal_w_clip(parameter,w) (spMulLow(parameter,spDiv(SP_ONE,(w>>spMaxWLogDiff))>>spMaxWLogDiff) >> SP_ACCURACY)
+#define reciprocal_w_clip(parameter,w) ((parameter >> SP_HALF_ACCURACY)*(spOne_over_x_look_up_fixed[(w>>spMaxWLogDiff) & (SP_ONE-1)]>>spMaxWLogDiff) >> SP_ACCURACY)
+
+#ifdef FAST_BUT_UGLY
+	#define draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color) \
+	{ \
+		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
+		{ \
+			Sint32 uw = reciprocal_w_clip(u,w); \
+			Sint32 vw = reciprocal_w_clip(v,w); \
+			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+			Uint32 pixel = spTexturePixel[(uw) + (vw) * spTextureScanLine];  \
+			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		} \
+	}
+#else
+	#define draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color) \
+	{ \
+		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
+		{ \
+			Sint32 uw = reciprocal_w_clip(u,w); \
+			Sint32 vw = reciprocal_w_clip(v,w); \
+			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+			Uint32 pixel = spTexturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * spTextureScanLine];  \
+			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		} \
+	}
+#endif
+
+#ifdef FAST_BUT_UGLY
+	#define draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color) \
+	{ \
+		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
+		{ \
+			Sint32 uw = reciprocal_w_clip(u,w); \
+			Sint32 vw = reciprocal_w_clip(v,w); \
+			Uint32 pixel = spTexturePixel[(uw) + (vw) * spTextureScanLine];  \
+			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		} \
+	}
+#else
+	#define draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color) \
+	{ \
+		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
+		{ \
+			Sint32 uw = reciprocal_w_clip(u,w); \
+			Sint32 vw = reciprocal_w_clip(v,w); \
+			Uint32 pixel = spTexturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * spTextureScanLine];  \
+			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		} \
+	}
+#endif
+
+#ifdef FAST_BUT_UGLY
+	#define draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color) \
+	{ \
+		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+		Sint32 uw = reciprocal_w_clip(u,w); \
+		Sint32 vw = reciprocal_w_clip(v,w); \
+		Uint32 pixel = spTexturePixel[(uw) + (vw) * spTextureScanLine];  \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	}
+#else
+	#define draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color) \
+	{ \
+		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+		Sint32 uw = reciprocal_w_clip(u,w); \
+		Sint32 vw = reciprocal_w_clip(v,w); \
+		Uint32 pixel = spTexturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * spTextureScanLine];  \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	}
+#endif
+
+#ifdef FAST_BUT_UGLY
+	#define draw_pixel_tex_perspect(x,y,u,v,w,color) \
+	{ \
+		Sint32 uw = reciprocal_w_clip(u,w); \
+		Sint32 vw = reciprocal_w_clip(v,w); \
+		Uint32 pixel = spTexturePixel[(uw) + (vw) * spTextureScanLine];  \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	}
+#else
+	#define draw_pixel_tex_perspect(x,y,u,v,w,color) \
+	{ \
+		Sint32 uw = reciprocal_w_clip(u,w); \
+		Sint32 vw = reciprocal_w_clip(v,w); \
+		Uint32 pixel = spTexturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * spTextureScanLine];  \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	}
+#endif
+
 // + Pattern
 #define draw_pixel_tex_ztest_zset_pattern(x,y,z,u,v,color) \
 	{if ((spPattern[y & 7] >> (x & 7)) & 1) \
@@ -171,6 +280,22 @@
 #define draw_pixel_tex_pattern(x,y,u,v,color) \
 	{if ((spPattern[y & 7] >> (x & 7)) & 1) \
 		draw_pixel_tex(x,y,u,v,color)}
+
+#define draw_pixel_tex_ztest_zset_pattern_perspect(x,y,z,u,v,w,color) \
+	{if ((spPattern[y & 7] >> (x & 7)) & 1) \
+		draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color)}
+
+#define draw_pixel_tex_ztest_pattern_perspect(x,y,z,u,v,w,color) \
+	{if ((spPattern[y & 7] >> (x & 7)) & 1) \
+		draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color)}
+
+#define draw_pixel_tex_zset_pattern_perspect(x,y,z,u,v,w,color) \
+	{if ((spPattern[y & 7] >> (x & 7)) & 1) \
+		draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color)}
+
+#define draw_pixel_tex_pattern_perspect(x,y,u,v,w,color) \
+	{if ((spPattern[y & 7] >> (x & 7)) & 1) \
+		draw_pixel_tex_perspect(x,y,u,v,w,color)}
 
 /* ******************************************** */
 /* draw_pixel functions with textures and alpha */
@@ -280,6 +405,126 @@
 	}
 #endif
 
+#ifdef FAST_BUT_UGLY
+	#define draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color) \
+	{ \
+		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
+		{ \
+			Sint32 uw = reciprocal_w_clip(u,w); \
+			Sint32 vw = reciprocal_w_clip(v,w); \
+			Uint32 pixel = spTexturePixel[(uw) + (vw) * spTextureScanLine];  \
+			if (pixel != SP_ALPHA_COLOR) \
+			{ \
+				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																								+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+			} \
+		} \
+	}
+#else
+	#define draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color) \
+	{ \
+		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
+		{ \
+			Sint32 uw = reciprocal_w_clip(u,w); \
+			Sint32 vw = reciprocal_w_clip(v,w); \
+			Uint32 pixel = spTexturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * spTextureScanLine];  \
+			if (pixel != SP_ALPHA_COLOR) \
+			{ \
+				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																								+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+			} \
+		} \
+	}
+#endif
+
+#ifdef FAST_BUT_UGLY
+	#define draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color) \
+	{ \
+		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
+		{ \
+			Sint32 uw = reciprocal_w_clip(u,w); \
+			Sint32 vw = reciprocal_w_clip(v,w); \
+			Uint32 pixel = spTexturePixel[(uw) + (vw) * spTextureScanLine];  \
+			if (pixel != SP_ALPHA_COLOR) \
+				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																								+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		} \
+	}
+#else
+	#define draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color) \
+	{ \
+		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
+		{ \
+			Sint32 uw = reciprocal_w_clip(u,w); \
+			Sint32 vw = reciprocal_w_clip(v,w); \
+			Uint32 pixel = spTexturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * spTextureScanLine];  \
+			if (pixel != SP_ALPHA_COLOR) \
+				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																								+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		} \
+	}
+#endif
+
+#ifdef FAST_BUT_UGLY
+	#define draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color) \
+	{ \
+		Sint32 uw = reciprocal_w_clip(u,w); \
+		Sint32 vw = reciprocal_w_clip(v,w); \
+		Uint32 pixel = spTexturePixel[(uw) + (vw) * spTextureScanLine];  \
+		if (pixel != SP_ALPHA_COLOR) \
+		{ \
+			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		} \
+	}
+#else
+	#define draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color) \
+	{ \
+		Sint32 uw = reciprocal_w_clip(u,w); \
+		Sint32 vw = reciprocal_w_clip(v,w); \
+		Uint32 pixel = spTexturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * spTextureScanLine];  \
+		if (pixel != SP_ALPHA_COLOR) \
+		{ \
+			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		} \
+	}
+#endif
+
+#ifdef FAST_BUT_UGLY
+	#define draw_pixel_tex_alpha_perspect(x,y,u,v,w,color) \
+	{ \
+		Sint32 uw = reciprocal_w_clip(u,w); \
+		Sint32 vw = reciprocal_w_clip(v,w); \
+		Uint32 pixel = spTexturePixel[(uw) + (vw) * spTextureScanLine];  \
+		if (pixel != SP_ALPHA_COLOR) \
+			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	}
+#else
+	#define draw_pixel_tex_alpha_perspect(x,y,u,v,w,color) \
+	{ \
+		Sint32 uw = reciprocal_w_clip(u,w); \
+		Sint32 vw = reciprocal_w_clip(v,w); \
+		Uint32 pixel = spTexturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * spTextureScanLine];  \
+		if (pixel != SP_ALPHA_COLOR) \
+			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	}
+#endif
+
 // + Pattern
 #define draw_pixel_tex_ztest_zset_alpha_pattern(x,y,z,u,v,color) \
 	{if ((spPattern[y & 7] >> (x & 7)) & 1) \
@@ -296,4 +541,20 @@
 #define draw_pixel_tex_alpha_pattern(x,y,u,v,color) \
 	{if ((spPattern[y & 7] >> (x & 7)) & 1) \
 		draw_pixel_tex_alpha(x,y,u,v,color)}
+
+#define draw_pixel_tex_ztest_zset_alpha_pattern_perspect(x,y,z,u,v,w,color) \
+	{if ((spPattern[y & 7] >> (x & 7)) & 1) \
+		draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color)}
+
+#define draw_pixel_tex_ztest_alpha_pattern_perspect(x,y,z,u,v,w,color) \
+	{if ((spPattern[y & 7] >> (x & 7)) & 1) \
+		draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color)}
+
+#define draw_pixel_tex_zset_alpha_pattern_perspect(x,y,z,u,v,w,color) \
+	{if ((spPattern[y & 7] >> (x & 7)) & 1) \
+		draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color)}
+
+#define draw_pixel_tex_alpha_pattern_perspect(x,y,u,v,w,color) \
+	{if ((spPattern[y & 7] >> (x & 7)) & 1) \
+		draw_pixel_tex_alpha_perspect(x,y,u,v,w,color)}
 

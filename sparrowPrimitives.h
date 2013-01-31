@@ -63,14 +63,6 @@
 #include "sparrow3d.h"
 #include <SDL.h>
 
-
-/* IMPORTANT: That means, that you still have 14 Bit for your Pixel Range
- * minus 1 Bit for the sign. So you have 13 Bit == 8192 Pixel Width or Height
- * Maximum!, if you use the software renderer! Furthermore the lookup table
- * for the one_over_x function needs a 18 Bit Array. This is 1 MByte!*/
-#define SP_PRIM_ACCURACY 18
-#define SP_HALF_PRIM_ACCURACY 9
-
 /* If alphatest is enabled, this color will not be drawn */
 #define SP_ALPHA_COLOR 63519
 

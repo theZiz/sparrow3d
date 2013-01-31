@@ -138,7 +138,7 @@ int calc_test( Uint32 steps )
 void resize( Uint16 w, Uint16 h )
 {
 	//Setup of the new/resized window
-	spSetPerspective( 50.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 0.1, 100 );
+	spSetPerspective( 130.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 0.1, 100 );
 }
 
 
@@ -169,6 +169,7 @@ int main( int argc, char **argv )
 	spSetLight( 1 );
 
 	//All glory the main loop
+	spSetPerspectiveTextureMapping(1);
 	spLoop( draw_test, calc_test, 10, resize, NULL );
 
 	//Winter Wrap up, Winter Wrap up …

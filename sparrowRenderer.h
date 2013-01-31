@@ -60,7 +60,7 @@ typedef struct spTexPointStruct
 	Sint32 x, y, z;    //space coordinates
 	Sint32 tx, ty, tz; //multiplied with modelview
 	Sint32 px, py, pz; //projected
-	Sint32 u, v;
+	Sint32 u, v, w; //texture coordinates + w clip
 } spTexPoint;
 
 /* An edge with a status-flag, e.g. for borderlines */
@@ -220,6 +220,11 @@ PREFIX void spSetAmbientLightColor( Uint32 r, Uint32 g, Uint32 b );
 
 //--- "Real" 3D functions, where the primitives is correct rotated ---
 
+/* every 3D function with textures can be rendered with affine texture mapping,
+ * what may look a bit "wobly" or perspectivly correct, which looks the best,
+ * but may be slower! */
+PREFIX void spSetPerspectiveTextureMapping(int value);
+
 /* Draws a triangle in 3D space. Returns 0
  * if not drawn (culling) or different bits, where the edges are:
  * 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right,
@@ -303,8 +308,7 @@ PREFIX void spBlit3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface );
  * the ModelViewMatrix should be involved. E.g. if you want to get a
  * perspective correct width, you don't want the rotation. In this case
  * set it to 0. Most of the time you should be fine with 1. */
-PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 withModelview );
-
+PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 *w,Sint32 withModelview );
 /* spUsePrecalculatedNormals desides, whether the precalculated normal
  * values of meshes are used or not. So this works only with spMesh3D*
  * functions. Be carefull! You can use this optimization only, if you

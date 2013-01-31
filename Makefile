@@ -135,7 +135,7 @@ endif
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
 
-all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testsprite testmesh testtarget testtext testfile testparallax testserver testclient
+all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testsprite testtarget testtext testfile testparallax testserver testclient
 
 targets:
 	@echo "gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora, gcw"
@@ -145,9 +145,6 @@ testsparrow: testsparrow.c libsparrow3d.so
 
 testsprite: testsprite.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testsprite.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testsprite
-
-testmesh: testmesh.c libsparrow3d.so
-	$(CPP_LINK) $(CFLAGS) testmesh.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testmesh
 
 testtarget: testtarget.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testtarget.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testtarget
@@ -217,7 +214,6 @@ clean:
 	rm -f libsparrow3d.so
 	rm -f testsparrow
 	rm -f testsprite
-	rm -f testmesh
 	rm -f testtext
 	rm -f testtarget
 	rm -f testparallax
