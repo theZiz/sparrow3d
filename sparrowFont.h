@@ -189,6 +189,9 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
  * unicode character "character". Returns NULL if not found. */
 PREFIX spLetterPointer spFontGetLetter( spFontPointer font, Uint32 character );
 
+/* spFontGetButton works like spFontGetLetter but for buttons. ;-) */
+PREFIX spLetterPointer spFontGetButton( spFontPointer font, Uint32 character );
+
 /* spFontDraw draws the text "text" at x,y on the screen. z stuff
  * is handled! It uses the font "font". */
 PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPointer font );

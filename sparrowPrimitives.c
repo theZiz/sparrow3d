@@ -121,9 +121,16 @@ PREFIX Sint32* spGetRenderTargetZBuffer()
 
 PREFIX void spBindTexture( SDL_Surface* texture )
 {
-	if ( texture == NULL )
-		return;
 	spTexture = texture;
+	if ( texture == NULL )
+	{
+		spTextureScanLine = 0;
+		spTextureX = 0;
+		spTextureY = 0;
+		spTextureXY = 0;
+		spTexturePixel = NULL;
+		return;
+	}
 	spTextureScanLine = texture->pitch/texture->format->BytesPerPixel;
 	spTextureX = texture->w;
 	spTextureY = texture->h;
@@ -1589,6 +1596,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						y2 = spTargetY;
 					}
 					SDL_Surface* oldTexture = spTexture;
+					Sint32 oldTextureScanLine = spTextureScanLine;
+					Sint32 oldTextureX = spTextureY;
+					Sint32 oldTextureY = spTextureX;
+					Sint32 oldTextureXY = spTextureXY;
+					Uint16* oldTexturePixel = spTexturePixel;
+	
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
 					int u = sx;
@@ -1602,7 +1615,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						}
 						u++;
 					}
-					spBindTexture( oldTexture );
+					spTexture = oldTexture;
+					spTextureScanLine = oldTextureScanLine;
+					spTextureX = oldTextureY;
+					spTextureY = oldTextureX;
+					spTextureXY = oldTextureXY;
+					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
 				else
@@ -1642,6 +1660,11 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						y2 = spTargetY;
 					}
 					SDL_Surface* oldTexture = spTexture;
+					Sint32 oldTextureScanLine = spTextureScanLine;
+					Sint32 oldTextureX = spTextureY;
+					Sint32 oldTextureY = spTextureX;
+					Sint32 oldTextureXY = spTextureXY;
+					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
 					int u = sx;
@@ -1655,7 +1678,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						}
 						u++;
 					}
-					spBindTexture( oldTexture );
+					spTexture = oldTexture;
+					spTextureScanLine = oldTextureScanLine;
+					spTextureX = oldTextureY;
+					spTextureY = oldTextureX;
+					spTextureXY = oldTextureXY;
+					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
 			}
@@ -1700,6 +1728,11 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						y2 = spTargetY;
 					}
 					SDL_Surface* oldTexture = spTexture;
+					Sint32 oldTextureScanLine = spTextureScanLine;
+					Sint32 oldTextureX = spTextureY;
+					Sint32 oldTextureY = spTextureX;
+					Sint32 oldTextureXY = spTextureXY;
+					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
 					int u = sx;
@@ -1713,7 +1746,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						}
 						u++;
 					}
-					spBindTexture( oldTexture );
+					spTexture = oldTexture;
+					spTextureScanLine = oldTextureScanLine;
+					spTextureX = oldTextureY;
+					spTextureY = oldTextureX;
+					spTextureXY = oldTextureXY;
+					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
 				else
@@ -1753,6 +1791,11 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						y2 = spTargetY;
 					}
 					SDL_Surface* oldTexture = spTexture;
+					Sint32 oldTextureScanLine = spTextureScanLine;
+					Sint32 oldTextureX = spTextureY;
+					Sint32 oldTextureY = spTextureX;
+					Sint32 oldTextureXY = spTextureXY;
+					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
 					int u = sx;
@@ -1766,7 +1809,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						}
 						u++;
 					}
-					spBindTexture( oldTexture );
+					spTexture = oldTexture;
+					spTextureScanLine = oldTextureScanLine;
+					spTextureX = oldTextureY;
+					spTextureY = oldTextureX;
+					spTextureXY = oldTextureXY;
+					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
 			}
@@ -1814,6 +1862,11 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						y2 = spTargetY;
 					}
 					SDL_Surface* oldTexture = spTexture;
+					Sint32 oldTextureScanLine = spTextureScanLine;
+					Sint32 oldTextureX = spTextureY;
+					Sint32 oldTextureY = spTextureX;
+					Sint32 oldTextureXY = spTextureXY;
+					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
 					int u = sx;
@@ -1827,7 +1880,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						}
 						u++;
 					}
-					spBindTexture( oldTexture );
+					spTexture = oldTexture;
+					spTextureScanLine = oldTextureScanLine;
+					spTextureX = oldTextureY;
+					spTextureY = oldTextureX;
+					spTextureXY = oldTextureXY;
+					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
 				else
@@ -1867,6 +1925,11 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						y2 = spTargetY;
 					}
 					SDL_Surface* oldTexture = spTexture;
+					Sint32 oldTextureScanLine = spTextureScanLine;
+					Sint32 oldTextureX = spTextureY;
+					Sint32 oldTextureY = spTextureX;
+					Sint32 oldTextureXY = spTextureXY;
+					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
 					int u = sx;
@@ -1880,7 +1943,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						}
 						u++;
 					}
-					spBindTexture( oldTexture );
+					spTexture = oldTexture;
+					spTextureScanLine = oldTextureScanLine;
+					spTextureX = oldTextureY;
+					spTextureY = oldTextureX;
+					spTextureXY = oldTextureXY;
+					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
 			}
@@ -1925,6 +1993,11 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						y2 = spTargetY;
 					}
 					SDL_Surface* oldTexture = spTexture;
+					Sint32 oldTextureScanLine = spTextureScanLine;
+					Sint32 oldTextureX = spTextureY;
+					Sint32 oldTextureY = spTextureX;
+					Sint32 oldTextureXY = spTextureXY;
+					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
 					int u = sx;
@@ -1938,7 +2011,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						}
 						u++;
 					}
-					spBindTexture( oldTexture );
+					spTexture = oldTexture;
+					spTextureScanLine = oldTextureScanLine;
+					spTextureX = oldTextureY;
+					spTextureY = oldTextureX;
+					spTextureXY = oldTextureXY;
+					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
 				else
@@ -1978,6 +2056,11 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						y2 = spTargetY;
 					}
 					SDL_Surface* oldTexture = spTexture;
+					Sint32 oldTextureScanLine = spTextureScanLine;
+					Sint32 oldTextureX = spTextureY;
+					Sint32 oldTextureY = spTextureX;
+					Sint32 oldTextureXY = spTextureXY;
+					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
 					int u = sx;
@@ -1991,7 +2074,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						}
 						u++;
 					}
-					spBindTexture( oldTexture );
+					spTexture = oldTexture;
+					spTextureScanLine = oldTextureScanLine;
+					spTextureX = oldTextureY;
+					spTextureY = oldTextureX;
+					spTextureXY = oldTextureXY;
+					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
 			}
@@ -2042,6 +2130,11 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						y2 = spTargetY;
 					}
 					SDL_Surface* oldTexture = spTexture;
+					Sint32 oldTextureScanLine = spTextureScanLine;
+					Sint32 oldTextureX = spTextureY;
+					Sint32 oldTextureY = spTextureX;
+					Sint32 oldTextureXY = spTextureXY;
+					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
 					int u = sx;
@@ -2055,7 +2148,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						}
 						u++;
 					}
-					spBindTexture( oldTexture );
+					spTexture = oldTexture;
+					spTextureScanLine = oldTextureScanLine;
+					spTextureX = oldTextureY;
+					spTextureY = oldTextureX;
+					spTextureXY = oldTextureXY;
+					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
 				else
@@ -2153,6 +2251,11 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						y2 = spTargetY;
 					}
 					SDL_Surface* oldTexture = spTexture;
+					Sint32 oldTextureScanLine = spTextureScanLine;
+					Sint32 oldTextureX = spTextureY;
+					Sint32 oldTextureY = spTextureX;
+					Sint32 oldTextureXY = spTextureXY;
+					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
 					int u = sx;
@@ -2166,7 +2269,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						}
 						u++;
 					}
-					spBindTexture( oldTexture );
+					spTexture = oldTexture;
+					spTextureScanLine = oldTextureScanLine;
+					spTextureX = oldTextureY;
+					spTextureY = oldTextureX;
+					spTextureXY = oldTextureXY;
+					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
 				else
@@ -2229,6 +2337,11 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						y2 = spTargetY;
 					}
 					SDL_Surface* oldTexture = spTexture;
+					Sint32 oldTextureScanLine = spTextureScanLine;
+					Sint32 oldTextureX = spTextureY;
+					Sint32 oldTextureY = spTextureX;
+					Sint32 oldTextureXY = spTextureXY;
+					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
 					int u = sx;
@@ -2242,7 +2355,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						}
 						u++;
 					}
-					spBindTexture( oldTexture );
+					spTexture = oldTexture;
+					spTextureScanLine = oldTextureScanLine;
+					spTextureX = oldTextureY;
+					spTextureY = oldTextureX;
+					spTextureXY = oldTextureXY;
+					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
 				else
@@ -2340,6 +2458,11 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						y2 = spTargetY;
 					}
 					SDL_Surface* oldTexture = spTexture;
+					Sint32 oldTextureScanLine = spTextureScanLine;
+					Sint32 oldTextureX = spTextureY;
+					Sint32 oldTextureY = spTextureX;
+					Sint32 oldTextureXY = spTextureXY;
+					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
 					int u = sx;
@@ -2353,7 +2476,12 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 						}
 						u++;
 					}
-					spBindTexture( oldTexture );
+					spTexture = oldTexture;
+					spTextureScanLine = oldTextureScanLine;
+					spTextureX = oldTextureY;
+					spTextureY = oldTextureX;
+					spTextureXY = oldTextureXY;
+					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
 				else
@@ -4108,6 +4236,11 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 	Sint32 ny4 = y + ( y4 * spCos( angle ) + x4 * spSin( angle ) >> SP_ACCURACY );
 
 	SDL_Surface* oldTexture = spTexture;
+	Sint32 oldTextureScanLine = spTextureScanLine;
+	Sint32 oldTextureX = spTextureY;
+	Sint32 oldTextureY = spTextureX;
+	Sint32 oldTextureXY = spTextureXY;
+	Uint16* oldTexturePixel = spTexturePixel;
 	spBindTexture( surface );
 	Sint32 mx = nx1 + nx2 + nx3 + nx4 >> 2;
 	Sint32 my = ny1 + ny2 + ny3 + ny4 >> 2;
@@ -4125,7 +4258,12 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 	sp_intern_Triangle_tex_inter( nx4, ny4, z, sx + w, sy  ,
 								  nx1, ny1, z, sx  , sy  ,
 								  mx , my , z, mu  , mv  );
-	spBindTexture( oldTexture );
+	spTexture = oldTexture;
+	spTextureScanLine = oldTextureScanLine;
+	spTextureX = oldTextureY;
+	spTextureY = oldTextureX;
+	spTextureXY = oldTextureXY;
+	spTexturePixel = oldTexturePixel;
 }
 
 PREFIX void spSetHorizontalOrigin( Sint32 origin )

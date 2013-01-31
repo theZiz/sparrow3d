@@ -538,6 +538,11 @@ PREFIX spLetterPointer spFontGetLetter( spFontPointer font, Uint32 character )
 	return spLetterFind( font->root, character );
 }
 
+PREFIX spLetterPointer spFontGetButton( spFontPointer font, Uint32 character )
+{
+	return spLetterFind( font->buttonRoot, character );
+}
+
 PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPointer font )
 {
 	int l = 0;
