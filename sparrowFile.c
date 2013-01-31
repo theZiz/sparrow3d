@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#ifdef WIN32
+#ifndef __GNUC__
 	#include <windows.h>
 	#include <tchar.h>
 #else
