@@ -52,6 +52,7 @@ PREFIX int spReadOneLine( spFilePointer file , char* buffer, int buffer_len)
 PREFIX int spReadUntil( spFilePointer file , char* buffer, int buffer_len, char end_sign,char ignore_windows_return)
 {
 	int pos = 0;
+	buffer[pos] = 0;
 	if (ignore_windows_return)
 		while (pos < buffer_len)
 		{

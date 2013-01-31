@@ -208,7 +208,7 @@ PREFIX spBundlePointer spLoadBundle(const char* filename,int own_bundle)
 			text = spCreateText(caption,bundle);
 		}
 		else
-		if (line[0] == '#' || line[0] == ' ') {} //comment
+		if (line[0] == '#' || line[0] == ' ' || line[0] == '\n' || line[0] == 0) {} //comment, empty line
 		else
 		if (line[0] != 0 && line[1] != 0 && line[2] != 0) //new translation
 		{
