@@ -704,16 +704,40 @@ PREFIX int spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, const char *text, spF
 
 PREFIX int spFontWidth(const char* text, spFontPointer font )
 {
-	int width = 0;
 	int l = 0;
-	while ( text[l] != 0 )
+	int width;
+	int max_width = 0;
+	int again = 1;
+	while ( again )
 	{
-		spLetterPointer letter = spFontGetLetter( font, text[l] ); //TODO utf8
-		if ( letter )
+		width = 0;
+		again = 0;
+		while ( text[l] != 0 )
+		{
+			if ( text[l] == '\n' )
+			{
+				again = 1;
+				l++;
+				if (width > max_width)
+					max_width = width;
+				break;
+			}
+			spLetterPointer letter;
+			//first we look for buttons
+			if ( text[l] == spFontButtonLeft && ( letter = spLetterFind( font->buttonRoot, text[l + 1] ) ) && text[l + 2] == spFontButtonRight )
+				l += 2;
+			else
+			{
+				Uint32 sign = spFontGetUnicodeFromUTF8( &( text[l] ) );
+				letter = spFontGetLetter( font, sign );
+			}
 			width += letter->width;
-		l++;
+			l += spFontLastUTF8Length;
+		}
 	}
-	return width;
+	if (width > max_width)
+		max_width = width;
+	return max_width;
 }
 
 static void spLetterDelete( spLetterPointer letter )
