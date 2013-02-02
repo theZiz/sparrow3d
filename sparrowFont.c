@@ -543,7 +543,7 @@ PREFIX spLetterPointer spFontGetButton( spFontPointer font, Uint32 character )
 	return spLetterFind( font->buttonRoot, character );
 }
 
-PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPointer font )
+PREFIX int spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPointer font )
 {
 	int l = 0;
 	int pos = x;
@@ -573,9 +573,10 @@ PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPo
 		}
 		l+=spFontLastUTF8Length;
 	}
+	return pos-x;
 }
 
-PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, const char *text, spFontPointer font )
+PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, const char *text, spFontPointer font )
 {
 	int l = 0;
 	int width;
@@ -635,9 +636,10 @@ PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, const char *text, spF
 		if ( again )
 			y += font->maxheight;
 	}
+	return width;
 }
 
-PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, const char *text, spFontPointer font )
+PREFIX int spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, const char *text, spFontPointer font )
 {
 	int l = 0;
 	int width;
@@ -697,6 +699,7 @@ PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, const char *text, sp
 		if ( again )
 			y += font->maxheight;
 	}
+	return width;
 }
 
 PREFIX int spFontWidth(const char* text, spFontPointer font )

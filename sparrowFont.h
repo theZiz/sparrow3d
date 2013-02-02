@@ -193,16 +193,16 @@ PREFIX spLetterPointer spFontGetLetter( spFontPointer font, Uint32 character );
 PREFIX spLetterPointer spFontGetButton( spFontPointer font, Uint32 character );
 
 /* spFontDraw draws the text "text" at x,y on the screen. z stuff
- * is handled! It uses the font "font". */
-PREFIX void spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPointer font );
+ * is handled! It uses the font "font". Returns the printed width in pixel */
+PREFIX int spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPointer font );
 
 /* spFontDrawRight works like spFontDraw, but the text has a right
- * alignment */
-PREFIX void spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font );
+ * alignment. Returns the printed width in pixel */
+PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font );
 
 /* spFontDrawRight works like spFontDraw, but the text has a center
- * alignment */
-PREFIX void spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font );
+ * alignment. Returns the printed width in pixel */
+PREFIX int spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font );
 
 /* spFontWidth returns, how width the text would be, if you would draw
  * it. */
