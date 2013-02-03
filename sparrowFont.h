@@ -32,6 +32,7 @@
 #define _SPARROW_FONT_H
 
 #include "sparrowDefines.h"
+#include "sparrowText.h"
 #include <SDL.h>
 #include <SDL_ttf.h>
 
@@ -235,4 +236,7 @@ PREFIX void spFontSetShadeColor(int value);
  * true (1) should look much better. :) */
 PREFIX void spFontShadeButtons(int value);
 
+/* spFontAddEveryLetterOfTextBundle adds every letter used in the given
+ * sparrowText Bundle of Translations */
+PREFIX void spFontAddEveryLetterOfTextBundle( spFontPointer font,spBundlePointer bundle,Uint16 color);
 #endif

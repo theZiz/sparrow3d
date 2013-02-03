@@ -731,7 +731,8 @@ PREFIX int spFontWidth(const char* text, spFontPointer font )
 				Uint32 sign = spFontGetUnicodeFromUTF8( &( text[l] ) );
 				letter = spFontGetLetter( font, sign );
 			}
-			width += letter->width;
+			if (letter)
+				width += letter->width;
 			l += spFontLastUTF8Length;
 		}
 	}
@@ -787,4 +788,20 @@ PREFIX void spFontSetShadeColor(int value)
 PREFIX void spFontShadeButtons(int value)
 {
 	spFontButtonShade = value;
+}
+
+PREFIX void spFontAddEveryLetterOfTextBundle( spFontPointer font,spBundlePointer bundle,Uint16 color)
+{
+	//Parsing bundle
+	spTextPointer momText = bundle->firstText;
+	while (momText)
+	{
+		spTranslationPointer momTranslastion = momText->firstTranslation;
+		while (momTranslastion)
+		{
+			spFontAdd( font, momTranslastion->text, color );
+			momTranslastion = momTranslastion->next;
+		}
+		momText = momText->next;
+	}
 }
