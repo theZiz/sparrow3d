@@ -23,7 +23,7 @@
 #ifndef _SPARROW_TEXT_H
 #define _SPARROW_TEXT_H
 
-#include "sparrow3d.h"
+#include "sparrowDefines.h"
 #include <SDL.h>
 #include <SDL_ttf.h>
 

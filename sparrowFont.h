@@ -238,5 +238,5 @@ PREFIX void spFontShadeButtons(int value);
 
 /* spFontAddEveryLetterOfTextBundle adds every letter used in the given
  * sparrowText Bundle of Translations */
-PREFIX void spFontAddEveryLetterOfTextBundle( spFontPointer font,spBundlePointer bundle,Uint16 color);
+PREFIX void spFontAddEveryLetterOfTextBundle( spFontPointer font, spBundlePointer bundle,Uint16 color);
 #endif

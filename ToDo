@@ -2,6 +2,7 @@ Roadmap til next version (tag):
 - File management
 	- Searching files
 	  - Windows
+- perspective on gp2x buggy
 
 general Roadmap:
 - third device layer (controlled by sparrowCore)
@@ -15,6 +16,7 @@ general Roadmap:
     - Returns *int => changeable
 - sparrowFont additional or own part, which allows to draw blocked text
   (e.g. text from sparrowText ;-) )
+- sparrowText faster Lookup: O(log(n)) instead of O(n)
 - Network (with threads)
 - GUI
 

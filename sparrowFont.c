@@ -790,7 +790,7 @@ PREFIX void spFontShadeButtons(int value)
 	spFontButtonShade = value;
 }
 
-PREFIX void spFontAddEveryLetterOfTextBundle( spFontPointer font,spBundlePointer bundle,Uint16 color)
+PREFIX void spFontAddEveryLetterOfTextBundle( spFontPointer font, spBundlePointer bundle,Uint16 color)
 {
 	//Parsing bundle
 	spTextPointer momText = bundle->firstText;

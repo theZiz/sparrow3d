@@ -83,11 +83,11 @@
 #endif
 
 #ifdef FAST_DIVISION
-	#define spDiv(a,b) ((b>=0 && b<(1<<SP_PRIM_ACCURACY))? \
-											 (a*spGetOne_over_x_pointer()[b]>>SP_PRIM_ACCURACY-SP_ACCURACY): \
+	#define spDiv(a,b) ((b>=0 && b<(1<<SP_ACCURACY))? \
+											 (a*spGetOne_over_x_pointer()[b]): \
 											 ( \
-												 (b <0 && b>(-1<<SP_PRIM_ACCURACY))? \
-												 (-a*spGetOne_over_x_pointer()[-b]>>SP_PRIM_ACCURACY-SP_ACCURACY): \
+												 (b <0 && b>(-1<<SP_ACCURACY))? \
+												 (-a*spGetOne_over_x_pointer()[-b]): \
 												 (((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY) \
 											 ))
 #else
