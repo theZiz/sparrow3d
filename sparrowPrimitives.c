@@ -299,6 +299,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 }
 
 /* ************ Include of the texture triangle functions *********** */
+#ifndef NO_PERSPECTIVE
 #define __SPARROW_INTERNAL_PERSPECT__
 	#define __SPARROW_INTERNAL_ALPHA___
 		#define __SPARROW_INTERNAL_ZBOTH__
@@ -360,6 +361,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 	#undef __SPARROW_INTERNAL_PATTERN__
 
 #undef __SPARROW_INTERNAL_PERSPECT__
+#endif
 	#define __SPARROW_INTERNAL_ALPHA___
 		#define __SPARROW_INTERNAL_ZBOTH__
 		#include "sparrowPrimitiveTexTriangleInclude.c"
@@ -564,6 +566,9 @@ PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1
 
 PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 w1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 w2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 w3, Uint32 color )
 {
+	#ifdef NO_PERSPECTIVE
+		return spTriangle_tex(x1,y1,z1,u1,v1,x2,y2,z2,u2,v2,x3,y3,z3,u3,v3,color);
+	#else
 	if ( spAlphaTest && color == SP_ALPHA_COLOR )
 		return 0;
 	if ( spCulling && ( x2 - x1 ) * ( y3 - y1 ) - ( y2 - y1 ) * ( x3 - x1 ) > 0 )
@@ -632,16 +637,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 		w3 = temp;
 	}
 	//w clip of u and v:
-	u1 = spDiv(u1 << SP_ACCURACY,w1);
-	u2 = spDiv(u2 << SP_ACCURACY,w2);
-	u3 = spDiv(u3 << SP_ACCURACY,w3);
-	v1 = spDiv(v1 << SP_ACCURACY,w1);
-	v2 = spDiv(v2 << SP_ACCURACY,w2);
-	v3 = spDiv(v3 << SP_ACCURACY,w3);
+	u1 = spDivHigh(u1 << SP_ACCURACY,w1);
+	u2 = spDivHigh(u2 << SP_ACCURACY,w2);
+	u3 = spDivHigh(u3 << SP_ACCURACY,w3);
+	v1 = spDivHigh(v1 << SP_ACCURACY,w1);
+	v2 = spDivHigh(v2 << SP_ACCURACY,w2);
+	v3 = spDivHigh(v3 << SP_ACCURACY,w3);
 	//reciprocal:
-	w1 = spDiv(SP_ONE,w1);
-	w2 = spDiv(SP_ONE,w2);
-	w3 = spDiv(SP_ONE,w3);
+	w1 = spDivHigh(SP_ONE,w1);
+	w2 = spDivHigh(SP_ONE,w2);
+	w3 = spDivHigh(SP_ONE,w3);
 	int result = spGetPixelPosition( x1, y1 ) | spGetPixelPosition( x2, y2 ) | spGetPixelPosition( x3, y3 );
 	if ( !result )
 		return 0;
@@ -720,6 +725,7 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 		}
 	}
 	return result;
+	#endif
 }
 
 PREFIX int spQuad( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 x4, Sint32 y4, Sint32 z4, Uint32 color )

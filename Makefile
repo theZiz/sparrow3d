@@ -77,6 +77,9 @@ SDL_PATH = -I/usr/include/SDL
 # LIB determines, where all the other libraries are
 # LIB = -L/usr/lib
 
+# CFLAGS += -DNO_PERSPECTIVE
+# CFLAGS += -DFAST_DIVISION -DFAST_MULTIPLICATION
+
 # === The Targets. Set your own paths on your PC!
 # == GP2X/WIZ ==
 ifeq ($(TARGET),open2x)

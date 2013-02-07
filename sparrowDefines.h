@@ -82,19 +82,20 @@
 	#define spMul(a,b) spMulHigh(a,b)
 #endif
 
-#ifdef FAST_DIVISION
-	#define spDiv(a,b) ((b>=0 && b<(1<<SP_ACCURACY))? \
-											 (a*spGetOne_over_x_pointer()[b]): \
-											 ( \
-												 (b <0 && b>(-1<<SP_ACCURACY))? \
-												 (-a*spGetOne_over_x_pointer()[-b]): \
-												 (((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY) \
-											 ))
-#else
-	//#define spDiv(a,b) ((((a)<<SP_HALF_ACCURACY)/(b))<<SP_HALF_ACCURACY)
-	#define spDiv(a,b) (((Sint64)(a)<<SP_ACCURACY)/(Sint64)(b))
-#endif
 #define spDivHigh(a,b) (((Sint64)(a)<<SP_ACCURACY)/(Sint64)(b))
+#define spDivLow(a,b) ((b>=0 && b<(1<<SP_ACCURACY))? \
+										 (a*spGetOne_over_x_pointer()[b]): \
+										 ( \
+											 (b <0 && b>(-1<<SP_ACCURACY))? \
+											 (-a*spGetOne_over_x_pointer()[-b]): \
+											 (((a<<SP_HALF_ACCURACY)/b)<<SP_HALF_ACCURACY) \
+										 ))
+
+#ifdef FAST_DIVISION
+	#define spDiv(a,b) spDivLow(a,b)
+#else
+	#define spDiv(a,b) spDivHigh(a,b)
+#endif
 
 #define spFixedToFloat(x) ((float)(x)/SP_ACCURACY_FACTOR)
 #define spFloatToFixed(x) ((Sint32)((float)(x)*SP_ACCURACY_FACTOR))
