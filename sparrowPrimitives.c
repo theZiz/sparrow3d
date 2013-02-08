@@ -172,7 +172,7 @@ inline Sint32 z_div( Sint32 z, Sint32 d ) __attribute__((always_inline));
 inline Sint32 z_div( Sint32 z, Sint32 d )
 {
 #ifdef REALGP2X
-	return ( z >> SP_HALF_ACCURACY ) * ( one_over_x( d ) >> SP_HALF_ACCURACY );
+	return spMulHigh( z, one_over_x( d ));
 #else
 	if ( d == 0 )
 		return 0;
