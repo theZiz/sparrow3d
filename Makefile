@@ -77,7 +77,13 @@ SDL_PATH = -I/usr/include/SDL
 # LIB determines, where all the other libraries are
 # LIB = -L/usr/lib
 
+# This deactivates the perspective mapping and makes the lib smaller,
+# but as I tested not faster.
 # CFLAGS += -DNO_PERSPECTIVE
+
+# Normaly theese flags are activated only for small and/or slow devices.
+# But sometimes it is important to activate them for testing purpose
+# even on faster hardware. ;)
 # CFLAGS += -DFAST_DIVISION -DFAST_MULTIPLICATION
 
 # === The Targets. Set your own paths on your PC!
