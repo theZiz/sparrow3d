@@ -2,7 +2,23 @@ Roadmap til next version (tag):
 - File management
 	- Searching files
 	  - Windows
-- perspective on gp2x buggy
+- Project management
+  - Toolbar:
+	- New
+	- Load
+	- Save
+	- Save as
+	- Make
+	- Make Clean
+	- Run
+	- "Install" Target
+	- Target Listbox
+  - class for every option
+  - class for every target
+	- Makefile Options
+	- Extrafiles like starters or PXML
+  - compiling and copying (!) in subfolders
+  - Globale or target specific extra options, that are added to the compilation or linking
 
 general Roadmap:
 - third device layer (controlled by sparrowCore)
