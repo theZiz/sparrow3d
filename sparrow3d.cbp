@@ -7,8 +7,8 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Sparrow (Win x86)">
-				<Option output="bin\W32\libsparrow3d" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\W32\" />
+				<Option output="bin/W32/libsparrow3d" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/W32/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createStaticLib="1" />
@@ -18,7 +18,7 @@
 					<Add option="-DX86CPU" />
 					<Add option="-DBUILDING_DLL" />
 					<Add directory="$(#mingw.include)" />
-					<Add directory="$(#mingw.include)\SDL" />
+					<Add directory="$(#mingw.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -27,8 +27,8 @@
 				</Linker>
 			</Target>
 			<Target title="Sparrow (Pandora)">
-				<Option output="bin\Pandora\libsparrow3d.so" prefix_auto="1" extension_auto="0" />
-				<Option object_output="obj\Pandora\" />
+				<Option output="bin/Pandora/libsparrow3d.so" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Pandora/" />
 				<Option type="3" />
 				<Option compiler="armelfgcc" />
 				<Compiler>
@@ -37,7 +37,7 @@
 					<Add option="-DARMCPU" />
 					<Add option="-DPANDORA" />
 					<Add directory="$(#pandora_sdk.include)" />
-					<Add directory="$(#pandora_sdk.include)\SDL" />
+					<Add directory="$(#pandora_sdk.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -50,8 +50,8 @@
 				</Linker>
 			</Target>
 			<Target title="Sound (Win x86)">
-				<Option output="bin\W32\libsparrowSound" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\W32\" />
+				<Option output="bin/W32/libsparrowSound" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/W32/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createStaticLib="1" />
@@ -61,7 +61,7 @@
 					<Add option="-DX86CPU" />
 					<Add option="-DBUILDING_DLL" />
 					<Add directory="$(#mingw.include)" />
-					<Add directory="$(#mingw.include)\SDL" />
+					<Add directory="$(#mingw.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -71,8 +71,8 @@
 				</Linker>
 			</Target>
 			<Target title="Sound (Pandora)">
-				<Option output="bin\Pandora\libsparrowSound.so" prefix_auto="1" extension_auto="0" />
-				<Option object_output="obj\Pandora\" />
+				<Option output="bin/Pandora/libsparrowSound.so" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Pandora/" />
 				<Option type="3" />
 				<Option compiler="armelfgcc" />
 				<Compiler>
@@ -81,7 +81,7 @@
 					<Add option="-DARMCPU" />
 					<Add option="-DPANDORA" />
 					<Add directory="$(#pandora_sdk.include)" />
-					<Add directory="$(#pandora_sdk.include)\SDL" />
+					<Add directory="$(#pandora_sdk.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -95,8 +95,8 @@
 				</Linker>
 			</Target>
 			<Target title="Net (Win x86)">
-				<Option output="bin\W32\libsparrowNet" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\W32\" />
+				<Option output="bin/W32/libsparrowNet" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/W32/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createStaticLib="1" />
@@ -106,7 +106,7 @@
 					<Add option="-DX86CPU" />
 					<Add option="-DBUILDING_DLL" />
 					<Add directory="$(#mingw.include)" />
-					<Add directory="$(#mingw.include)\SDL" />
+					<Add directory="$(#mingw.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -116,8 +116,8 @@
 				</Linker>
 			</Target>
 			<Target title="Net (Pandora)">
-				<Option output="bin\Pandora\libsparrowNet.so" prefix_auto="1" extension_auto="0" />
-				<Option object_output="obj\Pandora\" />
+				<Option output="bin/Pandora/libsparrowNet.so" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Pandora/" />
 				<Option type="3" />
 				<Option compiler="armelfgcc" />
 				<Compiler>
@@ -126,7 +126,7 @@
 					<Add option="-DARMCPU" />
 					<Add option="-DPANDORA" />
 					<Add directory="$(#pandora_sdk.include)" />
-					<Add directory="$(#pandora_sdk.include)\SDL" />
+					<Add directory="$(#pandora_sdk.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -140,8 +140,8 @@
 				</Linker>
 			</Target>
 			<Target title="Testsparrow (Win x86)">
-				<Option output="bin\W32\testsparrow" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\W32\" />
+				<Option output="bin/W32/testsparrow" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/W32/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -150,7 +150,7 @@
 					<Add option="-DX86CPU" />
 					<Add option="-DBUILDING_DLL" />
 					<Add directory="$(#mingw.include)" />
-					<Add directory="$(#mingw.include)\SDL" />
+					<Add directory="$(#mingw.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -160,8 +160,8 @@
 				</Linker>
 			</Target>
 			<Target title="Testsparrow (Pandora)">
-				<Option output="bin\Pandora\testsparrow" prefix_auto="1" extension_auto="0" />
-				<Option object_output="obj\Pandora\" />
+				<Option output="bin/Pandora/testsparrow" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Pandora/" />
 				<Option type="0" />
 				<Option compiler="armelfgcc" />
 				<Compiler>
@@ -170,7 +170,7 @@
 					<Add option="-DARMCPU" />
 					<Add option="-DPANDORA" />
 					<Add directory="$(#pandora_sdk.include)" />
-					<Add directory="$(#pandora_sdk.include)\SDL" />
+					<Add directory="$(#pandora_sdk.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -184,8 +184,8 @@
 				</Linker>
 			</Target>
 			<Target title="Testsprite (Win x86)">
-				<Option output="bin\W32\testsprite" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\W32\" />
+				<Option output="bin/W32/testsprite" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/W32/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -194,7 +194,7 @@
 					<Add option="-DX86CPU" />
 					<Add option="-DBUILDING_DLL" />
 					<Add directory="$(#mingw.include)" />
-					<Add directory="$(#mingw.include)\SDL" />
+					<Add directory="$(#mingw.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -204,8 +204,8 @@
 				</Linker>
 			</Target>
 			<Target title="Testsprite (Pandora)">
-				<Option output="bin\Pandora\testsprite" prefix_auto="1" extension_auto="0" />
-				<Option object_output="obj\Pandora\" />
+				<Option output="bin/Pandora/testsprite" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Pandora/" />
 				<Option type="0" />
 				<Option compiler="armelfgcc" />
 				<Compiler>
@@ -214,7 +214,7 @@
 					<Add option="-DARMCPU" />
 					<Add option="-DPANDORA" />
 					<Add directory="$(#pandora_sdk.include)" />
-					<Add directory="$(#pandora_sdk.include)\SDL" />
+					<Add directory="$(#pandora_sdk.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -228,28 +228,27 @@
 				</Linker>
 			</Target>
 			<Target title="Testtext (Win x86)">
-				<Option output="bin\W32\testtext" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\W32\" />
+				<Option output="bin/W32/testtext" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/W32/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
-					<Add option="-O3" />
+					<Add option="-g" />
 					<Add option="-DX86CPU" />
 					<Add option="-DBUILDING_DLL" />
 					<Add directory="$(#mingw.include)" />
-					<Add directory="$(#mingw.include)\SDL" />
+					<Add directory="$(#mingw.include)/SDL" />
 				</Compiler>
 				<Linker>
-					<Add option="-s" />
 					<Add option="-lmingw32" />
 					<Add option="-lSDLmain" />
 					<Add directory="$(#mingw.lib)" />
 				</Linker>
 			</Target>
 			<Target title="Testtext (Pandora)">
-				<Option output="bin\Pandora\testtext" prefix_auto="1" extension_auto="0" />
-				<Option object_output="obj\Pandora\" />
+				<Option output="bin/Pandora/testtext" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Pandora/" />
 				<Option type="1" />
 				<Option compiler="armelfgcc" />
 				<Compiler>
@@ -258,51 +257,7 @@
 					<Add option="-DARMCPU" />
 					<Add option="-DPANDORA" />
 					<Add directory="$(#pandora_sdk.include)" />
-					<Add directory="$(#pandora_sdk.include)\SDL" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-					<Add option="-ldl" />
-					<Add option="-lpthread" />
-					<Add option="-lfreetype" />
-					<Add option="-lpng" />
-					<Add option="-lz" />
-					<Add option="-lts" />
-					<Add directory="$(#pandora_sdk.lib)" />
-				</Linker>
-			</Target>
-			<Target title="Testmesh (Win x86)">
-				<Option output="bin\W32\testmesh" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\W32\" />
-				<Option type="0" />
-				<Option compiler="gcc" />
-				<Option projectLinkerOptionsRelation="2" />
-				<Compiler>
-					<Add option="-O3" />
-					<Add option="-DX86CPU" />
-					<Add option="-DBUILDING_DLL" />
-					<Add directory="$(#mingw.include)" />
-					<Add directory="$(#mingw.include)\SDL" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-					<Add option="-lmingw32" />
-					<Add option="-lSDLmain" />
-					<Add directory="$(#mingw.lib)" />
-				</Linker>
-			</Target>
-			<Target title="Testmesh (Pandora)">
-				<Option output="bin\Pandora\testmesh" prefix_auto="1" extension_auto="0" />
-				<Option object_output="obj\Pandora\" />
-				<Option type="0" />
-				<Option compiler="armelfgcc" />
-				<Compiler>
-					<Add option="-O3" />
-					<Add option="-DMOBILE_DEVICE" />
-					<Add option="-DARMCPU" />
-					<Add option="-DPANDORA" />
-					<Add directory="$(#pandora_sdk.include)" />
-					<Add directory="$(#pandora_sdk.include)\SDL" />
+					<Add directory="$(#pandora_sdk.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -316,8 +271,8 @@
 				</Linker>
 			</Target>
 			<Target title="Testparallax (Win x86)">
-				<Option output="bin\W32\testparallax" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\W32\" />
+				<Option output="bin/W32/testparallax" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/W32/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -326,7 +281,7 @@
 					<Add option="-DX86CPU" />
 					<Add option="-DBUILDING_DLL" />
 					<Add directory="$(#mingw.include)" />
-					<Add directory="$(#mingw.include)\SDL" />
+					<Add directory="$(#mingw.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -336,8 +291,8 @@
 				</Linker>
 			</Target>
 			<Target title="Testparallax (Pandora)">
-				<Option output="bin\Pandora\testparallax" prefix_auto="1" extension_auto="0" />
-				<Option object_output="obj\Pandora\" />
+				<Option output="bin/Pandora/testparallax" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Pandora/" />
 				<Option type="0" />
 				<Option compiler="armelfgcc" />
 				<Compiler>
@@ -346,7 +301,7 @@
 					<Add option="-DARMCPU" />
 					<Add option="-DPANDORA" />
 					<Add directory="$(#pandora_sdk.include)" />
-					<Add directory="$(#pandora_sdk.include)\SDL" />
+					<Add directory="$(#pandora_sdk.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -360,8 +315,8 @@
 				</Linker>
 			</Target>
 			<Target title="Testtarget (Win x86)">
-				<Option output="bin\W32\testtarget" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\W32\" />
+				<Option output="bin/W32/testtarget" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/W32/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -370,7 +325,7 @@
 					<Add option="-DX86CPU" />
 					<Add option="-DBUILDING_DLL" />
 					<Add directory="$(#mingw.include)" />
-					<Add directory="$(#mingw.include)\SDL" />
+					<Add directory="$(#mingw.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -380,8 +335,8 @@
 				</Linker>
 			</Target>
 			<Target title="Testtarget (Pandora)">
-				<Option output="bin\Pandora\testtarget" prefix_auto="1" extension_auto="0" />
-				<Option object_output="obj\Pandora\" />
+				<Option output="bin/Pandora/testtarget" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Pandora/" />
 				<Option type="0" />
 				<Option compiler="armelfgcc" />
 				<Compiler>
@@ -390,7 +345,51 @@
 					<Add option="-DARMCPU" />
 					<Add option="-DPANDORA" />
 					<Add directory="$(#pandora_sdk.include)" />
-					<Add directory="$(#pandora_sdk.include)\SDL" />
+					<Add directory="$(#pandora_sdk.include)/SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-ldl" />
+					<Add option="-lpthread" />
+					<Add option="-lfreetype" />
+					<Add option="-lpng" />
+					<Add option="-lz" />
+					<Add option="-lts" />
+					<Add directory="$(#pandora_sdk.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testfile (Win x86)">
+				<Option output="bin/W32/testfile" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/W32/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-DX86CPU" />
+					<Add option="-DBUILDING_DLL" />
+					<Add directory="$(#mingw.include)" />
+					<Add directory="$(#mingw.include)/SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lmingw32" />
+					<Add option="-lSDLmain" />
+					<Add directory="$(#mingw.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Testfile (Pandora)">
+				<Option output="bin/Pandora/testfile" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Pandora/" />
+				<Option type="0" />
+				<Option compiler="armelfgcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DMOBILE_DEVICE" />
+					<Add option="-DARMCPU" />
+					<Add option="-DPANDORA" />
+					<Add directory="$(#pandora_sdk.include)" />
+					<Add directory="$(#pandora_sdk.include)/SDL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -435,12 +434,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowCore.h">
 			<Option target="Sparrow (Win x86)" />
@@ -451,12 +450,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowDefines.h">
 			<Option target="Sparrow (Win x86)" />
@@ -467,12 +466,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowFile.c">
 			<Option compilerVar="CC" />
@@ -484,12 +483,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowFile.h">
 			<Option target="Sparrow (Win x86)" />
@@ -500,12 +499,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowFont.c">
 			<Option compilerVar="CC" />
@@ -517,12 +516,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowFont.h">
 			<Option target="Sparrow (Win x86)" />
@@ -533,12 +532,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowMath.c">
 			<Option compilerVar="CC" />
@@ -550,12 +549,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowMath.h">
 			<Option target="Sparrow (Win x86)" />
@@ -566,12 +565,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowMesh.c">
 			<Option compilerVar="CC" />
@@ -583,12 +582,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowMesh.h">
 			<Option target="Sparrow (Win x86)" />
@@ -599,12 +598,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowNet.c">
 			<Option compilerVar="CC" />
@@ -625,12 +624,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowPrimitives.h">
 			<Option target="Sparrow (Win x86)" />
@@ -641,12 +640,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowPrimitivesAsm.c">
 			<Option compilerVar="CC" />
@@ -658,12 +657,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowRenderer.c">
 			<Option compilerVar="CC" />
@@ -675,12 +674,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowRenderer.h">
 			<Option target="Sparrow (Win x86)" />
@@ -691,12 +690,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowSound.c">
 			<Option compilerVar="CC" />
@@ -717,12 +716,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowSprite.h">
 			<Option target="Sparrow (Win x86)" />
@@ -733,12 +732,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowText.c">
 			<Option compilerVar="CC" />
@@ -750,12 +749,12 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowText.h">
 			<Option target="Sparrow (Win x86)" />
@@ -766,17 +765,17 @@
 			<Option target="Testsprite (Pandora)" />
 			<Option target="Testtext (Win x86)" />
 			<Option target="Testtext (Pandora)" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
 			<Option target="Testparallax (Win x86)" />
 			<Option target="Testparallax (Pandora)" />
 			<Option target="Testtarget (Win x86)" />
 			<Option target="Testtarget (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
-		<Unit filename="testmesh.c">
+		<Unit filename="testfile.c">
 			<Option compilerVar="CC" />
-			<Option target="Testmesh (Win x86)" />
-			<Option target="Testmesh (Pandora)" />
+			<Option target="Testfile (Win x86)" />
+			<Option target="Testfile (Pandora)" />
 		</Unit>
 		<Unit filename="testparallax.c">
 			<Option compilerVar="CC" />
