@@ -3,6 +3,12 @@
 
 # === First of all some defines. If your compilation is slow or instable, check
 # === the defines and changes them for your Target.
+# === Every target is in an extra file named like the target + .mk, e.g.
+# === gp2x.mk. If you have another path settings than me, just duplicate the
+# === target file, alter the paths and call maybe make myGp2x if your file is
+# === named myGp2x.mk. So you are independent from my changes of the target
+# === files. ;) However always have a look at the changelog, maybe I add new
+# === fancy optimization, you have to add in your target file yourself!
 
 # -DDO_USE_NOT_WASD_BUTTONS enables other buttons instead of WASD for the
 # action buttons and QE for the shoulder buttons. For debugging and some
@@ -26,7 +32,8 @@
 # don't use it. I activate it only for the gp2x.
 
 # === Now some globale variables. These are the default values for compilation on
-# === a Linux machine. The other targets then change, where their have differences
+# === a Linux machine. The other targets then change, where their have
+# === differences in the target files (the .mk files)
 
 # DYNAMIC says, which libraries will be linked dynamicly. Most of the time these
 # are all used libraries, but some systems also need static linking, too. Because
@@ -86,68 +93,22 @@ SDL_PATH = -I/usr/include/SDL
 # even on faster hardware. ;)
 # CFLAGS += -DFAST_DIVISION -DFAST_MULTIPLICATION
 
-# === The Targets. Set your own paths on your PC!
-# == GP2X/WIZ ==
-ifeq ($(TARGET),open2x)
-# CPP_LINK = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 -DFAST_BUT_UGLY $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
-# CPP = /opt/open2x/wiz-toolchain-4.6.3-3/bin/arm-wiz-linux-gnu-gcc -mfpu=fpa -msoft-float -mcpu=arm920t -DMOBILE_DEVICE -DARMCPU -DGP2X -DF100 -DFAST_BUT_UGLY $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
-CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DREALGP2X -DF100 -DFAST_BUT_UGLY -DDO_NOT_USE_DELAY $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
-SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags` 
-INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
-LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib
-endif
-ifeq ($(TARGET),gp2x)
-CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DREALGP2X -DF100 -DFAST_BUT_UGLY -DDO_NOT_USE_DELAY $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
-STATIC = -Wl,-Bstatic -lSDL -lm -Wl,-Bdynamic
-DYNAMIC = -lSDL_image -lSDL_net -lSDL_mixer -lSDL_ttf -lfreetype -lpng -lz -ljpeg
-SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags`
-INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
-LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib
-endif
-ifeq ($(TARGET),wiz)
-CPP = /opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/arm-open2x-linux-gcc -DMOBILE_DEVICE -DARMCPU -DGP2X -DWIZ $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
-STATIC = -Wl,-Bstatic -lpng -Wl,-Bdynamic
-DYNAMIC = -lSDL_net -lSDL_mixer -lSDL_ttf -lSDL_image -lSDL -lm
-SDL = `/opt/open2x/gcc-4.1.1-glibc-2.3.6/bin/sdl-config --cflags`
-INCLUDE = -I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include
-LIB = -L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath=/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib
-endif
-# == Caanoo ==
-ifeq ($(TARGET),caanoo)
-CPP = /opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/bin/arm-gph-linux-gnueabi-gcc -DMOBILE_DEVICE -DARMCPU -DCAANOO $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
-SDL = -I/opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi/sys-root/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT
-INCLUDE = -I/opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi/sys-root/usr/include
-LIB = -L/opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi/sys-root/usr/lib -Wl,-rpath=/opt/caanoo/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi/sys-root/usr/lib
-endif
-# == Dingux ==
-ifeq ($(TARGET),dingux)
-CPP = /opt/opendingux-toolchain/usr/bin/mipsel-linux-gcc -DMOBILE_DEVICE -DDINGUX -DFAST_BUT_UGLY $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
-SDL = -I/opt/opendingux-toolchain/usr/mipsel-unknown-linux-uclibc/sys-include/SDL -D_GNU_SOURCE=1 -D_REENTRANT
-INCLUDE = -I/opt/opendingux-toolchain/usr/mipsel-unknown-linux-uclibc/sys-include
-LIB = -L/opt/opendingux-toolchain/usr/lib -Wl,-rpath=/opt/opendingux-toolchain/usr/lib
-endif
-# == GCW ==
-ifeq ($(TARGET),gcw)
-CPP = /opt/opendingux-toolchain/usr/bin/mipsel-linux-gcc -DMOBILE_DEVICE -DGCW -DFAST_BUT_UGLY $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)
-SDL = -I/opt/opendingux-toolchain/usr/mipsel-unknown-linux-uclibc/sys-include/SDL -D_GNU_SOURCE=1 -D_REENTRANT
-INCLUDE = -I/opt/opendingux-toolchain/usr/mipsel-unknown-linux-uclibc/sys-include
-LIB = -L/opt/opendingux-toolchain/usr/lib -Wl,-rpath=/opt/opendingux-toolchain/usr/lib
-endif
-# == Pandora ==
-ifeq ($(TARGET),pandora)
-CPP = /opt/pandora/arm-2011.03/bin/arm-none-linux-gnueabi-gcc -DMOBILE_DEVICE -DARMCPU -DPANDORA $(GENERAL_TWEAKS)
-SDL = `/opt/pandora/arm-2011.03/usr/bin/sdl-config --cflags`
-INCLUDE = -I/opt/pandora/arm-2011.03/usr/include
-LIB = -L/opt/pandora/arm-2011.03/usr/lib -Wl,-rpath=/opt/pandora/arm-2011.03/usr/lib
+ifdef TARGET
+include $(TARGET).mk
+else
+TARGET = "Default (change with make TARGET=otherTarget. See All targets with make targets)"
 endif
 
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
 
 all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testsprite testtarget testtext testfile testparallax testserver testclient
+	@echo "=== Built for Target "$(TARGET)" ==="
 
 targets:
-	@echo "gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora, gcw"
+	@echo "The targets are:"
+	@ls *.mk | tr .mk " "
+#	@echo "Default targets are: gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora, gcw"
 
 testsparrow: testsparrow.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o testsparrow
