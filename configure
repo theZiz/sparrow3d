@@ -2,5 +2,5 @@
 echo " * Sparrow3d doesn't use autoconf. So please open the Makefile in an editor  *"
 echo " * of your choice, read the comments, understand the comments and build it   *"
 echo " * with \"make\" for your system or \"make TARGET=devive\" for other devices.    *"
-echo " * Use \"make target\" to see every target. Always clean up with \"make clean\"  *"
+echo " * Use \"make targets\" to see every target. Always clean up with \"make clean\" *"
 echo " * before using another target.                                              *"
