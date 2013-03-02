@@ -19,3 +19,5 @@
 */
 
 #include "sparrowNet.h"
+
+#define meow

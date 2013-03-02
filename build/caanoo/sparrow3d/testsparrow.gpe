@@ -1,0 +1,6 @@
+#!/bin/sh
+cd `dirname $0`
+
+LD_LIBRARY_PATH=. ./testsparrow 2>&1 >testsparrow.log
+
+cd /usr/gp2x; ./gp2xmenu
