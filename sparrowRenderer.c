@@ -791,37 +791,37 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 	spMulModellView( x4, y4, z4, &tx4, &ty4, &tz4, &tw4 );
 
 	//homogenous world space ===> w space ==(w-clip)=> device space
-	       x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 4],ty1) + spMul(spProjection[ 8],tz1) + spMul(spProjection[12],tw1);
-	       y1 = spMul( spProjection[ 1], tx1 ) + spMul(spProjection[ 5],ty1) + spMul(spProjection[ 9],tz1) + spMul(spProjection[13],tw1);
-	       z1 = spMul( spProjection[ 2], tx1 ) + spMul(spProjection[ 6],ty1) + spMul(spProjection[10],tz1) + spMul(spProjection[14],tw1);
-	Sint32 w1 = spMul( spProjection[ 3], tx1 ) + spMul(spProjection[ 7],ty1) + spMul(spProjection[11],tz1) + spMul(spProjection[15],tw1);
+	       x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8],tz1 );
+	       y1 = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9],tz1 );
+	       z1 = spMul( spProjection[10], tz1 ) + spProjection[14];
+	Sint32 w1 = spMul( spProjection[11], tz1 );
 	if ( w1 == 0 )
 		w1 = 1;
 	Sint32 nx1 = spDiv( x1, w1 ) >> SP_HALF_ACCURACY;
 	Sint32 ny1 = spDiv( y1, w1 ) >> SP_HALF_ACCURACY;
 	
-	       x2 = spMul( spProjection[ 0], tx2 ) + spMul(spProjection[ 4],ty2) + spMul(spProjection[ 8],tz2) + spMul(spProjection[12],tw2);
-	       y2 = spMul( spProjection[ 1], tx2 ) + spMul(spProjection[ 5],ty2) + spMul(spProjection[ 9],tz2) + spMul(spProjection[13],tw2);
-	       z2 = spMul( spProjection[ 2], tx2 ) + spMul(spProjection[ 6],ty2) + spMul(spProjection[10],tz2) + spMul(spProjection[14],tw2);
-	Sint32 w2 = spMul( spProjection[ 3], tx2 ) + spMul(spProjection[ 7],ty2) + spMul(spProjection[11],tz2) + spMul(spProjection[15],tw2);
+	       x2 = spMul( spProjection[ 0], tx2 ) + spMul(spProjection[ 8],tz2 );
+	       y2 = spMul( spProjection[ 5], ty2 ) + spMul(spProjection[ 9],tz2 );
+	       z2 = spMul( spProjection[10], tz2 ) + spProjection[14];
+	Sint32 w2 = spMul( spProjection[11], tz2 );
 	if ( w2 == 0 )
 		w2 = 1;
 	Sint32 nx2 = spDiv( x2, w2 ) >> SP_HALF_ACCURACY;
 	Sint32 ny2 = spDiv( y2, w2 ) >> SP_HALF_ACCURACY;
 
-	       x3 = spMul( spProjection[ 0], tx3 ) + spMul(spProjection[ 4],ty3) + spMul(spProjection[ 8],tz3) + spMul(spProjection[12],tw3);
-	       y3 = spMul( spProjection[ 1], tx3 ) + spMul(spProjection[ 5],ty3) + spMul(spProjection[ 9],tz3) + spMul(spProjection[13],tw3);
-	       z3 = spMul( spProjection[ 2], tx3 ) + spMul(spProjection[ 6],ty3) + spMul(spProjection[10],tz3) + spMul(spProjection[14],tw3);
-	Sint32 w3 = spMul( spProjection[ 3], tx3 ) + spMul(spProjection[ 7],ty3) + spMul(spProjection[11],tz3) + spMul(spProjection[15],tw3);
+	       x3 = spMul( spProjection[ 0], tx3 ) + spMul(spProjection[ 8],tz3 );
+	       y3 = spMul( spProjection[ 5], ty3 ) + spMul(spProjection[ 9],tz3 );
+	       z3 = spMul( spProjection[10], tz3 ) + spProjection[14];
+	Sint32 w3 = spMul( spProjection[11], tz3 );
 	if ( w3 == 0 )
 		w3 = 1;
 	Sint32 nx3 = spDiv( x3, w3 ) >> SP_HALF_ACCURACY;
 	Sint32 ny3 = spDiv( y3, w3 ) >> SP_HALF_ACCURACY;
 
-	       x4 = spMul( spProjection[ 0], tx4 ) + spMul(spProjection[ 4],ty4) + spMul(spProjection[ 8],tz4) + spMul(spProjection[12],tw4);
-	       y4 = spMul( spProjection[ 1], tx4 ) + spMul(spProjection[ 5],ty4) + spMul(spProjection[ 9],tz4) + spMul(spProjection[13],tw4);
-	       z4 = spMul( spProjection[ 2], tx4 ) + spMul(spProjection[ 6],ty4) + spMul(spProjection[10],tz4) + spMul(spProjection[14],tw4);
-	Sint32 w4 = spMul( spProjection[ 3], tx4 ) + spMul(spProjection[ 7],ty4) + spMul(spProjection[11],tz4) + spMul(spProjection[15],tw4);
+	       x4 = spMul( spProjection[ 0], tx4 ) + spMul(spProjection[ 8],tz4 );
+	       y4 = spMul( spProjection[ 5], ty4 ) + spMul(spProjection[ 9],tz4 );
+	       z4 = spMul( spProjection[10], tz4 ) + spProjection[14];
+	Sint32 w4 = spMul( spProjection[11], tz4 );
 	if ( w4 == 0 )
 		w4 = 1;
 	Sint32 nx4 = spDiv( x4, w4 ) >> SP_HALF_ACCURACY;
