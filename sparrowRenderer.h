@@ -134,7 +134,12 @@ typedef struct spLightStruct
 
 
 //--- Operations for the Matrizes ---
-
+/* spSetFrustumf2 setups the frustum of the projection matrix. In most
+ * cases you don't need it directly, because spSetPerspective calls it */
+void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
+							Sint32 znear, Sint32 zfar );
+							
+							
 /* spSetPerspective sets the Projection matrix. Because you call this
  * function mostly just one time at beginning and the need of REALLY
  * high accuracy, this is one of the only functions from sparrow3d,
@@ -146,6 +151,10 @@ typedef struct spLightStruct
  *   in fact: znear is ignored most of the time*/
 PREFIX void spSetPerspective( float fovyInDegrees, float aspectRatio,
 							  float znear, float zfar );
+
+
+PREFIX void spSetPerspectiveStereoscopic( Sint32* projectionMatrix, float fovyInDegrees, float aspectRatio,
+							  float znear, float zfar , float z0,float distance);
 
 /* spGetProjectionMatrix returns the projetion matrix. Be carefull: You
  * get the real pointer, no copy. */

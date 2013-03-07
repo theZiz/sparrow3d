@@ -33,7 +33,7 @@ Uint32 spLightAmbient[3] = {1 << SP_ACCURACY-2,1 << SP_ACCURACY-2,1 << SP_ACCURA
 int spPreNormal = 0;
 int spUsePerspective = 0;
 
-inline void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
+PREFIX void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
 							Sint32 znear, Sint32 zfar )
 {
 	Sint32 znear2 = znear << 1;
@@ -63,8 +63,6 @@ PREFIX void spSetPerspective( float fovyInDegrees, float aspectRatio,
 {
 	float ymax, xmax;
 	ymax = znear * tanf( fovyInDegrees * M_PI / 360.0f );
-	//ymin = -ymax;
-	//xmin = -ymax * aspectRatio;
 	xmax = ymax * aspectRatio;
 	spSetFrustumf2( spProjection, ( Sint32 )( -xmax  * SP_ACCURACY_FACTOR ),
 	                              ( Sint32 )(  xmax  * SP_ACCURACY_FACTOR ),
@@ -72,6 +70,25 @@ PREFIX void spSetPerspective( float fovyInDegrees, float aspectRatio,
 	                              ( Sint32 )(  ymax  * SP_ACCURACY_FACTOR ),
 	                              ( Sint32 )(  znear * SP_ACCURACY_FACTOR ),
 	                              ( Sint32 )(  zfar  * SP_ACCURACY_FACTOR ));
+	Sint32 spRatio = ( Sint32 )( aspectRatio * SP_ACCURACY_FACTOR );
+	spSetZFar((Sint32)(zfar * SP_ACCURACY_FACTOR));
+	spSetZNear((Sint32)(znear * SP_ACCURACY_FACTOR));
+}
+
+PREFIX void spSetPerspectiveStereoscopic( Sint32* projectionMatrix, float fovyInDegrees, float aspectRatio,
+							  float znear, float zfar , float z0,float distance)
+{
+	float ymax, xmax, ymin, xmin;
+	xmin = -znear * tanf( fovyInDegrees * M_PI / 360.0f ) + distance/2.0f*znear/z0;
+	xmax =  znear * tanf( fovyInDegrees * M_PI / 360.0f ) + distance/2.0f*znear/z0;
+	ymin = -1.0f/aspectRatio * znear * tanf( fovyInDegrees * M_PI / 360.0f );
+	ymax =  1.0f/aspectRatio * znear * tanf( fovyInDegrees * M_PI / 360.0f );
+	spSetFrustumf2( projectionMatrix, ( Sint32 )( xmin  * SP_ACCURACY_FACTOR ),
+	                                  ( Sint32 )( xmax  * SP_ACCURACY_FACTOR ),
+	                                  ( Sint32 )( ymin  * SP_ACCURACY_FACTOR ),
+	                                  ( Sint32 )( ymax  * SP_ACCURACY_FACTOR ),
+	                                  ( Sint32 )( znear * SP_ACCURACY_FACTOR ),
+	                                  ( Sint32 )( zfar  * SP_ACCURACY_FACTOR ));
 	Sint32 spRatio = ( Sint32 )( aspectRatio * SP_ACCURACY_FACTOR );
 	spSetZFar((Sint32)(zfar * SP_ACCURACY_FACTOR));
 	spSetZNear((Sint32)(znear * SP_ACCURACY_FACTOR));
