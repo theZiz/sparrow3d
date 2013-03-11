@@ -36,11 +36,18 @@ int spUsePerspective = 0;
 PREFIX void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
 							Sint32 znear, Sint32 zfar )
 {
+	printf("Created Projection frustum with:\n");
+	printf("  Left:   %.3f\n",spFixedToFloat(left));
+	printf("  Right:  %.3f\n",spFixedToFloat(right));
+	printf("  Top:    %.3f\n",spFixedToFloat(top));
+	printf("  Bottom: %.3f\n",spFixedToFloat(bottom));
+	printf("  Z-near: %.3f\n",spFixedToFloat(znear));
+	printf("  Z-far:  %.3f\n",spFixedToFloat(zfar));
 	Sint32 znear2 = znear << 1;
 	Sint32 width = right - left;
 	Sint32 height = top - bottom;
 	Sint32 zRange = znear - zfar;
-	matrix[0] = spDivHigh( znear2, width );
+	/*matrix[0] = spDivHigh( znear2, width );
 	matrix[1] = 0 << SP_ACCURACY;
 	matrix[2] = 0 << SP_ACCURACY;
 	matrix[3] = 0 << SP_ACCURACY;
@@ -55,6 +62,22 @@ PREFIX void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bo
 	matrix[12] = 0 << SP_ACCURACY;
 	matrix[13] = 0 << SP_ACCURACY;
 	matrix[14] = -SP_ONE;
+	matrix[15] = 0 << SP_ACCURACY;*/
+	matrix[ 0] = spDivHigh( znear2, width );
+	matrix[ 1] = 0 << SP_ACCURACY;
+	matrix[ 2] = 0 << SP_ACCURACY;
+	matrix[ 3] = 0 << SP_ACCURACY;
+	matrix[ 4] = 0 << SP_ACCURACY;
+	matrix[ 5] = spDivHigh( znear2, height );
+	matrix[ 6] = 0 << SP_ACCURACY;
+	matrix[ 7] = 0 << SP_ACCURACY;
+	matrix[ 8] = spDivHigh( right + left, width ); //0 if right == -left
+	matrix[ 9] = spDivHigh( top + bottom, height ); //0 if top == -bottom
+	matrix[10] = -SP_ONE;//spDivHigh( zfar + znear, zRange ); //nearly minus one
+	matrix[11] = -SP_ONE;
+	matrix[12] = 0 << SP_ACCURACY;
+	matrix[13] = 0 << SP_ACCURACY;
+	matrix[14] = -znear;//spDivHigh( spMulHigh( znear2, zfar ), zRange );
 	matrix[15] = 0 << SP_ACCURACY;
 }
 
@@ -72,6 +95,10 @@ PREFIX void spSetPerspective( float fovyInDegrees, float aspectRatio,
 	                              ( Sint32 )(  zfar  * SP_ACCURACY_FACTOR ));
 	spSetZFar((Sint32)(zfar * SP_ACCURACY_FACTOR));
 	spSetZNear((Sint32)(znear * SP_ACCURACY_FACTOR));
+	printf("  Matrix:\n");
+	int i;
+	for (i = 0; i < 4; i++)
+		printf("    | % 3.3f | % 3.3f | % 3.3f | % 3.3f | \n",spFixedToFloat(spProjection[0+i]),spFixedToFloat(spProjection[4+i]),spFixedToFloat(spProjection[8+i]),spFixedToFloat(spProjection[12+i]));	
 }
 
 PREFIX void spSetPerspectiveStereoscopic( Sint32* projectionMatrix, float fovyInDegrees, float aspectRatio,
@@ -88,8 +115,13 @@ PREFIX void spSetPerspectiveStereoscopic( Sint32* projectionMatrix, float fovyIn
 	                                  ( Sint32 )( ymax  * SP_ACCURACY_FACTOR ),
 	                                  ( Sint32 )( znear * SP_ACCURACY_FACTOR ),
 	                                  ( Sint32 )( zfar  * SP_ACCURACY_FACTOR ));
+  projectionMatrix[12] = spFloatToFixed(distance);
 	spSetZFar((Sint32)(zfar * SP_ACCURACY_FACTOR));
 	spSetZNear((Sint32)(znear * SP_ACCURACY_FACTOR));
+	printf("  Matrix:\n");
+	int i;
+	for (i = 0; i < 4; i++)
+		printf("    | % 3.3f | % 3.3f | % 3.3f | % 3.3f | \n",spFixedToFloat(projectionMatrix[0+i]),spFixedToFloat(projectionMatrix[4+i]),spFixedToFloat(projectionMatrix[8+i]),spFixedToFloat(projectionMatrix[12+i]));	
 }
 
 PREFIX Sint32* spGetProjectionMatrix()
@@ -604,7 +636,7 @@ PREFIX int spTriangle3D( Sint32 x1, Sint32 y1, Sint32 z1,
 	spMulModellView( x2, y2, z2, &tx2, &ty2, &tz2, &tw2 );
 	spMulModellView( x3, y3, z3, &tx3, &ty3, &tz3, &tw3 );
 
-	x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8],tz1);
+	x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8],tz1) + spProjection[12];
 	y1 = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9],tz1);
 	z1 = spMul( spProjection[10], tz1 ) + spProjection[14];
 	Sint32 w1 = spMul( spProjection[11], tz1 );
@@ -614,7 +646,7 @@ PREFIX int spTriangle3D( Sint32 x1, Sint32 y1, Sint32 z1,
 	Sint32 nx1 = spDiv( x1, w1 ) >> SP_HALF_ACCURACY;
 	Sint32 ny1 = spDiv( y1, w1 ) >> SP_HALF_ACCURACY;
 
-	x2 = spMul( spProjection[ 0], tx2 ) + spMul(spProjection[ 8],tz2);
+	x2 = spMul( spProjection[ 0], tx2 ) + spMul(spProjection[ 8],tz2) + spProjection[12];
 	y2 = spMul( spProjection[ 5], ty2 ) + spMul(spProjection[ 9],tz2);
 	z2 = spMul( spProjection[10], tz2 ) + spProjection[14];
 	Sint32 w2 = spMul( spProjection[11], tz2 );
@@ -623,7 +655,7 @@ PREFIX int spTriangle3D( Sint32 x1, Sint32 y1, Sint32 z1,
 	Sint32 nx2 = spDiv( x2, w2 ) >> SP_HALF_ACCURACY;
 	Sint32 ny2 = spDiv( y2, w2 ) >> SP_HALF_ACCURACY;
 
-	x3 = spMul( spProjection[ 0], tx3 ) + spMul(spProjection[ 8],tz3);
+	x3 = spMul( spProjection[ 0], tx3 ) + spMul(spProjection[ 8],tz3) + spProjection[12];
 	y3 = spMul( spProjection[ 5], ty3 ) + spMul(spProjection[ 9],tz3);
 	z3 = spMul( spProjection[10], tz3 ) + spProjection[14];
 	Sint32 w3 = spMul( spProjection[11], tz3 );
@@ -659,7 +691,7 @@ PREFIX int spQuad3D( Sint32 x1, Sint32 y1, Sint32 z1,
 	spMulModellView( x3, y3, z3, &tx3, &ty3, &tz3, &tw3 );
 	spMulModellView( x4, y4, z4, &tx4, &ty4, &tz4, &tw4 );
 
-	x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8],tz1);
+	x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8],tz1) + spProjection[12];
 	y1 = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9],tz1);
 	z1 = spMul( spProjection[10], tz1 ) + spProjection[14];
 	Sint32 w1 = spMul( spProjection[11], tz1 );
@@ -669,7 +701,7 @@ PREFIX int spQuad3D( Sint32 x1, Sint32 y1, Sint32 z1,
 	Sint32 nx1 = spDiv( x1, w1 ) >> SP_HALF_ACCURACY;
 	Sint32 ny1 = spDiv( y1, w1 ) >> SP_HALF_ACCURACY;
 
-	x2 = spMul( spProjection[ 0], tx2 ) + spMul(spProjection[ 8],tz2);
+	x2 = spMul( spProjection[ 0], tx2 ) + spMul(spProjection[ 8],tz2) + spProjection[12];
 	y2 = spMul( spProjection[ 5], ty2 ) + spMul(spProjection[ 9],tz2);
 	z2 = spMul( spProjection[10], tz2 ) + spProjection[14];
 	Sint32 w2 = spMul( spProjection[11], tz2 );
@@ -678,7 +710,7 @@ PREFIX int spQuad3D( Sint32 x1, Sint32 y1, Sint32 z1,
 	Sint32 nx2 = spDiv( x2, w2 ) >> SP_HALF_ACCURACY;
 	Sint32 ny2 = spDiv( y2, w2 ) >> SP_HALF_ACCURACY;
 
-	x3 = spMul( spProjection[ 0], tx3 ) + spMul(spProjection[ 8],tz3);
+	x3 = spMul( spProjection[ 0], tx3 ) + spMul(spProjection[ 8],tz3) + spProjection[12];
 	y3 = spMul( spProjection[ 5], ty3 ) + spMul(spProjection[ 9],tz3);
 	z3 = spMul( spProjection[10], tz3 ) + spProjection[14];
 	Sint32 w3 = spMul( spProjection[11], tz3 );
@@ -687,7 +719,7 @@ PREFIX int spQuad3D( Sint32 x1, Sint32 y1, Sint32 z1,
 	Sint32 nx3 = spDiv( x3, w3 ) >> SP_HALF_ACCURACY;
 	Sint32 ny3 = spDiv( y3, w3 ) >> SP_HALF_ACCURACY;
 
-	x4 = spMul( spProjection[ 0], tx4 ) + spMul(spProjection[ 8],tz4);
+	x4 = spMul( spProjection[ 0], tx4 ) + spMul(spProjection[ 8],tz4) + spProjection[12];
 	y4 = spMul( spProjection[ 5], ty4 ) + spMul(spProjection[ 9],tz4);
 	z4 = spMul( spProjection[10], tz4 ) + spProjection[14];
 	Sint32 w4 = spMul( spProjection[11], tz4 );
@@ -723,7 +755,7 @@ PREFIX int spTriangleTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v
 	spMulModellView( x2, y2, z2, &tx2, &ty2, &tz2, &tw2 );
 	spMulModellView( x3, y3, z3, &tx3, &ty3, &tz3, &tw3 );
 
-	x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8],tz1);
+	x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8],tz1) + spProjection[12];
 	y1 = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9],tz1);
 	z1 = spMul( spProjection[10], tz1 ) + spProjection[14];
 	Sint32 w1 = spMul( spProjection[11], tz1 );
@@ -733,7 +765,7 @@ PREFIX int spTriangleTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v
 	Sint32 nx1 = spDiv( x1, w1 ) >> SP_HALF_ACCURACY;
 	Sint32 ny1 = spDiv( y1, w1 ) >> SP_HALF_ACCURACY;
 
-	x2 = spMul( spProjection[ 0], tx2 ) + spMul(spProjection[ 8],tz2);
+	x2 = spMul( spProjection[ 0], tx2 ) + spMul(spProjection[ 8],tz2) + spProjection[12];
 	y2 = spMul( spProjection[ 5], ty2 ) + spMul(spProjection[ 9],tz2);
 	z2 = spMul( spProjection[10], tz2 ) + spProjection[14];
 	Sint32 w2 = spMul( spProjection[11], tz2 );
@@ -742,7 +774,7 @@ PREFIX int spTriangleTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v
 	Sint32 nx2 = spDiv( x2, w2 ) >> SP_HALF_ACCURACY;
 	Sint32 ny2 = spDiv( y2, w2 ) >> SP_HALF_ACCURACY;
 
-	x3 = spMul( spProjection[ 0], tx3 ) + spMul(spProjection[ 8],tz3);
+	x3 = spMul( spProjection[ 0], tx3 ) + spMul(spProjection[ 8],tz3) + spProjection[12];
 	y3 = spMul( spProjection[ 5], ty3 ) + spMul(spProjection[ 9],tz3);
 	z3 = spMul( spProjection[10], tz3 ) + spProjection[14];
 	Sint32 w3 = spMul( spProjection[11], tz3 );
@@ -791,8 +823,8 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 	spMulModellView( x4, y4, z4, &tx4, &ty4, &tz4, &tw4 );
 
 	//homogenous world space ===> w space ==(w-clip)=> device space
-	       x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8],tz1 );
-	       y1 = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9],tz1 );
+	       x1 = spMul( spProjection[ 0], tx1 ) + spMul( spProjection[ 8], tz1 ) + spProjection[12];
+	       y1 = spMul( spProjection[ 5], ty1 ) + spMul( spProjection[ 9], tz1 );
 	       z1 = spMul( spProjection[10], tz1 ) + spProjection[14];
 	Sint32 w1 = spMul( spProjection[11], tz1 );
 	if ( w1 == 0 )
@@ -800,8 +832,8 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 	Sint32 nx1 = spDiv( x1, w1 ) >> SP_HALF_ACCURACY;
 	Sint32 ny1 = spDiv( y1, w1 ) >> SP_HALF_ACCURACY;
 	
-	       x2 = spMul( spProjection[ 0], tx2 ) + spMul(spProjection[ 8],tz2 );
-	       y2 = spMul( spProjection[ 5], ty2 ) + spMul(spProjection[ 9],tz2 );
+	       x2 = spMul( spProjection[ 0], tx2 ) + spMul( spProjection[ 8], tz2 ) + spProjection[12];
+	       y2 = spMul( spProjection[ 5], ty2 ) + spMul( spProjection[ 9], tz2 );
 	       z2 = spMul( spProjection[10], tz2 ) + spProjection[14];
 	Sint32 w2 = spMul( spProjection[11], tz2 );
 	if ( w2 == 0 )
@@ -809,8 +841,8 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 	Sint32 nx2 = spDiv( x2, w2 ) >> SP_HALF_ACCURACY;
 	Sint32 ny2 = spDiv( y2, w2 ) >> SP_HALF_ACCURACY;
 
-	       x3 = spMul( spProjection[ 0], tx3 ) + spMul(spProjection[ 8],tz3 );
-	       y3 = spMul( spProjection[ 5], ty3 ) + spMul(spProjection[ 9],tz3 );
+	       x3 = spMul( spProjection[ 0], tx3 ) + spMul( spProjection[ 8], tz3 ) + spProjection[12];
+	       y3 = spMul( spProjection[ 5], ty3 ) + spMul( spProjection[ 9], tz3 );
 	       z3 = spMul( spProjection[10], tz3 ) + spProjection[14];
 	Sint32 w3 = spMul( spProjection[11], tz3 );
 	if ( w3 == 0 )
@@ -818,8 +850,8 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 	Sint32 nx3 = spDiv( x3, w3 ) >> SP_HALF_ACCURACY;
 	Sint32 ny3 = spDiv( y3, w3 ) >> SP_HALF_ACCURACY;
 
-	       x4 = spMul( spProjection[ 0], tx4 ) + spMul(spProjection[ 8],tz4 );
-	       y4 = spMul( spProjection[ 5], ty4 ) + spMul(spProjection[ 9],tz4 );
+	       x4 = spMul( spProjection[ 0], tx4 ) + spMul( spProjection[ 8], tz4 ) + spProjection[12];
+	       y4 = spMul( spProjection[ 5], ty4 ) + spMul( spProjection[ 9], tz4 );
 	       z4 = spMul( spProjection[10], tz4 ) + spProjection[14];
 	Sint32 w4 = spMul( spProjection[11], tz4 );
 	if ( w4 == 0 )
@@ -857,7 +889,7 @@ PREFIX void spBlit3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface )
 	Sint32 tx1, ty1, tz1, tw1;
 	spMulModellView( x1, y1, z1, &tx1, &ty1, &tz1, &tw1 );
 
-	x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8],tz1);
+	x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8],tz1) + spProjection[12];
 	y1 = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9],tz1);
 	z1 = spMul( spProjection[10], tz1 ) + spProjection[14];
 	Sint32 w1 = spMul( spProjection[11], tz1 );
@@ -886,7 +918,7 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 	{
 		Sint32 tw;
 		spMulModellView( mesh->point[i].x, mesh->point[i].y, mesh->point[i].z, &( mesh->point[i].tx ), &( mesh->point[i].ty ), &( mesh->point[i].tz ), &tw );
-		Sint32 x1 = spMul( spProjection[ 0], mesh->point[i].tx ) + spMul(spProjection[ 8],mesh->point[i].tz);
+		Sint32 x1 = spMul( spProjection[ 0], mesh->point[i].tx ) + spMul(spProjection[ 8],mesh->point[i].tz) + spProjection[12];
 		Sint32 y1 = spMul( spProjection[ 5], mesh->point[i].ty ) + spMul(spProjection[ 9],mesh->point[i].tz);
 		Sint32 z1 = spMul( spProjection[10], mesh->point[i].tz ) + spProjection[14];
 		Sint32 w1 = spMul( spProjection[11], mesh->point[i].tz );
@@ -902,7 +934,7 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 	{
 		Sint32 tw;
 		spMulModellView( mesh->texPoint[i].x, mesh->texPoint[i].y, mesh->texPoint[i].z, &( mesh->texPoint[i].tx ), &( mesh->texPoint[i].ty ), &( mesh->texPoint[i].tz ), &tw );
-		Sint32 x1 = spMul( spProjection[ 0], mesh->texPoint[i].tx ) + spMul(spProjection[ 8],mesh->texPoint[i].tz);
+		Sint32 x1 = spMul( spProjection[ 0], mesh->texPoint[i].tx ) + spMul(spProjection[ 8],mesh->texPoint[i].tz) + spProjection[12];
 		Sint32 y1 = spMul( spProjection[ 5], mesh->texPoint[i].ty ) + spMul(spProjection[ 9],mesh->texPoint[i].tz);
 		Sint32 z1 = spMul( spProjection[10], mesh->texPoint[i].tz ) + spProjection[14];
 		mesh->texPoint[i].w = spMul( spProjection[11], mesh->texPoint[i].tz );
@@ -1206,7 +1238,7 @@ PREFIX void spLine3D( Sint32 x1, Sint32 y1, Sint32 z1,
 	spMulModellView( x1, y1, z1, &tx1, &ty1, &tz1, &tw1 );
 	spMulModellView( x2, y2, z2, &tx2, &ty2, &tz2, &tw2 );
 
-	x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1);
+	x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1) + spProjection[12];
 	y1 = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9], tz1);
 	z1 = spMul( spProjection[10], tz1 ) + spProjection[14];
 	Sint32 w1 = spMul( spProjection[11], tz1 );
@@ -1216,7 +1248,7 @@ PREFIX void spLine3D( Sint32 x1, Sint32 y1, Sint32 z1,
 	Sint32 nx1 = spDiv( x1, w1 ) >> SP_HALF_ACCURACY;
 	Sint32 ny1 = spDiv( y1, w1 ) >> SP_HALF_ACCURACY;
 
-	x2 = spMul( spProjection[ 0], tx2 ) + spMul(spProjection[ 8], tz2);
+	x2 = spMul( spProjection[ 0], tx2 ) + spMul(spProjection[ 8], tz2) + spProjection[12];
 	y2 = spMul( spProjection[ 5], ty2 ) + spMul(spProjection[ 9], tz2);
 	z2 = spMul( spProjection[10], tz2 ) + spProjection[14];
 	Sint32 w2 = spMul( spProjection[11], tz2 );
@@ -1294,7 +1326,7 @@ PREFIX void spRectangle3D( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uin
 
 	Sint32 tx1, ty1, tz1, tw1;
 	spMulModellView( x, y, z, &tx1, &ty1, &tz1, &tw1 );
-	x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1);
+	x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1) + spProjection[12];
 	y = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9], tz1);
 	z = spMul( spProjection[10], tz1 ) + spProjection[14];
 	w = spMul( spProjection[ 0], w );
@@ -1324,7 +1356,7 @@ PREFIX void spEllipse3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uin
 
 	Sint32 tx1, ty1, tz1, tw1;
 	spMulModellView( x, y, z, &tx1, &ty1, &tz1, &tw1 );
-	x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1);
+	x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1) + spProjection[12];
 	y = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9], tz1);
 	z = spMul( spProjection[10], tz1 ) + spProjection[14];
 	rx = spMul( spProjection[ 0], rx );
@@ -1354,7 +1386,7 @@ PREFIX void spRectangleBorder3D( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 
 
 	Sint32 tx1, ty1, tz1, tw1;
 	spMulModellView( x, y, z, &tx1, &ty1, &tz1, &tw1 );
-	x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1);
+	x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1) + spProjection[12];
 	y = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9], tz1);
 	z = spMul( spProjection[10], tz1 ) + spProjection[14];
 	w = spMul( spProjection[ 0], w );
@@ -1390,7 +1422,7 @@ PREFIX void spEllipseBorder3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 r
 
 	Sint32 tx1, ty1, tz1, tw1;
 	spMulModellView( x, y, z, &tx1, &ty1, &tz1, &tw1 );
-	x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1);
+	x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1) + spProjection[12];
 	y = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9], tz1);
 	z = spMul( spProjection[10], tz1 ) + spProjection[14];
 	rx = spMul( spProjection[ 0], rx );
@@ -1428,13 +1460,13 @@ PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *
 	spMulModellView( x, y, z, &tx1, &ty1, &tz1, &tw1 );
 	if ( withModelview )
 	{
-		x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1);
+		x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1) + spProjection[12];
 		y = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9], tz1);
 		z = spMul( spProjection[10], tz1 ) + spProjection[14];
 	}
 	else
 	{
-		x = spMul( spProjection[ 0], x ) + spMul(spProjection[ 8], tz1);
+		x = spMul( spProjection[ 0], x ) + spMul(spProjection[ 8], tz1) + spProjection[12];
 		y = spMul( spProjection[ 5], y ) + spMul(spProjection[ 9], tz1);
 		z = spMul( spProjection[10], tz1 ) + spProjection[14];
 	}
@@ -1468,10 +1500,10 @@ PREFIX void spRotozoomSurface3D( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surf
 
 	Sint32 tx1, ty1, tz1, tw1;
 	spMulModellView( x, y, z, &tx1, &ty1, &tz1, &tw1 );
-	x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1);
+	x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1) + spProjection[12];
 	y = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9], tz1);
 	z = spMul( spProjection[10], tz1 ) + spProjection[14];
-	zoomX = spMul( spProjection[ 0], zoomX ) + spMul(spProjection[ 8], tz1);
+	zoomX = spMul( spProjection[ 0], zoomX ) + spMul(spProjection[ 8], tz1) + spProjection[12];
 	zoomY = spMul( spProjection[ 5], zoomY ) + spMul(spProjection[ 9], tz1);
 	Sint32 w1 = spMul( spProjection[11], tz1 );
 	if ( w1 == 0 )
@@ -1497,10 +1529,10 @@ PREFIX void spRotozoomSurfacePart3D( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* 
 
 	Sint32 tx1, ty1, tz1, tw1;
 	spMulModellView( x, y, z, &tx1, &ty1, &tz1, &tw1 );
-	x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1);
+	x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1) + spProjection[12];
 	y = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9], tz1);
 	z = spMul( spProjection[10], tz1 ) + spProjection[14];
-	zoomX = spMul( spProjection[ 0], zoomX ) + spMul(spProjection[ 8], tz1);
+	zoomX = spMul( spProjection[ 0], zoomX ) + spMul(spProjection[ 8], tz1) + spProjection[12];
 	zoomY = spMul( spProjection[ 5], zoomY ) + spMul(spProjection[ 9], tz1);
 	Sint32 w1 = spMul( spProjection[11], tz1 );
 	if ( w1 == 0 )

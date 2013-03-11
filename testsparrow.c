@@ -544,7 +544,7 @@ void resize( Uint16 w, Uint16 h )
 	
 	
 	//Setup of the new/resized window
-	spSetPerspective( 130.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 0.1f, 100.0f );
+	spSetPerspective( 45.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 1.0f, 100.0f );
 
 	//Font Loading
 	spFontShadeButtons(1);
