@@ -107,7 +107,7 @@ endif
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
 
-all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testsprite testtarget testtext testfile testparallax testserver testclient
+all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testsprite testtarget testtext testfile testparallax testserver testclient testreal3d
 	@echo "=== Built for Target "$(TARGET)" ==="
 
 targets:
@@ -117,6 +117,9 @@ targets:
 
 testsparrow: testsparrow.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testsparrow
+
+testreal3d: testreal3d.c libsparrow3d.so
+	$(CPP_LINK) $(CFLAGS) testreal3d.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testreal3d
 
 testsprite: testsprite.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testsprite.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testsprite
