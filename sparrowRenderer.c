@@ -47,22 +47,6 @@ PREFIX void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bo
 	Sint32 width = right - left;
 	Sint32 height = top - bottom;
 	Sint32 zRange = znear - zfar;
-	/*matrix[0] = spDivHigh( znear2, width );
-	matrix[1] = 0 << SP_ACCURACY;
-	matrix[2] = 0 << SP_ACCURACY;
-	matrix[3] = 0 << SP_ACCURACY;
-	matrix[4] = 0 << SP_ACCURACY;
-	matrix[5] = spDivHigh( znear2, height );
-	matrix[6] = 0 << SP_ACCURACY;
-	matrix[7] = 0 << SP_ACCURACY;
-	matrix[8] = spDivHigh( right + left, width ); //0 if right == -left
-	matrix[9] = spDivHigh( top + bottom, height ); //0 if top == -bottom
-	matrix[10] = spDivHigh( zfar + znear, zRange ); //nearly one
-	matrix[11] = spDivHigh( spMulHigh( znear2, zfar ), zRange );
-	matrix[12] = 0 << SP_ACCURACY;
-	matrix[13] = 0 << SP_ACCURACY;
-	matrix[14] = -SP_ONE;
-	matrix[15] = 0 << SP_ACCURACY;*/
 	matrix[ 0] = spDivHigh( znear2, width );
 	matrix[ 1] = 0 << SP_ACCURACY;
 	matrix[ 2] = 0 << SP_ACCURACY;
@@ -122,6 +106,13 @@ PREFIX void spSetPerspectiveStereoscopic( Sint32* projectionMatrix, float fovyIn
 	int i;
 	for (i = 0; i < 4; i++)
 		printf("    | % 3.3f | % 3.3f | % 3.3f | % 3.3f | \n",spFixedToFloat(projectionMatrix[0+i]),spFixedToFloat(projectionMatrix[4+i]),spFixedToFloat(projectionMatrix[8+i]),spFixedToFloat(projectionMatrix[12+i]));	
+}
+
+PREFIX void spStereoCreateProjectionMatrixes(Sint32* left_matrix,Sint32* right_matrix,float fovyInDegrees, float aspectRatio,
+							  float znear, float zfar , float z0,float distance,int crossed)
+{
+	spSetPerspectiveStereoscopic(  left_matrix, fovyInDegrees, aspectRatio/(crossed?2.0f:1.0f), znear, zfar, z0,  distance );
+	spSetPerspectiveStereoscopic( right_matrix, fovyInDegrees, aspectRatio/(crossed?2.0f:1.0f), znear, zfar, z0, -distance );	
 }
 
 PREFIX Sint32* spGetProjectionMatrix()

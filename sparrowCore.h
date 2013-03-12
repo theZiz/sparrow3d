@@ -271,4 +271,11 @@ PREFIX SDL_Surface* spGetVirtualKeyboard();
  * highscore name is entered or to show the virtual keyboard. */
 PREFIX int spIsKeyboardPolled();
 
+/* This functions merges two same sized (!) surfaces to one. The left one will
+ * be overwritten be the or-merge, if "crossed" is 0. That means every pixel of
+ * the left surface will be: left[p] = left[p] | right[p]. If "crossed" is 1
+ * every second line of every surface will be taken, that you get two clinched
+ * pictures in one surface. Use the first one for coloured glasses stereo and
+ * the second for crossing eye stereoscopy. */
+PREFIX void spStereoMergeSurfaces(SDL_Surface* left,SDL_Surface* right,int crossed);
 #endif

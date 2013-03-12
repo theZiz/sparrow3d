@@ -1785,3 +1785,35 @@ PREFIX int spIsKeyboardPolled()
 {
 	return (spInput.keyboard.buffer != NULL);
 }
+
+PREFIX void spStereoMergeSurfaces(SDL_Surface* left,SDL_Surface* right,int crossed)
+{
+	if (left->w != right->w || left->h != right->h)
+		return;
+	int W = left->pitch/left->format->BytesPerPixel;
+	int H = left->h;
+	//merge
+	SDL_LockSurface(left);
+	SDL_LockSurface(right);
+	Uint16* right_pixels = (Uint16*)right->pixels;
+	Uint16* pixels = (Uint16*)left->pixels;
+	if (crossed)
+	{
+		int x,y;
+		for (x = 0; x < W/2; x++)
+			for (y = 0; y < H; y++)
+				pixels[x+y*W] = pixels[x*2+y*W];
+		for (; x < W; x++)
+			for (y = 0; y < H; y++)
+				pixels[x+y*W] = right_pixels[(x-W/2)*2+y*W];
+	}
+	else
+	{
+		int i;
+		int all = W*H;
+		for (i = 0; i < all; i++)
+			pixels[i] |= right_pixels[i];
+	}
+	SDL_UnlockSurface(left);	
+	SDL_UnlockSurface(right);
+}

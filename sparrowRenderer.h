@@ -152,9 +152,19 @@ void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, S
 PREFIX void spSetPerspective( float fovyInDegrees, float aspectRatio,
 							  float znear, float zfar );
 
-
+/* Works like spSetPerspective, but for stereoscopic projection */
 PREFIX void spSetPerspectiveStereoscopic( Sint32* projectionMatrix, float fovyInDegrees, float aspectRatio,
 							  float znear, float zfar , float z0,float distance);
+
+/* Use this function, if you want two projection matrixes with the given
+ * distance for stereoscopic projection. The projection matrix of sparrow3d is
+ * not set! You have to set it with
+ * memcpy(spGetProjectionMatrix(),matrix,sizeof(Sint32)*16) by yourself.
+ * For stereoscopic rendering, you have to render the scene two times with the
+ * colours of your 3d glasses and merge it afterwars, e.g. with
+ * spStereoMergeSurfaces(screen,right_screen,crossedEyes). */
+PREFIX void spStereoCreateProjectionMatrixes(Sint32* left_matrix,Sint32* right_matrix,float fovyInDegrees, float aspectRatio,
+							  float znear, float zfar , float z0,float distance,int crossed);
 
 /* spGetProjectionMatrix returns the projetion matrix. Be carefull: You
  * get the real pointer, no copy. */
