@@ -9,8 +9,7 @@
 #include <string.h>
 #include "sparrow3d.h"
 
-//#define SCALE_UP
-//#define CROSSED_EYES
+#define SCALE_UP
 
 #define DISTANCE 0.06f
 #define Z0 5.0f
