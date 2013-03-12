@@ -10,10 +10,9 @@
  under the License.
 
  Alternatively, the contents of this file may be used under the rms
- of the GNU Lesser General Public license (the  "LGPL License"), in which case the
- provisions of LGPL License are applicable instead of those
- above.
-
+ GNU Lesser General Public license (the  "LGPL License") version 2 or higher, in
+ which case the provisions of LGPL License are applicable instead of those above
+ 
  For feedback and questions about my Files and Projects please mail me,
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
