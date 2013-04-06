@@ -560,10 +560,10 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					spInput.button[SP_BUTTON_START] = 1;
 					break;
 				case SDLK_SPACE:
-					spInput.button[SP_BUTTON_X] = 1;
+					spInput.button[SP_BUTTON_Y] = 1;
 					break;
 				case SDLK_LSHIFT:
-					spInput.button[SP_BUTTON_Y] = 1;
+					spInput.button[SP_BUTTON_X] = 1;
 					break;
 				case SDLK_LCTRL:
 					spInput.button[SP_BUTTON_A] = 1;
@@ -727,10 +727,10 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					spInput.button[SP_BUTTON_START] = 0;
 					break;
 				case SDLK_SPACE:
-					spInput.button[SP_BUTTON_X] = 0;
+					spInput.button[SP_BUTTON_Y] = 0;
 					break;
 				case SDLK_LSHIFT:
-					spInput.button[SP_BUTTON_Y] = 0;
+					spInput.button[SP_BUTTON_X] = 0;
 					break;
 				case SDLK_LCTRL:
 					spInput.button[SP_BUTTON_A] = 0;
