@@ -19,14 +19,14 @@ it e.g. for:
 - GP2X Caanoo
 - Dingux
 - Pandora
-- Maemo (Future)
+- GCW Zero
 - PC (Linux / Windows) (mainly for testing...)
 That are the systems, which are supported at the moment or which hopefully will
 be supported in the near future. :)
 To see, what is possible with this engine take a look at
-- einstein (TODO: rewrite & link)
-- snowman (TODO: rewrite & link)
-- puzzletube (TODO: rewrite & link)
+- Puzzletube
+- Snowman
+- Schwerkaft
 
 -------------------------------------------------------------------------------
 
