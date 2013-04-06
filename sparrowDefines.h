@@ -81,6 +81,8 @@
 	#define spMul(a,b) spMulHigh(a,b)
 #endif
 
+#define spSquare(a) spMul(a,a)
+
 #define spDivHigh(a,b) (((Sint64)(a)<<SP_ACCURACY)/(Sint64)(b))
 /*#define spDivLow(a,b) ((b>=0 && b<(1<<SP_ACCURACY))? \
 										 (a*spGetOne_over_x_pointer()[b]): \
