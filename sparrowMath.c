@@ -91,7 +91,7 @@ PREFIX Sint32 spSqrt (Sint32 n)
 		return 0;
 	if (n <= (1 << SP_SQRT_ACCURACY)+1)
 		return spSqrtvalue[n];
-#ifdef FAST_BUT_UGLY
+#ifdef BLACK_MAGIC
 	int bit_count = 30;
 	Sint32 x = 1 << bit_count;
 	while (x > n)

@@ -22,10 +22,12 @@
 
 # -DFAST_DIVISION does the same as -DFAST_MULTIPLICATION, but for division.
 
-# -DFAST_BUT_UGLY may crash. It uses possibly memory (just reading),
-# which it not owns. Try always to have some border pixels to your
-# textures if using! However as it says, it makes sparrow3d a bit faster,
-# but the texture mapping a bit uglier.
+# -DUNSAFE_MAGIC may crash. It uses possibly memory (just reading), which it
+# not owns. Try always to have some border pixels to your textures if using!
+# However it makes sparrow3d a bit faster, but the texture mapping a bit uglier.
+
+# -DBLACK_MAGIC activates some crazy lookup table and other optimizations, but
+# may look a bit worse.
 
 # If you activate -DDO_NOT_USE_DELAY there will be no delay of 1 ms, if
 # the time between two calculations is 0. If your device is powerfull

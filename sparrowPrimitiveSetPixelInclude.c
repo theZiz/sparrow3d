@@ -66,7 +66,7 @@
 /* draw_pixel functions with textures */
 /* ********************************** */
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_ztest_zset(x,y,z,u,v,color) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
@@ -92,7 +92,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_ztest(x,y,z,u,v,color) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
@@ -116,7 +116,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_zset(x,y,z,u,v,color) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -136,7 +136,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex(x,y,u,v,color) \
 	{ \
 		Uint32 pixel = spTexturePixel[(u) + (v) * spTextureScanLine];  \
@@ -159,7 +159,7 @@
 //#define reciprocal_w_clip(parameter,w) (spMulLow(parameter,spDiv(SP_ONE,(w>>spMaxWLogDiff))>>spMaxWLogDiff) >> SP_ACCURACY)
 #define reciprocal_w_clip(parameter,w) ((parameter >> SP_HALF_ACCURACY)*(spOne_over_x_look_up_fixed[(w>>spMaxWLogDiff) & (SP_ONE-1)]>>spMaxWLogDiff) >> SP_ACCURACY)
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
@@ -189,7 +189,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
@@ -217,7 +217,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -241,7 +241,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_perspect(x,y,u,v,w,color) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
@@ -300,7 +300,7 @@
 /* draw_pixel functions with textures and alpha */
 /* ******************************************** */
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_ztest_zset_alpha(x,y,z,u,v,color) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
@@ -332,7 +332,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_ztest_alpha(x,y,z,u,v,color) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
@@ -358,7 +358,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_zset_alpha(x,y,z,u,v,color) \
 	{ \
 		Uint32 pixel = spTexturePixel[(u) + (v) * spTextureScanLine];  \
@@ -384,7 +384,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_alpha(x,y,u,v,color) \
 	{ \
 		Uint32 pixel = spTexturePixel[(u) + (v) * spTextureScanLine];  \
@@ -404,7 +404,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
@@ -440,7 +440,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
@@ -470,7 +470,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
@@ -500,7 +500,7 @@
 	}
 #endif
 
-#ifdef FAST_BUT_UGLY
+#ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_alpha_perspect(x,y,u,v,w,color) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \

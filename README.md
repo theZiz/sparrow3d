@@ -62,9 +62,11 @@ BUILDING_DLL
 	into errors during linking, compile with this define
 CORE_DEBUG
 	Print out verbose debug text
-FAST_BUT_UGLY 
+UNSAFE_MAGIC 
 	could crash, uses possibly memory (just reading) Try always to have some 
 	border pixels to your textures if using!
+BLACK_MAGIC 
+	Uses fancy lookup table magic to improve speed, but may look worse. Just try.
 FAST_MULTIPLICATION
 	looks good at small resolutions
 FAST_DIVISION

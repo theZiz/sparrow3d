@@ -395,7 +395,7 @@ inline void spMulModellView3x3( Sint32* p, Sint32* t)
 		root |= 2 << (N);\
 	}
 
-#ifdef FAST_BUT_UGLY
+#ifdef BLACK_MAGIC
 SP_LIGHT_TYPE lightSqrt (SP_LIGHT_TYPE n)
 {
 	if (n <= 0)
