@@ -59,7 +59,7 @@ var indexSectionsWithContent = {
       "Y": false,
       "Z": false
       },
-   "Files": {
+   "Macros": {
       "Symbols": false,
       "Numbers": false,
       "A": false,

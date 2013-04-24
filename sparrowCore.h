@@ -17,7 +17,9 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 
-/* sparrowCore is for creating a SDL window, creating optimal surfaces
+/* Title: sparrowCore
+ * 
+ * SparrowCore is for creating a SDL window, creating optimal surfaces
  * for blitting on these window, for program main loops with feeedback
  * functions for drawing, calculation and different kinds of event
  * handling. Furthermore here are some helper functions like converting
@@ -28,31 +30,156 @@
 #include <SDL.h>
 #include "sparrowDefines.h"
 
-/* The minimal and maximal value of the analog axis */
+/* Define: SP_ANALOG_AXIS_MIN
+ * 
+ * The minimal value of the analog axis */
 #define SP_ANALOG_AXIS_MIN -32768
+
+/* Define: SP_ANALOG_AXIS_MAX
+ * 
+ * The maximal value of the analog axis */
 #define SP_ANALOG_AXIS_MAX  32767
 
-/* if a REAL input device (not the sparrow3d generic input device!) has
+/* Define: SP_JOYSTICK_MIN_TRIGGER_ON
+ * 
+ * if a REAL input device (not the sparrow3d generic input device!) has
  * a analog stick, these are the limits, from which the generic axis are
- * uneven 0 or reseted to 0 again*/
+ * uneven 0 or reseted to 0 again
+ * 
+ * See Also:
+ * 
+ * <SP_JOYSTICK_MIN_TRIGGER_OFF>,
+ * <SP_JOYSTICK_MAX_TRIGGER_ON>,
+ * <SP_JOYSTICK_MAX_TRIGGER_OFF>*/
 #define SP_JOYSTICK_MIN_TRIGGER_ON -24576
+
+/* Define: SP_JOYSTICK_MIN_TRIGGER_OFF
+ * 
+ * if a REAL input device (not the sparrow3d generic input device!) has
+ * a analog stick, these are the limits, from which the generic axis are
+ * uneven 0 or reseted to 0 again
+ * 
+ * See Also:
+ * 
+ * <SP_JOYSTICK_MIN_TRIGGER_ON>,
+ * <SP_JOYSTICK_MAX_TRIGGER_ON>,
+ * <SP_JOYSTICK_MAX_TRIGGER_OFF>*/
 #define SP_JOYSTICK_MIN_TRIGGER_OFF -8192
+
+/* Define: SP_JOYSTICK_MAX_TRIGGER_ON
+ * 
+ * if a REAL input device (not the sparrow3d generic input device!) has
+ * a analog stick, these are the limits, from which the generic axis are
+ * uneven 0 or reseted to 0 again
+ * 
+ * See Also:
+ * 
+ * <SP_JOYSTICK_MIN_TRIGGER_ON>,
+ * <SP_JOYSTICK_MIN_TRIGGER_OFF>,
+ * <SP_JOYSTICK_MAX_TRIGGER_OFF>*/
 #define SP_JOYSTICK_MAX_TRIGGER_ON 24576
+
+/* Define: SP_JOYSTICK_MAX_TRIGGER_OFF
+ * 
+ * if a REAL input device (not the sparrow3d generic input device!) has
+ * a analog stick, these are the limits, from which the generic axis are
+ * uneven 0 or reseted to 0 again
+ * 
+ * See Also:
+ * 
+ * <SP_JOYSTICK_MIN_TRIGGER_ON>,
+ * <SP_JOYSTICK_MIN_TRIGGER_OFF>,
+ * <SP_JOYSTICK_MAX_TRIGGER_ON>*/
 #define SP_JOYSTICK_MAX_TRIGGER_OFF	8192
 
-/* The size of the surface cache */
+/* Define: SP_CACHE_SIZE
+ * 
+ * The size of the surface cache */
 #define SP_CACHE_SIZE 2048
 
+/* Define: SP_INPUT_BUTTON_COUNT
+ * 
+ * The maximal count of buttons on the generic device. If you "blind" grep for
+ * all buttons, don't test further then this value!
+ * 
+ * See Also:
+ * 
+ * <SP_INPUT_AXIS_COUNT>*/
 #define SP_INPUT_BUTTON_COUNT 20
+
+/* Define: SP_INPUT_AXIS_COUNT
+ * 
+ * Count of axis on the generic device. Should never change in fact.
+ * 
+ * See Also:
+ * 
+ * <SP_INPUT_BUTTON_COUNT>*/
 #define SP_INPUT_AXIS_COUNT 2
 
+/* Define: SP_KEYBOARD_FIRST_WAIT
+ * 
+ * This determines, how long it takes until a key will be entered a second time
+ * if it is still pressed.
+ * 
+ * See Also:
+ * 
+ * <SP_KEYBOARD_WAIT>, <SP_VIRTUAL_KEYBOARD_FIRST_WAIT>, <SP_VIRTUAL_KEYBOARD_WAIT>*/
 #define SP_KEYBOARD_FIRST_WAIT 600
+/* Define: SP_KEYBOARD_WAIT
+ * 
+ * If a key is pressed longer than <SP_KEYBOARD_FIRST_WAIT>, it takes this time
+ * for the key to react again.
+ * 
+ * See Also:
+ * 
+ * <SP_KEYBOARD_FIRST_WAIT>, <SP_VIRTUAL_KEYBOARD_FIRST_WAIT>, <SP_VIRTUAL_KEYBOARD_WAIT>*/
 #define SP_KEYBOARD_WAIT 100
 
+/* Define: SP_VIRTUAL_KEYBOARD_NEVER
+ * 
+ * Used by <spSetVirtualKeyboard>. Says, that never a virtual keyboard shall be
+ * shown.
+ * 
+ * See Also:
+ * <SP_VIRTUAL_KEYBOARD_IF_NEEDED>, <SP_VIRTUAL_KEYBOARD_ALWAYS>*/
 #define SP_VIRTUAL_KEYBOARD_NEVER 0
+
+/* Define: SP_VIRTUAL_KEYBOARD_IF_NEEDED
+ * 
+ * Used by <spSetVirtualKeyboard>. Says, that a virtual keyboard shall be shown,
+ * if the device don't have a hardware keyboard.
+ * 
+ * See Also:
+ * <SP_VIRTUAL_KEYBOARD_NEVER>, <SP_VIRTUAL_KEYBOARD_ALWAYS>*/
 #define SP_VIRTUAL_KEYBOARD_IF_NEEDED 1
+
+/* Define: SP_VIRTUAL_KEYBOARD_ALWAYS
+ * 
+ * Used by <spSetVirtualKeyboard>. Shows a virtual keyboard on every device,
+ * even PC or Pandora.
+ * 
+ * See Also:
+ * <SP_VIRTUAL_KEYBOARD_IF_NEEDED>, <SP_VIRTUAL_KEYBOARD_IF_NEEDED>*/
 #define SP_VIRTUAL_KEYBOARD_ALWAYS 2
+
+/* Define: SP_VIRTUAL_KEYBOARD_FIRST_WAIT
+ * 
+ * This determines, how long it takes until a virtual key will be entered a
+ * second time if it is still pressed.
+ * 
+ * See Also:
+ * 
+ * <SP_KEYBOARD_WAIT>, <SP_KEYBOARD_FIRST_WAIT>, <SP_VIRTUAL_KEYBOARD_WAIT>*/
 #define SP_VIRTUAL_KEYBOARD_FIRST_WAIT 300
+
+/* Define: SP_VIRTUAL_KEYBOARD_WAIT
+ * 
+ * If a key is pressed longer than <SP_VIRTUAL_KEYBOARD_FIRST_WAIT>, it takes
+ * this time for the virtual key to react again.
+ * 
+ * See Also:
+ * 
+ * <SP_KEYBOARD_WAIT>, <SP_KEYBOARD_FIRST_WAIT>, <SP_VIRTUAL_KEYBOARD_FIRST_WAIT>*/
 #define SP_VIRTUAL_KEYBOARD_WAIT 100
 
 /* This struct contains information about the generic input device
