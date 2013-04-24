@@ -95,10 +95,25 @@ typedef struct SspInput
 
 PREFIX void spSetDefaultWindowSize( int w, int h );
 
-/* spInitCore initializes SDL, SDL_TTF and other stuff. */
+/* Function: spInitCore
+ * 
+ * spInitCore initializes SDL, SDL_TTF and other stuff.
+ * 
+ * Returns:
+ * 
+ * 	Nothing*/
 PREFIX void spInitCore( void );
 
-/* spPrintDebug prints debug Stuff*/
+/* Function: spPrintDebug
+ * 
+ * spPrintDebug prints debug stuff with timestamp
+ * 
+ * Parameters:
+ * 	text - debug information to print
+ * 
+ * Returns:
+ * 
+ * 	Nothing*/
 PREFIX void spPrintDebug( char* text );
 
 /* spCreateWindow creates the Window in the plattform depended resolution.

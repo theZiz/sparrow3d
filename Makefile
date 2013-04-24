@@ -204,4 +204,8 @@ clean:
 	rm -f testclient
 	rm -f testserver
 
+documentation: *.h
+	mkdir -p /tmp/sparrowDocumentationTemp
+	naturaldocs -i . -o FramedHTML documentation -p /tmp/sparrowDocumentationTemp
+
 # This Makefile is AWESOME! /)^ɛ^(\ 
