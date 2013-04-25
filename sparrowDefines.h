@@ -99,12 +99,12 @@
  * with the normal multiplication. For addition you have to convert!
  * 
  * spMul(a,b) - Multiplies fixed point number a with the fixed point number b
- * spMulHigh(a,b) - Does the same as spMul, but with guaranteed high precision
- * spMulLow(a,b) - Does the same as spMul, but maybe with lower precision
+ * spMulHigh(a,b) - Does the same as <spMul(a,b)>, but with guaranteed high precision
+ * spMulLow(a,b) - Does the same as <spMul(a,b)>, but maybe with lower precision
  * spDiv(a,b) - Divides fixed point number a with the fixed point number b
- * spDivHigh(a,b) - Does the same as spDiv, but with guaranteed high precision
- * spDivLow(a,b) - Does the same as spDiv, but maybe with lower precision
- * spSquare(a) - Squares the fixed point number a with the help of <spMul>. */
+ * spDivHigh(a,b) - Does the same as <spDiv(a,b)>, but with guaranteed high precision
+ * spDivLow(a,b) - Does the same as <spDiv(a,b)>, but maybe with lower precision
+ * spSquare(a) - Squares the fixed point number a with the help of <spMul(a,b)>. */
 #define spMulHigh(a,b) ((Sint64)(a)*(Sint64)(b)>>SP_ACCURACY)
 #define spMulLow(a,b) (((a)>>SP_HALF_ACCURACY)*((b)>>SP_HALF_ACCURACY))
 
