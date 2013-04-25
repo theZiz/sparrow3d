@@ -313,7 +313,7 @@ PREFIX void spSetVirtualKeyboard(int state,int x,int y,int width,int height,SDL_
  * changes. Don't save the result, call it every frame.*/
 PREFIX SDL_Surface* spGetVirtualKeyboard();
 
-/* Function: spSetTouchscreenEmulations
+/* Function: spSetTouchscreenEmulationButtons
  * 
  * Sets, whether on systems without touchscreen or
  * mouse (like the GP2X F100) a touchscreen is emulated.
