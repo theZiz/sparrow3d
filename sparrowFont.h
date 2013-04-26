@@ -17,7 +17,9 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 
-/* sparrowFont is for loading truetype fonts with SDL_ttf and creating
+/* File: sparrowFont
+ * 
+ * SparrowFont is for loading truetype fonts with SDL_ttf and creating
  * bitmap-lookup tables for them. SDL_ttf and especially blending are
  * slow like hell. Not good for e.g. handhelds like the gp2x. So the
  * basic idea is to render every needed sign just once in a SDL surface
@@ -26,7 +28,7 @@
  * Because it depends, which texts you want to draw, you have to
  * determine first, which sign you want.
  * Furthermore sparrowFont is able to parse button-description, which
- * will be drawn in another way (like buttons...)*/
+ * will be drawn in another way (like buttons or keys)*/
 #ifndef _SPARROW_FONT_H
 #define _SPARROW_FONT_H
 
@@ -35,52 +37,77 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 
-/* That means: per default 16384 signs (needs 64 kilobytes) are cache.
- * Thats most enough. In fact - because SDL_ttf is just able to use
- * plane 0 (the first 65536 letters) of unicode, nearly everything you
- * will need is cached, and the tree is useles... But is was fun to
- * implement it!*/
-#define SP_FONT_DEFAULT_CACHE 16384
-
-/* This #define is some extra space for the border ;-) */
-#define SP_FONT_EXTRASPACE 1
-
-/* These constants determine, how buttons have to look */
+/* Defines: Defines for the look of the buttons and keys
+ * 
+ * SP_FONT_INTELLIGENT - Uses keys or buttons as it should make sense on the
+ * target, e.g. keys for the PC, buttons for handhelds buttons, but "keys" for
+ * the Start or Select button
+ * SP_FONT_BUTTON - shows always buttons
+ * SP_FONT_KEY - shows always keys */
 #define SP_FONT_INTELLIGENT 0
 #define SP_FONT_BUTTON 1
 #define SP_FONT_KEY 2
 
-/* Some default ranges for spFontAdd. */
+/* Defines: Default ranges for spFontAdd
+ * 
+ * SP_FONT_GROUP_ASCII - whole ASCII set (sign 32 (space) until 127 (~))
+ * SP_FONT_GROUP_GERMAN - German letters like umlauts
+ * SP_FONT_GROUP_ALPHABET - All 26 latin letters big and small
+ * SP_FONT_GROUP_NUMBERS - the arab numbers (0 to 9), dot, comma and minus*/
 #define SP_FONT_GROUP_ASCII " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
 #define SP_FONT_GROUP_GERMAN "äüöÄÜÖßẞ"
 #define SP_FONT_GROUP_ALPHABET " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 #define SP_FONT_GROUP_NUMBERS "0123456789.,-"
 
-/* Use this in spFontSetShadeColor, if you don't want / need aliasing */
+/* Define: SP_FONT_DEFAULT_CACHE
+ * 
+ * Per default 16384 signs (needs 64 kilobytes) are cache.
+ * Thats enough most of the times. In fact - because SDL_ttf is just able to use
+ * plane 0 (the first 65536 letters) of unicode, nearly everything you
+ * will need is cached, and the tree is useles... But it was fun to
+ * implement it!*/
+#define SP_FONT_DEFAULT_CACHE 16384
+
+// Define: SP_FONT_EXTRASPACE
+// Defines some extra space for the border ;-)
+#define SP_FONT_EXTRASPACE 1
+
+// Define: SP_FONT_NO_BORDER
+// Use this in spFontSetShadeColor, if you don't want / need aliasing
 #define SP_FONT_NO_BORDER -1
-/*a letter in a binary tree of a font*/
+
+/* type: spLetterStruct
+ * 
+ * a letter in a binary tree of a font
+ * 
+ * Variables:
+ * character - unicode character
+ * surface - the character's surface
+ * width - the character's width in pixels
+ * height - the character's height in pixels
+ * binary_height - internal value for the binary tree. NOT the height in pixels
+ * color - 16 Bit color of the character
+ * left - internal pointer for the tree
+ * right - internal pointer for the tree*/
 typedef struct spLetterStruct_ *spLetterPointer;
 typedef struct spLetterStruct_
 {
-	Uint32 character; //unicode character
-	SDL_Surface* surface; //the character's surface
-	Sint32 width; //the character's length
-	Sint32 height; //the character's height
-	Sint32 binary_height; //NOT the height of the letter! just for the binary tree
-	Uint16 color; //the color of the character
-	spLetterPointer left, right; //smaller and bigger character (used by tree)
-	spLetterPointer next; //For the Drawing functions
+	Uint32 character;
+	SDL_Surface* surface;
+	Sint32 width;
+	Sint32 height;
+	Sint32 binary_height;
+	Uint16 color;
+	spLetterPointer left, right;
 } spLetterStruct;
 
-/* Needed by spFontDrawRight and spFontDrawMiddle */
-typedef struct spLetterIterStruct_ *spLetterIterPointer;
-typedef struct spLetterIterStruct_
-{
-	spLetterPointer letter;
-	spLetterIterPointer next; //For the Drawing functions
-} spLetterIterStruct;
-
-/* the cache */
+/* type: spFontCacheStruct
+ * 
+ * the font cache
+ * 
+ * Variables:
+ * size - size of the cache
+ * cache - an array of pointers of <spLetterStruct>*/
 typedef struct spFontCacheStruct *spFontCachePointer;
 typedef struct spFontCacheStruct
 {
@@ -88,42 +115,67 @@ typedef struct spFontCacheStruct
 	spLetterPointer *cache;
 } spFontCacheStruct;
 
-/*root of a binary tree of all letters in this font*/
+/* type: spFontStruct
+ * 
+ * Root of a binary tree of all letters in this font
+ * 
+ * Variables:
+ * font - the SDL_ttf font struct
+ * maxheight - the height of the heighest letter in the tree
+ * root - the root of the binary letter tree
+ * cacheOffset - the offset of the cache, where it "starts"
+ * cache - the cache
+ * size - the size of the font
+ * buttonRoot - the root of the buttons of the binary letter tree */
 typedef struct spFontStruct_ *spFontPointer;
 typedef struct spFontStruct_
 {
-	TTF_Font* font; //the SDL_ttf font struct
-	Sint32 maxheight; //the height of the heighest letter in the tree
-	spLetterPointer root; //the root of the binary letter tree
-	Uint32 cacheOffset; //the offset of the cache
-	spFontCacheStruct cache; //the cache
-	Uint32 size; //the size of the font
-    spLetterPointer buttonRoot; //the root of the buttons of the binary letter tree
+	TTF_Font* font;
+	Sint32 maxheight;
+	spLetterPointer root;
+	Uint32 cacheOffset;
+	spFontCacheStruct cache;
+	Uint32 size;
+	spLetterPointer buttonRoot;
 } spFontStruct;
 
-/* spFontLoad loads the ttf font "fontname" with the size "size" and
- * returns a spFontPointer for later use */
+/* Function: spFontLoad
+ * 
+ * Loads a ttf font
+ * 
+ * Parameters:
+ * fontname - the name of the ttf font file
+ * size - the size to load the font
+ * 
+ * Returns:
+ * spFontStruct* - a pointer to a spFontStruct for later use */
 PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size );
 
-/* spFontAdd adds characters definied in "characters" to the font.
- * It adds every utf8 character passed in the char* string. Some defines
- * (SP_FONT_GROUP_ASCII, SP_FONT_GROUP_GERMAN, etc. ) are provided for ease
- * of use. However: If a letter already is in the range, the later mentions
- * will be ignored */
+/* Function: spFontAdd
+ * 
+ * Adds characters to the font.
+ * 
+ * Parameters:
+ * font - the font pointer, which shall be filled with new stuff
+ * characters - characters, that shall be added. It adds every utf8 character
+ * passed in this char* string. Some defines (<SP_FONT_GROUP_ASCII>,
+ * <SP_FONT_GROUP_GERMAN>, etc. ) are provided for ease of use. However: If a
+ * letter already is in the range, the later mentions will be ignored
+ * color - color of the added letters */
 PREFIX void spFontAdd( spFontPointer font, char* characters, Uint16 color );
 
-/* spFontAddRange adds a range of utf8 characters to the font.
- * You pass two single utf8-characters (or more, but only the first ones
- * will be used), it converts them to unicode and adds every in between
- * For example, you call
- * spFontAddRange(font,"ä","ü",color); It will add "ä" (Unicode 228),
- * "ü" (Unicode 252) and EVERYTHING between, which is:
- * "åæçèéêëìíîïðñòóôõö÷øùúû". So have a look at unicode tables, when
- * playing with this function, or you may get trouble. ;-) If you
- * are not familar with unicode or this function: Don't use it.
- * spFontAdd is a bit more writing effort, but much easier to
- * understand. One last word: If from is greater than to, they will
- * be switched.*/
+/* Function: spFontAddRange
+ * 
+ * Adds a range of utf8 characters to the font defined by a start and end
+ * character
+ * 
+ * Parameters:
+ * font - the font pointer, which shall be filled with new stuff
+ * from - start character
+ * to - end character. All characters between from and to will be added, e.g.
+ * usw from = 0 and to = 9 to add all numbers. See ASCII/utf8 tables for more
+ * usefull ranges. If to smaller than from, the values are switched
+ * color - color of the added characters*/
 PREFIX void spFontAddRange( spFontPointer font, char* from, char* to, Uint16 color );
 
 /* spFontGetUnicodeFromUTF8 converts a utf8 sign passed as char*-string

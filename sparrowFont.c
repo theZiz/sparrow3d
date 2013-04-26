@@ -575,6 +575,14 @@ PREFIX int spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPoi
 	return pos-x;
 }
 
+/* Needed by spFontDrawRight and spFontDrawMiddle */
+typedef struct spLetterIterStruct_ *spLetterIterPointer;
+typedef struct spLetterIterStruct_
+{
+	spLetterPointer letter;
+	spLetterIterPointer next; //For the Drawing functions
+} spLetterIterStruct;
+
 PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, const char *text, spFontPointer font )
 {
 	int l = 0;

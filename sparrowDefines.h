@@ -70,26 +70,6 @@
 /* a fast define for the fixed point value 1.0 */
 #define SP_ONE 65536
 
-/* Defines: Directions
- * 
- * These are some #defines e.g. for sparrowPrimitives to determine,
- * where the base of the drawn primitive is.
- * 
- * SP_CENTER - center
- * SP_LEFT - left
- * SP_TOP - top
- * SP_RIGHT - right
- * SP_BOTTOM - bottom*/
-#define SP_CENTER 0
-#define SP_LEFT 1
-#define SP_TOP 2
-#define SP_RIGHT 3
-#define SP_BOTTOM 4
-
-// Define: SP_NO_TOUCHSCREEN_EMULATION
-// Used by <spSetTouchscreenEmulationButtons>
-#define SP_NO_TOUCHSCREEN_EMULATION -1
-
 /* Defines: Fixed Point Arithmetics
  * 
  * These are some #defines for fast multiplication and division of
@@ -131,7 +111,7 @@
 	#define spDiv(a,b) spDivHigh(a,b)
 #endif
 
-/* Defines Fixed Point Convertations
+/* Defines: Fixed Point Convertations
  * 
  * spFixedToFloat(x) - converts the fixed point number a to a float
  * spFloatToFixed(x) - converts the float a to a fixed point number
@@ -453,5 +433,25 @@
 	#define SP_BUTTON_GP2X_ONLY_VOLMINUS_MASK (1 << SP_BUTTON_GP2X_ONLY_VOLMINUS)
 	#define SP_BUTTON_GP2X_ONLY_TIP_MASK (1 << SP_BUTTON_GP2X_ONLY_TIP)
 #endif
+
+/* Defines: Directions
+ * 
+ * These are some #defines e.g. for sparrowPrimitives to determine,
+ * where the base of the drawn primitive is.
+ * 
+ * SP_CENTER - center
+ * SP_LEFT - left
+ * SP_TOP - top
+ * SP_RIGHT - right
+ * SP_BOTTOM - bottom*/
+#define SP_CENTER 0
+#define SP_LEFT 1
+#define SP_TOP 2
+#define SP_RIGHT 3
+#define SP_BOTTOM 4
+
+// Define: SP_NO_TOUCHSCREEN_EMULATION
+// Used by <spSetTouchscreenEmulationButtons>
+#define SP_NO_TOUCHSCREEN_EMULATION -1
 
 #endif
