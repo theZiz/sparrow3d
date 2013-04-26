@@ -62,9 +62,6 @@
 #include "sparrow3d.h"
 #include <SDL.h>
 
-/* If alphatest is enabled, this color will not be drawn */
-#define SP_ALPHA_COLOR 63519
-
 /* Initializes some Look up tables and the zBufferCache. Is called from
  * sparrowCore. */
 PREFIX void spInitPrimitives();

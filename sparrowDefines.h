@@ -454,4 +454,9 @@
 // Used by <spSetTouchscreenEmulationButtons>
 #define SP_NO_TOUCHSCREEN_EMULATION -1
 
+// Define: SP_ALPHA_COLOR
+// If alphatest is enabled, this (pink) color will not be drawn, it is "transparent".
+#define SP_ALPHA_COLOR 63519
+
+
 #endif
