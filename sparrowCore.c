@@ -34,7 +34,7 @@ SDL_Surface* spWindow; //the thing we draw to
 SDL_Joystick **spJoy = NULL;
 char spDone;
 int spFPS;
-TspInput spInput;
+spInput spGenericInput;
 int debug_time;
 int sp_touchscreen_emulation = 0;
 int sp_switch_button = -1;
@@ -154,25 +154,25 @@ PREFIX void spInitCore( void )
 	spResetAxisState();
 	for (i = 0; i < SP_INPUT_AXIS_COUNT; i++)
 		sp_axis_was_used[i] = 0;
-	spInput.touchscreen.pressed = 0;
-	spInput.touchscreen.x = 0;
-	spInput.touchscreen.y = 0;
-	spInput.keyboard.buffer = NULL;
-	spInput.keyboard.len = 0;
-	spInput.keyboard.pos = 0;
-	spInput.keyboard.lastSize = 0;
+	spGenericInput.touchscreen.pressed = 0;
+	spGenericInput.touchscreen.x = 0;
+	spGenericInput.touchscreen.y = 0;
+	spGenericInput.keyboard.buffer = NULL;
+	spGenericInput.keyboard.len = 0;
+	spGenericInput.keyboard.pos = 0;
+	spGenericInput.keyboard.lastSize = 0;
 
 #ifdef GP2X
 	//f100, f200, open2x and wiz
-	spInput.supports_keyboard = 0;
+	spGenericInput.supports_keyboard = 0;
 #elif defined CAANOO
-	spInput.supports_keyboard = 0;
+	spGenericInput.supports_keyboard = 0;
 #elif defined DINGUX
-	spInput.supports_keyboard = 0;
+	spGenericInput.supports_keyboard = 0;
 #elif defined GCW
-	spInput.supports_keyboard = 0;
+	spGenericInput.supports_keyboard = 0;
 #else // PANDORA and PCs
-	spInput.supports_keyboard = 1;
+	spGenericInput.supports_keyboard = 1;
 #endif
 
 	spInitPrimitives();
@@ -319,33 +319,33 @@ static void spHandleKeyboardInput( const SDL_keysym pressedKey)
 {
 	if ( pressedKey.sym == SDLK_BACKSPACE )
 	{
-		if ( spInput.keyboard.pos > 0 )
+		if ( spGenericInput.keyboard.pos > 0 )
 		{
-			if ( spInput.keyboard.lastSize == 0 ) // need to determine size of last char in buffer
+			if ( spGenericInput.keyboard.lastSize == 0 ) // need to determine size of last char in buffer
 			{
 				int I;
-				for ( I = strlen( spInput.keyboard.buffer ) - 1; I >= 0; --I )
+				for ( I = strlen( spGenericInput.keyboard.buffer ) - 1; I >= 0; --I )
 				{
-					++spInput.keyboard.lastSize;
-					if ( !((Uint8)(spInput.keyboard.buffer[I] & 128) == 128 && (Uint8)(spInput.keyboard.buffer[I] & 64) == 0)) //no follower bit
+					++spGenericInput.keyboard.lastSize;
+					if ( !((Uint8)(spGenericInput.keyboard.buffer[I] & 128) == 128 && (Uint8)(spGenericInput.keyboard.buffer[I] & 64) == 0)) //no follower bit
 						break;
 				}
 			}
-			if ( spInput.keyboard.lastSize > 0 )
+			if ( spGenericInput.keyboard.lastSize > 0 )
 			{
-				spInput.keyboard.pos -= spInput.keyboard.lastSize;
-				spInput.keyboard.buffer[spInput.keyboard.pos] = '\0';
-				spInput.keyboard.lastSize = 0;
+				spGenericInput.keyboard.pos -= spGenericInput.keyboard.lastSize;
+				spGenericInput.keyboard.buffer[spGenericInput.keyboard.pos] = '\0';
+				spGenericInput.keyboard.lastSize = 0;
 			}
 		}
 	}
 	/*else if ( pressedKey.sym == SDLK_RETURN )
 	{
-		if ( spInput.keyboard.pos + 1 <= spInput.keyboard.len )
+		if ( spGenericInput.keyboard.pos + 1 <= spGenericInput.keyboard.len )
 		{
-			strcat( spInput.keyboard.buffer, "\n" );
-			spInput.keyboard.lastSize = 1;
-			spInput.keyboard.pos += 1;
+			strcat( spGenericInput.keyboard.buffer, "\n" );
+			spGenericInput.keyboard.lastSize = 1;
+			spGenericInput.keyboard.pos += 1;
 		}
 	}*/
 	else if ( pressedKey.sym >= SDLK_SPACE )
@@ -354,11 +354,11 @@ static void spHandleKeyboardInput( const SDL_keysym pressedKey)
 		char temp[5];
 		spFontGetUTF8FromUnicode( c, temp, 5 );
 		int s = strlen( temp );
-		if ( spInput.keyboard.pos + s <= spInput.keyboard.len )
+		if ( spGenericInput.keyboard.pos + s <= spGenericInput.keyboard.len )
 		{
-			strcat( spInput.keyboard.buffer, temp );
-			spInput.keyboard.lastSize = s;
-			spInput.keyboard.pos += s;
+			strcat( spGenericInput.keyboard.buffer, temp );
+			spGenericInput.keyboard.lastSize = s;
+			spGenericInput.keyboard.pos += s;
 		}
 	}
 }
@@ -387,18 +387,18 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 		switch ( event.type )
 		{
 			case SDL_MOUSEBUTTONDOWN:
-			  spInput.touchscreen.pressed = 1;
-			  spInput.touchscreen.x = event.button.x;
-			  spInput.touchscreen.y = event.button.y;
+			  spGenericInput.touchscreen.pressed = 1;
+			  spGenericInput.touchscreen.x = event.button.x;
+			  spGenericInput.touchscreen.y = event.button.y;
 			  break;
 			case SDL_MOUSEBUTTONUP:
-			  spInput.touchscreen.pressed = 0;
+			  spGenericInput.touchscreen.pressed = 0;
 			  break;
 			case SDL_MOUSEMOTION:
-				if (spInput.touchscreen.pressed)
+				if (spGenericInput.touchscreen.pressed)
 				{
-					spInput.touchscreen.x = event.motion.x;
-					spInput.touchscreen.y = event.motion.y;
+					spGenericInput.touchscreen.x = event.motion.x;
+					spGenericInput.touchscreen.y = event.motion.y;
 				}
 				break;
 			case SDL_JOYBUTTONDOWN:
@@ -443,15 +443,15 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 								newevent.button.type = SDL_MOUSEBUTTONDOWN;
 								newevent.button.button = SDL_BUTTON_LEFT;
 								newevent.button.state = SDL_PRESSED;
-								newevent.button.x = spInput.touchscreen.x;
-								newevent.button.y = spInput.touchscreen.y;
+								newevent.button.x = spGenericInput.touchscreen.x;
+								newevent.button.y = spGenericInput.touchscreen.y;
 								SDL_PushEvent(&event);
 							}
 						}
 					}
 					else
 			  #endif
-				spInput.button[event.jbutton.button] = 1;
+				spGenericInput.button[event.jbutton.button] = 1;
 				break;
 			case SDL_JOYBUTTONUP:
 			  #ifdef F100
@@ -494,8 +494,8 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 								newevent.button.type = SDL_MOUSEBUTTONUP;
 								newevent.button.button = SDL_BUTTON_LEFT;
 								newevent.button.state = SDL_RELEASED;
-								newevent.button.x = spInput.touchscreen.x;
-								newevent.button.y = spInput.touchscreen.y;
+								newevent.button.x = spGenericInput.touchscreen.x;
+								newevent.button.y = spGenericInput.touchscreen.y;
 								SDL_PushEvent(&event);
 							}
 						}
@@ -503,10 +503,10 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					}
 					else
 			  #endif
-				spInput.button[event.jbutton.button] = 0;
+				spGenericInput.button[event.jbutton.button] = 0;
 				break;
 			case SDL_KEYDOWN:
-				if ( spInput.keyboard.buffer )
+				if ( spGenericInput.keyboard.buffer )
 				{
 					spHandleKeyboardInput(event.key.keysym);
 					spLastKey = event.key.keysym;
@@ -515,154 +515,154 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				switch ( event.key.keysym.sym )
 				{
 				case SDLK_LEFT:
-					spInput.axis[0] = -1;
-					spInput.analog_axis[0] = SP_ANALOG_AXIS_MIN;
+					spGenericInput.axis[0] = -1;
+					spGenericInput.analog_axis[0] = SP_ANALOG_AXIS_MIN;
 					break;
 				case SDLK_RIGHT:
-					spInput.axis[0] = 1;
-					spInput.analog_axis[0] = SP_ANALOG_AXIS_MAX;
+					spGenericInput.axis[0] = 1;
+					spGenericInput.analog_axis[0] = SP_ANALOG_AXIS_MAX;
 					break;
 				case SDLK_UP:
-					spInput.axis[1] = -1;
-					spInput.analog_axis[1] = SP_ANALOG_AXIS_MIN;
+					spGenericInput.axis[1] = -1;
+					spGenericInput.analog_axis[1] = SP_ANALOG_AXIS_MIN;
 					break;
 				case SDLK_DOWN:
-					spInput.axis[1] = 1;
-					spInput.analog_axis[1] = SP_ANALOG_AXIS_MAX;
+					spGenericInput.axis[1] = 1;
+					spGenericInput.analog_axis[1] = SP_ANALOG_AXIS_MAX;
 					break;
 			#ifdef DINGUX
 				case SDLK_RETURN:
-					spInput.button[SP_BUTTON_START] = 1;
+					spGenericInput.button[SP_BUTTON_START] = 1;
 					break;
 				case SDLK_SPACE:
-					spInput.button[SP_BUTTON_X] = 1;
+					spGenericInput.button[SP_BUTTON_X] = 1;
 					break;
 				case SDLK_LSHIFT:
-					spInput.button[SP_BUTTON_Y] = 1;
+					spGenericInput.button[SP_BUTTON_Y] = 1;
 					break;
 				case SDLK_LCTRL:
-					spInput.button[SP_BUTTON_A] = 1;
+					spGenericInput.button[SP_BUTTON_A] = 1;
 					break;
 				case SDLK_LALT:
-					spInput.button[SP_BUTTON_B] = 1;
+					spGenericInput.button[SP_BUTTON_B] = 1;
 					break;
 				case SDLK_ESCAPE:
-					spInput.button[SP_BUTTON_SELECT] = 1;
+					spGenericInput.button[SP_BUTTON_SELECT] = 1;
 					break;
 				case SDLK_TAB:
-					spInput.button[SP_BUTTON_L] = 1;
+					spGenericInput.button[SP_BUTTON_L] = 1;
 					break;
 				case SDLK_BACKSPACE:
-					spInput.button[SP_BUTTON_R] = 1;
+					spGenericInput.button[SP_BUTTON_R] = 1;
 					break;
 			#elif defined GCW
 				case SDLK_RETURN:
-					spInput.button[SP_BUTTON_START] = 1;
+					spGenericInput.button[SP_BUTTON_START] = 1;
 					break;
 				case SDLK_SPACE:
-					spInput.button[SP_BUTTON_Y] = 1;
+					spGenericInput.button[SP_BUTTON_Y] = 1;
 					break;
 				case SDLK_LSHIFT:
-					spInput.button[SP_BUTTON_X] = 1;
+					spGenericInput.button[SP_BUTTON_X] = 1;
 					break;
 				case SDLK_LCTRL:
-					spInput.button[SP_BUTTON_A] = 1;
+					spGenericInput.button[SP_BUTTON_A] = 1;
 					break;
 				case SDLK_LALT:
-					spInput.button[SP_BUTTON_B] = 1;
+					spGenericInput.button[SP_BUTTON_B] = 1;
 					break;
 				case SDLK_ESCAPE:
-					spInput.button[SP_BUTTON_SELECT] = 1;
+					spGenericInput.button[SP_BUTTON_SELECT] = 1;
 					break;
 				case SDLK_TAB:
-					spInput.button[SP_BUTTON_L] = 1;
+					spGenericInput.button[SP_BUTTON_L] = 1;
 					break;
 				case SDLK_BACKSPACE:
-					spInput.button[SP_BUTTON_R] = 1;
+					spGenericInput.button[SP_BUTTON_R] = 1;
 					break;
 			#elif defined PANDORA
 //				case SDLK_MENU:
 //					spDone=1;
 //					break;
 				case SDLK_PAGEDOWN:
-					spInput.button[SP_BUTTON_X] = 1;
+					spGenericInput.button[SP_BUTTON_X] = 1;
 					break;
 				case SDLK_PAGEUP:
-					spInput.button[SP_BUTTON_Y] = 1;
+					spGenericInput.button[SP_BUTTON_Y] = 1;
 					break;
 				case SDLK_HOME:
-					spInput.button[SP_BUTTON_A] = 1;
+					spGenericInput.button[SP_BUTTON_A] = 1;
 					break;
 				case SDLK_END:
-					spInput.button[SP_BUTTON_B] = 1;
+					spGenericInput.button[SP_BUTTON_B] = 1;
 					break;
 				case SDLK_LCTRL:
-					spInput.button[SP_BUTTON_SELECT] = 1;
+					spGenericInput.button[SP_BUTTON_SELECT] = 1;
 					break;
 				case SDLK_RSHIFT:
-					spInput.button[SP_BUTTON_L] = 1;
+					spGenericInput.button[SP_BUTTON_L] = 1;
 					break;
 				case SDLK_RCTRL:
-					spInput.button[SP_BUTTON_R] = 1;
+					spGenericInput.button[SP_BUTTON_R] = 1;
 					break;
 				case SDLK_LALT:
-					spInput.button[SP_BUTTON_START] = 1;
+					spGenericInput.button[SP_BUTTON_START] = 1;
 					break;
 			#else //PC
 				case SDLK_KP_ENTER:
 				case SDLK_RETURN:
-					spInput.button[SP_BUTTON_START] = 1;
+					spGenericInput.button[SP_BUTTON_START] = 1;
 					break;
 				#ifdef DO_USE_NOT_WASD_BUTTONS
 					case SDLK_MODE:
-						spInput.button[SP_BUTTON_A] = 1;
+						spGenericInput.button[SP_BUTTON_A] = 1;
 						break;
 					case SDLK_LCTRL:
-						spInput.button[SP_BUTTON_B] = 1;
+						spGenericInput.button[SP_BUTTON_B] = 1;
 						break;
 					case SDLK_LALT:case SDLK_RALT:
-						spInput.button[SP_BUTTON_Y] = 1;
+						spGenericInput.button[SP_BUTTON_Y] = 1;
 						break;
 					case SDLK_LSUPER:case SDLK_RSUPER:
-						spInput.button[SP_BUTTON_X] = 1;
+						spGenericInput.button[SP_BUTTON_X] = 1;
 						break;
 					case SDLK_ESCAPE:
-						spInput.button[SP_BUTTON_SELECT] = 1;
+						spGenericInput.button[SP_BUTTON_SELECT] = 1;
 						break;
 					case SDLK_PAGEUP:
-						spInput.button[SP_BUTTON_L] = 1;
+						spGenericInput.button[SP_BUTTON_L] = 1;
 						break;
 					case SDLK_PAGEDOWN:
-						spInput.button[SP_BUTTON_R] = 1;
+						spGenericInput.button[SP_BUTTON_R] = 1;
 						break;
 				#else
 					case SDLK_a:
-						spInput.button[SP_BUTTON_A] = 1;
+						spGenericInput.button[SP_BUTTON_A] = 1;
 						break;
 					case SDLK_d:
-						spInput.button[SP_BUTTON_B] = 1;
+						spGenericInput.button[SP_BUTTON_B] = 1;
 						break;
 					case SDLK_w:
-						spInput.button[SP_BUTTON_Y] = 1;
+						spGenericInput.button[SP_BUTTON_Y] = 1;
 						break;
 					case SDLK_s:
-						spInput.button[SP_BUTTON_X] = 1;
+						spGenericInput.button[SP_BUTTON_X] = 1;
 						break;
 					case SDLK_BACKSPACE:
-						spInput.button[SP_BUTTON_SELECT] = 1;
+						spGenericInput.button[SP_BUTTON_SELECT] = 1;
 						break;
 					case SDLK_q:
-						spInput.button[SP_BUTTON_L] = 1;
+						spGenericInput.button[SP_BUTTON_L] = 1;
 						break;
 					case SDLK_e:
-						spInput.button[SP_BUTTON_R] = 1;
+						spGenericInput.button[SP_BUTTON_R] = 1;
 						break;
 				#endif
 			#endif
 				}
 				break;
 			case SDL_KEYUP:
-				if ( spInput.keyboard.buffer )
+				if ( spGenericInput.keyboard.buffer )
 				{
 					spLastKey.unicode = 0;
 					spLastKeyCountDown = 0;
@@ -670,178 +670,178 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				switch ( event.key.keysym.sym )
 				{
 				case SDLK_LEFT:
-					if ( spInput.axis[0] == -1 )
+					if ( spGenericInput.axis[0] == -1 )
 					{
-						spInput.axis[0] = 0;
-						spInput.analog_axis[0] = 0;
+						spGenericInput.axis[0] = 0;
+						spGenericInput.analog_axis[0] = 0;
 					}
 					break;
 				case SDLK_RIGHT:
-					if ( spInput.axis[0] == 1 )
+					if ( spGenericInput.axis[0] == 1 )
 					{
-						spInput.axis[0] = 0;
-						spInput.analog_axis[0] = 0;
+						spGenericInput.axis[0] = 0;
+						spGenericInput.analog_axis[0] = 0;
 					}
 					break;
 				case SDLK_UP:
-					if ( spInput.axis[1] == -1 )
+					if ( spGenericInput.axis[1] == -1 )
 					{
-						spInput.axis[1] = 0;
-						spInput.analog_axis[1] = 0;
+						spGenericInput.axis[1] = 0;
+						spGenericInput.analog_axis[1] = 0;
 					}
 					break;
 				case SDLK_DOWN:
-					if ( spInput.axis[1] == 1 )
+					if ( spGenericInput.axis[1] == 1 )
 					{
-						spInput.axis[1] = 0;
-						spInput.analog_axis[1] = 0;
+						spGenericInput.axis[1] = 0;
+						spGenericInput.analog_axis[1] = 0;
 					}
 					break;
 			#ifdef DINGUX
 				case SDLK_RETURN:
-					spInput.button[SP_BUTTON_START] = 0;
+					spGenericInput.button[SP_BUTTON_START] = 0;
 					break;
 				case SDLK_SPACE:
-					spInput.button[SP_BUTTON_X] = 0;
+					spGenericInput.button[SP_BUTTON_X] = 0;
 					break;
 				case SDLK_LSHIFT:
-					spInput.button[SP_BUTTON_Y] = 0;
+					spGenericInput.button[SP_BUTTON_Y] = 0;
 					break;
 				case SDLK_LCTRL:
-					spInput.button[SP_BUTTON_A] = 0;
+					spGenericInput.button[SP_BUTTON_A] = 0;
 					break;
 				case SDLK_LALT:
-					spInput.button[SP_BUTTON_B] = 0;
+					spGenericInput.button[SP_BUTTON_B] = 0;
 					break;
 				case SDLK_ESCAPE:
-					spInput.button[SP_BUTTON_SELECT] = 0;
+					spGenericInput.button[SP_BUTTON_SELECT] = 0;
 					break;
 				case SDLK_TAB:
-					spInput.button[SP_BUTTON_L] = 0;
+					spGenericInput.button[SP_BUTTON_L] = 0;
 					break;
 				case SDLK_BACKSPACE:
-					spInput.button[SP_BUTTON_R] = 0;
+					spGenericInput.button[SP_BUTTON_R] = 0;
 					break;
 			#elif defined GCW
 				case SDLK_RETURN:
-					spInput.button[SP_BUTTON_START] = 0;
+					spGenericInput.button[SP_BUTTON_START] = 0;
 					break;
 				case SDLK_SPACE:
-					spInput.button[SP_BUTTON_Y] = 0;
+					spGenericInput.button[SP_BUTTON_Y] = 0;
 					break;
 				case SDLK_LSHIFT:
-					spInput.button[SP_BUTTON_X] = 0;
+					spGenericInput.button[SP_BUTTON_X] = 0;
 					break;
 				case SDLK_LCTRL:
-					spInput.button[SP_BUTTON_A] = 0;
+					spGenericInput.button[SP_BUTTON_A] = 0;
 					break;
 				case SDLK_LALT:
-					spInput.button[SP_BUTTON_B] = 0;
+					spGenericInput.button[SP_BUTTON_B] = 0;
 					break;
 				case SDLK_ESCAPE:
-					spInput.button[SP_BUTTON_SELECT] = 0;
+					spGenericInput.button[SP_BUTTON_SELECT] = 0;
 					break;
 				case SDLK_TAB:
-					spInput.button[SP_BUTTON_L] = 0;
+					spGenericInput.button[SP_BUTTON_L] = 0;
 					break;
 				case SDLK_BACKSPACE:
-					spInput.button[SP_BUTTON_R] = 0;
+					spGenericInput.button[SP_BUTTON_R] = 0;
 					break;
 			#elif defined PANDORA
 				case SDLK_PAGEDOWN:
-					spInput.button[SP_BUTTON_X] = 0;
+					spGenericInput.button[SP_BUTTON_X] = 0;
 					break;
 				case SDLK_PAGEUP:
-					spInput.button[SP_BUTTON_Y] = 0;
+					spGenericInput.button[SP_BUTTON_Y] = 0;
 					break;
 				case SDLK_HOME:
-					spInput.button[SP_BUTTON_A] = 0;
+					spGenericInput.button[SP_BUTTON_A] = 0;
 					break;
 				case SDLK_END:
-					spInput.button[SP_BUTTON_B] = 0;
+					spGenericInput.button[SP_BUTTON_B] = 0;
 					break;
 				case SDLK_LCTRL:
-					spInput.button[SP_BUTTON_SELECT] = 0;
+					spGenericInput.button[SP_BUTTON_SELECT] = 0;
 					break;
 				case SDLK_RSHIFT:
-					spInput.button[SP_BUTTON_L] = 0;
+					spGenericInput.button[SP_BUTTON_L] = 0;
 					break;
 				case SDLK_RCTRL:
-					spInput.button[SP_BUTTON_R] = 0;
+					spGenericInput.button[SP_BUTTON_R] = 0;
 					break;
 				case SDLK_LALT:
-					spInput.button[SP_BUTTON_START] = 0;
+					spGenericInput.button[SP_BUTTON_START] = 0;
 					break;
 			#else //PC
 				case SDLK_KP_ENTER:
 				case SDLK_RETURN:
-					spInput.button[SP_BUTTON_START] = 0;
+					spGenericInput.button[SP_BUTTON_START] = 0;
 					break;
 				#ifdef DO_USE_NOT_WASD_BUTTONS
 					case SDLK_MODE:
-						spInput.button[SP_BUTTON_A] = 0;
+						spGenericInput.button[SP_BUTTON_A] = 0;
 						break;
 					case SDLK_LCTRL:
-						spInput.button[SP_BUTTON_B] = 0;
+						spGenericInput.button[SP_BUTTON_B] = 0;
 						break;
 					case SDLK_LALT:case SDLK_RALT:
-						spInput.button[SP_BUTTON_Y] = 0;
+						spGenericInput.button[SP_BUTTON_Y] = 0;
 						break;
 					case SDLK_LSUPER:case SDLK_RSUPER:
-						spInput.button[SP_BUTTON_X] = 0;
+						spGenericInput.button[SP_BUTTON_X] = 0;
 						break;
 					case SDLK_ESCAPE:
-						spInput.button[SP_BUTTON_SELECT] = 0;
+						spGenericInput.button[SP_BUTTON_SELECT] = 0;
 						break;
 					case SDLK_PAGEUP:
-						spInput.button[SP_BUTTON_L] = 0;
+						spGenericInput.button[SP_BUTTON_L] = 0;
 						break;
 					case SDLK_PAGEDOWN:
-						spInput.button[SP_BUTTON_R] = 0;
+						spGenericInput.button[SP_BUTTON_R] = 0;
 						break;
 				#else
 					case SDLK_a:
-						spInput.button[SP_BUTTON_A] = 0;
+						spGenericInput.button[SP_BUTTON_A] = 0;
 						break;
 					case SDLK_d:
-						spInput.button[SP_BUTTON_B] = 0;
+						spGenericInput.button[SP_BUTTON_B] = 0;
 						break;
 					case SDLK_w:
-						spInput.button[SP_BUTTON_Y] = 0;
+						spGenericInput.button[SP_BUTTON_Y] = 0;
 						break;
 					case SDLK_s:
-						spInput.button[SP_BUTTON_X] = 0;
+						spGenericInput.button[SP_BUTTON_X] = 0;
 						break;
 					case SDLK_BACKSPACE:
-						spInput.button[SP_BUTTON_SELECT] = 0;
+						spGenericInput.button[SP_BUTTON_SELECT] = 0;
 						break;
 					case SDLK_q:
-						spInput.button[SP_BUTTON_L] = 0;
+						spGenericInput.button[SP_BUTTON_L] = 0;
 						break;
 					case SDLK_e:
-						spInput.button[SP_BUTTON_R] = 0;
+						spGenericInput.button[SP_BUTTON_R] = 0;
 						break;
 				#endif
 			#endif
 				}
 				break;
 			case SDL_JOYAXISMOTION:
-				spInput.analog_axis[event.jaxis.axis & 1] = event.jaxis.value;
+				spGenericInput.analog_axis[event.jaxis.axis & 1] = event.jaxis.value;
 				if ( event.jaxis.value < SP_JOYSTICK_MIN_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != -1 )
 				{
-					spInput.axis[event.jaxis.axis & 1] = -1;
+					spGenericInput.axis[event.jaxis.axis & 1] = -1;
 					sp_axis_was_used[event.jaxis.axis & 1] = -1;
 				}
 				else
 				if ( event.jaxis.value > SP_JOYSTICK_MAX_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != 1)
 				{
-					spInput.axis[event.jaxis.axis & 1] = 1;
+					spGenericInput.axis[event.jaxis.axis & 1] = 1;
 					sp_axis_was_used[event.jaxis.axis & 1] = 1;
 				}
 				else
 				if (event.jaxis.value > SP_JOYSTICK_MIN_TRIGGER_OFF && event.jaxis.value < SP_JOYSTICK_MAX_TRIGGER_OFF)
 				{
-					spInput.axis[event.jaxis.axis & 1] = 0;
+					spGenericInput.axis[event.jaxis.axis & 1] = 0;
 					sp_axis_was_used[event.jaxis.axis & 1] = 0;
 				}
 				break;
@@ -864,41 +864,41 @@ inline void spUpdateAxis( int axis )
 #ifdef GP2X
 	if ( axis == 0 )
 	{
-		spInput.axis[axis] = 0;
-		if ( spInput.button[SP_AXIS_LEFTUP] ||
-				spInput.button[SP_AXIS_LEFT]   ||
-				spInput.button[SP_AXIS_LEFTDOWN] )
-			spInput.axis[axis] = -1;
-		if ( spInput.button[SP_AXIS_RIGHTUP] ||
-				spInput.button[SP_AXIS_RIGHT]   ||
-				spInput.button[SP_AXIS_RIGHTDOWN] )
-			spInput.axis[axis] = 1;
-		if (spInput.axis[axis] == -1)
-			spInput.analog_axis[axis] = SP_ANALOG_AXIS_MIN;
+		spGenericInput.axis[axis] = 0;
+		if ( spGenericInput.button[SP_AXIS_LEFTUP] ||
+				spGenericInput.button[SP_AXIS_LEFT]   ||
+				spGenericInput.button[SP_AXIS_LEFTDOWN] )
+			spGenericInput.axis[axis] = -1;
+		if ( spGenericInput.button[SP_AXIS_RIGHTUP] ||
+				spGenericInput.button[SP_AXIS_RIGHT]   ||
+				spGenericInput.button[SP_AXIS_RIGHTDOWN] )
+			spGenericInput.axis[axis] = 1;
+		if (spGenericInput.axis[axis] == -1)
+			spGenericInput.analog_axis[axis] = SP_ANALOG_AXIS_MIN;
 		else
-		if (spInput.axis[axis] ==  1)
-			spInput.analog_axis[axis] = SP_ANALOG_AXIS_MAX;
+		if (spGenericInput.axis[axis] ==  1)
+			spGenericInput.analog_axis[axis] = SP_ANALOG_AXIS_MAX;
 		else
-		spInput.analog_axis[axis] = 0;
+		spGenericInput.analog_axis[axis] = 0;
 	}
 	else
 	{
-		spInput.axis[axis] = 0;
-		if ( spInput.button[SP_AXIS_LEFTUP] ||
-				spInput.button[SP_AXIS_UP]   ||
-				spInput.button[SP_AXIS_RIGHTUP] )
-			spInput.axis[axis] = -1;
-		if ( spInput.button[SP_AXIS_LEFTDOWN] ||
-				spInput.button[SP_AXIS_DOWN]   ||
-				spInput.button[SP_AXIS_RIGHTDOWN] )
-			spInput.axis[axis] = 1;
-		if (spInput.axis[axis] == -1)
-			spInput.analog_axis[axis] = SP_ANALOG_AXIS_MIN;
+		spGenericInput.axis[axis] = 0;
+		if ( spGenericInput.button[SP_AXIS_LEFTUP] ||
+				spGenericInput.button[SP_AXIS_UP]   ||
+				spGenericInput.button[SP_AXIS_RIGHTUP] )
+			spGenericInput.axis[axis] = -1;
+		if ( spGenericInput.button[SP_AXIS_LEFTDOWN] ||
+				spGenericInput.button[SP_AXIS_DOWN]   ||
+				spGenericInput.button[SP_AXIS_RIGHTDOWN] )
+			spGenericInput.axis[axis] = 1;
+		if (spGenericInput.axis[axis] == -1)
+			spGenericInput.analog_axis[axis] = SP_ANALOG_AXIS_MIN;
 		else
-		if (spInput.axis[axis] ==  1)
-			spInput.analog_axis[axis] = SP_ANALOG_AXIS_MAX;
+		if (spGenericInput.axis[axis] ==  1)
+			spGenericInput.analog_axis[axis] = SP_ANALOG_AXIS_MAX;
 		else
-		spInput.analog_axis[axis] = 0;
+		spGenericInput.analog_axis[axis] = 0;
 	}
 #endif
 }
@@ -964,36 +964,36 @@ void spClickVirtualKey(int steps)
 
 void spHandleVirtualKeyboard( int steps )
 {
-	if (spInput.keyboard.buffer == NULL || spVirtualKeyboardState == SP_VIRTUAL_KEYBOARD_NEVER)
+	if (spGenericInput.keyboard.buffer == NULL || spVirtualKeyboardState == SP_VIRTUAL_KEYBOARD_NEVER)
 		return;
 	int was_greater = spVirtualKeyboardTime > 0;
-	if (spInput.axis[0] == 0 && spInput.axis[1] == 0)
+	if (spGenericInput.axis[0] == 0 && spGenericInput.axis[1] == 0)
 		spVirtualKeyboardTime = 0;
 	else
 		spVirtualKeyboardTime -= steps;
 	if (spVirtualKeyboardTime <= 0)
 	{
 		int change = 0;
-		if (spInput.axis[0] || spInput.axis[1])
+		if (spGenericInput.axis[0] || spGenericInput.axis[1])
 			spInternalCleanVirtualKeyboard();
-		if (spInput.axis[0] < 0)
+		if (spGenericInput.axis[0] < 0)
 		{
 			spVirtualKeyboardX = (spVirtualKeyboardX+19) % 20;
 			change = 1;
 		}
 		else
-		if (spInput.axis[0] > 0)
+		if (spGenericInput.axis[0] > 0)
 		{
 			spVirtualKeyboardX = (spVirtualKeyboardX+1) % 20;
 			change = 1;
 		}
-		if (spInput.axis[1] < 0)
+		if (spGenericInput.axis[1] < 0)
 		{
 			spVirtualKeyboardY = (spVirtualKeyboardY+2) % 3;
 			change = 1;
 		}
 		else
-		if (spInput.axis[1] > 0)
+		if (spGenericInput.axis[1] > 0)
 		{
 			spVirtualKeyboardY = (spVirtualKeyboardY+1) % 3;
 			change = 1;
@@ -1016,22 +1016,22 @@ void spHandleVirtualKeyboard( int steps )
 	//Keyboard input
 	for (b = 0; b < 31; b++)
 	{
-		if ((spVirtualKeyboardMask & (1 << b)) && spInput.button[b])
+		if ((spVirtualKeyboardMask & (1 << b)) && spGenericInput.button[b])
 		{
 			noButton = 0;
 			spClickVirtualKey(steps);
 		}
 	}
 	//Touchscreen input
-	if ( spInput.touchscreen.pressed &&
-	    (spInput.touchscreen.x-spVirtualKeyboardPositionX) >= 0 &&
-	    (spInput.touchscreen.x-spVirtualKeyboardPositionX) < spVirtualKeyboard[spVirtualKeyboardShift]->w &&
-	    (spInput.touchscreen.y-spVirtualKeyboardPositionY) >= 0 &&
-	    (spInput.touchscreen.y-spVirtualKeyboardPositionY) < spVirtualKeyboard[spVirtualKeyboardShift]->h)
+	if ( spGenericInput.touchscreen.pressed &&
+	    (spGenericInput.touchscreen.x-spVirtualKeyboardPositionX) >= 0 &&
+	    (spGenericInput.touchscreen.x-spVirtualKeyboardPositionX) < spVirtualKeyboard[spVirtualKeyboardShift]->w &&
+	    (spGenericInput.touchscreen.y-spVirtualKeyboardPositionY) >= 0 &&
+	    (spGenericInput.touchscreen.y-spVirtualKeyboardPositionY) < spVirtualKeyboard[spVirtualKeyboardShift]->h)
 	{
 		spInternalCleanVirtualKeyboard();
-		Sint32 clickX = spInput.touchscreen.x-spVirtualKeyboardPositionX << SP_ACCURACY;
-		Sint32 clickY = spInput.touchscreen.y-spVirtualKeyboardPositionY << SP_ACCURACY;
+		Sint32 clickX = spGenericInput.touchscreen.x-spVirtualKeyboardPositionX << SP_ACCURACY;
+		Sint32 clickY = spGenericInput.touchscreen.y-spVirtualKeyboardPositionY << SP_ACCURACY;
 		Sint32 divisor = (spVirtualKeyboard[spVirtualKeyboardShift]->w << SP_ACCURACY)/20;
 		spVirtualKeyboardX = spDivHigh(clickX,divisor) >> SP_ACCURACY;
 		       divisor = (spVirtualKeyboard[spVirtualKeyboardShift]->h << SP_ACCURACY)/3;
@@ -1080,8 +1080,8 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 			//in the code? -_-), SDL_WarpMouse should test for the screen dimension.
 			int mouse_steps = newticks - oldticks;
 			if (mouse_steps)
-				SDL_WarpMouse(spInput.touchscreen.x + sp_touchscreen_dx * mouse_steps,
-											spInput.touchscreen.y + sp_touchscreen_dy * mouse_steps);
+				SDL_WarpMouse(spGenericInput.touchscreen.x + sp_touchscreen_dx * mouse_steps,
+											spGenericInput.touchscreen.y + sp_touchscreen_dy * mouse_steps);
 		}
 #endif
 		if ( spHandleEvent( spEvent ) && spResize )
@@ -1173,14 +1173,14 @@ PREFIX void spFlip( void )
 
 PREFIX PspInput spGetInput( void )
 {
-	return &spInput;
+	return &spGenericInput;
 }
 
 PREFIX void spResetButtonsState( void )
 {
 	int I;
 	for ( I = 0; I < SP_INPUT_BUTTON_COUNT; ++I )
-		spInput.button[I] = 0;
+		spGenericInput.button[I] = 0;
 }
 
 PREFIX void spResetAxisState( void )
@@ -1188,8 +1188,8 @@ PREFIX void spResetAxisState( void )
 	int I;
 	for ( I = 0; I < SP_INPUT_AXIS_COUNT; ++I )
 	{
-		spInput.axis[I] = 0;
-		spInput.analog_axis[I] = 0;
+		spGenericInput.axis[I] = 0;
+		spGenericInput.analog_axis[I] = 0;
 	}
 }
 
@@ -1197,10 +1197,10 @@ PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, Sint32 enter_key_
 {
 	if ( bufferSize > 0 && buffer)
 	{
-		spInput.keyboard.buffer = buffer;
-		spInput.keyboard.len = bufferSize;
-		spInput.keyboard.pos = strlen( buffer );
-		spInput.keyboard.lastSize = 0;
+		spGenericInput.keyboard.buffer = buffer;
+		spGenericInput.keyboard.len = bufferSize;
+		spGenericInput.keyboard.pos = strlen( buffer );
+		spGenericInput.keyboard.lastSize = 0;
 		spVirtualKeyboardMask = enter_key_mask;
 		SDL_EnableUNICODE( 1 );
 	}
@@ -1212,10 +1212,10 @@ PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, Sint32 enter_key_
 
 PREFIX void spStopKeyboardInput( void )
 {
-	spInput.keyboard.buffer = NULL;
-	spInput.keyboard.len = 0;
-	spInput.keyboard.pos = 0;
-	spInput.keyboard.lastSize = 0;
+	spGenericInput.keyboard.buffer = NULL;
+	spGenericInput.keyboard.len = 0;
+	spGenericInput.keyboard.pos = 0;
+	spGenericInput.keyboard.lastSize = 0;
 	spVirtualKeyboardMask = 0;
 	spLastKey.unicode = 0;
 	spLastKeyCountDown = 0;
@@ -1782,7 +1782,7 @@ PREFIX SDL_Surface* spGetVirtualKeyboard()
 
 PREFIX int spIsKeyboardPolled()
 {
-	return (spInput.keyboard.buffer != NULL);
+	return (spGenericInput.keyboard.buffer != NULL);
 }
 
 PREFIX void spStereoMergeSurfaces(SDL_Surface* left,SDL_Surface* right,int crossed)

@@ -29,7 +29,8 @@
 
 /* Function: spInitMath
  * 
- * Initializes the fixed point look up tables for sin, cos, etc. */
+ * Initializes the fixed point look up tables for sin, cos, etc. Is called by
+ * <spInitCore>.*/
 PREFIX void spInitMath( void );
 
 /* Function: spSin

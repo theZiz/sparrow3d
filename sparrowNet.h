@@ -20,6 +20,9 @@
 #ifndef _SPARROW_NET_H
 #define _SPARROW_NET_H
 
-/* ToDo Make me working :( */
+/* File: sparrowNet
+ * 
+ * SparrowNet / libSparrowNet will be the networking part of sparrow3D.
+ * However, at the moment, nothing is implemented.*/
 
 #endif

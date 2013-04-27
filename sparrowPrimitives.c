@@ -851,11 +851,6 @@ PREFIX void spResetZBuffer()
 			spZBuffer[i] = s;
 }
 
-PREFIX Sint32* spGetZBuffer()
-{
-	return spZBuffer;
-}
-
 PREFIX void spSetZTest( Uint32 test )
 {
 	spZTest = test;
@@ -4306,6 +4301,8 @@ int log_2(int x)
 PREFIX void spSetZFar(Sint32 zfar)
 {
 	spZFar = zfar;
+	//For division optimization we need the logarithm of the biggest w component,
+	//that will happen while rendering
 	Sint32 x,y,z,w;
 	spProjectPoint3D(0,0,-zfar,&x,&y,&z,&w,1);
 	int l = log_2(w)+1;

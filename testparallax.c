@@ -38,7 +38,7 @@ void draw_function( void )
 			int addy = spCos(rotation*(2<<layer)>>3)>>SP_ACCURACY-5;
 			for (x = -16; x <= spGetWindowSurface()->w+16; x+=32)
 				for (y = -16; y <= spGetWindowSurface()->h+16; y+=32)
-						spDrawSprite(x+addx,y+addy,l,sprite[rand()&7][rand()&3]);
+						spDrawSprite(x+addx,y+addy,l+1,sprite[rand()&7][rand()&3]);
 		}
 	else
 		for (l=0; l < layer_count; l++)
@@ -47,27 +47,25 @@ void draw_function( void )
 			int addy = spCos(rotation*(2<<l)>>3)>>SP_ACCURACY-5;
 			for (x = -16; x <= spGetWindowSurface()->w+16; x+=32)
 				for (y = -16; y <= spGetWindowSurface()->h+16; y+=32)
-						spDrawSprite(x+addx,y+addy,l,sprite[rand()&7][rand()&3]);
+						spDrawSprite(x+addx,y+addy,l+1,sprite[rand()&7][rand()&3]);
 		}
 	
 	
-	spSetZSet(0);
-	spSetZTest(0);
-	spFontDraw( 0, 0, -1, "[L] Less Layer", font );
-	spFontDrawRight( spGetWindowSurface()->w-1, 0, -1, "More Layer [R]", font );
+	//spSetZSet(0);
+	//spSetZTest(0);
+	spFontDraw( 0, 0, 0, "[L] Less Layer", font );
+	spFontDrawRight( spGetWindowSurface()->w-1, 0, 0, "More Layer [R]", font );
 	
 	char buffer[256];
 	sprintf(buffer,"Layer: %i",layer_count);
-	spFontDraw( 0, spGetWindowSurface()->h-font->maxheight, -1, buffer, font );
+	spFontDraw( 0, spGetWindowSurface()->h-font->maxheight, 0, buffer, font );
 	if (using_zbuffer)
-		spFontDrawMiddle( spGetWindowSurface()->w/2, spGetWindowSurface()->h-font->maxheight, -1, "Z-Buffer: On [A]", font );
+		spFontDrawMiddle( spGetWindowSurface()->w/2, spGetWindowSurface()->h-font->maxheight, 0, "Z-Buffer: On [A]", font );
 	else
-		spFontDrawMiddle( spGetWindowSurface()->w/2, spGetWindowSurface()->h-font->maxheight, -1, "Z-Buffer: Off [A]", font );
+		spFontDrawMiddle( spGetWindowSurface()->w/2, spGetWindowSurface()->h-font->maxheight, 0, "Z-Buffer: Off [A]", font );
 	sprintf(buffer,"FPS: %i",spGetFPS());
-	spFontDrawRight( spGetWindowSurface()->w-1, spGetWindowSurface()->h-font->maxheight, -1, buffer, font );
+	spFontDrawRight( spGetWindowSurface()->w-1, spGetWindowSurface()->h-font->maxheight, 0, buffer, font );
 	
-	
-
 	spFlip();
 }
 

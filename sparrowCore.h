@@ -94,10 +94,10 @@
  * The size of the surface cache */
 #define SP_CACHE_SIZE 2048
 
-/* typedef: TspInput
+/* typedef: spInput
  * 
  * This struct contains information about the generic input device
- * sparrowCore provides, which is same on EVERY target
+ * sparrowCore provides, which is same on *every* device
  * 
  * Variables:
  * 
@@ -131,7 +131,7 @@ typedef struct SspInput
 		int pos,len,lastSize;
 	} keyboard;
 	Sint16 analog_axis[SP_INPUT_AXIS_COUNT];
-} TspInput;
+} spInput;
 
 
 /* Function: spSetDefaultWindowSize
@@ -223,7 +223,7 @@ PREFIX void spFlip( void );
  * *Dont't free it on your own!*
  * 
  * Returns:
- * PspInput - A pointer to a <TspInput> struct*/
+ * PspInput - A pointer to a <spInput> struct*/
 PREFIX PspInput spGetInput( void );
 
 /* Function: spResetButtonsState
