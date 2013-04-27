@@ -143,7 +143,7 @@ void draw_test(void)
 	spSelectRenderTarget(screen);
 	char buffer[256];
 	sprintf(buffer,"FPS: %i",spGetFPS());
-	spFontDrawRight(screen->w-2,screen->h-2-font->maxheight,1, buffer, font );
+	spFontDrawRight(screen->w-2,screen->h-2-font->maxheight,0, buffer, font );
 	#ifdef SCALE_UP
 	spScale2XSmooth(screen,real_screen);
 	#endif

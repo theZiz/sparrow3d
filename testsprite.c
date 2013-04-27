@@ -64,15 +64,15 @@ void draw_function( void )
 	}
 
 	//Drawing the sprite in the middle of the screen
-	spDrawSprite( screen->w / 2, screen->h / 2, -1, spActiveSprite(collection) );
-	spDrawSprite( screen->w - 1, screen->h - 1, -1, spActiveSprite(collection) );
-	spDrawSprite( screen->w - 1, 0, -1, spActiveSprite(collection) );
-	spDrawSprite( 0, screen->h - 1, -1, spActiveSprite(collection) );
-	spDrawSprite( 0, 0, -1, spActiveSprite(collection) );
+	spDrawSprite( screen->w / 2, screen->h / 2, 0, spActiveSprite(collection) );
+	spDrawSprite( screen->w - 1, screen->h - 1, 0, spActiveSprite(collection) );
+	spDrawSprite( screen->w - 1, 0, 0, spActiveSprite(collection) );
+	spDrawSprite( 0, screen->h - 1, 0, spActiveSprite(collection) );
+	spDrawSprite( 0, 0, 0, spActiveSprite(collection) );
 
 	//mark the center
-	//spEllipseBorder( screen->w / 2, screen->h / 2, -100, 60+spSin(rotation/2)/1000, 60+spCos(rotation/3)/1000, 20+spCos(rotation/7)/10000, 20+spSin(rotation/5)/10000, 0 );
-	spEllipseBorder( screen->w / 2, screen->h / 2, -100, 6, 6, 2, 2, 0 );
+	//spEllipseBorder( screen->w / 2, screen->h / 2, 100, 60+spSin(rotation/2)/1000, 60+spCos(rotation/3)/1000, 20+spCos(rotation/7)/10000, 20+spSin(rotation/5)/10000, 0 );
+	spEllipseBorder( screen->w / 2, screen->h / 2, 100, 6, 6, 2, 2, 0 );
 
 	//Show it!
 	spFlip();

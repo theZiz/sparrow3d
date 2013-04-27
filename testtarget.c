@@ -27,15 +27,15 @@ void draw_test( void )
 	spSetZSet(0);
 	spSetZTest(0);
 	sprite->rotation = 0;
-	spDrawSprite( texture->w / 4, texture->h / 4, -1, sprite );
+	spDrawSprite( texture->w / 4, texture->h / 4, 0, sprite );
 	sprite->zoomX = spSin( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 );
 	sprite->zoomY = spCos( rotation * 6 ) + ( 3 << SP_ACCURACY - 1 );
-	spDrawSprite( 3 * texture->w / 4, texture->h / 4, -1, sprite );
+	spDrawSprite( 3 * texture->w / 4, texture->h / 4, 0, sprite );
 	sprite->rotation = rotation * 4;
-	spDrawSprite( texture->w / 4, 3 * texture->h / 4, -1, sprite );
+	spDrawSprite( texture->w / 4, 3 * texture->h / 4, 0, sprite );
 	sprite->zoomX = SP_ONE;
 	sprite->zoomY = SP_ONE;
-	spDrawSprite( 3 * texture->w / 4, 3 * texture->h / 4, -1, sprite );
+	spDrawSprite( 3 * texture->w / 4, 3 * texture->h / 4, 0, sprite );
 
   //drawing on the graph
   spSelectRenderTarget(graph);
@@ -65,17 +65,17 @@ void draw_test( void )
 		Sint32 sx2 = (x+1-GRAPH_SIZE/2)<<SP_ACCURACY-4;
 		Sint32 sy2 = spTan(sx2+rotation*8);
 		Sint32 y2 = (sy2>>SP_ACCURACY-4)+GRAPH_SIZE/2;
-		spLine(x,y1,-1,x+1,y2,-1,34567);
+		spLine(x,y1,0,x+1,y2,0,34567);
 		sy1 = spAcos(sx1/2+spSin(rotation*24));
 		y1 = (sy1>>SP_ACCURACY-4)+GRAPH_SIZE/2;
 		sy2 = spAcos(sx2/2+spSin(rotation*24));
 		y2 = (sy2>>SP_ACCURACY-4)+GRAPH_SIZE/2;
-		spLine(x,y1,-1,x+1,y2,-1,23456);
+		spLine(x,y1,0,x+1,y2,0,23456);
 		sy1 = spAsin(sx1/2+spCos(rotation*24));
 		y1 = (sy1>>SP_ACCURACY-4)+GRAPH_SIZE/2;
 		sy2 = spAsin(sx2/2+spCos(rotation*24));
 		y2 = (sy2>>SP_ACCURACY-4)+GRAPH_SIZE/2;
-		spLine(x,y1,-1,x+1,y2,-1,12345);
+		spLine(x,y1,0,x+1,y2,0,12345);
   }
   
   //drawing on the screen
@@ -138,7 +138,7 @@ int calc_test( Uint32 steps )
 void resize( Uint16 w, Uint16 h )
 {
 	//Setup of the new/resized window
-	spSetPerspective( 130.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 0.1, 100 );
+	spSetPerspective( 45.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 0.1, 100 );
 }
 
 

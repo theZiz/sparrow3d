@@ -153,10 +153,6 @@ void draw_test( void )
 							  -SP_ONE, -SP_ONE, 0,
 							  SP_ONE, -SP_ONE, 0,
 							  SP_ONE, SP_ONE, 0, 32767 );
-					//spQuadTex3D(-SP_ONE, SP_ONE, 0,SP_FONT_EXTRASPACE,SP_FONT_EXTRASPACE,
-					//            -SP_ONE,-SP_ONE, 0,1,garfield->h-SP_FONT_EXTRASPACE-1,
-					//             SP_ONE,-SP_ONE, 0,garfield->w-SP_FONT_EXTRASPACE-1,garfield->h-SP_FONT_EXTRASPACE-1,
-					//             SP_ONE, SP_ONE, 0,garfield->w-SP_FONT_EXTRASPACE-1,SP_FONT_EXTRASPACE,65535);
 					memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) );
 				}
 		for ( x = -6; x <= 6; x++ )
@@ -224,7 +220,6 @@ void draw_test( void )
 				else if ( ( y + a + 4 ) & 8 )
 					spEllipseBorder3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 2, 3 << SP_ACCURACY - 2, 1<<SP_ACCURACY - 2, 1<<SP_ACCURACY - 2, -SDL_GetTicks() / 64 );
 				else if ( ( y + a + 5 ) & 8 )
-					//spBlit3D(0,y<<SP_ACCURACY-2, 9<<SP_ACCURACY-1,pepper);
 					spRotozoomSurface3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, pepper, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ), spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ), rotation );
 				else
 					spQuad3D( -3 << SP_ACCURACY - 2, y + 3 << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1,
