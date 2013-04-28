@@ -17,10 +17,12 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 
-/* This file is for rendering 3D stuff to the target of sparrowPrimitives.
+/* File: sparrowRenderer
+ * 
+ * SparrowRenderer is for rendering 3D stuff to the target of sparrowPrimitives.
  * Like sparrowPrimitves it provides triangles, quads (with and without
  * texture), lines, ellipses, rectangles and blitting or rotozoom of
- * surfaces. Furthermore light calculation. Like other 3d libraries
+ * surfaces, furthermore light calculation. Like other 3d libraries
  * (e.g. OpenGL) sparrow3d uses matrizes for the orientation and
  * position in space.*/
 #ifndef _SPARROW_RENDERER_H
@@ -29,20 +31,31 @@
 #include "sparrowDefines.h"
 #include <SDL.h>
 
-/* This #define defines the max count of lights possible in
- * sparrowRenderer. Even if you could use more lights: Because of the
- * very simple light calculation it wouldn't be look good. */
+/* Defines: Light
+ * 
+ * SP_MAX_LIGHTS - maximal count of lights. However more would look shitty
+ * nevertheless.
+ * SP_LIGHT_TYPE - type for light calculating. It is 64 bit, because we need
+ * a lot better accuracy than for the rendering itself
+ * SP_LIGHT_TYPE_SIZE - the bit count of the type (64)
+ * SP_LIGHT_ACCURACY - the number of decimal places for light calculation
+ * SP_LIGHT_HALF_ACCURACY - the half of <SP_LIGHT_ACCURACY>
+ * SP_LIGHT_ACCURACY_FACTOR - for convertation fixed point light values to float*/
 #define SP_MAX_LIGHTS 8
-/* These are the types for the light calculation. Sint64 because of the
- * high accuracy. Really: With Sint32 it is flickering like hell... */
 #define SP_LIGHT_TYPE Sint64
 #define SP_LIGHT_TYPE_SIZE 64
 #define SP_LIGHT_ACCURACY 24
 #define SP_LIGHT_HALF_ACCURACY 12
 #define SP_LIGHT_ACCURACY_FACTOR (65536.0f*256.0f)
 
-/* A point with the projected coordinates, but without uv-coordinates.
- * Used for Meshes.*/
+/* Type: spPoint
+ * 
+ * a point struct with space, modelview and projected coordinates
+ * 
+ * Variables:
+ * x,y,z - coordinates in space
+ * tx,ty,tz - with modelview multiplied coordinates
+ * px,py,pz - projected coordinates*/
 typedef struct spPointStruct *spPointPointer;
 typedef struct spPointStruct
 {
@@ -51,8 +64,17 @@ typedef struct spPointStruct
 	Sint32 px, py, pz; //projected
 } spPoint;
 
-/* A point with the projected coordinates and uv-coordinates. Used for
- * Meshes. */
+/* Type: spTexPoint
+ * 
+ * a point struct with space, modelview, projected and texture coordinates and
+ * the w clip
+ * 
+ * Variables:
+ * x,y,z - coordinates in space
+ * tx,ty,tz - with modelview multiplied coordinates
+ * px,py,pz - projected coordinates
+ * u,v - texture coordinates
+ * w - w clip*/
 typedef struct spTexPointStruct *spTexPointPointer;
 typedef struct spTexPointStruct
 {
@@ -62,7 +84,14 @@ typedef struct spTexPointStruct
 	Sint32 u, v, w; //texture coordinates + w clip
 } spTexPoint;
 
-/* An edge with a status-flag, e.g. for borderlines */
+/* Type: spEdge
+ * 
+ * edge struct for meshes.
+ * 
+ * Variables:
+ * point - array of the two points, which create an edge
+ * status - flag after drawing (optional), whether the edge is in the background
+ * (-1), in the foreground (1) or at the border (0)*/
 typedef struct spEdgeStruct *spEdgePointer;
 typedef struct spEdgeStruct
 {
@@ -70,22 +99,40 @@ typedef struct spEdgeStruct
 	int status; //-1 background, 0 border, 1 foreground
 } spEdge;
 
-/* A triangle struct for meshes */
+/* Type: spTriangleS
+ * 
+ * A triangle struct for meshes.
+ * 
+ * Variables:
+ * point - Array of 3 references to points
+ * was_drawn - determines, where the triangle was drawn the last time:
+ * 0 = not drawn, else 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop,
+ * 32 right, 64 rightbottom, 128 bottom, 256 leftbottom
+ * edge - Array of 3 references to edges
+ * normal - Array with 3 fixed point numbers as normal
+ * pNormal - Array with 3 fixed point numbers as projected normal */
 typedef struct spTriangleStruct *spTrianglePointer;
 typedef struct spTriangleStruct
 {
-	int point[3]; //the edges
-	/* was_drawn shows (always), where the triangle was drawn the
-	 * last time: 0 = not drawn, else 1 screen, 2 left, 4 lefttop,
-	 * 8 top, 16 righttop, 32 right, 64 rightbottom, 128 bottom,
-	 * 256 leftbottom */
+	int point[3];
 	int was_drawn;
-	int edge[3]; //the update of the Edges status flag is optional!
+	int edge[3];
 	Sint32 normal[3];
 	Sint32 pNormal[3];
 } spTriangleS;
 
-/* A quad struct for meshes */
+/* Type: spQuadS
+ * 
+ * A triangle struct for meshes.
+ * 
+ * Variables:
+ * point - Array of 4 references to points
+ * was_drawn - determines, where the quad was drawn the last time:
+ * 0 = not drawn, else 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop,
+ * 32 right, 64 rightbottom, 128 bottom, 256 leftbottom
+ * edge - Array of 4 references to edges
+ * normal - Array with 3 fixed point numbers as normal
+ * pNormal - Array with 3 fixed point numbers as projected normal */
 typedef struct spQuadStruct *spQuadPointer;
 typedef struct spQuadStruct
 {
@@ -100,10 +147,20 @@ typedef struct spQuadStruct
 	Sint32 pNormal[3];
 } spQuadS;
 
-/* spModelSturct contains a mesh. You can fill it on your own (have fun,
- * it is a lot of work) or use sparrowMesh to load (e.g.) wave object
- * files. sparrowRenderer provides functions for drawing these meshes
- * very fast */
+/* Type: spModel
+ * 
+ * Contains a mesh. You can fill it on your own (have fun, it is a lot of work)
+ * or use <sparrowMesh> to load (e.g.) wavefront object files. SparrowRenderer
+ * provides functions for drawing these meshes very fast.
+ * 
+ * Variables:
+ * texture - the texture. Sparrow3D Meshes only can have 1 texture
+ * pointCount - number of points without texture coordinates in the mesh
+ * point - pointer/array to pointCount <spPoint> structs
+ * texPointCount - number of points with texture coordinates in the mesh
+ * texPoint - pointer/array to texPointCount <spTexPoint> structs
+ * 
+ * */
 typedef struct spModelStruct *spModelPointer;
 typedef struct spModelStruct
 {

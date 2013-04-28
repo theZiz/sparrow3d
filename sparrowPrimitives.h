@@ -302,7 +302,7 @@ PREFIX Sint32 spGetVerticalOrigin();
  * zfar - new farest value. Has to be positive
  * 
  * See Also:
- * spGetZFar(), spSetZNear()*/
+ * <spGetZFar>, <spSetZNear>*/
 PREFIX void spSetZFar(Sint32 zfar);
 
 /* Function: spGetZFar
@@ -313,7 +313,7 @@ PREFIX void spSetZFar(Sint32 zfar);
  * Sint32 - the farest z value
  * 
  * See Also:
- * spSetZFar(), spGetZNear()*/
+ * <spSetZFar>, <spGetZNear>*/
 PREFIX Sint32 spGetZFar();
 
 /* Function: spSetNear
@@ -325,7 +325,7 @@ PREFIX Sint32 spGetZFar();
  * znear - new nearest value. Has to be positive
  * 
  * See Also:
- * spSetZFar(), spGetZNear()*/
+ * <spSetZFar>, <spGetZNear>*/
 PREFIX void spSetZNear(Sint32 znear);
 
 /* Function: spGetZFar
@@ -336,7 +336,7 @@ PREFIX void spSetZNear(Sint32 znear);
  * Sint32 - the nearest z value
  * 
  * See Also:
- * spGetZFar(), spSetZNear()*/
+ * <spGetZFar>, <spSetZNear>*/
 PREFIX Sint32 spGetZNear();
 
 /* Function: spGetPixelPosition
