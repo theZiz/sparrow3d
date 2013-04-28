@@ -316,7 +316,7 @@ PREFIX void spSetZFar(Sint32 zfar);
  * <spSetZFar>, <spGetZNear>*/
 PREFIX Sint32 spGetZFar();
 
-/* Function: spSetNear
+/* Function: spSetZNear
  * 
  * Sets the value, to which the zbuffer will be reseted. Mostly called by
  * <spSetPerspective>
