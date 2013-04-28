@@ -288,7 +288,7 @@ PREFIX Sint32 spGetHorizontalOrigin();
  * Returns the vertical origin.
  * 
  * Returns:
- * Sint32<SP_TOP> for top origin, <SP_BOTTOM> for bottom origin and
+ * Sint32 - <SP_TOP> for top origin, <SP_BOTTOM> for bottom origin and
  * <SP_CENTER> (default) for centered origin
 */
 PREFIX Sint32 spGetVerticalOrigin();
