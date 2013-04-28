@@ -328,7 +328,7 @@ PREFIX Sint32 spGetZFar();
  * <spSetZFar>, <spGetZNear>*/
 PREFIX void spSetZNear(Sint32 znear);
 
-/* Function: spGetZFar
+/* Function: spGetZNear
  * 
  * Gets the value, to which the zbuffer will be reseted.
  * 
