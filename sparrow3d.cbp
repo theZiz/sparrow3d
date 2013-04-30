@@ -139,6 +139,53 @@
 					<Add directory="$(#pandora_sdk.lib)" />
 				</Linker>
 			</Target>
+			<Target title="Debug Library (Win x86)">
+				<Option output="bin/W32/libsparrow3d" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/W32_DEBUG/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DX86CPU" />
+					<Add option="-DBUILDING_DLL" />
+					<Add option="-DCORE_DEBUG" />
+					<Add directory="$(#mingw.include)" />
+					<Add directory="$(#mingw.include)/SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-lSDLmain" />
+					<Add option="-lSDL_mixer" />
+					<Add option="-lSDL_net" />
+					<Add directory="$(#mingw.lib)" />
+				</Linker>
+			</Target>
+			<Target title="Debug Library (Pandora)">
+				<Option output="bin/Pandora/libsparrow3d.so" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Pandora_DEBUG/" />
+				<Option type="3" />
+				<Option compiler="armelfgcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DMOBILE_DEVICE" />
+					<Add option="-DARMCPU" />
+					<Add option="-DPANDORA" />
+					<Add option="-DCORE_DEBUG" />
+					<Add directory="$(#pandora_sdk.include)" />
+					<Add directory="$(#pandora_sdk.include)/SDL" />
+				</Compiler>
+				<Linker>
+					<Add option="-lSDL_mixer" />
+					<Add option="-lSDL_net" />
+					<Add option="-ldl" />
+					<Add option="-lpthread" />
+					<Add option="-lfreetype" />
+					<Add option="-lpng" />
+					<Add option="-lz" />
+					<Add directory="$(#pandora_sdk.lib)" />
+				</Linker>
+			</Target>
 			<Target title="Testsparrow (Win x86)">
 				<Option output="bin/W32/testsparrow" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/W32/" />
@@ -440,6 +487,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowCore.h">
 			<Option target="Sparrow (Win x86)" />
@@ -456,6 +505,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowDefines.h">
 			<Option target="Sparrow (Win x86)" />
@@ -472,6 +523,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowFile.c">
 			<Option compilerVar="CC" />
@@ -489,6 +542,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowFile.h">
 			<Option target="Sparrow (Win x86)" />
@@ -505,6 +560,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowFont.c">
 			<Option compilerVar="CC" />
@@ -522,6 +579,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowFont.h">
 			<Option target="Sparrow (Win x86)" />
@@ -538,6 +597,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowMath.c">
 			<Option compilerVar="CC" />
@@ -555,6 +616,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowMath.h">
 			<Option target="Sparrow (Win x86)" />
@@ -571,6 +634,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowMesh.c">
 			<Option compilerVar="CC" />
@@ -588,6 +653,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowMesh.h">
 			<Option target="Sparrow (Win x86)" />
@@ -604,15 +671,21 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowNet.c">
 			<Option compilerVar="CC" />
 			<Option target="Net (Win x86)" />
 			<Option target="Net (Pandora)" />
+			<Option target="Debug Library (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
 		</Unit>
 		<Unit filename="sparrowNet.h">
 			<Option target="Net (Win x86)" />
 			<Option target="Net (Pandora)" />
+			<Option target="Debug Library (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
 		</Unit>
 		<Unit filename="sparrowPrimitives.c">
 			<Option compilerVar="CC" />
@@ -630,6 +703,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowPrimitives.h">
 			<Option target="Sparrow (Win x86)" />
@@ -646,6 +721,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowPrimitivesAsm.c">
 			<Option compilerVar="CC" />
@@ -663,6 +740,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowRenderer.c">
 			<Option compilerVar="CC" />
@@ -680,6 +759,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowRenderer.h">
 			<Option target="Sparrow (Win x86)" />
@@ -696,15 +777,21 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowSound.c">
 			<Option compilerVar="CC" />
 			<Option target="Sound (Win x86)" />
 			<Option target="Sound (Pandora)" />
+			<Option target="Debug Library (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
 		</Unit>
 		<Unit filename="sparrowSound.h">
 			<Option target="Sound (Win x86)" />
 			<Option target="Sound (Pandora)" />
+			<Option target="Debug Library (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
 		</Unit>
 		<Unit filename="sparrowSprite.c">
 			<Option compilerVar="CC" />
@@ -722,6 +809,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowSprite.h">
 			<Option target="Sparrow (Win x86)" />
@@ -738,6 +827,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowText.c">
 			<Option compilerVar="CC" />
@@ -755,6 +846,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="sparrowText.h">
 			<Option target="Sparrow (Win x86)" />
@@ -771,6 +864,8 @@
 			<Option target="Testtarget (Pandora)" />
 			<Option target="Testfile (Win x86)" />
 			<Option target="Testfile (Pandora)" />
+			<Option target="Debug Library (Win x86)" />
+			<Option target="Debug Library (Pandora)" />
 		</Unit>
 		<Unit filename="testfile.c">
 			<Option compilerVar="CC" />
