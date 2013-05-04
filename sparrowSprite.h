@@ -17,7 +17,9 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 
-/* sparrowSprite is about drawing sprites. Sprites are small animations
+/* File: sparrowSprite
+ * 
+ * SparrowSprite is about drawing sprites. Sprites are small animations
  * of surfaces with scaling and rotation. Scale and rotation are more
  * expensive, than just blitting, keep that in mind. So rotation = 0 and
  * scaling = SP_ONE (fixed point value!) will be fastest. If you disable
@@ -29,73 +31,174 @@
 #include "sparrow3d.h"
 #include <SDL.h>
 
-/* a sprite consists of differnt subSprites. Every subsprite contains
- * one surface (or a part of it), a duration and an age. If the age is
- * greater than the duration, the next subSprite will be drawn */
 typedef struct spSubSpriteStruct *spSubSpritePointer;
+typedef struct spSpriteCollectionStruct *spSpriteCollectionPointer;
+typedef struct spSpriteStruct *spSpritePointer;
+
+/* Type: spSubSprite
+ * 
+ * a sprite consists of different subSprites. Every subSprite contains
+ * one surface (or a part of it), a duration and an age. If the age is
+ * greater than the duration, the next subSprite will be drawn. Think of
+ * it as a frame of a sprite.
+ * 
+ * Variables:
+ * surface - the surface of the subsprite
+ * sx,sy - the position in the surface to be drawn for tiling. If sx is
+ * smaller than 0 no tilling is done
+ * sw,sh - the width and height of the part of the surface
+ * duration - the time the surface shall be seen. E.g. 50 ms would mean
+ * an animation with 20 fps
+ * age - how long was this subsprite seeable yet?
+ * before,next - internal linked list pointers*/
 typedef struct spSubSpriteStruct
 {
-	SDL_Surface* surface; //the surface
-	Sint32 sx, sy, sw, sh; //for Tiling. If sx<0 no tiling will be done
-	Sint32 duration; //how long will this surface be seeable
-	Sint32 age; //how long was it seeable yet
+	SDL_Surface* surface;
+	Sint32 sx, sy, sw, sh;
+	Sint32 duration;
+	Sint32 age;
 	spSubSpritePointer before;
 	spSubSpritePointer next;
 } spSubSprite;
 
-/* A spSpriteCollection is a collection of different sprites of one
- * kind. See below for more details. */
-typedef struct spSpriteCollectionStruct *spSpriteCollectionPointer;
-
-/* The sprite struct */
-typedef struct spSpriteStruct *spSpritePointer;
+/* Type: spSprite
+ * 
+ * The sprite struct itself.
+ * 
+ * Variables:
+ * wholeDuration - the sum of all durations of all subSprites. See
+ * <spSubSprite> for more about "duration"
+ * wholeAge - the whole age of the animation
+ * maxWidth,maxHeight - every subSprite can have different sizes. These
+ * are the biggest width and height
+ * rotation - the rotation of the sprite in fixed point radiant
+ * zoomX, zoomY - the zoom of the sprite. SP_ONE means no zoom
+ * firstSub - double linked list of the subSprites. See <spSubSprite>
+ * for more detailed information
+ * momSub - the active subSprite (and image) to draw
+ * name - the name of the sprite. Needed for <spSpriteCollection>
+ * collection - the collection the sprite is saved in. Can be NULL
+ * next - pointer to the next sprite pointer in the linked list from
+ * the collection. Do not change.*/
 typedef struct spSpriteStruct
 {
-	Sint32 wholeDuration; //the duration of all subSprites.
-	/* the age of all subSprites. Of wholeAge is greater than
-	 * wholeDuration, the sprite restarts */
+	Sint32 wholeDuration; 
 	Sint32 wholeAge; 
-	Sint32 maxWidth, maxHeight; //the max high and weight the whole sprite will have (unrotated)
-	Sint32 rotation; //the rotation of the sprite. A radiant fixed point value
-	Sint32 zoomX, zoomY; //the zoom of the sprite, fixed point values. SP_ONE means no zoom
-	spSubSpritePointer firstSub; //double linked list of subsprites
-	spSubSpritePointer momSub; //for drawing and update. Don't touch it.
-	char* name; //the name of the sprite. Important for spriteCollection
+	Sint32 maxWidth, maxHeight;
+	Sint32 rotation;
+	Sint32 zoomX, zoomY;
+	spSubSpritePointer firstSub;
+	spSubSpritePointer momSub;
+	char* name;
 	spSpriteCollectionPointer collection;
-	spSpritePointer next; //Used for spriteCollections. Do not modify!
+	spSpritePointer next;
 } spSprite;
 
+/* Type: spSpriteCollection
+ * 
+ * This is a collection of different sprites of one kind, e.g the
+ * sprite of the character of your game. In that case you can have
+ * different named sprites in this collection e.g. for running left,
+ * running right, jumping left, jumping right, standing left, standing
+ * right and so on and can easyly choose between them e.g. by calling
+ * > spSelectSprite(collection,"running left");
+ * 
+ * Variables:
+ * firstSprite - the first sprite in the collection
+ * active - the choosen sprite*/
 typedef struct spSpriteCollectionStruct
 {
-	spSpritePointer firstSprite; //the first sprite of the collection
-	spSpritePointer active; //the selected sprite
+	spSpritePointer firstSprite;
+	spSpritePointer active;
 } spSpriteCollection;
 
-/* spNewSprite creates a new (empty) sprite. If you pass as name, it
- * will be copied and saved - important for sprite collections, but if
- * you don't use them, feel free to pass NULL.*/
+
+/* Function: spNewSprite
+ * 
+ * Creates a new (empty) sprite.
+ * 
+ * Parameters:
+ * name - the name of the sprite. Needed for finding in a collection,
+ * but not necessary for the sprite itself, so if not needed feel free
+ * to pass NULL
+ * 
+ * Returns:
+ * spSprite* - Pointer to a <spSprite> struct*/
 PREFIX spSpritePointer spNewSprite(char* name);
 
-/* spDeleteSprite deletes a sprite and all subsprites. If the sprite is
- * in a collection (see below), it is removed from there, too.*/
+/* Function: spDeleteSprite
+ * 
+ * Deletes a sprite and *all* subsprites. If the sprite is
+ * in a collection (see below), it is removed from there, too.
+ * 
+ * Parameters:
+ * sprite - the sprite to be removed*/
 PREFIX void spDeleteSprite( spSpritePointer sprite);
 
-/* spNewSubSpriteNoTiling creates a new subSprite out of a whole surface
- * and add it to the sprite "sprite" with the duration "duration". */
+/* Function: spNewSubSpriteNoTiling
+ * 
+ * Creates a new subSprite out of a whole surface.
+ * 
+ * Parameters:
+ * sprite - the sprite, in which the subsprite shall be added
+ * surface - the surface to be added. It will be "copied" with
+ * <spCopySurface>. See <spCopySurface> for more information about
+ * "copying" with enabled caching
+ * duration - the duration of the subsprite in milliseconds
+ * 
+ * Returns:
+ * spSubSprite* - a pointer to the created <spSubSprite> struct
+ * 
+ * See Also:
+ * <spNewSubSpriteWithTiling>, <spNewSubSpriteTilingRow>*/
 PREFIX spSubSpritePointer spNewSubSpriteNoTiling( spSpritePointer sprite, SDL_Surface* surface, Sint32 duration );
 
-/* spNewSubSpriteWithTiling is very similar to spNewSubSpriteNoTiling,
- * but instead of a surface a PART of the surface is passed. sx and sy
- * are the left/top egde of the part and sw and sh the width and high.*/
+/* Function: spNewSubSpriteWithTiling
+ * 
+ * Creates a new subSprite out of a part of a surface (tiling).
+ * 
+ * Parameters:
+ * sprite - the sprite, in which the subsprite shall be added
+ * surface - the surface, which part shall be added. It will be "copied"
+ * with <spCopySurface>. See <spCopySurface> for more information about
+ * "copying" with enabled caching
+ * sx,sy - position of the left top corner of the part of the surface to
+ * be added
+ * w,h - size of the part to be added
+ * duration - the duration of the subsprite in milliseconds
+ * 
+ * Returns:
+ * spSubSprite* - a pointer to the created <spSubSprite> struct
+ * 
+ * See Also:
+ * <spNewSubSpriteNoTiling>, <spNewSubSpriteTilingRow>*/
 PREFIX spSubSpritePointer spNewSubSpriteWithTiling( spSpritePointer sprite, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 sw, Sint32 sh, Sint32 duration );
 
-/* spNewSubSpriteTilingRow is very similar to spNewSubSpriteWithTiling -
- * But instead of adding ONE part of a surface, count parts of the
- * same surface "surface" are added, sw and sh are similar. sx and sy
- * are the coordinates of the FIRST subSprite. hopw is the width
- * to the next subSprite. If the border of the surface is reached, but
- * still subSprites to add, the next line (hoph under the first) will
- * be read. */
+/* Function: spNewSubSpriteTilingRow
+ * 
+ * Very similar to <spNewSubSpriteWithTiling>, but instead of adding
+ * *one* part of a surface, multiple parts ("tiles") of the same surface
+ * are added.
+ * 
+ * Parameters:
+ * sprite - the sprite, in which the subsprites shall be added
+ * surface - the surface, which parts shall be added. It will be
+ * "copied" with <spCopySurface>. See <spCopySurface> for more
+ * information about "copying" with enabled caching
+ * sx,sy - position of the left top corner of the first part of the
+ * surface to be added
+ * w,h - size of the parts to be added
+ * hopw - the x distance to the next tile. If you don't use borders,
+ * hopw should be the same as w
+ * hoph - the y distance to the next tile. If the right end of the
+ * surface is reached, but not all parts added this functions "jumps"
+ * hoph on the y-axis and resets the x-position, too (like a line break
+ * in the image). If you don't use borders, hoph should be the same as h
+ * count - the number of subSprites to be added.
+ * duration - the duration of the subsprite in milliseconds
+ * 
+ * See Also:
+ * <spNewSubSpriteNoTiling>, <spNewSubSpriteWithTiling>*/
 PREFIX void spNewSubSpriteTilingRow( spSpritePointer sprite, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 sw, Sint32 sh, Sint32 hopw,Sint32 hoph, Sint32 count,Sint32 duration );
 
 /* Updates the sprite for time ms */
