@@ -59,9 +59,9 @@
 typedef struct spPointStruct *spPointPointer;
 typedef struct spPointStruct
 {
-	Sint32 x, y, z;    //space coordinates
-	Sint32 tx, ty, tz; //multiplied with modelview
-	Sint32 px, py, pz; //projected
+	Sint32 x, y, z;
+	Sint32 tx, ty, tz;
+	Sint32 px, py, pz;
 } spPoint;
 
 /* Type: spTexPoint
@@ -78,10 +78,10 @@ typedef struct spPointStruct
 typedef struct spTexPointStruct *spTexPointPointer;
 typedef struct spTexPointStruct
 {
-	Sint32 x, y, z;    //space coordinates
-	Sint32 tx, ty, tz; //multiplied with modelview
-	Sint32 px, py, pz; //projected
-	Sint32 u, v, w; //texture coordinates + w clip
+	Sint32 x, y, z;
+	Sint32 tx, ty, tz;
+	Sint32 px, py, pz;
+	Sint32 u, v, w;
 } spTexPoint;
 
 /* Type: spEdge
@@ -96,7 +96,7 @@ typedef struct spEdgeStruct *spEdgePointer;
 typedef struct spEdgeStruct
 {
 	int point[2];
-	int status; //-1 background, 0 border, 1 foreground
+	int status;
 } spEdge;
 
 /* Type: spTriangleS
@@ -136,13 +136,9 @@ typedef struct spTriangleStruct
 typedef struct spQuadStruct *spQuadPointer;
 typedef struct spQuadStruct
 {
-	int point[4]; //the edges
-	/* was_drawn shows (always), where the triangle was drawn the
-	 * last time: 0 = not drawn, else 1 screen, 2 left, 4 lefttop,
-	 * 8 top, 16 righttop, 32 right, 64 rightbottom, 128 bottom,
-	 * 256 leftbottom */
+	int point[4];
 	int was_drawn;
-	int edge[4]; //the update of the Edges status flag is optional!
+	int edge[4];
 	Sint32 normal[3];
 	Sint32 pNormal[3];
 } spQuadS;
@@ -159,186 +155,452 @@ typedef struct spQuadStruct
  * point - pointer/array to pointCount <spPoint> structs
  * texPointCount - number of points with texture coordinates in the mesh
  * texPoint - pointer/array to texPointCount <spTexPoint> structs
- * 
+ * triangleCount - numbers of untextured triangles in the Mesh
+ * triangle - pointer/array to triangleCount <spTriangleS> structs
+ * texTriangleCount - numbers of textured triangles in the Mesh
+ * texTriangle - pointer/array to texTriangleCount <spTriangleS> structs
+ * quadCount - numbers of untextured quads in the Mesh
+ * quad - pointer/array to quadCount <spQuadS> structs
+ * texQuadCount - numbers of textured quads in the Mesh
+ * texQuad - pointer/array to texQuadCount <spQuadS> structs
+ * edgeCount - numbers of untextured edges in the Mesh
+ * edge - pointer/array to edgeCount <spEdge> structs
+ * texEdgeCount - numbers of textured edges in the Mesh
+ * texEdge - pointer/array to texEdgeCount <spEdge> structs
+ * color - 16 bit colour of the whole mesh
  * */
 typedef struct spModelStruct *spModelPointer;
 typedef struct spModelStruct
 {
 	SDL_Surface* texture;
 	int pointCount;
-	spPointPointer    point; //"normal" points
+	spPointPointer point;
 	int texPointCount;
-	spTexPointPointer texPoint; //points with u,v coordinates
+	spTexPointPointer texPoint;
 	int triangleCount, texTriangleCount;
-	spTrianglePointer triangle, texTriangle; //the triangles of the modell
+	spTrianglePointer triangle, texTriangle;
 	int quadCount, texQuadCount;
-	spQuadPointer quad, texQuad; //the quads of the modell
+	spQuadPointer quad, texQuad;
 	int edgeCount, texEdgeCount;
 	spEdgePointer edge, texEdge;
 	Uint16 color;
 } spModel;
 
-/* This is a struct for one light source */
+/* Type: spLight
+ * 
+ * Struct for light sources.
+ * 
+ * Variables:
+ * r,g,b - fixed point color of the light. (SP_ONE,SP_ONE,SP_ONE) is a bright
+ * white
+ * x,y,z - position of the light
+ * tx,ty,tz - translated position of the light
+ * active - determines, whether the light is enabled in calculation or not. 1 is
+ * on, 0 is off*/
 typedef struct spLightStruct *spLightPointer;
 typedef struct spLightStruct
 {
-	Uint32 r, g, b; //fix point color! (1,1,1) is "normal"
-	Sint32 x, y, z; //the position
-	Sint32 tx,ty,tz; //the translated position;
-	Sint32 active;  //just guess, what is says ;-)
+	Uint32 r, g, b;
+	Sint32 x, y, z;
+	Sint32 tx,ty,tz;
+	Sint32 active;
 } spLight;
 
 
-//--- Operations for the Matrizes ---
-/* spSetFrustumf2 setups the frustum of the projection matrix. In most
- * cases you don't need it directly, because spSetPerspective calls it */
+/* Functions: Operations for the Matrizes
+ * 
+ * Like other 3d libraries like OpenGL, sparrow3d uses homolog 4x4 matrizes for
+ * the orientation in space, too. These functions are for manipulating the
+ * projection and modelview matrix. The last is for the orientation in space,
+ * the first for projecting from the 3d space to the 2d space of the screen.
+ * Most of the times you will not have to change the matrizes on your own and
+ * you can just functions for manipulating them */
+ 
+ 
+/* Function: spSetFrustumf2
+ * 
+ * Function for setting up the frustom of the projection matrix. Most of the
+ * time you will not use this directly, but the perspective setting up functions
+ * do.
+ * 
+ * Parameters:
+ * matrix - a pointer to at least 16 Sint32 values for the matrix
+ * left - the left border of the frustum
+ * right - the right border of the frustum
+ * bottom - the bottom border of the frustum
+ * top - the top border of the frustum
+ * znear - z position auf the near plane
+ * zfar - z position of the far plane*/
 void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
 							Sint32 znear, Sint32 zfar );
 							
 							
-/* spSetPerspective sets the Projection matrix. Because you call this
- * function mostly just one time at beginning and the need of REALLY
- * high accuracy, this is one of the only functions from sparrow3d,
- * which has floats as parameter.
- * - fovyInDegrees is the field of View in degrees
- * - aspectRatio is self-explanatory. width / height is a good value
- *   most of the times.
- * - znear and zfar are the nearest and farest value for the z ordinate.
- *   in fact: znear is ignored most of the time*/
+/* Function: spSetPerspective
+ * 
+ * Sets the projection matrix. Because you call this function mostly just one
+ * time at beginning and the need of REALLY high accuracy, this is one of the
+ * rare functions from sparrow3d, which has floats as parameter.
+ * 
+ * Parameters:
+ * fovyInDegrees - the field of View in degrees. 45° is a good value
+ * aspectRatio - the aspect ratio of the projection. width / height is a good
+ * value most of the times
+ * znear,zfar - the nearest and farest value for the z ordinate
+ * 
+ * See Also:
+ * <spSetPerspectiveStereoscopic>*/
 PREFIX void spSetPerspective( float fovyInDegrees, float aspectRatio,
 							  float znear, float zfar );
 
-/* Works like spSetPerspective, but for stereoscopic projection */
+/* Function: spSetPerspectiveStereoscopic
+ * 
+ * Sets and returns a projection matrix for steroscopic viewing, so most of the
+ * times you will call this function for each eye once. Because you call this
+ * function mostly just one time at beginning and the need of REALLY high
+ * accuracy, this is one of the rare functions from sparrow3d, which has floats
+ * as parameter.
+ * 
+ * Parameters:
+ * projectionMatrix - a pointer to at least 16 Sint32 values for the calculated
+ * projection matrix
+ * fovyInDegrees - the field of View in degrees. 45° is a good value
+ * aspectRatio - the aspect ratio of the projection. width / height is a good
+ * value most of the times
+ * znear,zfar - the nearest and farest value for the z ordinate
+ * z0 - position of the null paralaxis. That is the plane, where the left and
+ * right eye got the same image and it seems, that the object is at screen
+ * position while stereoscopic rendering
+ * distance - the distance from the centre, for one eye positive, for one
+ * negative
+ * 
+ * See Also:
+ * <spSetPerspective>*/
 PREFIX void spSetPerspectiveStereoscopic( Sint32* projectionMatrix, float fovyInDegrees, float aspectRatio,
 							  float znear, float zfar , float z0,float distance);
 
-/* Use this function, if you want two projection matrixes with the given
+/* Function: spStereoCreateProjectionMatrixes
+ * 
+ * Use this function, if you want two projection matrixes with the given eye
  * distance for stereoscopic projection. The projection matrix of sparrow3d is
  * not set! You have to set it with
  * memcpy(spGetProjectionMatrix(),matrix,sizeof(Sint32)*16) by yourself.
  * For stereoscopic rendering, you have to render the scene two times with the
  * colours of your 3d glasses and merge it afterwars, e.g. with
- * spStereoMergeSurfaces(screen,right_screen,crossedEyes). */
+ * <spStereoMergeSurfaces> (screen,right_screen,crossedEyes).
+ * 
+ * Parameters:
+ * left_matrix, right_matrix - the matrizes (pointer to at least 16 Sint32
+ * values) of the left and right eye
+ * fovyInDegrees - the field of View in degrees. 45° is a good value
+ * aspectRatio - the aspect ratio of the projection. width / height is a good
+ * value most of the times
+ * znear,zfar - the nearest and farest value for the z ordinate
+ * z0 - position of the null paralaxis. That is the plane, where the left and
+ * right eye got the same image and it seems, that the object is at screen
+ * position while stereoscopic rendering
+ * distance - the distance from the centre, for one eye positive, for one
+ * negative
+ * crossed - determines, whether the you will use crossed eye or color merging
+ * for merging the two resulting projections. For colored glassed use crossed=0,
+ * for two seperate images crossed=0
+ * */
 PREFIX void spStereoCreateProjectionMatrixes(Sint32* left_matrix,Sint32* right_matrix,float fovyInDegrees, float aspectRatio,
 							  float znear, float zfar , float z0,float distance,int crossed);
 
-/* spGetProjectionMatrix returns the projetion matrix. Be carefull: You
- * get the real pointer, no copy. */
+/* Function: spGetProjectionMatrix
+ * 
+ * Returns the projetion matrix pointer. Be carefull: You get the real pointer,
+ * no copy. Usefull for setting the projection matrix on yourself, e.g. while
+ * rendering stereoscopic:
+ * >spSelectRenderTarget(right_screen);
+ * >memcpy(spGetProjectionMatrix(),right_projection,sizeof(Sint32)*16);
+ * 
+ * Returns:
+ * Sint32* - pointer to the projection matrix
+ * 
+ * See Also:
+ * <spGetMatrix>*/
 PREFIX Sint32* spGetProjectionMatrix();
 
-/* you can set the projectio matrix on your own, if you want to. matrix
- * will be copied to the internal projection matrix variable (which is
- * returned by spGetProjectionMatrix) */
-PREFIX void spSetProjectionMatrix( Sint32* matrix );
+/* Function: spGetMatrix
+ * 
+ * Returns you the REAL modelview matrix pointer! That
+ * means, every change is directly updated. It is usefull for saving
+ * the modelview matrix like glPush, e.g.:
+ * >Sint16* matrix;
+ * >memcpy(spGetMatrix(),matrix,16*sizeof(Sint32)); //Save matrix
+ * >//Do fancy stuff
+ * >memcpy(matrix,spGetMatrix(),16*sizeof(Sint32)); //Restore matrix
+ * 
+ * Returns:
+ * Sint32* - pointer to the modelview matrix
+ * 
+ * See Also:
+ * <spGetProjectionMatrix>*/
+PREFIX Sint32* spGetMatrix();
 
-/* Sets the Modellview matrix to the identity matrix. This resets the
+/* Function: spIdentity
+ * 
+ * Sets the modelview matrix to the identity matrix. This resets the
  * view. If you now would draw something, it would be drawn to (0,0,0),
  * without rotation and without scaling. */
 PREFIX void spIdentity();
 
-/* spScale scales the modell view matrix. Use it with care, seems to be
- * a bit buggy... */
+/* Function: spScale
+ * 
+ * spScale scales the modelview matrix. Use it with care, seems to be
+ * a bit buggy...
+ * 
+ * Parameters:
+ * x,y,z - zoom parameters. Set everything to SP_ONE to get no result*/
 PREFIX void spScale( Sint32 x, Sint32 y, Sint32 z );
 
-/* spRotate rotates rad radians around the vector (x,y,z). Also a bit
- * buggy. spRotate(X|Y|Z) are better most of the times. */
+/* Function: spRotate
+ * 
+ * Rotates rad radians around the vector (x,y,z). Also a bit
+ * buggy. spRotate(X|Y|Z) are better most of the times.
+ * 
+ * Parameters:
+ * x,y,z - axis to rotate
+ * rad - angle to rotate
+ * 
+ * See Also:
+ * <spRotateX>,<spRotateY>,<spRotateZ>*/
 PREFIX void spRotate( Sint32 x, Sint32 y, Sint32 z, Sint32 rad );
 
-/* Rotates around the X-Axis. Every transformation done AFTERwards is
- * rotated around rad radians */
+/* Function: spRotateX
+ * 
+ * Rotates rad radians around the x-axis.
+ * 
+ * Parameters:
+ * rad - angle to rotate around the x-axis
+ * 
+ * See Also:
+ * <spRotate>,<spRotateY>,<spRotateZ>*/
 PREFIX void spRotateX( Sint32 rad );
 
-/* Rotates around the Y-Axis. Every transformation done AFTERwards is
- * rotated around rad radians */
+/* Function: spRotateY
+ * 
+ * Rotates rad radians around the y-axis.
+ * 
+ * Parameters:
+ * rad - angle to rotate around the y-axis
+ * 
+ * See Also:
+ * <spRotate>,<spRotateX>,<spRotateZ>*/
 PREFIX void spRotateY( Sint32 rad );
 
-/* Rotates around the Z-Axis. Every transformation done AFTERwards is
- * rotated around rad radians */
+/* Function: spRotateZ
+ * 
+ * Rotates rad radians around the z-axis.
+ * 
+ * Parameters:
+ * rad - angle to rotate around the z-axis
+ * 
+ * See Also:
+ * <spRotate>,<spRotateX>,<spRotateY>*/
 PREFIX void spRotateZ( Sint32 rad );
 
-/* spTranslate does a relative translation to (x,y,z) */
+/* Function: spTranslate
+ * 
+ * This function does a relative translation to (x,y,z).
+ * 
+ * Parameters:
+ * x,y,z - way to translate*/
 PREFIX void spTranslate( Sint32 x, Sint32 y, Sint32 z );
 
-/* spGetMatrix returns you the REAL modellview matrix pointer! That
- * means, every change is directly updated. It is usefull for saving
- * the modell view matrix like glPush.*/
-PREFIX Sint32* spGetMatrix();
+/* Functions: Light functions
+ * 
+ * Only <"Real" 3D functions> (except spLine3D) are enlighted. You have up to
+ * 8 light sources (in fact, even more than 4 look shitty).*/
 
-/* Sets the modell view matrix (copies matrix). Usefull for restoring 
- * a modell view matrix like glPop */
-PREFIX void spSetMatrix( Sint32* matrix );
-
-//--- Light functions. Only "real" 3D functions (except spLine3D) are enlighted ---
-
-/* Sets Light Calculation on or off. Default off (0) */
+/* Function: spSetLight
+ * 
+ * Sets Light Calculation on or off. Default off (0)
+ * 
+ * Parameters:
+ * value - 0 means off, 1 means on*/
 PREFIX void spSetLight( int value );
 
-/* Specifies, whether the light number is used or not (default: just
- * number 0 is enabled)*/
+/* Function: spEnableLight
+ * 
+ * Specifies, whether a light is used or not for the light calculation.
+ * (default: just number 0 is enabled)
+ * 
+ * Paramaters:
+ * number - the light to (de)activate
+ * active - 1 for turning on, 0 for switching off*/
 PREFIX void spEnableLight( int number, Sint32 active );
 
-/* Sets the Light Color */
+/* Function: spSetLightColor
+ * 
+ * Sets the color of a light
+ * 
+ * Parameters:
+ * number - the light to change the color
+ * r,g,b - Uint32 fixed point RGB color of the light*/
 PREFIX void spSetLightColor( int number, Uint32 r, Uint32 g, Uint32 b );
 
-/* Sets the Light Position. The Position will be transformed with the
- * Modelview matrix as it is at call! */
+/* Function: spSetLightPosition
+ * 
+ * Sets the Light Position. The Position will be transformed with the
+ * modelview matrix *as it is* at call!
+ * 
+ * Parameters:
+ * number - the light to change position
+ * x,y,z - new position of the light
+ * 
+ * See Also:
+ * <spUpdateLight>*/
 PREFIX void spSetLightPosition( int number, Sint32 x, Sint32 y, Sint32 z );
 
-/* If you want to update the lights position without a recall of
- * spSetLightPosition use this. This just multiplies the lights position
- * with the Modelviewmatrix. */
+/* Function: spUpdateLight
+ * 
+ * If you want to update the lights position without a recall of
+ * <spSetLightPosition> use this function. This just multiplies the lights
+ * position with the modelview matrix to get the new position in camera space.
+ * 
+ * Parameters:
+ * number - the light to update position
+ * 
+ * See Also:
+ * <spSetLightPosition>*/
 PREFIX void spUpdateLight(int number);
 
-/* Sets the global ambient light value used be every 3D quad or triangle
- * Default: 0.25, 0.25, 0.25 */
+/* Function: spSetAmbientLightColor
+ * 
+ * Sets the global ambient light value. This value is added to all other lights
+ * independing from position of the face in space.
+ * 
+ * Parameters:
+ * r,g,b - Fixed point Uint32 color value. Default: 0.25, 0.25, 0.25*/
 PREFIX void spSetAmbientLightColor( Uint32 r, Uint32 g, Uint32 b );
 
-//--- "Real" 3D functions, where the primitives is correct rotated ---
+/* Functions: "Real" 3D functions
+ * 
+ * These functions are for drawing 3d primitives in space with light calculation,
+ * rotation and so on.*/
 
-/* every 3D function with textures can be rendered with affine texture mapping,
+/* Function: spSetPerspectiveTextureMapping
+ * 
+ * Every 3D function with textures can be rendered with affine texture mapping,
  * what may look a bit "wobly" or perspectivly correct, which looks the best,
- * but may be slower! */
+ * but may be slower!
+ * 
+ * Parameters:
+ * value - 1 enables perspectively correct mapping, 0 disables. 0 is default*/
 PREFIX void spSetPerspectiveTextureMapping(int value);
 
-/* Draws a triangle in 3D space. Returns 0
- * if not drawn (culling) or different bits, where the edges are:
- * 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right,
- * 64 rightbottom, 128 bottom, 256 leftbottom */
+/* Function: spTriangle3D
+ * 
+ * Draws a triangle in 3D space. Returns 0 if not drawn (culling) or different
+ * bits, where the edges are: 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 
+ * 32 right, 64 rightbottom, 128 bottom, 256 leftbottom.
+ * 
+ * Parameters:
+ * x1,y1,z1 - position of the first triangle point in space
+ * x2,y2,z2 - position of the second triangle point in space
+ * x3,y3,z3 - position of the third triangle point in space
+ * color - 16 Bit color of the triangle
+ * 
+ * Returns:
+ * int - see above
+ * 
+ * See Also:
+ * <spTriangleTex3D>, <spQuad3D>*/
 PREFIX int spTriangle3D( Sint32 x1, Sint32 y1, Sint32 z1,
 						 Sint32 x2, Sint32 y2, Sint32 z2,
 						 Sint32 x3, Sint32 y3, Sint32 z3, Uint16 color );
 
-/* Draws a quad in 3D space. Returns 0
- * if not drawn (culling) or different bits, where the edges are:
- * 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right,
- * 64 rightbottom, 128 bottom, 256 leftbottom */
+/* Function: spQuad3D
+ * 
+ * Draws a quad in 3D space. Returns 0 if not drawn (culling) or different
+ * bits, where the edges are: 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 
+ * 32 right, 64 rightbottom, 128 bottom, 256 leftbottom.
+ * 
+ * Parameters:
+ * x1,y1,z1 - position of the first quad point in space
+ * x2,y2,z2 - position of the second quad point in space
+ * x3,y3,z3 - position of the third quad point in space
+ * x4,y4,z4 - position of the fourth quad point in space
+ * color - 16 Bit color of the quad
+ * 
+ * Returns:
+ * int - see above
+ * 
+ * See Also:
+ * <spTriangle3D>, <spQuadTex3D>*/
 PREFIX int spQuad3D( Sint32 x1, Sint32 y1, Sint32 z1,
 					 Sint32 x2, Sint32 y2, Sint32 z2,
 					 Sint32 x3, Sint32 y3, Sint32 z3,
 					 Sint32 x4, Sint32 y4, Sint32 z4, Uint16 color );
 
-/* Draws a triangles with textue in 3D space. Returns 0
- * if not drawn (culling) or different bits, where the edges are:
- * 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right,
- * 64 rightbottom, 128 bottom, 256 leftbottom */
+/* Function: spTriangleTex3D
+ * 
+ * Draws a textured triangle in 3D space. Returns 0 if not drawn (culling) or
+ * different bits, where the edges are: 1 screen, 2 left, 4 lefttop, 8 top,
+ * 16 righttop, 32 right, 64 rightbottom, 128 bottom, 256 leftbottom.
+ * The used texture is determined with <spBindTexture>.
+ * 
+ * Parameters:
+ * x1,y1,z1 - position of the first triangle point in space
+ * u1,v1 - texture position of the first triangle point
+ * x2,y2,z2 - position of the second triangle point in space
+ * u2,v2 - texture position of the second triangle point
+ * x3,y3,z3 - position of the third triangle point in space
+ * u3,v3 - texture position of the third triangle point
+ * color - 16 Bit color of the triangle
+ * 
+ * Returns:
+ * int - see above
+ * 
+ * See Also:
+ * <spTriangle3D>, <spQuadTex3D>*/
 PREFIX int spTriangleTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 							Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2,
 							Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint16 color );
 
-/* Draws a quad with textue in 3D space. Returns 0
- * if not drawn (culling) or different bits, where the edges are:
- * 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop, 32 right,
- * 64 rightbottom, 128 bottom, 256 leftbottom */
+/* Function: spQuadTex3D
+ * 
+ * Draws a textured quad in 3D space. Returns 0 if not drawn (culling) or
+ * different bits, where the edges are: 1 screen, 2 left, 4 lefttop, 8 top,
+ * 16 righttop, 32 right, 64 rightbottom, 128 bottom, 256 leftbottom.
+ * The used texture is determined with <spBindTexture>.
+ * 
+ * Parameters:
+ * x1,y1,z1 - position of the first quad point in space
+ * u1,v1 - texture position of the first quad point
+ * x2,y2,z2 - position of the second quad point in space
+ * u2,v2 - texture position of the second quad point
+ * x3,y3,z3 - position of the third quad point in space
+ * u3,v3 - texture position of the third quad point
+ * x4,y4,z4 - position of the fourth quad point in space
+ * u4,v4 - texture position of the fourth quad point
+ * color - 16 Bit color of the quad
+ * 
+ * Returns:
+ * int - see above
+ * 
+ * See Also:
+ * <spQuad3D>, <spTriangleTex3D>*/
 PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 						Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2,
 						Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3,
 						Sint32 x4, Sint32 y4, Sint32 z4, Sint32 u4, Sint32 v4, Uint16 color );
 
-/* Draws a mesh in 3D space. Returns the count of drawns faces. If
- * updateEdgeList is uneven 0, the edge struct of the mesh is updated.
- * Furthermore every time the was_drawn variable of every face is sets,
- * which determines, whether the face was drawn (uneven 0) and where
- * (like e.g. the return value of spQuadTex3D). */
+/* Function: spMesh3D
+ * 
+ * Draws a mesh in 3D space. Every time the was_drawn variable of every face is
+ * sets, which determines, whether the face was drawn (uneven 0) and where
+ * (like e.g. the return value of spTriangle3D).
+ * 
+ * Parameters:
+ * mesh - pointer to a spModel struct to be drawn
+ * updateEdgeList - determines, whether the edgeList shall be updated (1) or
+ * not (0)
+ * 
+ * Returns:
+ * int - the count of drawn faces*/
 PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList );
 
 /* like spMesh3D, but with a additional position */

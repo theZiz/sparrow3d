@@ -336,11 +336,6 @@ PREFIX Sint32* spGetMatrix()
 	return spModelView;
 }
 
-PREFIX void spSetMatrix( Sint32* matrix )
-{
-	memcpy( spModelView, matrix, 16 * sizeof( Sint32 ) );
-}
-
 inline void spCalcNormal( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2,
 						  Sint32 x3, Sint32 y3, Sint32 z3, Sint32* normale )
 {
