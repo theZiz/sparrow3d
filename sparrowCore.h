@@ -76,7 +76,7 @@
 #define SP_VIRTUAL_KEYBOARD_FIRST_WAIT 300
 #define SP_VIRTUAL_KEYBOARD_WAIT 100
 
-/* Defines: Values for <spSetVirtualKeyboard>.
+/* Defines: Values for spSetVirtualKeyboard.
  * 
  * With <spSetVirtualKeyboard> you setup, when the virtual keyboard is used.
  * 
@@ -173,7 +173,7 @@ PREFIX void spPrintDebug( char* text );
  * 
  * Returns:
  * SDL_Surface* - Window surface. If you want to draw to it with sparrow3d,
- * dont't forget to call <sparrowPrimitives.spSelectRenderTarget>.*/
+ * dont't forget to call <spSelectRenderTarget>.*/
 PREFIX SDL_Surface* spCreateWindow( int width, int height, int fullscreen, int allowresize );
 
 /* Function: spCreateDefaultWindow

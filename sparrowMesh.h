@@ -45,7 +45,7 @@
  * multiplied with the color of the texture and the result will be the texture.
  * 
  * Returns:
- * spModelPointer - a pointer to a new created <spModelStruct> struct
+ * spModelPointer - a pointer to a new created <spModel> struct
  * 
  * See Also:
  * <spMeshLoadObjSize>*/
@@ -70,7 +70,7 @@ PREFIX spModelPointer spMeshLoadObj( char* name, SDL_Surface* texture, Uint16 co
  * <spMeshLoadObj>
  * 
  * Returns:
- * spModelPointer - a pointer to a new created <spModelStruct> struct
+ * spModelPointer - a pointer to a new created <spModel> struct
  * 
  * See Also:
  * <spMeshLoadObj>*/

@@ -502,7 +502,7 @@ PREFIX int spPerspectiveQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Si
  * <spBlitSurfacePart>*/
 PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface );
 
-/* Function: spBlitSurface
+/* Function: spBlitSurfacePart
  * 
  * Draws a part of a Surface on the target. The origin is at the center as
  * default. Use <spSetHorizontalOrigin> and <spSetVerticalOrigin> to change this

@@ -365,7 +365,7 @@ PREFIX void spScale( Sint32 x, Sint32 y, Sint32 z );
  * rad - angle to rotate
  * 
  * See Also:
- * <spRotateX>,<spRotateY>,<spRotateZ>*/
+ * <spRotateX>, <spRotateY>, <spRotateZ>*/
 PREFIX void spRotate( Sint32 x, Sint32 y, Sint32 z, Sint32 rad );
 
 /* Function: spRotateX
@@ -376,7 +376,7 @@ PREFIX void spRotate( Sint32 x, Sint32 y, Sint32 z, Sint32 rad );
  * rad - angle to rotate around the x-axis
  * 
  * See Also:
- * <spRotate>,<spRotateY>,<spRotateZ>*/
+ * <spRotate>, <spRotateY>, <spRotateZ>*/
 PREFIX void spRotateX( Sint32 rad );
 
 /* Function: spRotateY
@@ -387,7 +387,7 @@ PREFIX void spRotateX( Sint32 rad );
  * rad - angle to rotate around the y-axis
  * 
  * See Also:
- * <spRotate>,<spRotateX>,<spRotateZ>*/
+ * <spRotate>, <spRotateX>, <spRotateZ>*/
 PREFIX void spRotateY( Sint32 rad );
 
 /* Function: spRotateZ
@@ -398,7 +398,7 @@ PREFIX void spRotateY( Sint32 rad );
  * rad - angle to rotate around the z-axis
  * 
  * See Also:
- * <spRotate>,<spRotateX>,<spRotateY>*/
+ * <spRotate>, <spRotateX>, <spRotateY>*/
 PREFIX void spRotateZ( Sint32 rad );
 
 /* Function: spTranslate
@@ -480,16 +480,6 @@ PREFIX void spSetAmbientLightColor( Uint32 r, Uint32 g, Uint32 b );
  * 
  * These functions are for drawing 3d primitives in space with light calculation,
  * rotation and so on.*/
-
-/* Function: spSetPerspectiveTextureMapping
- * 
- * Every 3D function with textures can be rendered with affine texture mapping,
- * what may look a bit "wobly" or perspectivly correct, which looks the best,
- * but may be slower!
- * 
- * Parameters:
- * value - 1 enables perspectively correct mapping, 0 disables. 0 is default*/
-PREFIX void spSetPerspectiveTextureMapping(int value);
 
 /* Function: spTriangle3D
  * 
@@ -600,57 +590,208 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
  * not (0)
  * 
  * Returns:
- * int - the count of drawn faces*/
+ * int - the count of drawn faces
+ * 
+ * See Also:
+ * <spMesh3DwithPos>*/
 PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList );
 
-/* like spMesh3D, but with a additional position */
+/* Function: spMesh3DwithPos
+ * 
+ * like <spMesh3D>, but with an additional position.
+ * 
+ * Parameters:
+ * x,y,z - position to draw to mesh
+ * mesh - pointer to a spModel struct to be drawn
+ * updateEdgeList - determines, whether the edgeList shall be updated (1) or
+ * not (0)
+ * 
+ * Returns:
+ * int - the count of drawn faces
+ * 
+ * See Also:
+ * <spMesh3D>*/
 PREFIX int spMesh3DwithPos(Sint32 x,Sint32 y,Sint32 z, spModelPointer mesh, int updateEdgeList );
 
-/* Draws a line in the 3d space with the given color. No light
- * calculation is done. */
+/* Function: spLine3D
+ * 
+ * Draws a line in the 3d space with the given color. No light
+ * calculation is done!
+ * 
+ * Parameters:
+ * x1,y1,z1 - the point from which the line should be drawn
+ * x2,y2,z2 - the point to which the line should be drawn
+ * color - 16 bit color of the line*/
 PREFIX void spLine3D( Sint32 x1, Sint32 y1, Sint32 z1,
 					  Sint32 x2, Sint32 y2, Sint32 z2, Uint16 color );
 
-//--- "Billboard" 3D Functions. The position and size are projected, but the rotation is always, that you see the front. No light! ---
+/* Functions: "Billboard" 3D Functions
+ * 
+ * For these functions the position and size are projected, but the
+ * rotation is always, that you see the front (also called "billboard").
+ * No lighting, as it woudln't make much sense with the face always
+ * showing in the same direction!*/
 
-/* spRotozoomSurface3D draws a surface only rotated angle radians around
- * the z axis. Furthermore it can be zoomed in x and y direction. The
- * surface is getting smaller, if it is more fare away. */
+/* Function: spRotozoomSurface3D
+ * 
+ * Draws a rotozoomed surface in 3d space. If father away, it gets
+ * smaller. If you don't want these effect evaluate zoomX and zoomY with
+ * the z-coordinate or use <spBlit3D>.
+ * 
+ * Parameters:
+ * x,y,z - position in 3d space
+ * surface - SDL_Surface* to be drawn
+ * zoomX,zoomY - x and y zoom of the surface
+ * angle - the rotation of the surface in fixed point radian
+ * 
+ * See Also:
+ * <spRotozoomSurfacePart3D>, <spBlit3D>*/
 PREFIX void spRotozoomSurface3D( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface, Sint32 zoomX, Sint32 zoomY, Sint32 angle );
 
-/* draws a part of a surface only rotated angle radians around
- * the z axis. Furthermore it can be zoomed in x and y direction. The
- * surface is getting smaller, if it is more fare away. */
+/* Function: spRotozoomSurfacePart3D
+ * 
+ * Draws a rotozoomed part of a surface in 3d space. If father away, it
+ * gets smaller. If you don't want these effect evaluate zoomX and zoomY
+ * with the z-coordinate or use <spBlitPart3D>.
+ * 
+ * Parameters:
+ * x,y,z - position in 3d space
+ * surface - SDL_Surface* to be drawn
+ * sx,sy - position of the left top corner of the part of the surface to be
+ * drawn
+ * w,h - size of the part to be drawn
+ * zoomX,zoomY - x and y zoom of the surface
+ * angle - the rotation of the surface in fixed point radian*/
 PREFIX void spRotozoomSurfacePart3D( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, Sint32 zoomX, Sint32 zoomY, Sint32 angle );
 
-/* draws a billboard rectangle in 3d space */
+/* Function: spRectangle3D
+ * 
+ * Draws a billboard rectangle in 3d space.
+ * 
+ * Parameters:
+ * x,y,z - position in 3d space
+ * w,h - width and height of the rectangle
+ * color - 16 bit color of the rectangle
+ * 
+ * See Also:
+ * <spRectangleBorder3D>*/
 PREFIX void spRectangle3D( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint16 color );
 
-/* draws a billboard ellipse in 3d space */
+/* Function: spEllipse3D
+ * 
+ * Draws a billboard ellipse in 3d space.
+ * 
+ * Parameters:
+ * x,y,z - position in 3d space
+ * rx,ry - x and y radius of the ellipse
+ * color - 16 bit color of the ellipse
+ * 
+ * See Also:
+ * <spEllipseBorder3D>*/
 PREFIX void spEllipse3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint16 color );
 
-/* draws a billboard rectangle border in 3d space */
+/* Function: spRectangleBorder3D
+ * 
+ * Draws a billboard rectangle border in 3d space.
+ * 
+ * Parameters:
+ * x,y,z - position in 3d space
+ * w,h - width and height of the rectangle
+ * bx,by - width and height of the border
+ * color - 16 bit color of the rectangle
+ * 
+ * See Also:
+ * <spRectangle3D>*/
 PREFIX void spRectangleBorder3D( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Sint32 bx, Sint32 by, Uint16 color );
 
-/* draws a billboard ellipse border in 3d space */
+/* Function: spEllipseBorder3D
+ * 
+ * Draws a billboard ellipse border in 3d space.
+ * 
+ * Parameters:
+ * x,y,z - position in 3d space
+ * rx,ry - x and y radius of the ellipse
+ * bx,by - width and height of the border
+ * color - 16 bit color of the ellipse
+ * 
+ * See Also:
+ * <spEllipse3D>*/
 PREFIX void spEllipseBorder3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Sint32 bx, Sint32 by, Uint16 color );
 
-//--- "Blitting" 3D Functions. Very much like the "Billboard" 3D Functions, but the size and rotation is fix (0 and 1)!
+/* Functions: "Blitting" 3D Functions
+ * 
+ * Very much like the <"Billboard" 3D Functions>, but the size and rotation is fix (0 and SP_ONE)!*/
 
-/* Blits a Surface. very fast! */
+/* Function: spBlit3D
+ * 
+ * Blits a surface in 3d space very fast.
+ * 
+ * Parameters:
+ * 
+ * x1,y1,z1 - position in space
+ * surface - SDL_Surface* to be drawn
+ * 
+ * See Also:
+ * <spRotozoomSurface3D>, <spBlitPart3D>*/
 PREFIX void spBlit3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface );
 
-/* Projects a point in the 3D scene. Usefull if you will draw your own
- * stuff in the 3D world. "withModelview" says, whether the rotation in
- * the ModelViewMatrix should be involved. E.g. if you want to get a
- * perspective correct width, you don't want the rotation. In this case
- * set it to 0. Most of the time you should be fine with 1. */
+/* Function: spBlitPart3D
+ * 
+ * Blits a part of a surface in 3d space very fast.
+ * 
+ * Parameters:
+ * 
+ * x1,y1,z1 - position in space
+ * surface - SDL_Surface* to be drawn
+ * sx,sy - position of the left top corner of the part of the surface to be
+ * drawn
+ * w,h - size of the part to be drawn
+ * 
+ * See Also:
+ * <spRotozoomSurfacePart3D>, <spBlit3D>*/
+PREFIX void spBlitPart3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h);
+
+/* Functions: Optimization and other functions
+ * 
+ * Some optional optimizations and helpers.*/
+
+/* Function: spSetPerspectiveTextureMapping
+ * 
+ * Every of the <"Real" 3D functions> with textures can be rendered with
+ * affine texture mapping what may look a bit "wobly" or perspectivly
+ * correct, which looks the best, but may be slower!
+ * 
+ * Parameters:
+ * value - 1 enables perspectively correct mapping, 0 disables. 0 is
+ * default*/
+PREFIX void spSetPerspectiveTextureMapping(int value);
+
+/* Function: spProjectPoint3D
+ * 
+ * Projects a point in the 3D scene. Usefull if you will draw your own
+ * stuff in the 3D world.
+ * 
+ * Parameters:
+ * x,y,z - 3d space point to project
+ * px,py,pz - pointer (!) to Sint32 coordinates, where to write the
+ * projection result
+ * w - pointer (!) to a Sint32 variable to save the w coordinate for
+ * w-clipping if needed
+ * withModelview - says, whether the rotation in the ModelViewMatrix
+ * should be involved. E.g. if you want to get a perspective correct
+ * width, you don't want the rotation. In this case set it to 0. Most of
+ * the time you should be fine with 1*/
 PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *py, Sint32 *pz, Sint32 *w,Sint32 withModelview );
-/* spUsePrecalculatedNormals desides, whether the precalculated normal
- * values of meshes are used or not. So this works only with spMesh3D*
- * functions. Be carefull! You can use this optimization only, if you
- * don't scale! Translation and rotations are okay. At default this
- * feature is disabled */
+
+/* Function: spUsePrecalculatedNormals
+ * 
+ * Desides, whether the precalculated normal values of meshes are used
+ * or not. So this works only with spMesh3D* functions. Be carefull! You
+ * can use this optimization only, if you don't scale! Translation and
+ * rotations are fine. At default this feature is disabled.
+ * 
+ * Parameters:
+ * value - 1 enabled, 0 disabled (default)*/
 PREFIX void spUsePrecalculatedNormals(int value);
 
 #endif

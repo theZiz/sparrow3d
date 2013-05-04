@@ -890,6 +890,31 @@ PREFIX void spBlit3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface )
 
 }
 
+PREFIX void spBlitPart3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
+{
+	int windowX = spGetRenderTarget()->w;
+	int windowY = spGetRenderTarget()->h;
+	int viewPortX = ( windowX >> 1 );
+	int viewPortY = ( windowY >> 1 );
+	Sint32 tx1, ty1, tz1, tw1;
+	spMulModellView( x1, y1, z1, &tx1, &ty1, &tz1, &tw1 );
+
+	x1 = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8],tz1) + spProjection[12];
+	y1 = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9],tz1);
+	z1 = spMul( spProjection[10], tz1 ) + spProjection[14];
+	Sint32 w1 = spMul( spProjection[11], tz1 );
+	if ( w1 == 0 )
+		w1 = 1;
+
+	Sint32 nx1 = spDiv( x1, w1 ) >> SP_HALF_ACCURACY;
+	Sint32 ny1 = spDiv( y1, w1 ) >> SP_HALF_ACCURACY;
+
+	spBlitSurfacePart( viewPortX + ( ( nx1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
+				   viewPortY - ( ( ny1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
+				   z1,surface,sx,sy,w,h);
+
+}
+
 PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 {
 	int count = 0;
