@@ -17,9 +17,11 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 
-/* sparrowSound is for sound output. Most calls and types are just renames of
- * libSDL_mixer functions with error handling.
- * For more details (especially about what is not wrapped here) have a look at
+/* File: sparrowSound
+ * 
+ * SparrowSound is for sound output. Most calls and types are just
+ * renames of libSDL_mixer functions with error handling. For more
+ * details (especially about what is not wrapped here) have a look at
  * http://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_frame.html */
 
 #ifndef _SPARROW_SOUND_H
@@ -28,94 +30,228 @@
 #include "sparrowDefines.h"
 #include <SDL_mixer.h>
 
+/* Define: SP_VOLUME_MAX
+ * 
+ * The maximal volume of a channel or chunk/spSound. Same as
+ * MIX_MAX_VOLUME from SDL Mixer.*/
 #define SP_VOLUME_MAX MIX_MAX_VOLUME
 
-/* This type ist just renamed for better usage (I don't like the SDL name).
- * Of course you can use the SDL-type-name or use this types with SDL-mixer
- * functions */
+/* Type: spSound
+ * 
+ * This type ist just Mix_Chunk from SDL Mixer renamed for better usage
+ * (I don't like the SDL name). Of course you can use the SDL-type-name
+ * or use this types with SDL-mixer functions */
 typedef Mix_Chunk spSound;
 
-/* This inits spSound. Without not sound will be possible! It returns 1 at
- * success and 0 at failure. If it failure, every spSound function will still
- * work - there will just be no sound. Btw, SDL_mixer would crash ;-) */
+/* Function: spSoundInit
+ * 
+ * This inits spSound. Without no sound will be possible! It returns 1
+ * at success and 0 at failure. If it failure, every spSound function
+ * will still be callable without crash - there will just be no sound.
+ * 
+ * Returns:
+ * int - 1 at success, 0 at failure*/
 PREFIX int spSoundInit();
 
-/* Sets the maximum count of channels. More channels need more space and time
- * to get handled. The default is 8 on most systems */
+/* Function: spSoundSetChannels
+ * 
+ * Sets the maximum count of channels. More channels need more space and
+ * time to get handled. The default is 8 on most systems.
+ * 
+ * Parameters:
+ * channels - the new count of channels*/
 PREFIX void spSoundSetChannels(int channels);
 
-/* This has to be called at the end of the program */
+/* Function: spSoundQuit
+ * 
+ * This has to be called at the end of the program.*/
 PREFIX void spSoundQuit();
 
-/* Pauses all music and sounds if 1 and resume with 0. Every new started 
- * sound will be pause, too. */
+/* Function: spSoundPauseAll
+ * 
+ * Pauses or resumes all music and sounds. Every new started sound will
+ * be pause, too.
+ * 
+ * Parameters:
+ * pause - 1 if you want to pause, 0 if you want to resume
+ * 
+ * See Also:
+ * <spSoundPause>, <spSoundPauseMusic>*/
 PREFIX void spSoundPauseAll(int pause);
 
-// ---- background music ----
+/* Functions: Background music functions
+ * 
+ * These functions are for the background music.*/
 
-/* If any sparrow call about background music is called, this Sound file will
- * be used. It can be any often used sound format like ogg, mp3, wav and so one.
- * Sometimes even mid. */
+/* Function: spSoundSetMusic
+ * 
+ * Sets the background music file. Every function for background music
+ * uses this function. It's like <spBindTexture> for music. ^^' To
+ * *start* the music use <spSoundPlayMusic> afterwards.
+ * 
+ * Parameters:
+ * filename - the music file to be used. Many formats are supported
+ * depending on the system. ogg, mp3, flac, wav should always be fine,
+ * but I already had system without mpe-support. In doubt use ogg or
+ * flac.
+ * 
+ * Returns:
+ * int - 1 at success, 0 at failure
+ * 
+ * See Also:
+ * <spSoundLoad>*/
 PREFIX int spSoundSetMusic(char* filename);
 
-/* Plays the loaded music from above. If fadeIn is > 0, a fade in of fadeIn
- * milli seconds is made. loops is the amount of times the background music
- * will be played. -1 means "infinite" times*/
+/* Function: spSoundPlayMusic
+ * 
+ * Plays the loaded music from <spSoundSetMusic> with optional fade in
+ * and repeating.
+ * 
+ * Parameters:
+ * fadeIn - if greater 0, the duration of the fade in
+ * loops - the amount of times the background music will be played. -1
+ * means "infinite" times and 0 means just once (0 repeats ;))
+ * 
+ * Returns:
+ * int - 1 at success, 0 at failure*/
 PREFIX int spSoundPlayMusic(int fadeIn,int loops);
 
-/* Stops playing the loaded music and uses a fadeOut, if it is greater than 0 */
+/* Function: spSoundStopMusic
+ * 
+ * Stops playing the loaded music with optional fade out.
+ * 
+ * Parameters:
+ * fadeOut - if greater 0, the duration of the fade out
+ * 
+ * Returns:
+ * int - 1 at success, 0 at failure*/
 PREFIX int spSoundStopMusic(int fadeOut);
 
-/* Pauses the music if pause = 1 and resumes with pause = 0 */
+/* Function: spSoundPauseMusic
+ * 
+ * Pauses or resumes the music.
+ * 
+ * Parameters:
+ * pause - 1 pauses and 0 resumes
+ * 
+ * See Also:
+ * <spSoundPauseAll>, <spSoundPauseMusic>*/ 
 PREFIX void spSoundPauseMusic(int pause);
 
-/* Returns the set volume of the music. Music and (all) sounds have different
- * volumes! */
-PREFIX int spSoundGetMusicVolume();
-
-/* Sets the volume of the music. Music and (all) sounds have different
- * volumes! The max value is SP_VOLUME_MAX */
+/* Function: spSoundSetMusicVolume
+ * 
+ * Sets the volume of the background music.
+ * 
+ * Parameters:
+ * volume - the new volume of the music. Music and (all) sounds have
+ * different volumes!
+ * 
+ * See Also:
+ * <spSoundGetMusicVolume>, <spSoundSetVolume>*/
 PREFIX void spSoundSetMusicVolume(int volume);
 
-// ---- Playing samples ----
+/* Function: spSoundGetMusicVolume
+ * 
+ * Returns the volume of the background music.
+ * 
+ * Returns
+ * int - the set volume of the music. Music and (all) sounds have
+ * different volumes!
+ * 
+ * See Also:
+ * <spSoundSetMusicVolume>, <spSoundGetVolume>*/
+PREFIX int spSoundGetMusicVolume();
 
-/* Loads a sound from the file at filename. Many formats like ogg, mp3 or wav
- * are possible. */
+/* Functions: Sound sample functions
+ * 
+ * These functions are for the sound samples.*/
+
+/* Function: spSoundLoad
+ * 
+ * Loads a <spSound> from a file. The loaded file is not played
+ * automaticly, use <spSoundPlay> for this.
+ * 
+ * Parameters:
+ * filename - the file to be loaded. Many formats are possible like
+ * wav, ogg, mp3 or flac. But some systems don't support everything so
+ * it is a good idea to stay with ogg and flac.
+ * 
+ * See Also:
+ * <spSoundSetMusic>*/
 PREFIX spSound* spSoundLoad(char* filename);
 
-/* Plays the sound and returns the channel, where it is played (e.g. for further
- * use with SDL_mixer calls. Most of the times you will not need it. Channel is
- * the channel, where it should be played. If you don't care, use -1, than the
- * choosen channel is returned. But sometimes it makes sense to e.g. use channel
- * 0 for the giant laser canon and channel 1 for the sound of the crying
- * hostages and you don't want to mind them, just always using the same. :)
- * loops determines, how often the sound will be played. 0 means once, -1
- * infinite. In this case you should mind the returned channel to stop it
- * yourself ;). If fadeIn is greater 0 a fade in of fadeIn ms will be done.
- * maxTime is the maximum time of playing the sound, if it doesn't stop before
- * because of being to short or too few loops. */
+/* Function: spSoundPlay
+ * 
+ * Plays a <spSound> sound.
+ * 
+ * Parameters:
+ * sound - the sound to be played
+ * channel - if you want to play on a specific channel, use this
+ * parameter, if you don't care (what you will most of the time) use -1
+ * loops - the amount of times the sound will be played. -1 means
+ * "infinite" times and 0 means just once (0 repeats ;))
+ * fadeIn - if greater 0, the duration of the fade in
+ * maxTime - the maximal time of playing the sound even with "infinite"
+ * loops. -1 means no maximal duration
+ * 
+ * Returns:
+ * int - the channel, in which the sound is played*/
 PREFIX int spSoundPlay(spSound* sound,int channel, int loops,int fadeIn,int maxTime);
 
-/* This stops a channel. You have to stop channels because of spSounds, because
- * on sound can be played multiple times on multiple channels. However: If
- * you pass -1 every sound stops. fadeOut is again a possibility for a fade Out
- * in milli seconds. */
+/* Function: spSoundStop
+ * 
+ * Stops a channel. You have to stop channels instead of spSounds,
+ * because one sound can be played multiple times on multiple channels.
+ * 
+ * Parameters:
+ * soundChannel - the channel to be stopped. -1 stops every channel
+ * fadeOut - if greater 0 this is the duration of a fade out*/
 PREFIX void spSoundStop(int soundChannel,int fadeOut);
 
-/* Pauses the channel if pause = 1 and resumes with pause = 0. If you want
- * to pause everything use channel = -1 or spSoundPauseAll if you want to pause
- * all sounds AND the background music. */
+/* Function: spSoundPause
+ * 
+ * Pauses or resumes a channel.
+ * 
+ * Parameters:
+ * pause - use 1 for pause and 0 for resume
+ * channel - the channel to be paused or resumed. -1 means every channel
+ * is pause or resumed. To pause or resume every channel *and* the
+ * background music use <spSoundPauseAll>
+ * 
+ * See Also:
+ * <spSoundPauseAll>, <spSoundPauseMusic>*/
 PREFIX void spSoundPause(int pause, int channel);
 
-/* Deletes the sound */
+/* Function: spSoundDelete
+ * 
+ * Deletes a sound.
+ * 
+ * Parameters:
+ * sound - the sound to be deleted*/
 PREFIX void spSoundDelete(spSound* sound);
 
-/* Returns the set volume of the sounds. Music and (all) sounds have different
- * volumes! */
-PREFIX int spSoundGetVolume();
-
-/* Sets the volume of the sounds. Music and (all) sounds have different
- * volumes! The max value is SP_VOLUME_MAX */
+/* Function: spSoundSetVolume
+ * 
+ * Sets the volume of all sound.
+ * 
+ * Parameters:
+ * volume - the new volume of all sounds. Music and (all) sounds have
+ * different volumes!
+ * 
+ * See Also:
+ * <spSoundGetVolume>, <spSoundSetMusicVolume>*/
 PREFIX void spSoundSetVolume(int volume);
+
+/* Function: spSoundGetVolume
+ * 
+ * Returns the volume of all sounds.
+ * 
+ * Returns
+ * int - the set volume of all sounds. Music and (all) sounds have
+ * different volumes!
+ * 
+ * See Also:
+ * <spSoundSetVolume>, <spSoundGetMusicVolume>*/
+PREFIX int spSoundGetVolume();
 
 #endif
