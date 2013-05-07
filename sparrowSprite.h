@@ -201,58 +201,148 @@ PREFIX spSubSpritePointer spNewSubSpriteWithTiling( spSpritePointer sprite, SDL_
  * <spNewSubSpriteNoTiling>, <spNewSubSpriteWithTiling>*/
 PREFIX void spNewSubSpriteTilingRow( spSpritePointer sprite, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 sw, Sint32 sh, Sint32 hopw,Sint32 hoph, Sint32 count,Sint32 duration );
 
-/* Updates the sprite for time ms */
+/* Function: spUpdateSprite
+ * 
+ * Updates the sprite animation.
+ * 
+ * Parameters:
+ * sprite - a pointer to a <spSprite> struct to update
+ * time - the elapsed time*/
 PREFIX void spUpdateSprite( spSpritePointer sprite, Sint32 time );
 
-/* Sets the rotation of the sprite. Similar to sprite->rotation = … */
+/* Function: spSetSpriteRotation
+ * 
+ * Sets the rotation of the sprite. Same as to sprite->rotation = …
+ * 
+ * Parameters:
+ * sprite - a pointer to a <spSprite> struct to update
+ * rotation - Sint32 fixed point radian rotation to set
+ * 
+ * See Also:
+ * <spSetSpriteZoom>*/
 PREFIX void spSetSpriteRotation( spSpritePointer sprite, Sint32 rotation );
 
-/* Sets the zoom of the sprite. Similar to sprite->zoomX = … or
- * sprite->zoomY = … */
+/* Function: spSetSpriteZoom
+ * 
+ * Sets the zoom of the sprite. Same as to sprite->zoomX = … or
+ * sprite->zoomY = …
+ * 
+ * Parameters:
+ * sprite - a pointer to a <spSprite> struct to update
+ * zoomX,zoomY - Sint32 fixed point zoom of the sprite. SP_ONE means no zoom
+ * 
+ * See Also:
+ * <spSetSpriteRotation>*/
 PREFIX void spSetSpriteZoom( spSpritePointer sprite, Sint32 zoomX, Sint32 zoomY );
 
-/* Draws the sprite @x,y on the screen with the z ordinate "z". The
- * handling of z is like spBlitSurface or spDrawSurface (zTest, zSet) */
+/* Function: spDrawSprite
+ * 
+ * Draws a sprite with z set and test. For more information or deactivating
+ * see <sparrowPrimitives>. The sprite is always drawn with the fastest possible
+ * way. That means e.g. blitting, if no zoom and rotation is given.
+ * 
+ * Parameters:
+ * x,y,z - position on screen and z coordinate for z test
+ * sprite - a pointer to a <spSprite> struct to update
+ * 
+ * See Also:
+ * <spDrawSprite3D> */
 PREFIX void spDrawSprite( Sint32 x, Sint32 y, Sint32 z, spSpritePointer sprite );
 
-/* Works like spDrawSprite, but it projects the sprite first. */
+/* Function: spDrawSprite3D
+ * 
+ * Draws a sprite with z set and test in 3d space. For more information or
+ * deactivating the z stuff see <sparrowPrimitives>. The sprite is always drawn
+ * with the fastest possible way. That means e.g. blitting, if no zoom and
+ * rotation is given.
+ * 
+ * Parameters:
+ * x,y,z - position in 3d space
+ * sprite - a pointer to a <spSprite> struct to update
+ * 
+ * See Also:
+ * <spDrawSprite> */
 PREFIX void spDrawSprite3D( Sint32 x, Sint32 y, Sint32 z, spSpritePointer sprite );
 
-/* Sometimes it is useful to encapsulated different sprites to one
+/* Function: spNewSpriteCollection
+ * 
+ * Sometimes it is useful to encapsulated different sprites to one
  * bundle, e.g. if you have a character with different animationloops
  * like running left, jumping left, running right, jumping right, etc.
  * These bundles are called "spriteCollections" in sparrow3d. Every
  * sprite can (but have not to be!) in one collection. The name of the
  * sprite is used to identify it, so keep in mind to give every sprite
- * a unique name at creation time! */
+ * a unique name at creation time for this feature!
+ * 
+ * Returns:
+ * spSpriteCollection* - a pointer to a fresh created <spSpriteCollection>*/
 PREFIX spSpriteCollectionPointer spNewSpriteCollection();
 
-/* This deletes the collection "collection". If "keepSprites" is 0 the
- * sprites in the collection will be deleted, too. */
+/* Function: spDeleteSpriteCollection
+ * 
+ * Deletes a collection.
+ * 
+ * Parameters:
+ * collection - the collection to be removed
+ * keepSprites - if 1 the sprites in the collection are kept, if 0 the sprites
+ * are deleted, too*/
 PREFIX void spDeleteSpriteCollection(spSpriteCollectionPointer collection, int keepSprites);
 
-/* This adds the existing (!) sprite "sprite" to the collection
- * "collection". If sprite is already in a collection, it will
- * automaticly removed first. */
+/* Function: spAddSpriteToCollection
+ * 
+ * This adds a existing (!) sprite to a collection.
+ * 
+ * Parameters:
+ * collection - the collection the sprite shall be added to
+ * sprite - the sprite to add to the collection. If the sprite is already in a
+ * collection, it is removed from the old collection*/
 PREFIX void spAddSpriteToCollection(spSpriteCollectionPointer collection, spSpritePointer sprite);
 
-/* This call removes a sprite from a collection and sets it collection
- * to NULL. The sprite is NOT deleted, but if you would delete it, it
- * would automaticly removed from the collection. */
+/* Function: spRemoveSpriteFromCollection
+ * 
+ * Removes a sprite from a collection.
+ * 
+ * Parameters:
+ * sprite - sprite to be removed from it's collection. The collection of the
+ * sprite is set to NULL. The sprite is not deleted, just removed! However, if
+ * you delete the sprite, it will be removed from it's collection automaticly*/
 PREFIX void spRemoveSpriteFromCollection(spSpritePointer sprite);
 
-/* Sets the active sprite of the collection. If no sprite with the name
- * "name" is found, no change is made. */
+/* Function: spSelectSprite
+ * 
+ * Sets the active sprite of the collection.
+ * 
+ * Parameters:
+ * collection - collection to work with
+ * name - name of the sprite to be choosen. If such a sprite doesn't exist, no
+ * change is done*/
 PREFIX void spSelectSprite(spSpriteCollectionPointer collection,char* name);
 
-/* Returns the active sprite of the sprite Collection. Same to
- * collection->active, but looks nicer, don't you think? ;-) */
+/* Function: spActiveSprite
+ * 
+ * Returns the active sprite of the sprite Collection. Same to
+ * collection->active, but looks nicer, don't you think? ;-)
+ * 
+ * Parameters:
+ * collection - the collection, which active sprite you want to know
+ * 
+ * Returns:
+ * spSprite* - Pointer to the active <spSprite>*/
 PREFIX spSpritePointer spActiveSprite(spSpriteCollectionPointer collection);
 
-/* Loads the a sprite Collection from a ssc-file (see folder data for
- * example files) and returns it as a sprite collection.
- * The fallback_surface is, if the image, which should have loaded, is
- * not found.*/
+/* Function: spLoadSpriteCollection
+ * 
+ * Loads the a sprite Collection from a ssc-file and returns it as a sprite
+ * collection. Use the "exampleSprite.ssc" in the data-folder of sparrow3d for
+ * an example and documentation of the file format.
+ * 
+ * Parameters:
+ * filename - file name of the ssc file
+ * fallback_surface - this surface will be used, if the image file mentioned in
+ * the ssc file is not found.
+ * 
+ * Returns
+ * spSpriteCollection* - pointer to the loaded <spSpriteCollection>*/
 PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surface* fallback_surface);
 
 #endif

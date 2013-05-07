@@ -206,6 +206,6 @@ clean:
 
 documentation: *.h
 	mkdir -p /tmp/sparrowDocumentationTemp
-	naturaldocs -i . -xi ./documentation -o FramedHTML documentation -p /tmp/sparrowDocumentationTemp
+	naturaldocs -i . -xi ./documentation -o HTML documentation -p /tmp/sparrowDocumentationTemp
 
 # This Makefile is AWESOME! /)^ɛ^(\ 
