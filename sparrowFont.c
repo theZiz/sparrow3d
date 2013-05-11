@@ -38,7 +38,7 @@ PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size )
 		printf( "	Error was: \"%s\"\n", TTF_GetError() );
 		return NULL;
 	}
-	spFontPointer font = ( spFontPointer )malloc( sizeof( spFontStruct ) );
+	spFontPointer font = ( spFontPointer )malloc( sizeof( spFont ) );
 	font->font = ttf;
 	font->root = NULL;
 	font->buttonRoot = NULL;
@@ -175,7 +175,7 @@ static void spFontInternalAddOneCharacter( spFontPointer font, Uint32 character,
 {
 	if (spFontGetLetter(font,character))
 		return;
-	spLetterPointer letter = ( spLetterPointer )malloc( sizeof( spLetterStruct ) );
+	spLetterPointer letter = ( spLetterPointer )malloc( sizeof( spLetter ) );
 
 	spFontChangeLetter( font, letter, character, color );
 	letter->character = character;
@@ -409,7 +409,7 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
 
 PREFIX void spFontAddButton( spFontPointer font, Uint32 character, char* caption, Uint16 fgColor, Uint16 bgColor )
 {
-	spLetterPointer letter = ( spLetterPointer )malloc( sizeof( spLetterStruct ) );
+	spLetterPointer letter = ( spLetterPointer )malloc( sizeof( spLetter ) );
 
 	spFontChangeButton( font, letter, character, caption, fgColor, bgColor );
 	letter->character = character;
@@ -576,12 +576,12 @@ PREFIX int spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPoi
 }
 
 /* Needed by spFontDrawRight and spFontDrawMiddle */
-typedef struct spLetterIterStruct_ *spLetterIterPointer;
-typedef struct spLetterIterStruct_
+typedef struct spLetterIterStruct *spLetterIterPointer;
+typedef struct spLetterIterStruct
 {
 	spLetterPointer letter;
 	spLetterIterPointer next; //For the Drawing functions
-} spLetterIterStruct;
+} spLetterIter;
 
 PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, const char *text, spFontPointer font )
 {
@@ -613,7 +613,7 @@ PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, const char *text, spFo
 			}
 			if ( letter )
 			{
-				spLetterIterPointer iter = ( spLetterIterPointer )malloc( sizeof( spLetterIterStruct ) );
+				spLetterIterPointer iter = ( spLetterIterPointer )malloc( sizeof( spLetterIter ) );
 				iter->letter = letter;
 				if ( first == NULL )
 				{
@@ -676,7 +676,7 @@ PREFIX int spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, const char *text, spF
 			}
 			if ( letter )
 			{
-				spLetterIterPointer iter = ( spLetterIterPointer )malloc( sizeof( spLetterIterStruct ) );
+				spLetterIterPointer iter = ( spLetterIterPointer )malloc( sizeof( spLetterIter ) );
 				iter->letter = letter;
 				if ( first == NULL )
 				{

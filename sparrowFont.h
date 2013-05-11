@@ -76,21 +76,21 @@
 // Use this in spFontSetShadeColor, if you don't want / need aliasing
 #define SP_FONT_NO_BORDER -1
 
-/* type: spLetterStruct
+/* type: spLetter
  * 
  * a letter in a binary tree of a font
  * 
  * Variables:
- * character - unicode character
- * surface - the character's surface
- * width - the character's width in pixels
- * height - the character's height in pixels
- * binary_height - internal value for the binary tree. *Not* the height in pixels
- * color - 16 Bit color of the character
- * left - internal pointer for the tree
- * right - internal pointer for the tree*/
-typedef struct spLetterStruct_ *spLetterPointer;
-typedef struct spLetterStruct_
+ * character (Uint32) - unicode character
+ * surface (SDL_Surface*) - the character's surface
+ * width (Sint32) - the character's width in pixels
+ * height (Sint32) - the character's height in pixels
+ * binary_height (Sint32) - internal value for the binary tree. *Not* the height in pixels
+ * color (Uint16) - 16 Bit color of the character
+ * left (spLetter*) - internal pointer for the tree
+ * right (spLetter*) - internal pointer for the tree*/
+typedef struct spLetterStruct *spLetterPointer;
+typedef struct spLetterStruct
 {
 	Uint32 character;
 	SDL_Surface* surface;
@@ -99,45 +99,45 @@ typedef struct spLetterStruct_
 	Sint32 binary_height;
 	Uint16 color;
 	spLetterPointer left, right;
-} spLetterStruct;
+} spLetter;
 
-/* type: spFontCacheStruct
+/* type: spFontCache
  * 
  * the font cache
  * 
  * Variables:
- * size - size of the cache
- * cache - an array of pointers of <spLetterStruct>*/
+ * size (Uint32) - size of the cache
+ * cache (spLetter*) - an array of pointers of <spLetter>*/
 typedef struct spFontCacheStruct *spFontCachePointer;
 typedef struct spFontCacheStruct
 {
 	Uint32 size;
 	spLetterPointer *cache;
-} spFontCacheStruct;
+} spFontCache;
 
-/* type: spFontStruct
+/* type: spFont
  * 
  * Root of a binary tree of all letters in this font
  * 
  * Variables:
- * font - the SDL_ttf font struct
- * maxheight - the height of the heighest letter in the tree
- * root - the root of the binary letter tree
- * cacheOffset - the offset of the cache, where it "starts"
- * cache - the cache
- * size - the size of the font
- * buttonRoot - the root of the buttons of the binary letter tree */
-typedef struct spFontStruct_ *spFontPointer;
-typedef struct spFontStruct_
+ * font (TTF_Font*) - the SDL_ttf font struct
+ * maxheight (Sint32) - the height of the heighest letter in the tree
+ * root (spLetter*) - the root of the binary letter tree
+ * cacheOffset (Uint32) - the offset of the cache, where it "starts"
+ * cache (spFontCache) - the cache
+ * size (Uint32) - the size of the font
+ * buttonRoot (spLetter*) - the root of the buttons of the binary letter tree */
+typedef struct spFontStruct *spFontPointer;
+typedef struct spFontStruct
 {
 	TTF_Font* font;
 	Sint32 maxheight;
 	spLetterPointer root;
 	Uint32 cacheOffset;
-	spFontCacheStruct cache;
+	spFontCache cache;
 	Uint32 size;
 	spLetterPointer buttonRoot;
-} spFontStruct;
+} spFont;
 
 /* Function: spFontLoad
  * 
@@ -148,7 +148,7 @@ typedef struct spFontStruct_
  * size - the size to load the font
  * 
  * Returns:
- * spFontStruct* - a pointer to a spFontStruct for later use */
+ * spFont* - a pointer to a spFont for later use */
 PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size );
 
 /* Function: spFontAdd
@@ -309,7 +309,7 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
  * character - the unicode character, which shall be found
  * 
  * Returns:
- * spLetterStruct* - NULL if not found, else the found letter struct
+ * spLetter* - NULL if not found, else the found letter struct
  * 
  * See Also:
  * <spFontGetButton>*/

@@ -53,9 +53,9 @@
  * a point struct with space, modelview and projected coordinates
  * 
  * Variables:
- * x,y,z - coordinates in space
- * tx,ty,tz - with modelview multiplied coordinates
- * px,py,pz - projected coordinates*/
+ * x,y,z (Sint32) - coordinates in space
+ * tx,ty,tz (Sint32) - with modelview multiplied coordinates
+ * px,py,pz (Sint32) - projected coordinates*/
 typedef struct spPointStruct *spPointPointer;
 typedef struct spPointStruct
 {
@@ -70,11 +70,11 @@ typedef struct spPointStruct
  * the w clip
  * 
  * Variables:
- * x,y,z - coordinates in space
- * tx,ty,tz - with modelview multiplied coordinates
- * px,py,pz - projected coordinates
- * u,v - texture coordinates
- * w - w clip*/
+ * x,y,z (Sint32) - coordinates in space
+ * tx,ty,tz (Sint32) - with modelview multiplied coordinates
+ * px,py,pz (Sint32) - projected coordinates
+ * u,v (Sint32) - texture coordinates
+ * w (Sint32) - w clip*/
 typedef struct spTexPointStruct *spTexPointPointer;
 typedef struct spTexPointStruct
 {
@@ -89,8 +89,8 @@ typedef struct spTexPointStruct
  * edge struct for meshes.
  * 
  * Variables:
- * point - array of the two points, which create an edge
- * status - flag after drawing (optional), whether the edge is in the background
+ * point (int*) - array of the two points, which create an edge
+ * status (int) - flag after drawing (optional), whether the edge is in the background
  * (-1), in the foreground (1) or at the border (0)*/
 typedef struct spEdgeStruct *spEdgePointer;
 typedef struct spEdgeStruct
@@ -104,13 +104,13 @@ typedef struct spEdgeStruct
  * A triangle struct for meshes.
  * 
  * Variables:
- * point - Array of 3 references to points
- * was_drawn - determines, where the triangle was drawn the last time:
+ * point (int*) - Array of 3 references to points
+ * was_drawn (int) - determines, where the triangle was drawn the last time:
  * 0 = not drawn, else 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop,
  * 32 right, 64 rightbottom, 128 bottom, 256 leftbottom
- * edge - Array of 3 references to edges
- * normal - Array with 3 fixed point numbers as normal
- * pNormal - Array with 3 fixed point numbers as projected normal */
+ * edge (int*) - Array of 3 references to edges
+ * normal (Sint32) - Array with 3 fixed point numbers as normal
+ * pNormal (Sint32) - Array with 3 fixed point numbers as projected normal */
 typedef struct spTriangleStruct *spTrianglePointer;
 typedef struct spTriangleStruct
 {
@@ -126,13 +126,13 @@ typedef struct spTriangleStruct
  * A triangle struct for meshes.
  * 
  * Variables:
- * point - Array of 4 references to points
- * was_drawn - determines, where the quad was drawn the last time:
+ * point (int*) - Array of 4 references to points
+ * was_drawn (int) - determines, where the quad was drawn the last time:
  * 0 = not drawn, else 1 screen, 2 left, 4 lefttop, 8 top, 16 righttop,
  * 32 right, 64 rightbottom, 128 bottom, 256 leftbottom
- * edge - Array of 4 references to edges
- * normal - Array with 3 fixed point numbers as normal
- * pNormal - Array with 3 fixed point numbers as projected normal */
+ * edge (int*) - Array of 4 references to edges
+ * normal (Sint32) - Array with 3 fixed point numbers as normal
+ * pNormal (Sint32) - Array with 3 fixed point numbers as projected normal */
 typedef struct spQuadStruct *spQuadPointer;
 typedef struct spQuadStruct
 {
@@ -150,24 +150,24 @@ typedef struct spQuadStruct
  * provides functions for drawing these meshes very fast.
  * 
  * Variables:
- * texture - the texture. Sparrow3D Meshes only can have 1 texture
- * pointCount - number of points without texture coordinates in the mesh
- * point - pointer/array to pointCount <spPoint> structs
- * texPointCount - number of points with texture coordinates in the mesh
- * texPoint - pointer/array to texPointCount <spTexPoint> structs
- * triangleCount - numbers of untextured triangles in the Mesh
- * triangle - pointer/array to triangleCount <spTriangleS> structs
- * texTriangleCount - numbers of textured triangles in the Mesh
- * texTriangle - pointer/array to texTriangleCount <spTriangleS> structs
- * quadCount - numbers of untextured quads in the Mesh
- * quad - pointer/array to quadCount <spQuadS> structs
- * texQuadCount - numbers of textured quads in the Mesh
- * texQuad - pointer/array to texQuadCount <spQuadS> structs
- * edgeCount - numbers of untextured edges in the Mesh
- * edge - pointer/array to edgeCount <spEdge> structs
- * texEdgeCount - numbers of textured edges in the Mesh
- * texEdge - pointer/array to texEdgeCount <spEdge> structs
- * color - 16 bit colour of the whole mesh
+ * texture (SDL_Surface*) - the texture. Sparrow3D Meshes only can have 1 texture
+ * pointCount (int) - number of points without texture coordinates in the mesh
+ * point (spPoint*) - pointer/array to pointCount <spPoint> structs
+ * texPointCount (int) - number of points with texture coordinates in the mesh
+ * texPoint (spTexPoint*) - pointer/array to texPointCount <spTexPoint> structs
+ * triangleCount (int) - numbers of untextured triangles in the Mesh
+ * triangle (spTriangleS*) - pointer/array to triangleCount <spTriangleS> structs
+ * texTriangleCount (int) - numbers of textured triangles in the Mesh
+ * texTriangle (spTriangleS*) - pointer/array to texTriangleCount <spTriangleS> structs
+ * quadCount (int) - numbers of untextured quads in the Mesh
+ * quad (spQuadS)- pointer/array to quadCount <spQuadS> structs
+ * texQuadCount (int) - numbers of textured quads in the Mesh
+ * texQuad (spQuadS) - pointer/array to texQuadCount <spQuadS> structs
+ * edgeCount (int) - numbers of untextured edges in the Mesh
+ * edge (spEdge*) - pointer/array to edgeCount <spEdge> structs
+ * texEdgeCount (int) - numbers of textured edges in the Mesh
+ * texEdge (spEdge*) - pointer/array to texEdgeCount <spEdge> structs
+ * color (Uint16) - 16 bit colour of the whole mesh
  * */
 typedef struct spModelStruct *spModelPointer;
 typedef struct spModelStruct
@@ -191,11 +191,11 @@ typedef struct spModelStruct
  * Struct for light sources.
  * 
  * Variables:
- * r,g,b - fixed point color of the light. (SP_ONE,SP_ONE,SP_ONE) is a bright
+ * r,g,b (Uint32) - fixed point color of the light. (SP_ONE,SP_ONE,SP_ONE) is a bright
  * white
- * x,y,z - position of the light
- * tx,ty,tz - translated position of the light
- * active - determines, whether the light is enabled in calculation or not. 1 is
+ * x,y,z (Sint32) - position of the light
+ * tx,ty,tz (Sint32) - translated position of the light
+ * active (Sint32) - determines, whether the light is enabled in calculation or not. 1 is
  * on, 0 is off*/
 typedef struct spLightStruct *spLightPointer;
 typedef struct spLightStruct
