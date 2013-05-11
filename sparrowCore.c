@@ -381,7 +381,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 #ifdef CORE_DEBUG
 		counter++;
 		char buffer[32];
-		sprintf( buffer, "    Fetching Event %i\n", counter );
+		sprintf( buffer, "    Fetching Event %i", counter );
 		spPrintDebug( buffer );
 #endif
 		switch ( event.type )
