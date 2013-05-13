@@ -20,7 +20,7 @@ it e.g. for:
 - Dingux
 - Pandora
 - GCW Zero
-- PC (Linux / Windows) (mainly for testing...) 
+- PC (Linux / Windows) (mainly for testing...)  
 That are the systems, which are supported at the moment or which hopefully will
 be supported in the near future. :)
 To see, what is possible with this engine take a look at
@@ -42,13 +42,13 @@ kind of BSD licence) feel free to contact me. ;-)
 3. Compiling Sparrow3D
 ======================
 
-For compiling for PC just type 
-make 
-Thats all. Their is no possibility to install or such a thing ^^ 
-For handhelds type 
-make targets 
-to get the targets and 
-make TARGET=target 
+For compiling for PC just type  
+make  
+Thats all. Their is no possibility to install or such a thing ^^  
+For handhelds type  
+make targets  
+to get the targets and  
+make TARGET=target  
 to compile for the target "target". Every target has a .mk file in the folder
 targets. Change the paths in these files to your paths.
 Keep in mind, this engine and the games using this engines are mode for
@@ -59,38 +59,38 @@ don't want to use it, keep sure, that the application finds the
 libsparrow3d.whatever (e.g. .so on linux system or .dll on windows machines)
 
 Here is a list of compile-switches used throughout sparrow (use with -D...): 
-BUILDING_DLL 
+BUILDING_DLL  
 -	Windows only, changes dllimport to dllexport, if you are running
 	into errors during linking, compile with this define
-CORE_DEBUG 
+CORE_DEBUG  
 -	Print out verbose debug text
-UNSAFE_MAGIC 
+UNSAFE_MAGIC  
 -	could crash, uses possibly memory (just reading) Try always to have some 
 	border pixels to your textures if using!
-BLACK_MAGIC 
+BLACK_MAGIC  
 -	Uses fancy lookup table magic to improve speed, but may look worse. Just try.
-FAST_MULTIPLICATION 
+FAST_MULTIPLICATION  
 -	looks good at small resolutions
-FAST_DIVISION 
+FAST_DIVISION  
 -	looks good at small resolutions
-SDL_INCLUDE_SUBDIR 
+SDL_INCLUDE_SUBDIR  
 -	Changes the include path for every SDL*.h file to SDL/SDL*.h
    
 Target platforms (defines, use with -D...): 
-X86CPU 
+X86CPU  
 -	Generic 32bit PC
-WIN32 
+WIN32  
 -	Windows operating system (usually set automatically)
-ARMCPU 
+ARMCPU  
 -	Generic mobile device, used in combination with a device switch
-GP2X 
+GP2X  
 -	Second and third generation of GPH devices, use with one of the following
 	switches: F100, WIZ
-CAANOO
+CAANOO 
 -	GPH Caanoo
-DINGUX 
+DINGUX  
 -	Dingoo with dingux Linux
-GCW 
+GCW  
 -	GCW Zero
 PANDORA 
 -	Pandora
@@ -108,7 +108,6 @@ Alexander Matthes aka Ziz
     - irc.euirc.net
     - irc.efnet.ch
     - irc.freenode.net
-- site: ziz.openhandhelds.org
-
+- site: ziz.openhandhelds.org  
 I think you read, that I am not an Englisch native speaker. So ignore the bad
 grammar or give me corrections. I always try to get better. :)
