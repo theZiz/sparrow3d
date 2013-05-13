@@ -42,19 +42,21 @@ kind of BSD licence) feel free to contact me. ;-)
 3. Compiling Sparrow3D
 ======================
 
-First have a look in the Makefile. Some platforms are comment out. Just comment
-out the first PC-Variables and comment in your favourate platform. Keep in mind
-to change to location of the toolchain tools and include directories ;-)
-
-If everything fine with your Makefile, just type
+For compiling for PC just type
 make
-Thats all. Their is not possibility to install or such a thing ^^
+Thats all. Their is no possibility to install or such a thing ^^
+For handhelds type
+make targets
+to get the targets and
+make TARGET=target
+to compile for the target "target". Every target has a .mk file in the folder
+targets. Change the paths in these files to your paths.
 Keep in mind, this engine and the games using this engines are mode for
 (hopefully) open handhelds! Their is no need to install anything...
 If you want to test the testsparrow-application on your handheld / PC use the
 ./testsparrow.sh file. If the file doesn't work on your system or you just
-don't want to use it, keep sure, that the application findes the
-libsparrow3d.whatever (e.g. so on linux system or dll on windows machines)
+don't want to use it, keep sure, that the application finds the
+libsparrow3d.whatever (e.g. .so on linux system or .dll on windows machines)
 
 Here is a list of compile-switches used throughout sparrow (use with -D...):
 BUILDING_DLL
@@ -62,10 +64,10 @@ BUILDING_DLL
 	into errors during linking, compile with this define
 CORE_DEBUG
 	Print out verbose debug text
-UNSAFE_MAGIC 
+UNSAFE_MAGIC
 	could crash, uses possibly memory (just reading) Try always to have some 
 	border pixels to your textures if using!
-BLACK_MAGIC 
+BLACK_MAGIC
 	Uses fancy lookup table magic to improve speed, but may look worse. Just try.
 FAST_MULTIPLICATION
 	looks good at small resolutions
@@ -75,15 +77,23 @@ SDL_INCLUDE_SUBDIR
 	Changes the include path for every SDL*.h file to SDL/SDL*.h
    
 Target platforms (defines, use with -D...):
-X86CPU		Generic 32bit PC
-WIN32		Windows operating system (usually set automatically)
-ARMCPU		Generic mobile device, used in combination with a device switch
-GP2X		Second and third generation of GPH devices, use with one of the
-			following switches: F100, WIZ
-CAANOO		GPH Caanoo
-DINGUX		Dingoo with dingux Linux
-GCW	GCW
-PANDORA		Pandora
+X86CPU
+	Generic 32bit PC
+WIN32
+	Windows operating system (usually set automatically)
+ARMCPU
+	Generic mobile device, used in combination with a device switch
+GP2X
+	Second and third generation of GPH devices, use with one of the following
+	switches: F100, WIZ
+CAANOO
+	GPH Caanoo
+DINGUX
+	Dingoo with dingux Linux
+GCW
+	GCW Zero
+PANDORA
+	Pandora
 
 -------------------------------------------------------------------------------
 
@@ -98,6 +108,7 @@ irc: nickname "Ziz" in:
 - irc.euirc.net
 - irc.efnet.ch
 - irc.freenode.net
+site: ziz.openhandhelds.org
 
-I think you read, that I am no Englisch native speaker. So ignore the bad
-grammar or give me corrections. I always try to become better. :)
+I think you read, that I am not an Englisch native speaker. So ignore the bad
+grammar or give me corrections. I always try to get better. :)
