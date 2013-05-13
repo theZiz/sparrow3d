@@ -60,40 +60,40 @@ libsparrow3d.whatever (e.g. .so on linux system or .dll on windows machines)
 
 Here is a list of compile-switches used throughout sparrow (use with -D...):
 BUILDING_DLL
-	Windows only, changes dllimport to dllexport, if you are running
+-	Windows only, changes dllimport to dllexport, if you are running
 	into errors during linking, compile with this define
 CORE_DEBUG
-	Print out verbose debug text
+-	Print out verbose debug text
 UNSAFE_MAGIC
-	could crash, uses possibly memory (just reading) Try always to have some 
+-	could crash, uses possibly memory (just reading) Try always to have some 
 	border pixels to your textures if using!
 BLACK_MAGIC
-	Uses fancy lookup table magic to improve speed, but may look worse. Just try.
+-	Uses fancy lookup table magic to improve speed, but may look worse. Just try.
 FAST_MULTIPLICATION
-	looks good at small resolutions
+-	looks good at small resolutions
 FAST_DIVISION
-	looks good at small resolutions
+-	looks good at small resolutions
 SDL_INCLUDE_SUBDIR
-	Changes the include path for every SDL*.h file to SDL/SDL*.h
+-	Changes the include path for every SDL*.h file to SDL/SDL*.h
    
 Target platforms (defines, use with -D...):
 X86CPU
-	Generic 32bit PC
+-	Generic 32bit PC
 WIN32
-	Windows operating system (usually set automatically)
+-	Windows operating system (usually set automatically)
 ARMCPU
-	Generic mobile device, used in combination with a device switch
+-	Generic mobile device, used in combination with a device switch
 GP2X
-	Second and third generation of GPH devices, use with one of the following
+-	Second and third generation of GPH devices, use with one of the following
 	switches: F100, WIZ
 CAANOO
-	GPH Caanoo
+-	GPH Caanoo
 DINGUX
-	Dingoo with dingux Linux
+-	Dingoo with dingux Linux
 GCW
-	GCW Zero
+-	GCW Zero
 PANDORA
-	Pandora
+-	Pandora
 
 -------------------------------------------------------------------------------
 
@@ -102,13 +102,13 @@ PANDORA
 =========
 
 Alexander Matthes aka Ziz
-mail: zizsdl@googlemail.com
-jabber: ziz@jabber.ccc.de
-irc: nickname "Ziz" in:
-- irc.euirc.net
-- irc.efnet.ch
-- irc.freenode.net
-site: ziz.openhandhelds.org
+- mail: zizsdl@googlemail.com
+- jabber: ziz@jabber.ccc.de
+- irc: nickname "Ziz" in:
+- - irc.euirc.net
+- - irc.efnet.ch
+- - irc.freenode.net
+- site: ziz.openhandhelds.org
 
 I think you read, that I am not an Englisch native speaker. So ignore the bad
 grammar or give me corrections. I always try to get better. :)
