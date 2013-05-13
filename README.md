@@ -105,9 +105,9 @@ Alexander Matthes aka Ziz
 - mail: zizsdl@googlemail.com
 - jabber: ziz@jabber.ccc.de
 - irc: nickname "Ziz" in:
--- irc.euirc.net
--- irc.efnet.ch
--- irc.freenode.net
+    - irc.euirc.net
+    - irc.efnet.ch
+    - irc.freenode.net
 - site: ziz.openhandhelds.org
 
 I think you read, that I am not an Englisch native speaker. So ignore the bad
