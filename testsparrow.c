@@ -36,7 +36,7 @@ void draw_test( void )
 {
 	spResetZBuffer();
 	if ( test == 5 )
-		spClearTarget( ( spSin( rotation * 8 ) >> SP_ACCURACY - 4 ) + 16 );
+		spClearTarget( spFixedToInt( spSin( rotation * 8 ) * 16) + 16 );
 	else
 		spClearTarget( 0 );
 	spIdentity();
@@ -51,32 +51,32 @@ void draw_test( void )
 	int i;
 	Sint32 matrix[16];
 	Sint32 px, py, pz, w;
-	spSetLightPosition(0,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3,7 << SP_ACCURACY - 3);
+	spSetLightPosition(0,spFloatToFixed( 0.875f ),spFloatToFixed( 0.875f ),spFloatToFixed( 0.875f ));
 	spSetLightColor(0,SP_ONE,SP_ONE,SP_ONE);
 	switch ( test )
 	{
 	case 6:
 		spSetAlphaTest( 0 );
-		spTranslate( 0, 0, (-8 << SP_ACCURACY));
+		spTranslate( 0, 0, spFloatToFixed( -8.0f ));
 		spRotateX(rotation);
 		spRotateY(rotation);
 		spRotateZ(rotation);
 		
 		memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) ); //glPush()
-		spTranslate(0,2 << SP_ACCURACY,0);
+		spTranslate(0,spFloatToFixed( 2.0f ),0);
 		spSetLightPosition(0,0,0,0);
 		spSetLightColor(0,0,SP_ONE,SP_ONE);
 		spProjectPoint3D( 0,0,0, &px,&py,&pz, &w, 1);
-		spEllipse3D(0,0,0,1 << SP_ACCURACY-3,1 << SP_ACCURACY-3,spGetFastRGB(0,255,255));
+		spEllipse3D(0,0,0,spFloatToFixed( 0.125f ),spFloatToFixed( 0.125f ),spGetFastRGB(0,255,255));
 		spSetAlphaTest(1);
 		spFontDrawMiddle( px,py-font->maxheight/2,pz, "light", font );
 		spSetAlphaTest(0);
-		spTranslate(0,-4 << SP_ACCURACY,0);
+		spTranslate(0,spFloatToFixed( -4.0f ),0);
 		spEnableLight(1,1);
 		spSetLightPosition(1,0,0,0);
 		spSetLightColor(1,SP_ONE,SP_ONE,0);
 		spProjectPoint3D( 0,0,0, &px,&py,&pz, &w, 1);
-		spEllipse3D(0,0,0,1 << SP_ACCURACY-3,1 << SP_ACCURACY-3,spGetFastRGB(255,255,0));
+		spEllipse3D(0,0,0,spFloatToFixed( 0.125f ),spFloatToFixed( 0.125f ),spGetFastRGB(255,255,0));
 		spSetAlphaTest(1);
 		spFontDrawMiddle( px,py-font->maxheight/2,pz, "light", font );
 		spSetAlphaTest(0);
@@ -87,7 +87,7 @@ void draw_test( void )
 			memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) ); //glPush()
 			
 			spRotateY(SP_PI*i*4/15);
-			spTranslate(0,0,-35 << SP_ACCURACY-4);
+			spTranslate(0,0,spFloatToFixed( 2.1875f ));
 			
 			spRotateX(SP_PI*i/15);
 			spRotateZ( (i & 1) ?rotation*4:(-rotation*4+SP_PI/11));
@@ -98,12 +98,12 @@ void draw_test( void )
 		spEnableLight(1,0);
 		break;
 	case 5:
-		spRotozoomSurface( screen->w / 4, screen->h / 4, 0, garfield, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ) >> 2, spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ) >> 2, rotation );
-		spRotozoomSurfacePart( 3 * screen->w / 4, screen->h / 4, 0, garfield, garfield->w / 4, garfield->h / 4, garfield->w / 2, garfield->w / 2, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ) >> 1, spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ) >> 1, rotation );
+		spRotozoomSurface( screen->w / 4, screen->h / 4, 0, garfield, spSin( rotation * 4 ) + ( spFloatToFixed( 1.5f ) ) >> 2, spCos( rotation * 8 ) + ( spFloatToFixed( 1.5f ) ) >> 2, rotation );
+		spRotozoomSurfacePart( 3 * screen->w / 4, screen->h / 4, 0, garfield, garfield->w / 4, garfield->h / 4, garfield->w / 2, garfield->w / 2, spSin( rotation * 4 ) + ( spFloatToFixed( 1.5f ) ) >> 1, spCos( rotation * 8 ) + ( spFloatToFixed( 1.5f ) ) >> 1, rotation );
 		sprite->rotation = 0;
 		spDrawSprite( screen->w / 5, 5 * screen->h / 8, 0, sprite );
-		sprite->zoomX = spSin( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 );
-		sprite->zoomY = spCos( rotation * 6 ) + ( 3 << SP_ACCURACY - 1 );
+		sprite->zoomX = spSin( rotation * 8 ) + ( spFloatToFixed( 1.5f ) );
+		sprite->zoomY = spCos( rotation * 6 ) + ( spFloatToFixed( 1.5f ) );
 		spDrawSprite( 2 * screen->w / 5, 5 * screen->h / 8, 0, sprite );
 		sprite->rotation = rotation * 4;
 		spDrawSprite( 3 * screen->w / 5, 5 * screen->h / 8, 0, sprite );
@@ -129,7 +129,7 @@ void draw_test( void )
 		break;
 	case 3:
 		spSetAlphaTest( 0 );
-		spTranslate( 0, 0, (-6 << SP_ACCURACY)+spSin(rotation)*6 );
+		spTranslate( 0, 0, spFloatToFixed( -6.0f )+spSin(rotation)*6 );
 		spRotateX( rotation );
 		spRotateY( rotation );
 		spRotateZ( rotation );
@@ -137,7 +137,7 @@ void draw_test( void )
 		break;
 	case 2:
 		spSetAlphaTest( 1 );
-		spTranslate( 0, 0, ( -11<<SP_ACCURACY ) + spSin( rotation * 4 ) * 3 );
+		spTranslate( 0, 0, spFloatToFixed( -11.0f ) + spSin( rotation * 4 ) * 3 );
 		spRotateZ( rotation );
 		spRotateX( spSin( rotation ) >> 2 );
 		spRotateY( spCos( rotation * 2 ) >> 2 );
@@ -148,7 +148,7 @@ void draw_test( void )
 				{
 					Sint32 matrix[16];
 					memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) );
-					spTranslate( x << SP_ACCURACY + 1, y << SP_ACCURACY + 1, 0 );
+					spTranslate( spIntToFixed( x * 2 ), spIntToFixed( y * 2 ), 0 );
 					spQuad3D( -SP_ONE, SP_ONE, 0,
 							  -SP_ONE, -SP_ONE, 0,
 							  SP_ONE, -SP_ONE, 0,
@@ -161,71 +161,71 @@ void draw_test( void )
 				{
 					Sint32 matrix[16];
 					memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) );
-					spTranslate( x << SP_ACCURACY + 1, y << SP_ACCURACY + 1, 0 );
-					spQuad3D( -SP_ONE, SP_ONE, 2 << SP_ACCURACY,
-							  -SP_ONE, -SP_ONE, 2 << SP_ACCURACY,
-							  SP_ONE, -SP_ONE, 2 << SP_ACCURACY,
-							  SP_ONE, SP_ONE, 2 << SP_ACCURACY, 65535 );
+					spTranslate( spIntToFixed( x * 2 ), spIntToFixed( y * 2 ), 0 );
+					spQuad3D( -SP_ONE, SP_ONE, spFloatToFixed( 2.0f ),
+							  -SP_ONE, -SP_ONE, spFloatToFixed( 2.0f ),
+							  SP_ONE, -SP_ONE, spFloatToFixed( 2.0f ),
+							  SP_ONE, SP_ONE, spFloatToFixed( 2.0f ), 65535 );
 					//top
 					//if (y<0)
-					spQuad3D( -SP_ONE, SP_ONE, 2 << SP_ACCURACY,
-							  SP_ONE, SP_ONE, 2 << SP_ACCURACY,
-							  SP_ONE, SP_ONE, 0 << SP_ACCURACY,
-							  -SP_ONE, SP_ONE, 0 << SP_ACCURACY, 65535 );
+					spQuad3D( -SP_ONE, SP_ONE, spFloatToFixed( 2.0f ),
+							  SP_ONE, SP_ONE, spFloatToFixed( 2.0f ),
+							  SP_ONE, SP_ONE, 0,
+							  -SP_ONE, SP_ONE, 0, 65535 );
 					//bottom
 					//if (y>0)
-					spQuad3D( -SP_ONE, -SP_ONE, 0 << SP_ACCURACY,
-							  SP_ONE, -SP_ONE, 0 << SP_ACCURACY,
-							  SP_ONE, -SP_ONE, 2 << SP_ACCURACY,
-							  -SP_ONE, -SP_ONE, 2 << SP_ACCURACY, 65535 );
+					spQuad3D( -SP_ONE, -SP_ONE, 0,
+							  SP_ONE, -SP_ONE, 0,
+							  SP_ONE, -SP_ONE, spFloatToFixed( 2.0f ),
+							  -SP_ONE, -SP_ONE, spFloatToFixed( 2.0f ), 65535 );
 					//left
 					//if (x>0)
-					spQuad3D( -SP_ONE, -SP_ONE, 2 << SP_ACCURACY,
-							  -SP_ONE, SP_ONE, 2 << SP_ACCURACY,
-							  -SP_ONE, SP_ONE, 0 << SP_ACCURACY,
-							  -SP_ONE, -SP_ONE, 0 << SP_ACCURACY, 65535 );
+					spQuad3D( -SP_ONE, -SP_ONE, spFloatToFixed( 2.0f ),
+							  -SP_ONE, SP_ONE, spFloatToFixed( 2.0f ),
+							  -SP_ONE, SP_ONE, 0,
+							  -SP_ONE, -SP_ONE, 0, 65535 );
 					//right
 					//if (x<0)
-					spQuad3D( SP_ONE, -SP_ONE, 0 << SP_ACCURACY,
-							  SP_ONE, SP_ONE, 0 << SP_ACCURACY,
-							  SP_ONE, SP_ONE, 2 << SP_ACCURACY,
-							  SP_ONE, -SP_ONE, 2 << SP_ACCURACY, 65535 );
+					spQuad3D( SP_ONE, -SP_ONE, 0,
+							  SP_ONE, SP_ONE, 0,
+							  SP_ONE, SP_ONE, spFloatToFixed( 2.0f ),
+							  SP_ONE, -SP_ONE, spFloatToFixed( 2.0f ), 65535 );
 					memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) );
 				}
 		break;
 	case 1:
 		spSetAlphaTest( 1 );
-		spTranslate( 0, 0, -15 << SP_ACCURACY );
+		spTranslate( 0, 0, spFloatToFixed( -15.0f ));
 		spRotateY( rotation );
 		int a;
 		for ( a = 0; a < 16; a++ )
 		{
 			spRotateY( SP_PI / 8 );
-			Sint32 brightness = ( spCos( rotation + a * SP_PI / 8 ) >> SP_HALF_ACCURACY ) * abs( spCos( rotation + a * SP_PI / 8 ) >> SP_HALF_ACCURACY ) / 2 + ( 3 << SP_ACCURACY - 1 );
-			Uint16 color = ( ( brightness >> SP_ACCURACY - 4 ) << 11 ) + ( ( brightness >> SP_ACCURACY - 5 ) << 5 ) + ( brightness >> SP_ACCURACY - 4 );
+			Sint32 brightness = spMul( spCos( rotation + a * SP_PI / 8 ), abs( spCos( rotation + a * SP_PI / 8 )) ) / 2 + ( spFloatToFixed( 1.5f ) );
+			Uint16 color = spGetRGB(brightness >> 8,brightness >> 8,brightness >> 8);
 			for ( y = -21; y <= 21; y += 7 )
 			{
 				if ( ( y + a ) & 8 )
-					spQuadTex3D( -3 << SP_ACCURACY - 2, y + 3 << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, SP_FONT_EXTRASPACE, SP_FONT_EXTRASPACE,
-								 -3 << SP_ACCURACY - 2, y - 3 << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 1, garfield->h - SP_FONT_EXTRASPACE - 1,
-								 3 << SP_ACCURACY - 2, y - 3 << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, garfield->w - SP_FONT_EXTRASPACE - 1, garfield->h - SP_FONT_EXTRASPACE - 1,
-								 3 << SP_ACCURACY - 2, y + 3 << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, garfield->w - SP_FONT_EXTRASPACE - 1, SP_FONT_EXTRASPACE, color );
+					spQuadTex3D( -spFloatToFixed( 0.75f ), spIntToFixed( y ) / 4 + spFloatToFixed( 0.75f ), spFloatToFixed( 4.5f ), SP_FONT_EXTRASPACE, SP_FONT_EXTRASPACE,
+								 -spFloatToFixed( 0.75f ), spIntToFixed( y ) / 4 - spFloatToFixed( 0.75f ), spFloatToFixed( 4.5f ), 1, garfield->h - SP_FONT_EXTRASPACE - 1,
+								 spFloatToFixed( 0.75f ), spIntToFixed( y ) / 4 - spFloatToFixed( 0.75f ), spFloatToFixed( 4.5f ), garfield->w - SP_FONT_EXTRASPACE - 1, garfield->h - SP_FONT_EXTRASPACE - 1,
+								 spFloatToFixed( 0.75f ), spIntToFixed( y ) / 4 + spFloatToFixed( 0.75f ), spFloatToFixed( 4.5f ), garfield->w - SP_FONT_EXTRASPACE - 1, SP_FONT_EXTRASPACE, color );
 
 				else if ( ( y + a + 1 ) & 8 )
-					spRectangle3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, SDL_GetTicks() / 128 );
+					spRectangle3D( 0, spIntToFixed( y ) / 4, spFloatToFixed( 4.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), SDL_GetTicks() / 128 );
 				else if ( ( y + a + 2 ) & 8 )
-					spEllipse3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 2, 3 << SP_ACCURACY - 2, -SDL_GetTicks() / 128 );
+					spEllipse3D( 0, spIntToFixed( y ) / 4, spFloatToFixed( 4.5f ), spFloatToFixed( 0.75f ), spFloatToFixed( 0.75f ), -SDL_GetTicks() / 128 );
 				else if ( ( y + a + 3 ) & 8 )
-					spRectangleBorder3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 1<<SP_ACCURACY - 2, 1<<SP_ACCURACY - 2, SDL_GetTicks() / 64 );
+					spRectangleBorder3D( 0, spIntToFixed( y ) / 4, spFloatToFixed( 4.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 0.25 ), spFloatToFixed( 0.25 ), SDL_GetTicks() / 64 );
 				else if ( ( y + a + 4 ) & 8 )
-					spEllipseBorder3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 2, 3 << SP_ACCURACY - 2, 1<<SP_ACCURACY - 2, 1<<SP_ACCURACY - 2, -SDL_GetTicks() / 64 );
+					spEllipseBorder3D( 0, spIntToFixed( y ) / 4, spFloatToFixed( 4.5f ), spFloatToFixed( 0.75f ), spFloatToFixed( 0.75f ), spFloatToFixed( 0.25 ), spFloatToFixed( 0.25 ), -SDL_GetTicks() / 64 );
 				else if ( ( y + a + 5 ) & 8 )
-					spRotozoomSurface3D( 0, y << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, pepper, spSin( rotation * 4 ) + ( 3 << SP_ACCURACY - 1 ), spCos( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 ), rotation );
+					spRotozoomSurface3D( 0, spIntToFixed( y ) / 4, spFloatToFixed( 4.5f ), pepper, spSin( rotation * 4 ) + ( spFloatToFixed( 1.5f ) ), spCos( rotation * 8 ) + ( spFloatToFixed( 1.5f ) ), rotation );
 				else
-					spQuad3D( -3 << SP_ACCURACY - 2, y + 3 << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1,
-							  -3 << SP_ACCURACY - 2, y - 3 << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1,
-							  3 << SP_ACCURACY - 2, y - 3 << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1,
-							  3 << SP_ACCURACY - 2, y + 3 << SP_ACCURACY - 2, 9 << SP_ACCURACY - 1, color );
+					spQuad3D( -spFloatToFixed( 0.75f ), spIntToFixed( y ) / 4 + spFloatToFixed( 0.75f ), spFloatToFixed( 4.5f ),
+							  -spFloatToFixed( 0.75f ), spIntToFixed( y ) / 4 - spFloatToFixed( 0.75f ), spFloatToFixed( 4.5f ),
+							  spFloatToFixed( 0.75f ), spIntToFixed( y ) / 4 - spFloatToFixed( 0.75f ), spFloatToFixed( 4.5f ),
+							  spFloatToFixed( 0.75f ), spIntToFixed( y ) / 4 + spFloatToFixed( 0.75f ), spFloatToFixed( 4.5f ), color );
 
 			}
 		}
@@ -257,7 +257,7 @@ void draw_test( void )
 		              0b01101101,
 		              0b10111011,
 		              0b11000111);*/
-		spTranslate( spSin( rotation / 3 ), spSin( rotation / 5 ), ( -7 << SP_ACCURACY ) );
+		spTranslate( spSin( rotation / 3 ), spSin( rotation / 5 ), spFloatToFixed( -7.0f ) );
 		spRotateX( rotation );
 		spRotateY( rotation );
 		spRotateZ( rotation );
@@ -276,63 +276,63 @@ void draw_test( void )
 		Uint16 color5 = 0xFFFF;
 		Uint16 color6 = 0xFFFF;
 		spBindTexture( garfield );
-		spQuadTex3D( -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, garfield->h - 1,
-					 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, 0,
-					 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, 0,
-					 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, garfield->h - 1, color1 );
-		spQuadTex3D( 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, garfield->h - 1,
-					 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, 0,
-					 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, garfield->w - 1, 0,
-					 -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, garfield->w - 1, garfield->h - 1, color2 );
+		spQuadTex3D( -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), 0, garfield->h - 1,
+					 -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), 0, 0,
+					 spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), garfield->w - 1, 0,
+					 spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), garfield->w - 1, garfield->h - 1, color1 );
+		spQuadTex3D( spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), 0, garfield->h - 1,
+					 spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), 0, 0,
+					 -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), garfield->w - 1, 0,
+					 -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), garfield->w - 1, garfield->h - 1, color2 );
 		//Left / Right
-		spQuadTex3D( -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, garfield->h - 1,
-					 -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, 0,
-					 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, garfield->w - 1, 0,
-					 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, garfield->h - 1, color3 );
+		spQuadTex3D( -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), 0, garfield->h - 1,
+					 -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), 0, 0,
+					 -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), garfield->w - 1, 0,
+					 -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), garfield->w - 1, garfield->h - 1, color3 );
 		spBindTexture( check );
-		spQuadTex3D( 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, garfield->h - 1,
-					 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, 0,
-					 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, garfield->w - 1, 0,
-					 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, garfield->h - 1, color4 );
+		spQuadTex3D( spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), 0, garfield->h - 1,
+					 spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), 0, 0,
+					 spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), garfield->w - 1, 0,
+					 spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), garfield->w - 1, garfield->h - 1, color4 );
 		//Up / Down
-		spQuadTex3D( 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, garfield->h - 1,
-					 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, 0,
-					 -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, garfield->w - 1, 0,
-					 -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, garfield->h - 1, color5 );
-		spQuadTex3D( -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, garfield->h - 1,
-					 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, 0,
-					 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, garfield->w - 1, 0,
-					 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, garfield->h - 1, color6 );
+		spQuadTex3D( spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), 0, garfield->h - 1,
+					 spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), 0, 0,
+					 -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), garfield->w - 1, 0,
+					 -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), garfield->w - 1, garfield->h - 1, color5 );
+		spQuadTex3D( -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), 0, garfield->h - 1,
+					 -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), 0, 0,
+					 spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), garfield->w - 1, 0,
+					 spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), garfield->w - 1, garfield->h - 1, color6 );
 					 
 		spSetAlphaPattern4x4((spSin(rotation) + SP_ONE) / 512 % 512,8);
 		//Front / Back
-		spTranslate( -3 << SP_ACCURACY, 0, 0 );
+		spTranslate( spFloatToFixed ( -3.0f ), 0, 0 );
 		spQuad3D( -SP_ONE, SP_ONE, SP_ONE,
 				  -SP_ONE, -SP_ONE, SP_ONE,
 				  SP_ONE, -SP_ONE, SP_ONE,
-				  SP_ONE, SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
+				  SP_ONE, SP_ONE, SP_ONE, spGetRGB(spFixedToInt((spSin(rotation*4)+SP_ONE)*127),spFixedToInt((spSin(rotation*2)+SP_ONE)*127),spFixedToInt((spSin(rotation)+SP_ONE)*127)) );
 		spQuad3D( SP_ONE, SP_ONE, -SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
 				  -SP_ONE, -SP_ONE, -SP_ONE,
-				  -SP_ONE, SP_ONE, -SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
+				  -SP_ONE, SP_ONE, -SP_ONE, spGetRGB(spFixedToInt((spSin(rotation*4)+SP_ONE)*127),spFixedToInt((spSin(rotation*2)+SP_ONE)*127),spFixedToInt((spSin(rotation)+SP_ONE)*127)) );
 		//Left / Right
 		spQuad3D( -SP_ONE, SP_ONE, SP_ONE,
 				  -SP_ONE, SP_ONE, -SP_ONE,
 				  -SP_ONE, -SP_ONE, -SP_ONE,
-				  -SP_ONE, -SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
+				  -SP_ONE, -SP_ONE, SP_ONE, spGetRGB(spFixedToInt((spSin(rotation*4)+SP_ONE)*127),spFixedToInt((spSin(rotation*2)+SP_ONE)*127),spFixedToInt((spSin(rotation)+SP_ONE)*127)) );
 		spQuad3D( SP_ONE, -SP_ONE, SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
 				  SP_ONE, SP_ONE, -SP_ONE,
-				  SP_ONE, SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
+				  SP_ONE, SP_ONE, SP_ONE, spGetRGB(spFixedToInt((spSin(rotation*4)+SP_ONE)*127),spFixedToInt((spSin(rotation*2)+SP_ONE)*127),spFixedToInt((spSin(rotation)+SP_ONE)*127)) );
 		//Up / Down
 		spQuad3D( SP_ONE, SP_ONE, SP_ONE,
 				  SP_ONE, SP_ONE, -SP_ONE,
 				  -SP_ONE, SP_ONE, -SP_ONE,
-				  -SP_ONE, SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
+				  -SP_ONE, SP_ONE, SP_ONE, spGetRGB(spFixedToInt((spSin(rotation*4)+SP_ONE)*127),spFixedToInt((spSin(rotation*2)+SP_ONE)*127),spFixedToInt((spSin(rotation)+SP_ONE)*127)) );
 		spQuad3D( -SP_ONE, -SP_ONE, SP_ONE,
 				  -SP_ONE, -SP_ONE, -SP_ONE,
 				  SP_ONE, -SP_ONE, -SP_ONE,
-				  SP_ONE, -SP_ONE, SP_ONE, spGetRGB((spSin(rotation*4)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation*2)+SP_ONE)>>SP_ACCURACY-7,(spSin(rotation)+SP_ONE)>>SP_ACCURACY-7) );
+				  SP_ONE, -SP_ONE, SP_ONE, spGetRGB(spFixedToInt((spSin(rotation*4)+SP_ONE)*127),spFixedToInt((spSin(rotation*2)+SP_ONE)*127),spFixedToInt((spSin(rotation)+SP_ONE)*127)) );
 		spDeactivatePattern();
 		break;
 	}
@@ -465,7 +465,7 @@ int calc_test( Uint32 steps )
 	if (no_movement)
 		rotation = 20000;//SP_PI;
 	else
-		rotation += steps << SP_ACCURACY - 11;
+		rotation += steps*32;
 	
 	if ( spIsKeyboardPolled())
 	{
@@ -498,7 +498,7 @@ int calc_test( Uint32 steps )
 		pause = 1-pause;
 	}
 	if (pause)
-		rotation -= steps << SP_ACCURACY - 11;
+		rotation -= steps*32;
 
 	if ( spGetInput()->button[SP_BUTTON_R] )
 	{
@@ -545,7 +545,7 @@ void resize( Uint16 w, Uint16 h )
 	spFontShadeButtons(1);
 	if ( font )
 		spFontDelete( font );
-	font = spFontLoad( "./font/StayPuft.ttf", 13 * spGetSizeFactor() >> SP_ACCURACY );
+	font = spFontLoad( "./font/StayPuft.ttf", spFixedToInt(13 * spGetSizeFactor()));
 	spFontSetShadeColor(0);
 	spFontAdd( font, SP_FONT_GROUP_ASCII, 65535 ); //whole ASCII
 	spFontAdd( font, "äüöÄÜÖßẞ", 65535 ); //German stuff (same like spFontAdd( font, SP_FONT_GROUP_GERMAN, 0 ); )
