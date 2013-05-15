@@ -28,8 +28,8 @@ void draw_test( void )
 	spSetZTest(0);
 	sprite->rotation = 0;
 	spDrawSprite( texture->w / 4, texture->h / 4, 0, sprite );
-	sprite->zoomX = spSin( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 );
-	sprite->zoomY = spCos( rotation * 6 ) + ( 3 << SP_ACCURACY - 1 );
+	sprite->zoomX = spSin( rotation * 8 ) + spFloatToFixed( 1.5f );
+	sprite->zoomY = spCos( rotation * 6 ) + spFloatToFixed( 1.5f );
 	spDrawSprite( 3 * texture->w / 4, texture->h / 4, 0, sprite );
 	sprite->rotation = rotation * 4;
 	spDrawSprite( texture->w / 4, 3 * texture->h / 4, 0, sprite );

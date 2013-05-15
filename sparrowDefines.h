@@ -111,7 +111,25 @@
 	#define spDiv(a,b) spDivHigh(a,b)
 #endif
 
-/* Defines: Fixed Point Convertations
+/* Defines: Fixed Point Conversion
+ * 
+ * These conversions are no function calls, but defines. That means *before* the
+ * compiler compiles the code, it is replaced by the defined rule. E.g., you
+ * want to convert the float a to a fixed point number using spFloatToFixed. You
+ * call
+ * > Sint32 foo = spFloatToFixed(bar);
+ * Internal the compiler will make this:
+ * > Sint32 foo = ((Sint32)((float)(bar)*SP_ACCURACY_FACTOR));
+ * This saves you a function call. But it gets MUCH cheaper, if you don't have
+ * a float variable as parameter, but a number like 1.5f. Example:
+ * > Sint32 foo = spFloatToFixed(1.5);
+ * will become to:
+ * > Sint32 foo = ((Sint32)((float)(1.5f)*SP_ACCURACY_FACTOR));
+ * As no unknown parameter is in this equation the compiler will calculate it
+ * at *compile time*, which means: In you final binary, the (binary) code will
+ * just be:
+ * > Sint32 foo = 98304;
+ * which is obviouly *incredible* fast.
  * 
  * spFixedToFloat(x) - converts the fixed point number a to a float
  * spFloatToFixed(x) - converts the float a to a fixed point number
