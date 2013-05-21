@@ -61,8 +61,8 @@
 
 /* Define: SP_FONT_DEFAULT_CACHE
  *
- * Per default 16384 signs (needs 64 kilobytes) are cache.
- * Thats enough most of the times. In fact - because SDL_ttf is just able to use
+ * Per default 16384 signs (needs 64 kilobytes) are cached.
+ * Thats enough most of the time. In fact - because SDL_ttf is just able to use
  * plane 0 (the first 65536 letters) of unicode, nearly everything you
  * will need is cached, and the tree is useles... But it was fun to
  * implement it!*/
@@ -149,11 +149,13 @@ typedef struct spFontStruct
  *
  * Returns:
  * spFont* - a pointer to a spFont for later use */
-PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size );
+PREFIX spFontPointer spFontLoad( const char* fontname, Uint32 size );
 
 /* Function: spFontAdd
  *
  * Adds characters to the font.
+ * You need to call this once after spFontLoad and before drawing, with every
+ * character you eventually want to draw
  *
  * Parameters:
  * font - the font pointer, which shall be filled with new stuff
@@ -242,9 +244,11 @@ PREFIX void spFontSetButtonStrategy(int strategy);
 
 /* Function: spFontAddBorder
  *
- * For better viewing on different backgrounds, most of the time it is
- * useful to have a border around the letters. With this function you
- * can do this. It adds a border to every *yet* loading letter.
+ * For better viewing on different backgrounds, most of the time it is useful to 
+ * have a border around the letters. With this function you can do this.
+ * It adds a border to every *currently* loaded letter. (Every letter loaded
+ * afterwards will have no border by default )
+ * Note: Works on a pixel level, therefore needs a non-transparent font to work.
  *
  * Parameters:
  * font - the font, that shall get a border
@@ -255,8 +259,8 @@ PREFIX void spFontAddBorder( spFontPointer font, Uint16 bordercolor );
  *
  * If you want to change the color of every letter in the font, use
  * this function. It might be useful to draw just the border and no
- * letter inside. First draw the letter in a color of your choice
- * (maybe black), than add a border (maybe white) and than call
+ * letter inside: First draw the letter in a color of your choice
+ * (e.g. black), than add a border (e.g. white) and than call
  * spFontReplaceColor and replace the black with SP_ALPHA_COLOR (pink)
  *
  * Parameters:
