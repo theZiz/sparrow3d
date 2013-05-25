@@ -1100,7 +1100,7 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 #ifdef CORE_DEBUG
 		spPrintDebug( "  Did axis update" );
 #endif
-		//Calls with diffticks == 0 are possible!
+		//Calls with diffticks == 0 are not possible!
 		if ( spCalc && diffticks)
 		{
 			back = spCalc( diffticks );
