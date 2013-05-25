@@ -93,11 +93,11 @@ typedef SDL_RWops *spFilePointer;
  * Linked list type for searching results, which contains found files.
  * 
  * Variables:
- * name - filename
- * type - filetype, see <spFileType>
- * prev - previous found
- * next - next found
- * count - only valid for the first element, describes the number of found files*/
+ * name (char*) - filename
+ * type (spFileType) - filetype, see <spFileType>
+ * prev (spFileList*) - previous found
+ * next (spFileList*) - next found
+ * count (int) - only valid for the first element, describes the number of found files*/
 typedef struct spFileListStruct *spFileListPointer;
 typedef struct spFileListStruct {
 	char name[256];

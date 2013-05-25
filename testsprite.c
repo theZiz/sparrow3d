@@ -91,8 +91,8 @@ int calc_function( Uint32 steps )
 	//Update the sprite (next picture)
 	spUpdateSprite( spActiveSprite(collection), steps );
 	//rotozoom the sprite (without rotozoom it's faster):
-	spActiveSprite(collection)->zoomX = spSin( rotation * 8 ) / 2 + ( 3 << SP_ACCURACY - 1 );
-	spActiveSprite(collection)->zoomY = spCos( rotation * 6 ) / 2 + ( 3 << SP_ACCURACY - 1 );
+	spActiveSprite(collection)->zoomX = spSin( rotation * 8 ) / 2 + ( spFloatToFixed( 1.5f ) );
+	spActiveSprite(collection)->zoomY = spCos( rotation * 6 ) / 2 + ( spFloatToFixed( 1.5f ) );
 	spActiveSprite(collection)->rotation = rotation * 4;
 
 	return 0;

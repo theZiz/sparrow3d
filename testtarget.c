@@ -28,8 +28,8 @@ void draw_test( void )
 	spSetZTest(0);
 	sprite->rotation = 0;
 	spDrawSprite( texture->w / 4, texture->h / 4, 0, sprite );
-	sprite->zoomX = spSin( rotation * 8 ) + ( 3 << SP_ACCURACY - 1 );
-	sprite->zoomY = spCos( rotation * 6 ) + ( 3 << SP_ACCURACY - 1 );
+	sprite->zoomX = spSin( rotation * 8 ) + spFloatToFixed( 1.5f );
+	sprite->zoomY = spCos( rotation * 6 ) + spFloatToFixed( 1.5f );
 	spDrawSprite( 3 * texture->w / 4, texture->h / 4, 0, sprite );
 	sprite->rotation = rotation * 4;
 	spDrawSprite( texture->w / 4, 3 * texture->h / 4, 0, sprite );
@@ -46,35 +46,35 @@ void draw_test( void )
 	int x;
 	for (x = 0;x < GRAPH_SIZE; x++)
 	{
-		Sint32 sx = (x-GRAPH_SIZE/2)<<SP_ACCURACY-4;
+		Sint32 sx = spIntToFixed(x-GRAPH_SIZE/2)/16;
 		Sint32 sy = spSin(sx+rotation*16);
-		int y = (sy>>SP_ACCURACY-4)+GRAPH_SIZE/2;
+		int y = spFixedToInt(sy*16)+GRAPH_SIZE/2;
 		if (y>=0 && y<GRAPH_SIZE)
       pixeldata[y*GRAPH_SIZE+x] = 56789;
 		sy = spCos(sx+rotation*32);
-		y = (sy>>SP_ACCURACY-4)+GRAPH_SIZE/2;
+		y = spFixedToInt(sy*16)+GRAPH_SIZE/2;
 		if (y>=0 && y<GRAPH_SIZE)
       pixeldata[y*GRAPH_SIZE+x] = 45678;
   }
   spUnlockRenderTarget();
 	for (x = 0;x < GRAPH_SIZE-1; x++)
 	{
-		Sint32 sx1 = (x-GRAPH_SIZE/2)<<SP_ACCURACY-4;
+		Sint32 sx1 = spIntToFixed(x-GRAPH_SIZE/2)/16;
 		Sint32 sy1 = spTan(sx1+rotation*8);
-		Sint32 y1 = (sy1>>SP_ACCURACY-4)+GRAPH_SIZE/2;
-		Sint32 sx2 = (x+1-GRAPH_SIZE/2)<<SP_ACCURACY-4;
+		int y1 = spFixedToInt(sy1*16)+GRAPH_SIZE/2;
+		Sint32 sx2 = spIntToFixed(x+1-GRAPH_SIZE/2)/16;
 		Sint32 sy2 = spTan(sx2+rotation*8);
-		Sint32 y2 = (sy2>>SP_ACCURACY-4)+GRAPH_SIZE/2;
+		int y2 = spFixedToInt(sy2*16)+GRAPH_SIZE/2;
 		spLine(x,y1,0,x+1,y2,0,34567);
 		sy1 = spAcos(sx1/2+spSin(rotation*24));
-		y1 = (sy1>>SP_ACCURACY-4)+GRAPH_SIZE/2;
+		y1 = spFixedToInt(sy1*16)+GRAPH_SIZE/2;
 		sy2 = spAcos(sx2/2+spSin(rotation*24));
-		y2 = (sy2>>SP_ACCURACY-4)+GRAPH_SIZE/2;
+		y2 = spFixedToInt(sy2*16)+GRAPH_SIZE/2;
 		spLine(x,y1,0,x+1,y2,0,23456);
 		sy1 = spAsin(sx1/2+spCos(rotation*24));
-		y1 = (sy1>>SP_ACCURACY-4)+GRAPH_SIZE/2;
+		y1 = spFixedToInt(sy1*16)+GRAPH_SIZE/2;
 		sy2 = spAsin(sx2/2+spCos(rotation*24));
-		y2 = (sy2>>SP_ACCURACY-4)+GRAPH_SIZE/2;
+		y2 = spFixedToInt(sy2*16)+GRAPH_SIZE/2;
 		spLine(x,y1,0,x+1,y2,0,12345);
   }
   
@@ -86,41 +86,41 @@ void draw_test( void )
   spResetZBuffer();
 	spIdentity();
 
-	spTranslate( 0,0, ( -7 << SP_ACCURACY ) );
+	spTranslate( 0,0, spFloatToFixed( -7.0f ) );
 	spRotateX( rotation );
 	spRotateY( rotation );
 	spRotateZ( rotation );
 
 	//Front / Back
 	spBindTexture(texture);
-	spQuadTex3D( -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, texture->h - 1,
-				 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, 0,
-				 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, texture->w - 1, 0,
-				 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, texture->w - 1, texture->h - 1, 65535);
-	spQuadTex3D( 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, texture->h - 1,
-				 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, 0,
-				 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, texture->w - 1, 0,
-				 -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, texture->w - 1, texture->h - 1, 65535 );
+	spQuadTex3D( -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), 0, texture->h - 1,
+				 -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), 0, 0,
+				 spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), texture->w - 1, 0,
+				 spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), texture->w - 1, texture->h - 1, 65535);
+	spQuadTex3D( spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), 0, texture->h - 1,
+				 spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), 0, 0,
+				 -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), texture->w - 1, 0,
+				 -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), texture->w - 1, texture->h - 1, 65535 );
 	//Left / Right
 	spBindTexture(graph);
-	spQuadTex3D( -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, graph->h - 1,
-				 -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, 0,
-				 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, graph->w - 1, 0,
-				 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, graph->w - 1, graph->h - 1, 65535 );
-	spQuadTex3D( 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, graph->h - 1,
-				 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, 0,
-				 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, graph->w - 1, 0,
-				 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, graph->w - 1, graph->h - 1, 65535 );
+	spQuadTex3D( -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), 0, graph->h - 1,
+				 -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), 0, 0,
+				 -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), graph->w - 1, 0,
+				 -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), graph->w - 1, graph->h - 1, 65535 );
+	spQuadTex3D( spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), 0, graph->h - 1,
+				 spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), 0, 0,
+				 spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), graph->w - 1, 0,
+				 spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), graph->w - 1, graph->h - 1, 65535 );
 	//Up / Down
 	spBindTexture(garfield);
-	spQuadTex3D( 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, garfield->h - 1,
-				 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, 0,
-				 -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, garfield->w - 1, 0,
-				 -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, garfield->h - 1, 65535 );
-	spQuadTex3D( -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, 0, garfield->h - 1,
-				 -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 0, 0,
-				 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, garfield->w - 1, 0,
-				 3 << SP_ACCURACY - 1, -3 << SP_ACCURACY - 1, 3 << SP_ACCURACY - 1, garfield->w - 1, garfield->h - 1, 65535 );
+	spQuadTex3D( spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), 0, garfield->h - 1,
+				 spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), 0, 0,
+				 -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), garfield->w - 1, 0,
+				 -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), garfield->w - 1, garfield->h - 1, 65535 );
+	spQuadTex3D( -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), 0, garfield->h - 1,
+				 -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), 0, 0,
+				 spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), garfield->w - 1, 0,
+				 spFloatToFixed( 1.5f ), -spFloatToFixed( 1.5f ), spFloatToFixed( 1.5f ), garfield->w - 1, garfield->h - 1, 65535 );
 
 	spFlip();
 }
@@ -129,7 +129,7 @@ void draw_test( void )
 int calc_test( Uint32 steps )
 {
 	spUpdateSprite( sprite, steps );
-	rotation += steps << SP_ACCURACY - 11;
+	rotation += steps*32;
 	if ( spGetInput()->button[SP_BUTTON_START] )
 		return 1;
 	return 0;

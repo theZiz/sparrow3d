@@ -52,9 +52,9 @@
  * Contains a translation text and the language.
  * 
  * Variables:
- * text - a text in some language
- * language - the language of the text above
- * next - needed for the internal linked list. Do not change*/
+ * text (char*) - a text in some language
+ * language (Uint16) - the language of the text above
+ * next (spTranslation*) - needed for the internal linked list. Do not change*/
 typedef struct spTranslation *spTranslationPointer;
 typedef struct spTranslation
 {
@@ -71,10 +71,10 @@ typedef struct spBundle *spBundlePointer;
  * caption. The captions should be unique in bundles (See <spBundle>).
  * 
  * Variables:
- * char* - name of the text
- * firstTranslation - start of a linked list of possible translations
- * bundle - bundle of the text
- * prev,next - internal double linked list variables for the bundle. Do not
+ * caption (char*) - name of the text
+ * firstTranslation (spTranslation*) - start of a linked list of possible translations
+ * bundle (spBundle*) - bundle of the text
+ * prev,next (spText*) - internal double linked list variables for the bundle. Do not
  * change*/
 typedef struct spText *spTextPointer;
 typedef struct spText
@@ -90,8 +90,8 @@ typedef struct spText
  * A bundle is a collection of texts. Every text is in exactly one bunch.
  * 
  * Variables:
- * firstText - start of a double linked list of the texts
- * next - internal pointer to the next bundle in a linked list. Do not use or
+ * firstText (spText*) - start of a double linked list of the texts
+ * next (spBundle*) - internal pointer to the next bundle in a linked list. Do not use or
  * change!*/
 typedef struct spBundle
 {

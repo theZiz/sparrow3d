@@ -94,31 +94,33 @@
  * The size of the surface cache */
 #define SP_CACHE_SIZE 2048
 
-/* typedef: spInput
+/* type: spInput
  * 
  * This struct contains information about the generic input device
  * sparrowCore provides, which is same on *every* device
  * 
  * Variables:
  * 
- * axis - the two axis of the input device. Every axis can be -1 (left/up),
+ * axis (char*) - the two axis of the input device. Every axis can be -1 (left/up),
  * 0 (no direction) or 1 (right/down)
- * button - the generic input device has 20 buttons, but many buttons are just
+ * button (char*) - the generic input device has 20 buttons, but many buttons are just
  * for compatibility reason to the gp2x-family. You should only use button 8 to
  * 18 (11 buttons) or better: the #defines for the buttons like SP_BUTTON_START
  * or SP_BUTTON_A (see sparrowDefines.h).
- * supports_keyboard - this variable says, whether the target supports a hardware
+ * supports_keyboard (char) - this variable says, whether the target supports a hardware
  * keyboard. However: at least a software onscreen keyboard is always provided
- * touchscreen - because of the principle of the least common factor, there is
+ * touchscreen (struct of 3 ints) - because of the principle of the least common factor, there is
  * no support for mouses, but for touchscreens. The different is, that you CAN'T
  * use the position provided here if the touchscreen is not pressed! Please keep
  * that in mind. For devices without touchscreen an emulation is provided.
- * keyboard - internal struct for keyboard input. Do not change.
- * analog_axis - These analog axis is the SAME like above, but with more
- * different states instead of a trinary -1, 0, 1 decision. If a device doesn't
- * have an analog stick, it will emulated as full pressed, but axis like the
- * pandora nubs or an analog stick on a gamepad will be presented here with full
- * SDL accuracy.*/
+ * keyboard (internal struct)- internal struct for keyboard input. Do not change.
+ * analog_axis (Sint16*) - a value between <SP_ANALOG_AXIS_MIN> and
+ * <SP_ANALOG_AXIS_MAX>. For digital input (D-Pad) this will be always be the
+ * MIN or MAX value, but for analog input (such as the Pandora's nubs or another
+ * analog stick) you will get a value on the range of MIN..MAX as accurate as
+ * SDL can poll the hardware. axis and analog_axis are not independant. If both
+ * methods of input are present you will NOT be able to access both, instead the
+ * one polled last by SDL will superseed the former.*/
 typedef struct SspInput *PspInput;
 typedef struct SspInput
 {

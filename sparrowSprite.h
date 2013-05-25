@@ -43,14 +43,14 @@ typedef struct spSpriteStruct *spSpritePointer;
  * it as a frame of a sprite.
  * 
  * Variables:
- * surface - the surface of the subsprite
- * sx,sy - the position in the surface to be drawn for tiling. If sx is
+ * surface (SDL_Surface*) - the surface of the subsprite
+ * sx,sy (Sint32) - the position in the surface to be drawn for tiling. If sx is
  * smaller than 0 no tilling is done
- * sw,sh - the width and height of the part of the surface
- * duration - the time the surface shall be seen. E.g. 50 ms would mean
+ * sw,sh (Sint32) - the width and height of the part of the surface
+ * duration (Sint32) - the time the surface shall be seen. E.g. 50 ms would mean
  * an animation with 20 fps
- * age - how long was this subsprite seeable yet?
- * before,next - internal linked list pointers*/
+ * age (Sint32) - how long was this subsprite seeable yet?
+ * before,next (spSubSprite*) - internal linked list pointers*/
 typedef struct spSubSpriteStruct
 {
 	SDL_Surface* surface;
@@ -66,19 +66,19 @@ typedef struct spSubSpriteStruct
  * The sprite struct itself.
  * 
  * Variables:
- * wholeDuration - the sum of all durations of all subSprites. See
+ * wholeDuration (Sint32) - the sum of all durations of all subSprites. See
  * <spSubSprite> for more about "duration"
- * wholeAge - the whole age of the animation
- * maxWidth,maxHeight - every subSprite can have different sizes. These
+ * wholeAge (Sint32) - the whole age of the animation
+ * maxWidth,maxHeight (Sint32) - every subSprite can have different sizes. These
  * are the biggest width and height
- * rotation - the rotation of the sprite in fixed point radiant
- * zoomX, zoomY - the zoom of the sprite. SP_ONE means no zoom
- * firstSub - double linked list of the subSprites. See <spSubSprite>
+ * rotation (Sint32) - the rotation of the sprite in fixed point radiant
+ * zoomX, zoomY (Sint32) - the zoom of the sprite. SP_ONE means no zoom
+ * firstSub (spSubSprite*) - double linked list of the subSprites. See <spSubSprite>
  * for more detailed information
- * momSub - the active subSprite (and image) to draw
- * name - the name of the sprite. Needed for <spSpriteCollection>
- * collection - the collection the sprite is saved in. Can be NULL
- * next - pointer to the next sprite pointer in the linked list from
+ * momSub (spSubSprite*) - the active subSprite (and image) to draw
+ * name (char*) - the name of the sprite. Needed for <spSpriteCollection>
+ * collection (spSpriteCollection*) - the collection the sprite is saved in. Can be NULL
+ * next (spSprite*) - pointer to the next sprite pointer in the linked list from
  * the collection. Do not change.*/
 typedef struct spSpriteStruct
 {
@@ -104,8 +104,8 @@ typedef struct spSpriteStruct
  * > spSelectSprite(collection,"running left");
  * 
  * Variables:
- * firstSprite - the first sprite in the collection
- * active - the choosen sprite*/
+ * firstSprite (spSprite*) - the first sprite in the collection
+ * active (spSprite*) - the choosen sprite*/
 typedef struct spSpriteCollectionStruct
 {
 	spSpritePointer firstSprite;
