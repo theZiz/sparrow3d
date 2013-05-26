@@ -1239,3 +1239,161 @@
 	}
 	SDL_UnlockSurface( spTarget );
 }
+
+#ifndef __SPARROW_INTERNAL_PERSPECT__
+#ifdef __SPARROW_INTERNAL_PATTERN__ 
+	#ifdef __SPARROW_INTERNAL_ALPHA___
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			#ifdef __GNUC__
+			inline void draw_zoom_ztest_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z,Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_ztest_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			#ifdef __GNUC__
+			inline void draw_zoom_ztest_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_ztest_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#elif defined __SPARROW_INTERNAL_ZSET__
+			#ifdef __GNUC__
+			inline void draw_zoom_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#else
+			#ifdef __GNUC__
+			inline void draw_zoom_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			#ifdef __GNUC__
+			inline void draw_zoom_ztest_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_ztest_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			#ifdef __GNUC__
+			inline void draw_zoom_ztest_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_ztest_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#elif defined __SPARROW_INTERNAL_ZSET__
+			#ifdef __GNUC__
+			inline void draw_zoom_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#else
+			#ifdef __GNUC__
+			inline void draw_zoom_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#endif
+	#endif
+#else
+	#ifdef __SPARROW_INTERNAL_ALPHA___
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			#ifdef __GNUC__
+			inline void draw_zoom_ztest_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_ztest_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			#ifdef __GNUC__
+			inline void draw_zoom_ztest_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_ztest_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#elif defined __SPARROW_INTERNAL_ZSET__
+			#ifdef __GNUC__
+			inline void draw_zoom_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#else
+			#ifdef __GNUC__
+			inline void draw_zoom_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			#ifdef __GNUC__
+			inline void draw_zoom_ztest_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_ztest_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			#ifdef __GNUC__
+			inline void draw_zoom_ztest( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_ztest( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#elif defined __SPARROW_INTERNAL_ZSET__
+			#ifdef __GNUC__
+			inline void draw_zoom_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#else
+			#ifdef __GNUC__
+			inline void draw_zoom( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
+			#endif
+			inline void draw_zoom( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+		#endif
+	#endif
+#endif
+{
+	Sint32 du = spIntToFixed(w) / (x3-x1);
+	Sint32 dv = spIntToFixed(h) / (y3-y1);
+	spLockRenderTarget();
+	Sint32 u = spIntToFixed(sx);
+	int x,y;
+	for (x = x1; x < x3; x++)
+	{
+		u += du;
+		Sint32 v = spIntToFixed(sy);
+		for (y = y1; y < y3; y++)
+		{
+			#ifdef __SPARROW_INTERNAL_PATTERN__
+				#ifdef __SPARROW_INTERNAL_ALPHA___
+					#ifdef __SPARROW_INTERNAL_ZBOTH__
+						draw_pixel_tex_ztest_zset_alpha_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),65535);
+					#elif defined __SPARROW_INTERNAL_ZTEST__
+						draw_pixel_tex_ztest_alpha_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),65535);
+					#elif defined __SPARROW_INTERNAL_ZSET__
+						draw_pixel_tex_zset_alpha_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),65535);
+					#else
+						draw_pixel_tex_alpha_pattern(x,y,spFixedToInt(u),spFixedToInt(v),65535);
+					#endif
+				#else
+					#ifdef __SPARROW_INTERNAL_ZBOTH__
+						draw_pixel_tex_ztest_zset_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),65535);
+					#elif defined __SPARROW_INTERNAL_ZTEST__
+						draw_pixel_tex_ztest_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),65535);
+					#elif defined __SPARROW_INTERNAL_ZSET__
+						draw_pixel_tex_zset_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),65535);
+					#else
+						draw_pixel_tex_pattern(x,y,spFixedToInt(u),spFixedToInt(v),65535);
+					#endif
+				#endif
+			#else
+				#ifdef __SPARROW_INTERNAL_ALPHA___
+					#ifdef __SPARROW_INTERNAL_ZBOTH__
+						draw_pixel_tex_ztest_zset_alpha(x,y,z,spFixedToInt(u),spFixedToInt(v),65535);
+					#elif defined __SPARROW_INTERNAL_ZTEST__
+						draw_pixel_tex_ztest_alpha(x,y,z,spFixedToInt(u),spFixedToInt(v),65535);
+					#elif defined __SPARROW_INTERNAL_ZSET__
+						draw_pixel_tex_zset_alpha(x,y,z,spFixedToInt(u),spFixedToInt(v),65535);
+					#else
+						draw_pixel_tex_alpha(x,y,spFixedToInt(u),spFixedToInt(v),65535);
+					#endif
+				#else
+					#ifdef __SPARROW_INTERNAL_ZBOTH__
+						draw_pixel_tex_ztest_zset(x,y,z,spFixedToInt(u),spFixedToInt(v),65535);
+					#elif defined __SPARROW_INTERNAL_ZTEST__
+						draw_pixel_tex_ztest(x,y,z,spFixedToInt(u),spFixedToInt(v),65535);
+					#elif defined __SPARROW_INTERNAL_ZSET__
+						draw_pixel_tex_zset(x,y,z,spFixedToInt(u),spFixedToInt(v),65535);
+					#else
+						draw_pixel_tex(x,y,spFixedToInt(u),spFixedToInt(v),65535);
+					#endif
+				#endif
+			#endif
+			v += dv;
+		}
+	}
+	spUnlockRenderTarget();
+}
+#endif

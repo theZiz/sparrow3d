@@ -4226,15 +4226,6 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 		break;
 	}
 
-	Sint32 nx1 = x + ( x1 * spCos( angle ) - y1 * spSin( angle ) >> SP_ACCURACY );
-	Sint32 ny1 = y + ( y1 * spCos( angle ) + x1 * spSin( angle ) >> SP_ACCURACY );
-	Sint32 nx2 = x + ( x2 * spCos( angle ) - y2 * spSin( angle ) >> SP_ACCURACY );
-	Sint32 ny2 = y + ( y2 * spCos( angle ) + x2 * spSin( angle ) >> SP_ACCURACY );
-	Sint32 nx3 = x + ( x3 * spCos( angle ) - y3 * spSin( angle ) >> SP_ACCURACY );
-	Sint32 ny3 = y + ( y3 * spCos( angle ) + x3 * spSin( angle ) >> SP_ACCURACY );
-	Sint32 nx4 = x + ( x4 * spCos( angle ) - y4 * spSin( angle ) >> SP_ACCURACY );
-	Sint32 ny4 = y + ( y4 * spCos( angle ) + x4 * spSin( angle ) >> SP_ACCURACY );
-
 	SDL_Surface* oldTexture = spTexture;
 	Sint32 oldTextureScanLine = spTextureScanLine;
 	Sint32 oldTextureX = spTextureY;
@@ -4242,22 +4233,117 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 	Sint32 oldTextureXY = spTextureXY;
 	Uint16* oldTexturePixel = spTexturePixel;
 	spBindTexture( surface );
-	Sint32 mx = nx1 + nx2 + nx3 + nx4 >> 2;
-	Sint32 my = ny1 + ny2 + ny3 + ny4 >> 2;
-	Sint32 mu = sx + ( w >> 1 );
-	Sint32 mv = sy + ( h >> 1 );
-	sp_intern_Triangle_tex_inter( nx1, ny1, z, sx  , sy  ,
-								  nx2, ny2, z, sx  , sy + h,
-								  mx , my , z, mu  , mv  );
-	sp_intern_Triangle_tex_inter( nx2, ny2, z, sx  , sy + h,
-								  nx3, ny3, z, sx + w, sy + h,
-								  mx , my , z, mu  , mv  );
-	sp_intern_Triangle_tex_inter( nx3, ny3, z, sx + w, sy + h,
-								  nx4, ny4, z, sx + w, sy  ,
-								  mx , my , z, mu  , mv  );
-	sp_intern_Triangle_tex_inter( nx4, ny4, z, sx + w, sy  ,
-								  nx1, ny1, z, sx  , sy  ,
-								  mx , my , z, mu  , mv  );
+
+	if (angle == 0)
+	{
+		x1 += x;
+		x3 += x;
+		y1 += y;
+		y3 += y;
+		if ( spUsePattern )
+		{
+			if ( spAlphaTest )
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						draw_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+					else
+						draw_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+				}
+				else
+				{
+					if ( spZTest )
+						draw_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+					else
+						draw_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h,surface);
+				}
+			}
+			else
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						draw_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+					else
+						draw_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+				}
+				else
+				{
+					if ( spZTest )
+						draw_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+					else
+						draw_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h,surface);
+				}
+			}
+		}
+		else
+		{
+			if ( spAlphaTest )
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						draw_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+					else
+						draw_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+				}
+				else
+				{
+					if ( spZTest )
+						draw_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+					else
+						draw_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h,surface);
+				}
+			}
+			else
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						draw_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+					else
+						draw_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+				}
+				else
+				{
+					if ( spZTest )
+						draw_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+					else
+						draw_zoom(x1,x3,y1,y3,sx,sy,w,h,surface);
+				}
+			}
+		}
+	}
+	else
+	{
+		Sint32 nx1 = x + ( x1 * spCos( angle ) - y1 * spSin( angle ) >> SP_ACCURACY );
+		Sint32 ny1 = y + ( y1 * spCos( angle ) + x1 * spSin( angle ) >> SP_ACCURACY );
+		Sint32 nx2 = x + ( x2 * spCos( angle ) - y2 * spSin( angle ) >> SP_ACCURACY );
+		Sint32 ny2 = y + ( y2 * spCos( angle ) + x2 * spSin( angle ) >> SP_ACCURACY );
+		Sint32 nx3 = x + ( x3 * spCos( angle ) - y3 * spSin( angle ) >> SP_ACCURACY );
+		Sint32 ny3 = y + ( y3 * spCos( angle ) + x3 * spSin( angle ) >> SP_ACCURACY );
+		Sint32 nx4 = x + ( x4 * spCos( angle ) - y4 * spSin( angle ) >> SP_ACCURACY );
+		Sint32 ny4 = y + ( y4 * spCos( angle ) + x4 * spSin( angle ) >> SP_ACCURACY );
+
+		Sint32 mx = nx1 + nx2 + nx3 + nx4 >> 2;
+		Sint32 my = ny1 + ny2 + ny3 + ny4 >> 2;
+		Sint32 mu = sx + ( w >> 1 );
+		Sint32 mv = sy + ( h >> 1 );
+		sp_intern_Triangle_tex_inter( nx1, ny1, z, sx  , sy  ,
+									  nx2, ny2, z, sx  , sy + h,
+									  mx , my , z, mu  , mv  );
+		sp_intern_Triangle_tex_inter( nx2, ny2, z, sx  , sy + h,
+									  nx3, ny3, z, sx + w, sy + h,
+									  mx , my , z, mu  , mv  );
+		sp_intern_Triangle_tex_inter( nx3, ny3, z, sx + w, sy + h,
+									  nx4, ny4, z, sx + w, sy  ,
+									  mx , my , z, mu  , mv  );
+		sp_intern_Triangle_tex_inter( nx4, ny4, z, sx + w, sy  ,
+									  nx1, ny1, z, sx  , sy  ,
+									  mx , my , z, mu  , mv  );
+	}
+	
 	spTexture = oldTexture;
 	spTextureScanLine = oldTextureScanLine;
 	spTextureX = oldTextureY;
