@@ -32,6 +32,17 @@
 	#include <unistd.h>
 #endif
 
+#define replaceLinuxWithWindowsStuff(STR) \
+{\
+	int i = 0;\
+	while (STR[i]!=0)\
+	{\
+		if (STR[i]=='/')\
+			STR[i]='\\';\
+		i++;\
+	}\
+}\
+
 PREFIX int spFileExists( const char* filename )
 {
   SDL_RWops *file = SDL_RWFromFile(filename, "rb");
@@ -156,8 +167,15 @@ PREFIX spFileError spRemoveFile( const char* filename )
 PREFIX spFileError spRemoveDirectory( const char* dirname )
 {
 #ifdef WIN32
-	if (RemoveDirectory(dirname))
+	char *windowsName = (char*)malloc(strlen(dirname)+1);
+	sprintf(windowsName,"%s",dirname);
+	replaceLinuxWithWindowsStuff(windowsName);
+	if (RemoveDirectory(windowsName))
+	{
+		free(windowsName);
 		return SP_FILE_EVERYTHING_OK;
+	}
+	free(windowsName);
 	if (GetLastError() == ERROR_PATH_NOT_FOUND)
 		return SP_FILE_NOT_FOUND_ERROR;
 	return SP_FILE_ACCESS_ERROR;
@@ -192,23 +210,69 @@ PREFIX spFileError spRenameFile( const char* filename , const char* newname)
 }
 
 spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointer* last,char* directory,int recursive,int no_hidden_files)
-#ifdef WIN32
 {
-	#pragma message("Please implement this function for native Windows ;)")
-	//Use this stuff to implement this function... ;)
-	/*WIN32_FIND_DATA FindFileData;
+#ifdef WIN32
+	char* realDirectory = directory;
+	if (strcmp(directory,".") == 0)
+		realDirectory = &(directory[1]);
+	if (directory[0] == '.' && directory[1] == '/')
+		realDirectory = &(directory[2]);
+	char windowsSearchString[512];
+	if (realDirectory[0]!=0)
+		sprintf(windowsSearchString,"%s\\*",realDirectory);
+	else
+		sprintf(windowsSearchString,"*");
+	//Searching '/' and replacing with '\\'
+	replaceLinuxWithWindowsStuff(windowsSearchString);
+	WIN32_FIND_DATA FindFileData;
 	HANDLE hFind;
-	while
-	hFind = FindFirstFile(directory,&FindFileData);
+	hFind = FindFirstFile(windowsSearchString,&FindFileData);
 	if (hFind == INVALID_HANDLE_VALUE)
 		return SP_FILE_UNKNOWN_ERROR;
-
-
-	FindClose(hFind);*/
+	do
+	{
+		if (strcmp(FindFileData.cFileName,".") == 0 || strcmp(FindFileData.cFileName,"..") == 0)
+			continue;
+		if (no_hidden_files && FindFileData.cFileName[0]=='.')
+			continue;
+		if (no_hidden_files && (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
+			continue;
+		spFileListPointer newOne = (spFileListPointer)malloc(sizeof(spFileList));
+		sprintf(newOne->name,"%s/%s",directory,FindFileData.cFileName);
+		if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			newOne->type = SP_FILE_DIRECTORY;
+		else
+			newOne->type = SP_FILE_FILE;
+		if (*last)
+		{
+			(*last)->next = newOne;
+			newOne->prev = *last;
+			newOne->next = NULL;
+			*last = newOne;
+		}
+		else
+		{
+			newOne->prev = NULL;
+			newOne->next = NULL;
+			*pointer = newOne;
+			*last = newOne;
+			(*pointer)->count = 0;
+		}
+		(*pointer)->count++;
+		if ((newOne->type & SP_FILE_DIRECTORY) && recursive)
+		{
+			spFileError error = internalFileGetDirectory(pointer,last,newOne->name,1,no_hidden_files);
+			if (error != SP_FILE_EVERYTHING_OK)
+			{
+				FindClose(hFind);
+				return error;
+			}
+		}
+	}
+	while (FindNextFile(hFind,&FindFileData));
+	FindClose(hFind);
 	return SP_FILE_EVERYTHING_OK;
-}
 #else
-{
 	struct stat stat_buf;
 	DIR* d = opendir(directory);
 	if (d)
@@ -280,8 +344,8 @@ spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointe
 	}
 	closedir(d);
 	return SP_FILE_EVERYTHING_OK;
-}
 #endif
+}
 
 PREFIX spFileError spFileGetDirectory(spFileListPointer* pointer,char* directory,int recursive,int no_hidden_files)
 {
