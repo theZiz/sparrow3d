@@ -12,13 +12,13 @@
  Alternatively, the contents of this file may be used under the terms of the
  GNU Lesser General Public license (the  "LGPL License") version 2 or higher, in
  which case the provisions of LGPL License are applicable instead of those above
- 
+
  For feedback and questions about my Files and Projects please mail me,
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 
 /* File: sparrowFont
- * 
+ *
  * SparrowFont is for loading truetype fonts with SDL_ttf and creating
  * bitmap-lookup tables for them. SDL_ttf and especially blending are
  * slow like hell. Not good for e.g. handhelds like the gp2x. So the
@@ -38,7 +38,7 @@
 #include <SDL_ttf.h>
 
 /* Defines: Defines for the look of the buttons and keys
- * 
+ *
  * SP_FONT_INTELLIGENT - Uses keys or buttons as it should make sense on the
  * target, e.g. keys for the PC, buttons for handhelds buttons, but "keys" for
  * the Start or Select button
@@ -49,7 +49,7 @@
 #define SP_FONT_KEY 2
 
 /* Defines: Default ranges for spFontAdd
- * 
+ *
  * SP_FONT_GROUP_ASCII - whole ASCII set (sign 32 (space) until 127 (~))
  * SP_FONT_GROUP_GERMAN - German letters like umlauts
  * SP_FONT_GROUP_ALPHABET - All 26 latin letters big and small
@@ -60,9 +60,9 @@
 #define SP_FONT_GROUP_NUMBERS "0123456789.,-"
 
 /* Define: SP_FONT_DEFAULT_CACHE
- * 
- * Per default 16384 signs (needs 64 kilobytes) are cache.
- * Thats enough most of the times. In fact - because SDL_ttf is just able to use
+ *
+ * Per default 16384 signs (needs 64 kilobytes) are cached.
+ * Thats enough most of the time. In fact - because SDL_ttf is just able to use
  * plane 0 (the first 65536 letters) of unicode, nearly everything you
  * will need is cached, and the tree is useles... But it was fun to
  * implement it!*/
@@ -77,9 +77,9 @@
 #define SP_FONT_NO_BORDER -1
 
 /* type: spLetter
- * 
+ *
  * a letter in a binary tree of a font
- * 
+ *
  * Variables:
  * character (Uint32) - unicode character
  * surface (SDL_Surface*) - the character's surface
@@ -102,9 +102,9 @@ typedef struct spLetterStruct
 } spLetter;
 
 /* type: spFontCache
- * 
+ *
  * the font cache
- * 
+ *
  * Variables:
  * size (Uint32) - size of the cache
  * cache (spLetter*) - an array of pointers of <spLetter>*/
@@ -116,9 +116,9 @@ typedef struct spFontCacheStruct
 } spFontCache;
 
 /* type: spFont
- * 
+ *
  * Root of a binary tree of all letters in this font
- * 
+ *
  * Variables:
  * font (TTF_Font*) - the SDL_ttf font struct
  * maxheight (Sint32) - the height of the heighest letter in the tree
@@ -140,21 +140,23 @@ typedef struct spFontStruct
 } spFont;
 
 /* Function: spFontLoad
- * 
+ *
  * Loads a ttf font
- * 
+ *
  * Parameters:
  * fontname - the name of the ttf font file
  * size - the size to load the font
- * 
+ *
  * Returns:
  * spFont* - a pointer to a spFont for later use */
-PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size );
+PREFIX spFontPointer spFontLoad( const char* fontname, Uint32 size );
 
 /* Function: spFontAdd
- * 
+ *
  * Adds characters to the font.
- * 
+ * You need to call this once after spFontLoad and before drawing, with every
+ * character you eventually want to draw
+ *
  * Parameters:
  * font - the font pointer, which shall be filled with new stuff
  * characters - characters, that shall be added. It adds every utf8 character
@@ -165,10 +167,10 @@ PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size );
 PREFIX void spFontAdd( spFontPointer font, char* characters, Uint16 color );
 
 /* Function: spFontAddRange
- * 
+ *
  * Adds a range of utf8 characters to the font defined by a start and end
  * character
- * 
+ *
  * Parameters:
  * font - the font pointer, which shall be filled with new stuff
  * from - start character
@@ -179,34 +181,34 @@ PREFIX void spFontAdd( spFontPointer font, char* characters, Uint16 color );
 PREFIX void spFontAddRange( spFontPointer font, char* from, char* to, Uint16 color );
 
 /* Function: spFontGetUnicodeFromUTF8
- * 
+ *
  * Converts a utf8 sign to unicode
- * 
+ *
  * Parameters:
  * sign - utf8 character
- * 
+ *
  * Returns:
  * Uint32 - unicode value*/
 PREFIX Uint32 spFontGetUnicodeFromUTF8(const char* sign);
 
 /* Function: spFontGetUTF8FromUnicode
- * 
+ *
  * Converts a unicode character to utf8
- * 
+ *
  * Parameters:
  * sign - unicode sign
  * buffer - buffer for the resulting utf8 character, you have to alloc it!
  * However, 5 bytes are always enough
  * len - maximal length of the buffer
- * 
+ *
  * Returns:
  * char* - the same pointer as buffer points, too. Just for better usement.*/
 PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len);
 
 /* Function: spFontAddButton
- * 
+ *
  * Adds a button the the font.
- * 
+ *
  * Parameters:
  * font - the font pointer, which shall be filled with new stuff
  * character - this unicode character will identify the button, e.g. 'A' for the
@@ -219,21 +221,21 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len);
 PREFIX void spFontAddButton( spFontPointer font, Uint32 character, char* caption, Uint16 fgColor, Uint16 bgColor );
 
 /* Function: spFontSetButtonBoderSigns
- * 
+ *
  * Sets the starting and end sign for buttons, the defaults are '[' and ']',
  * which means, that "[A]" will be drawn as a button with the caption A, if you
  * called spFontAddButton(font,'A',"A",fg,bg) before.
- * 
+ *
  * Parameters:
  * left - the start of a button
  * right - the end of a button*/
 PREFIX void spFontSetButtonBorderSigns(Uint32 left,Uint32 right);
 
 /* Function: spFontSetButtonStrategy
- * 
+ *
  * Sets the strategy used to determine, whether buttons are round (like normal
  * buttons on handhelds) or quadric (like keyboard buttons).
- * 
+ *
  * Parameters:
  * strategy - <SP_FONT_INTELLIGENT> uses rounds buttons for normal button, but
  * quadric buttons for Start or Select and always quadric buttons for keyboard
@@ -241,24 +243,26 @@ PREFIX void spFontSetButtonBorderSigns(Uint32 left,Uint32 right);
 PREFIX void spFontSetButtonStrategy(int strategy);
 
 /* Function: spFontAddBorder
- * 
- * For better viewing on different backgrounds, most of the time it is
- * useful to have a border around the letters. With this function you
- * can do this. It adds a border to every *yet* loading letter.
- * 
+ *
+ * For better viewing on different backgrounds, most of the time it is useful to 
+ * have a border around the letters. With this function you can do this.
+ * It adds a border to every *currently* loaded letter. (Every letter loaded
+ * afterwards will have no border by default )
+ * Note: Works on a pixel level, therefore needs a non-transparent font to work.
+ *
  * Parameters:
  * font - the font, that shall get a border
  * bordercolor - the 16 bit color of the border*/
 PREFIX void spFontAddBorder( spFontPointer font, Uint16 bordercolor );
 
 /* Function: spFontReplaceColor
- * 
+ *
  * If you want to change the color of every letter in the font, use
- * this function. It is e.g. usefull, to have just the border and not
- * the letter inside. First draw the letter in a color of your choice
- * (maybe black), than add a border (maybe white) and than call
+ * this function. It might be useful to draw just the border and no
+ * letter inside: First draw the letter in a color of your choice
+ * (e.g. black), than add a border (e.g. white) and than call
  * spFontReplaceColor and replace the black with SP_ALPHA_COLOR (pink)
- * 
+ *
  * Parameters:
  * font - the font, which color shall be changed
  * oldcolor - 16 Bit color to be changed
@@ -266,10 +270,10 @@ PREFIX void spFontAddBorder( spFontPointer font, Uint16 bordercolor );
 PREFIX void spFontReplaceColor( spFontPointer font, Uint16 oldcolor, Uint16 newcolor );
 
 /* Function: spFontMulWidth
- * 
+ *
  * This function changes the width, which is similar to the distance of
  * the letters, of the whole font.
- * 
+ *
  * Parameters:
  * font - the font, which width will be changed
  * factor - fixed point factor for the width of the output. factor = SP_ONE does
@@ -278,20 +282,20 @@ PREFIX void spFontReplaceColor( spFontPointer font, Uint16 oldcolor, Uint16 newc
 PREFIX void spFontMulWidth( spFontPointer font, Sint32 factor );
 
 /* Function: spFontChangeLetter
- * 
+ *
  * Once I had a bug in sparrowFont. The "0" just looked ugly and wrong
  * and it seemed to be the failure of SDL_ttf. So I wrote this function
  * to replace the surface, but not the NAME of a letter. I called
  * spFontChangeLetter(font,spFontGetLetter(font,'0'),'O',color); and
  * my 0 was O. Looked a bit funny, but worked.
- * 
+ *
  * Parameters:
  * font - the font to be changed
  * letter - the letter in the font to be changed, use <spFontGetLetter>
  * character - the character to be replaced. The character value of the letter
  * will *not* be changed, this is only for the redrawing of the surface
  * color - color of the letter
- * 
+ *
  * See Also:
  * <spFontChangeButton>*/
 PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint32 character, Uint16 color );
@@ -301,16 +305,16 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint32 character, char* caption,  Uint16 fgColor, Uint16 bgColor);
 
 /* Function: spFontGetLetter
- * 
+ *
  * Returns the letter struct of a letter
- * 
+ *
  * Parameters:
  * font - the font to be searched
  * character - the unicode character, which shall be found
- * 
+ *
  * Returns:
  * spLetter* - NULL if not found, else the found letter struct
- * 
+ *
  * See Also:
  * <spFontGetButton>*/
 PREFIX spLetterPointer spFontGetLetter( spFontPointer font, Uint32 character );
@@ -320,80 +324,80 @@ PREFIX spLetterPointer spFontGetLetter( spFontPointer font, Uint32 character );
 PREFIX spLetterPointer spFontGetButton( spFontPointer font, Uint32 character );
 
 /* Function: spFontDraw
- * 
+ *
  * Draws a left aligned text to the render target
- * 
+ *
  * Parameters:
  * x,y - position on the render target
  * z - z value for z-test, z-set, etc.
  * text - text to be drawn
  * font - font, that shall be used for drawing the text
- * 
+ *
  * Returns:
  * int - the printed width in pixels*/
 PREFIX int spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPointer font );
 
 /* Function: spFontDrawRight
- * 
+ *
  * Draws a right aligned text to the render target
- * 
+ *
  * Parameters:
  * x,y - position on the render target
  * z - z value for z-test, z-set, etc.
  * text - text to be drawn
  * font - font, that shall be used for drawing the text
- * 
+ *
  * Returns:
  * int - the printed width in pixels*/
 PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font );
 
 /* Function: spFontDrawMiddle
- * 
+ *
  * Draws a center aligned text to the render target
- * 
+ *
  * Parameters:
  * x,y - position on the render target
  * z - z value for z-test, z-set, etc.
  * text - text to be drawn
  * font - font, that shall be used for drawing the text
- * 
+ *
  * Returns:
  * int - the printed width in pixels*/
 PREFIX int spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font );
 
 /* Function: spFontWidth
- * 
+ *
  * Width of a text
- * 
+ *
  * Parameters:
  * text - the text, which size you want to know
  * font - the font, which defines the size of the text
- * 
+ *
  * Returns:
  * int - the width in pixel, if you would draw the text with the font*/
 PREFIX int spFontWidth(const char* text, spFontPointer font );
 
 /* Function: spFontDelete
- * 
+ *
  * Deletes a font
- * 
+ *
  * Parameters:
  * font - the font to be deleted*/
 PREFIX void spFontDelete( spFontPointer font );
 
 /* Function: spFontChangeCacheSize
- * 
+ *
  * Changes to size of the cache.
- * 
+ *
  * Parameters:
  * font - the font, which cache you want to modify
  * size - new size of the cache*/
 PREFIX void spFontChangeCacheSize( spFontPointer font, Sint32 size );
 
 /* Function: spFontChangeCacheSize
- * 
+ *
  * Changes to start of the cache.
- * 
+ *
  * Parameters:
  * font - the font, which cache you want to modify
  * letter - the new start of the cache. Default is 0. The whole cache goes from
@@ -402,43 +406,43 @@ PREFIX void spFontChangeCacheSize( spFontPointer font, Sint32 size );
 PREFIX void spFontSetCacheStart( spFontPointer font, Sint32 letter );
 
 /* Function: spFontGetCacheStart
- * 
+ *
  * Returns the start of the cache.
- * 
+ *
  * Parameters:
  * font - the font, which cache property you want to get
- * 
+ *
  * Returns:
  * Sint32 - the start of the cache*/
 PREFIX Sint32 spFontGetCacheStart( spFontPointer font );
 
 /* Function: spFontSetShadeColor
- * 
- * Sets the "background" color, if you want to shade smoothy. It is still no
- * alpha blending, but the blended font will be look better. However, it could
- * be, that the font looks ugly at least with a shitty background color. So the
+ *
+ * Sets the "background" color, if you want to shade smoothly. It is still no
+ * alpha blending, but the blended font will be look better. However the font
+ * might look ugly at least with a shitty background color. So the
  * default is <SP_FONT_NO_BORDER>, which means, that no shading is done and the
- * font looks normal pixelize.
- * 
+ * font looks normal pixelized.
+ *
  * Parameters:
  * value - the 16 bit alpha color to which it shall be shaded*/
 PREFIX void spFontSetShadeColor(int value);
 
 /* Function: spFontShadeButtons
- * 
+ *
  * Desides, whether the button font should be shaded or not. For compatibility
  * (especially with transparent background color of the buttons) the default is
  * false (0). But in most cases true (1) should look much better. :)
- * 
+ *
  * Parameters:
  * value - 1 enabled, 0 disabled*/
 PREFIX void spFontShadeButtons(int value);
 
 /* Function: spFontAddEveryLetterOfTextBundle
- * 
+ *
  * Adds every letter used in the given sparrowText Bundle of Translations. See
  * <sparrowText> for more.
- * 
+ *
  * Parameters:
  * font - the font to be changed
  * bundle - the bundle, to be scaned for every used character
