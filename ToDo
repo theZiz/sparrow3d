@@ -1,5 +1,6 @@
 Roadmap til next version (tag):
 - all 12 tutorials
+- SDL_FillRect vs. my assembler stuff (measurement)
 
 general Roadmap:
 - third device layer (controlled by sparrowCore)

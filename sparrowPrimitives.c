@@ -139,10 +139,17 @@ PREFIX void spBindTexture( SDL_Surface* texture )
 
 PREFIX void spClearTarget( Uint32 color )
 {
-	SDL_FillRect( spTarget, NULL, color );
-	/*SDL_Surface(spTarget);
-	spHorizentalLine(spTargetPixel,0,0,spTargetScanLine*spTargetY,color,0,0,0);
-	SDL_UnlockSurface(spTarget);*/
+	//testfill with CLEAR_PER_FRAME = 64 with SDL_FillRect: 27 fps
+	//testfill with CLEAR_PER_FRAME = 64 assembler spHorizentalLine: 32 fps
+	//testfill with CLEAR_PER_FRAME = 128 with SDL_FillRect: 14 fps
+	//testfill with CLEAR_PER_FRAME = 128 assembler spHorizentalLine: 17 fps
+	#ifdef ARMCPU
+		SDL_LockSurface(spTarget);
+		spHorizentalLine(spTargetPixel,0,0,spTargetScanLine*spTargetY,color,0,0,0);
+		SDL_UnlockSurface(spTarget);
+	#else
+		SDL_FillRect( spTarget, NULL, color );
+	#endif
 }
 
 #ifdef __GNUC__

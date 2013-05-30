@@ -45,9 +45,9 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
 	l = l_;
 	register Uint32 color asm( "r2" );
 	color = color_;
-	asm volatile( //  r3-r12 auf dem Stack retten
+	asm volatile( //  saving r3-r12 to the stack
 		"stmfd sp!,{r3-r12} \n\t"
-		//"Doof gelegenes" Halfword am Anfang abfangen
+		//catching "awkward" laying Halfword at the beginning
 		"mov r3,%0,lsr #2 \n\t"
 		"subs r4,%0,r3,asl #2 \n\t"
 		"beq .all_ok \n\t"
@@ -55,7 +55,7 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
 		"subs %1,%1,#1 \n\t"
 		".all_ok: \n\t"
 		//if l>=22 then
-		//jmp twentytwo;
+		//  jmp twentytwo;
 		"cmp %1,#22\n\t"
 		"bge .twentytwo\n\t"
 		//if l>=12 then
@@ -71,9 +71,9 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
 		"bne .thelast\n\t"
 		//twentytwo:
 		".twentytwo: \n\t"
-		//  r2 auf sich selbst spiegeln
+		//  assining r2 on itself, but shifted
 		"orr %2,%2,%2,lsl #16 \n\t"
-		//  r3-r12 auf r2 setzen
+		//  setting r3-r12 to r2
 		"mov r3,%2 \n\t"
 		"mov r4,%2 \n\t"
 		"mov r5,%2 \n\t"
@@ -86,7 +86,7 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
 		"mov r12,%2 \n\t"
 		//  again22:
 		".again22: \n\t"
-		//  pos+44 auf r2-r12 setzen
+		//  setting pos til pos+43 to r2-r12
 		"stmia %0!,{%2,r3-r12} \n\t"
 		//  l-=22;
 		"subs %1,%1,#22 \n\t"
@@ -108,9 +108,9 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
 		" \n\t"
 		//twelve:
 		".twelve: \n\t"
-		//  r2 auf sich selbst spiegeln
+		//  mirroring r2 auf sich selbst spiegeln
 		"orr %2,%2,%2,lsl #16 \n\t"
-		//  r3-r7 auf r2 setzen
+		//  setting r3-r7 to r2
 		"mov r3,%2 \n\t"
 		"mov r4,%2 \n\t"
 		"mov r5,%2 \n\t"
@@ -118,14 +118,10 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
 		"mov r7,%2 \n\t"
 		//  again12:
 		".again12: \n\t"
-		//  pos+24 auf r2-r7 setzen
+		//  setting pos..pos+23 to r2-r7
 		"stmia %0!,{%2,r3-r7} \n\t"
 		//  l-=12;
 		"subs %1,%1,#12 \n\t"
-		//  if l>=12 then
-		//    jmp again12;
-		"cmp %1,#12 \n\t"
-		"bge .again12\n\t"
 		//  if l>=6 then
 		//    jmp again6;
 		"cmp %1,#6 \n\t"
@@ -136,9 +132,9 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
 		" \n\t"
 		//six:
 		".six: \n\t"
-		//  r2 auf sich selbst spiegeln
+		//  mirroring r2 to itself
 		"orr %2,%2,%2,lsl #16 \n\t"
-		//  r3-r4 auf r2 setzen
+		//  setting r3 and r4 to r2
 		"mov r3,%2 \n\t"
 		"mov r4,%2 \n\t"
 		//  again6:
@@ -147,10 +143,6 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
 		"stmia %0!,{%2,r3-r4} \n\t"
 		//  l-=6;
 		"subs %1,%1,#6 \n\t"
-		//  if l>=6 then
-		//    jmp again6;
-		"cmp %1,#6 \n\t"
-		"bge .again6 \n\t"
 		//thelast:
 		".thelast: \n\t"
 		//  if l=0 then
@@ -158,18 +150,17 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
 		"cmp %1,#0 \n\t"
 		"beq .end \n\t"
 		//  again:
-//               "subs %0,%0,#2 \n\t"
-//               "adds %1,%1,#1 \n\t"
 		".again: \n\t"
-		//  Speicherstelle an Position pos setzen und direkt inkrementieren
+		//  Setting color at pos directly and increment
 		"strh %2,[%0],#2 \n\t"
-		//  l um 1 verkleinern
+		//  l--;
 		"subs %1,%1,#1 \n\t"
 		//  if l!=0:
 		//    jmp again;
 		"bne .again \n\t"
 		//end:
 		".end: \n\t"
+		//Poping the registers
 		"ldmfd sp!,{r3-r12} \n\t"
 		:
 		: "r" ( pos ), "r"( l ), "r"( color )
