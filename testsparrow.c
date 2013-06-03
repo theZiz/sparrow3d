@@ -31,10 +31,15 @@ char input[32] = "";
 char no_movement = 0;
 int perspective = 0;
 int pause = 0;
+int blending = 0;
 
 void draw_test( void )
 {
 	spResetZBuffer();
+	if (blending)
+		spSetBlending( spMul(spSin(rotation * 4),spSin(rotation * 3)) + SP_ONE >> 1 );
+	else
+		spSetBlending( SP_ONE );
 	if ( test == 5 )
 		spClearTarget( spFixedToInt( spSin( rotation * 8 ) * 16) + 16 );
 	else
@@ -353,10 +358,10 @@ void draw_test( void )
 		case 1: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective work around", font ); break;
 		case 2: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective on", font ); break;
 	}
-	if (pause)
-		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] play", font );
+	if (blending)
+		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] blending", font );
 	else
-		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] pause", font );
+		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] no blending", font );
 	switch ( test )
 	{
 	case 0:
@@ -495,7 +500,8 @@ int calc_test( Uint32 steps )
 	if ( spGetInput()->button[SP_BUTTON_B] )
 	{
 		spGetInput()->button[SP_BUTTON_B] = 0;
-		pause = 1-pause;
+		//pause = 1-pause;
+		blending = 1-blending;
 	}
 	if (pause)
 		rotation -= steps*32;

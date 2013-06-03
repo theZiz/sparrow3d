@@ -188,6 +188,17 @@ PREFIX void spSetZSet( Uint32 test );
  * <spSetZSet>, <spSetZTest>*/
 PREFIX void spSetAlphaTest( Uint32 test );
 
+/* Function: spSetBlending
+ * 
+ * (De)Activates real blending. Every primitive, rectangle, ellipse, blitted
+ * or rotozoomed surface is blended. But keep in mind, that this is sloooow.
+ * Especially with rotozoom! Use it rarely or think about <spSetAlphaPattern>.
+ * 
+ * Paramaters:
+ * value - 0 is total transparent, SP_ONE is total opaque. Everything in between
+ * will be blended. If value is SP_ONE internal no blending is done */
+PREFIX void spSetBlending( Sint32 value );
+
 /* Function: spSetAffineTextureHack
  * 
  * The texture rendering is fast, but a bit wrong. It is affine. To
@@ -658,9 +669,11 @@ PREFIX void spAddBlackLayer(int alpha);
 
 /* Functions: Pattern functions
  * 
- * sparrow3d doesn't provide alpha blending. However, with these three functions
- * you can get some kind of dithering alpha effect. In movement and on screens
- * with a high dpi value it looks pretty good and is quite fast.
+ * sparrow3d does provide alpha blending (see <spSetBlending>), but this is
+ * slow, so use it rarely or better never. However, with these three functions
+ * you can get some kind of much faster dithering alpha effect. In movement and
+ * on screens with a high dpi value it looks pretty good and is quite fast (as
+ * said before).
  * 
  * You setup a 8x8 1-bit-pattern (=64 bit), which is tested for as for z or
  * alpha values. If the pattern-bit says 1, the pixel is drawn, if 0 it is not
