@@ -7,7 +7,7 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 #include <string.h>
-#include "sparrow3d.h"
+#include <sparrow3d.h>
 
 //#define SCALE_UP
 

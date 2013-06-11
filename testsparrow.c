@@ -6,7 +6,7 @@
  For feedback and questions about my Files and Projects please mail me,
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
-#include "sparrow3d.h"
+#include <sparrow3d.h>
 #include <SDL_image.h>
 #include <math.h>
 #include <string.h>
