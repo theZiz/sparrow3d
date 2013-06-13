@@ -72,8 +72,9 @@
 /* Define: SP_MAX_SCANLINES
  * 
  * That much scanlines will be cached at most in the parallel drawing thread */
-#define SP_MAX_SCANLINES 4096
-#define SP_MAX_SCANLINES_MOD 4095
+#define SP_MAX_SCANLINES 262144
+#define SP_MAX_SCANLINES_MOD 262143
+#define SP_MAX_SCANLINE_NO_CHECK
 
 // Functions: Setup and getter functions
 // These functions are for setting up all graphical stuff like the different per
