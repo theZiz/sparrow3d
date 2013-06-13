@@ -453,7 +453,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 #define __SPARROW_INTERNAL_BLENDING__
 	#ifndef NO_PERSPECTIVE
 	#define __SPARROW_INTERNAL_PERSPECT__
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -467,7 +467,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -483,7 +483,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 
 		// with pattern
 		#define __SPARROW_INTERNAL_PATTERN__
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -497,7 +497,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -514,7 +514,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 
 	#undef __SPARROW_INTERNAL_PERSPECT__
 	#endif
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -528,7 +528,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -544,7 +544,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 
 		// with pattern
 		#define __SPARROW_INTERNAL_PATTERN__
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -558,7 +558,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -576,7 +576,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 	#undef __SPARROW_INTERNAL_BLENDING__
 	#ifndef NO_PERSPECTIVE
 	#define __SPARROW_INTERNAL_PERSPECT__
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -590,7 +590,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -606,7 +606,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 
 		// with pattern
 		#define __SPARROW_INTERNAL_PATTERN__
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -620,7 +620,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -637,7 +637,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 
 	#undef __SPARROW_INTERNAL_PERSPECT__
 	#endif
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -651,7 +651,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -667,7 +667,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 
 		// with pattern
 		#define __SPARROW_INTERNAL_PATTERN__
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -681,7 +681,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
