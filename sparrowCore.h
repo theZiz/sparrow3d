@@ -539,4 +539,13 @@ PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgrou
  * crossed - determines, whether the merge is or-based or two-images-based (See
  * above)*/
 PREFIX void spStereoMergeSurfaces(SDL_Surface* left,SDL_Surface* right,int crossed);
+
+/* Function: spSleep
+ * 
+ * Waits the given microseconds (!). On some systems (e.g. linux) it gives the
+ * time to other threads and processes, which is quite usefull.
+ * 
+ * Parameters:
+ * microSeconds - the time to wait in microseconds*/
+PREFIX void spSleep(Uint32 microSeconds);
 #endif

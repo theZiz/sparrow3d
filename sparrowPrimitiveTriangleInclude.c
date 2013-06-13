@@ -203,45 +203,45 @@
 #ifdef __SPARROW_INTERNAL_BLENDING__
 	#ifdef __SPARROW_INTERNAL_PATTERN__
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
-			inline void sp_intern_Triangle_blending_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+			static void sp_intern_Triangle_blending_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
 		#elif defined __SPARROW_INTERNAL_ZTEST__
-			inline void sp_intern_Triangle_blending_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_blending_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
 		#elif defined __SPARROW_INTERNAL_ZSET__	
-			inline void sp_intern_Triangle_blending_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_blending_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
 		#else
-			inline void sp_intern_Triangle_blending_pattern( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color )
+			static void sp_intern_Triangle_blending_pattern( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color )
 		#endif
 	#else
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
-			inline void sp_intern_Triangle_blending_ztest_zset( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+			static void sp_intern_Triangle_blending_ztest_zset( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
 		#elif defined __SPARROW_INTERNAL_ZTEST__
-			inline void sp_intern_Triangle_blending_ztest( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_blending_ztest( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
 		#elif defined __SPARROW_INTERNAL_ZSET__	
-			inline void sp_intern_Triangle_blending_zset( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_blending_zset( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
 		#else
-			inline void sp_intern_Triangle_blending( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color )
+			static void sp_intern_Triangle_blending( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color )
 		#endif
 	#endif
 #else
 	#ifdef __SPARROW_INTERNAL_PATTERN__
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
-			inline void sp_intern_Triangle_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+			static void sp_intern_Triangle_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
 		#elif defined __SPARROW_INTERNAL_ZTEST__
-			inline void sp_intern_Triangle_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
 		#elif defined __SPARROW_INTERNAL_ZSET__	
-			inline void sp_intern_Triangle_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
 		#else
-			inline void sp_intern_Triangle_pattern( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color )
+			static void sp_intern_Triangle_pattern( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color )
 		#endif
 	#else
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
-			inline void sp_intern_Triangle_ztest_zset( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+			static void sp_intern_Triangle_ztest_zset( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
 		#elif defined __SPARROW_INTERNAL_ZTEST__
-			inline void sp_intern_Triangle_ztest( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_ztest( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
 		#elif defined __SPARROW_INTERNAL_ZSET__	
-			inline void sp_intern_Triangle_zset( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_zset( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
 		#else
-			inline void sp_intern_Triangle( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color )
+			static void sp_intern_Triangle( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color )
 		#endif
 	#endif
 #endif
@@ -928,7 +928,7 @@
 		else
 		{
 			SDL_mutexV(spScanLineMutex);
-			usleep(200);
+			spSleep(SP_MAX_SCANLINES_WAIT_TIME);
 		}
 	}
 }

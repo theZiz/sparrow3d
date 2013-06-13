@@ -64,18 +64,20 @@ typedef struct {
 	Sint32 z3;
 	Uint32 color;
 } type_spScanLineCache;
-Sint32 spScanLineBegin;
-Sint32 spScanLineEnd;
-type_spScanLineCache *spScanLineCache;
+Sint32 spScanLineBegin = 0;
+Sint32 spScanLineEnd = 0;
+type_spScanLineCache *spScanLineCache = NULL;
 SDL_Thread *spScanLineThread = NULL;
-Sint32 spScanLineMessage;
+Sint32 spScanLineMessage = 0;
 SDL_mutex* spScanLineMutex = NULL;
+Sint32 spUseParallelProcess = 0;
 
 PREFIX Sint32* spGetOne_over_x_pointer()
 {
 	return spOne_over_x_look_up;
 }
 
+void spRestartDrawingThread();
 void spStopDrawingThread();
 void spStartDrawingThread();
 
@@ -95,14 +97,7 @@ PREFIX void spInitPrimitives()
 	spSetZBufferCache( spZBufferCacheCount );
 	//Preparing the second processor of the gp2x:
 	//TODO
-	//Getting stack per malloc / mmap (gp2x)
-	spScanLineCache = (type_spScanLineCache*)malloc(sizeof(type_spScanLineCache)*SP_MAX_SCANLINES);
-	spScanLineBegin = 0;
-	spScanLineEnd = 0;
-	spScanLineMessage = 0;
 	spScanLineMutex = SDL_CreateMutex();
-	//Starting the background thread
-	spStartDrawingThread();
 }
 
 PREFIX void spQuitPrimitives()
@@ -117,8 +112,11 @@ PREFIX void spQuitPrimitives()
 		free( spTargetCache );
 	if ( spSizeCache )
 		free( spSizeCache );
-	spStopDrawingThread();
+	if ( spUseParallelProcess )
+		spStopDrawingThread();
 	SDL_DestroyMutex( spScanLineMutex );
+	if ( spScanLineCache ) //TODO: Not on the gp2x!
+		free( spScanLineCache );
 }
 
 PREFIX void spSelectRenderTarget( SDL_Surface* target )
@@ -154,6 +152,7 @@ PREFIX Sint32* spGetRenderTargetZBuffer()
 
 PREFIX void spBindTexture( SDL_Surface* texture )
 {
+	spWaitForDrawingThread();
 	spTexture = texture;
 	if ( texture == NULL )
 	{
@@ -173,6 +172,7 @@ PREFIX void spBindTexture( SDL_Surface* texture )
 
 PREFIX void spClearTarget( Uint32 color )
 {
+	spWaitForDrawingThread();
 	//testfill with CLEAR_PER_FRAME = 64 with SDL_FillRect: 27 fps
 	//testfill with CLEAR_PER_FRAME = 64 assembler spHorizentalLine: 32 fps
 	//testfill with CLEAR_PER_FRAME = 128 with SDL_FillRect: 14 fps
@@ -298,7 +298,7 @@ inline void sp_intern_Triangle_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32
 		if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
 			break;
 		SDL_mutexV(spScanLineMutex);
-		usleep(200);
+		spSleep(SP_MAX_SCANLINES_WAIT_TIME);
 	}
 	SDL_mutexV(spScanLineMutex);	
 	#endif
@@ -367,7 +367,85 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 	if ( !result )
 		return 0;
 	
-	sp_intern_Triangle_overlord( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+	if (spUseParallelProcess)
+		sp_intern_Triangle_overlord( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+	else
+	{
+		if ( spBlending == SP_ONE )
+		{
+			if ( spUsePattern )
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						sp_intern_Triangle_ztest_zset_pattern( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_zset_pattern      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				}
+				else
+				{
+					if ( spZTest )
+						sp_intern_Triangle_ztest_pattern     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_pattern           ( x1, y1, x2, y2, x3, y3, color );
+				}
+			}
+			else
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						sp_intern_Triangle_ztest_zset( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_zset      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				}
+				else
+				{
+					if ( spZTest )
+						sp_intern_Triangle_ztest     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle           ( x1, y1, x2, y2, x3, y3, color );
+				}
+			}
+		}
+		else
+		{
+			if ( spUsePattern )
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						sp_intern_Triangle_blending_ztest_zset_pattern( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_blending_zset_pattern      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				}
+				else
+				{
+					if ( spZTest )
+						sp_intern_Triangle_blending_ztest_pattern     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_blending_pattern           ( x1, y1, x2, y2, x3, y3, color );
+				}
+			}
+			else
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						sp_intern_Triangle_blending_ztest_zset( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_blending_zset      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				}
+				else
+				{
+					if ( spZTest )
+						sp_intern_Triangle_blending_ztest     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_blending           ( x1, y1, x2, y2, x3, y3, color );
+				}
+			}
+		}
+	}
 	return result;
 }
 
@@ -1181,6 +1259,7 @@ PREFIX int spPerspectiveQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Si
 
 PREFIX void spReAllocateZBuffer()
 {
+	spWaitForDrawingThread();
 	//in Cache?
 	int cacheline;
 	for ( cacheline = 0; cacheline < spZBufferCacheCount; cacheline++ )
@@ -1205,6 +1284,7 @@ PREFIX void spReAllocateZBuffer()
 
 PREFIX void spResetZBuffer()
 {
+	spWaitForDrawingThread();
 	int i;
 	Sint32 s = spZFar-spZNear;
 	if ( spZBuffer )
@@ -1214,21 +1294,32 @@ PREFIX void spResetZBuffer()
 
 PREFIX void spSetZTest( Uint32 test )
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spZTest = test;
+	spStartDrawingThread();
 }
 
 PREFIX void spSetZSet( Uint32 test )
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spZSet = test;
+	spStartDrawingThread();
 }
 
 PREFIX void spSetAlphaTest( Uint32 test )
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spAlphaTest = test;
+	spStartDrawingThread();
 }
 
 PREFIX void spSetBlending( Sint32 value )
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	if (value <= 0)
 		spBlending = 0;
 	else
@@ -1236,6 +1327,7 @@ PREFIX void spSetBlending( Sint32 value )
 		spBlending = SP_ONE;
 	else
 		spBlending = value;
+	spStartDrawingThread();
 }
 
 PREFIX void spSetAffineTextureHack( Uint32 test )
@@ -2447,6 +2539,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 
 PREFIX void spSetZBufferCache( Uint32 value )
 {
+	spWaitForDrawingThread();
 	if ( spZBufferCache )
 		free( spZBufferCache );
 	if ( spTargetCache )
@@ -5561,7 +5654,7 @@ PREFIX Sint32 spGetVerticalOrigin()
 	return spVerticalOrigin;
 }
 
-int log_2(int x)
+static int log_2(int x)
 {
 	int mom = 1 << 31;
 	int l = 31;
@@ -5575,6 +5668,7 @@ int log_2(int x)
 
 PREFIX void spSetZFar(Sint32 zfar)
 {
+	spWaitForDrawingThread();
 	spZFar = zfar;
 	//For division optimization we need the logarithm of the biggest w component,
 	//that will happen while rendering
@@ -5591,6 +5685,7 @@ PREFIX Sint32 spGetZFar()
 
 PREFIX void spSetZNear(Sint32 znear)
 {
+	spWaitForDrawingThread();
 	spZNear = znear;
 }
 
@@ -5601,6 +5696,7 @@ PREFIX Sint32 spGetZNear()
 
 PREFIX void spAddWhiteLayer(int alpha)
 {
+	spWaitForDrawingThread();
   int i;
   int goal = spTargetScanLine*spTargetY;
   for (i=0;i<goal;i++)
@@ -5627,6 +5723,7 @@ PREFIX void spAddWhiteLayer(int alpha)
 
 PREFIX void spAddBlackLayer(int alpha)
 {
+	spWaitForDrawingThread();
   int i;
   int goal = spTargetScanLine*spTargetY;
   for (i=0;i<goal;i++)
@@ -5653,6 +5750,8 @@ PREFIX void spAddBlackLayer(int alpha)
 
 PREFIX void spSetPattern32(Uint32 first_32_bit,Uint32 last_32_bit)
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spPattern[0] = first_32_bit >> 24;
 	spPattern[1] = first_32_bit >> 16;
 	spPattern[2] = first_32_bit >>  8;
@@ -5662,10 +5761,13 @@ PREFIX void spSetPattern32(Uint32 first_32_bit,Uint32 last_32_bit)
 	spPattern[6] = last_32_bit >>  8;
 	spPattern[7] = last_32_bit      ;
 	spUsePattern = (first_32_bit != ((Uint32)0xFFFFFFFF)) || (last_32_bit != ((Uint32)0xFFFFFFFF));
+	spStartDrawingThread();
 }
 
 PREFIX void spSetPattern64(Uint64 pattern)
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spPattern[0] = pattern >> 56;
 	spPattern[1] = pattern >> 48;
 	spPattern[2] = pattern >> 40;
@@ -5675,10 +5777,13 @@ PREFIX void spSetPattern64(Uint64 pattern)
 	spPattern[6] = pattern >>  8;
 	spPattern[7] = pattern      ;
 	spUsePattern = pattern != ((Uint64)0xFFFFFFFFFFFFFFFF);
+	spStartDrawingThread();
 }
 
 PREFIX void spSetPattern8(Uint8 line1,Uint8 line2,Uint8 line3,Uint8 line4,Uint8 line5,Uint8 line6,Uint8 line7,Uint8 line8)
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spPattern[0] = line1;
 	spPattern[1] = line2;
 	spPattern[2] = line3;
@@ -5690,16 +5795,21 @@ PREFIX void spSetPattern8(Uint8 line1,Uint8 line2,Uint8 line3,Uint8 line4,Uint8 
 	spUsePattern = line1 != 255 || line2 != 255 || line3 != 255 ||
 	               line4 != 255 || line5 != 255 || line6 != 255 ||
 	               line7 != 255 || line8 != 255;
-
+	spStartDrawingThread();
 }
 
 PREFIX void spDeactivatePattern()
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spUsePattern = 0;
+	spStartDrawingThread();
 }
 
 PREFIX void spSetAlphaPattern(int alpha,int shift)
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	alpha = alpha + 3 >> 2; //alpha = (alpha+3) / 4;
 	//now alpha is the count of bits, that should be set.
 	int pos = shift & 63; //pos = shift % 64;
@@ -5725,6 +5835,10 @@ PREFIX void spSetAlphaPattern(int alpha,int shift)
 			}
 		}
 	}
+	spUsePattern = spPattern[1] != 255 || spPattern[2] != 255 || spPattern[3] != 255 ||
+	               spPattern[4] != 255 || spPattern[5] != 255 || spPattern[6] != 255 ||
+	               spPattern[7] != 255 || spPattern[8] != 255;
+	spStartDrawingThread();
 }
 
 #define ringshift(left,shift) ((left << shift) | (left >> 32-shift))
@@ -5744,116 +5858,125 @@ PREFIX void spSetAlphaPattern4x4(int alpha,int shift)
 			 * 0100 0100
 			 * 0000 0000
 			 * 0000 0000 */
-			left = 4456448;
+			left = 4456448LL;
 			break;
 		case 2:
 			/* 0000 0000
 			 * 0100 0100
 			 * 0000 0000
 			 * 0001 0001 */
-			left = 4456465;
+			left = 4456465LL;
 			break;
 		case 3:
 			/* 0000 0000
 			 * 0100 0100
 			 * 0000 0000
 			 * 0101 0101 */
-			left = 4456533;
+			left = 4456533LL;
 			break;
 		case 4:
 			/* 0000 0000
 			 * 0101 0101
 			 * 0000 0000
 			 * 0101 0101 */
-			left = 5570645;
+			left = 5570645LL;
 			break;
 		case 5:
 			/* 1000 1000
 			 * 0101 0101
 			 * 0000 0000
 			 * 0101 0101 */
-			left = 2287272021;
+			left = 2287272021LL;
 			break;
 		case 6:
 			/* 1000 1000
 			 * 0101 0101
 			 * 0010 0010
 			 * 0101 0101 */
-			left = 2287280725;
+			left = 2287280725LL;
 			break;
 		case 7:
 			/* 1000 1000
 			 * 0101 0101
 			 * 1010 1010
 			 * 0101 0101 */
-			left = 2287315541;
+			left = 2287315541LL;
 			break;
 		case 8:
 			/* 1010 1010
 			 * 0101 0101
 			 * 1010 1010
 			 * 0101 0101 */
-			left = 2857740885;
+			left = 2857740885LL;
 			break;
 		case 9:
 			/* 1010 1010
 			 * 0101 0101
 			 * 1110 1110
 			 * 0101 0101 */
-			left = 2857758293;
+			left = 2857758293LL;
 			break;
 		case 10:
 			/* 1011 1011
 			 * 0101 0101
 			 * 1110 1110
 			 * 0101 0101 */
-			left = 3142970965;
+			left = 3142970965LL;
 			break;
 		case 11:
 			/* 1011 1011
 			 * 0101 0101
 			 * 1111 1111
 			 * 0101 0101 */
-			left = 3142975317;
+			left = 3142975317LL;
 			break;
 		case 12:
 			/* 1111 1111
 			 * 0101 0101
 			 * 1111 1111
 			 * 0101 0101 */
-			left = 4283826005;
+			left = 4283826005LL;
 			break;
 		case 13:
 			/* 1111 1111
 			 * 0101 0101
 			 * 1111 1111
 			 * 1101 1101 */
-			left = 4283826141;
+			left = 4283826141LL;
 			break;
 		case 14:
 			/* 1111 1111
 			 * 0111 0111
 			 * 1111 1111
 			 * 1101 1101 */
-			left = 4286054365;
+			left = 4286054365LL;
 			break;
 		case 15:
 			/* 1111 1111
 			 * 0111 0111
 			 * 1111 1111
 			 * 1111 1111 */
-			left = 4286054399;
+			left = 4286054399LL;
 		case 16:
 			/* 1111 1111
 			 * 1111 1111
 			 * 1111 1111
 			 * 1111 1111 */
-			left = 4294967295;
+			left = 4294967295LL;
 			break;
 	}
 	shift = shift & 15;
 	left = ringshift(left,shift);
 	spSetPattern32(left,left);
+}
+
+void spRestartDrawingThread()
+{
+	if (!spUseParallelProcess)
+		return;
+	spWaitForDrawingThread();
+	spStopDrawingThread();
+	spStartDrawingThread();
 }
 
 void spStopDrawingThread()
@@ -5866,23 +5989,33 @@ void spStopDrawingThread()
 	}
 }
 
-PREFIX void spWaitDrawingThread()
+PREFIX void spWaitForDrawingThread()
 {
+	if (!spUseParallelProcess)
+		return;
 	while (1)
 	{
 		SDL_mutexP(spScanLineMutex);
 		if (spScanLineBegin == spScanLineEnd)
 			break;
 		SDL_mutexV(spScanLineMutex);
-		usleep(200);
+		spSleep(SP_MAX_SCANLINES_WAIT_TIME);
 	}
 	SDL_mutexV(spScanLineMutex);
 }
 
 void spStartDrawingThread()
 {
+	if (!spUseParallelProcess)
+		return;
 	if (spScanLineThread)
 		return;
+		
+	if ( spScanLineCache == NULL ) //TODO: The gp2x just gets an adress of the upper memory
+		spScanLineCache = (type_spScanLineCache*)malloc(sizeof(type_spScanLineCache)*SP_MAX_SCANLINES);
+
+	spScanLineBegin = 0;
+	spScanLineEnd = 0;
 	spScanLineMessage = 1;
 	if ( spBlending == SP_ONE )
 	{
@@ -5958,4 +6091,14 @@ void spStartDrawingThread()
 			}
 		}
 	}
+}
+
+PREFIX void spDrawInExtraThread(int value)
+{
+	spWaitForDrawingThread();
+	spUseParallelProcess = value;
+	if (value == 0)
+		spStopDrawingThread();
+	else
+		spStartDrawingThread();
 }

@@ -29,7 +29,7 @@ int zStuff = 1;
 Uint16 lastKey = 0;
 char input[32] = "";
 char no_movement = 0;
-int perspective = 0;
+int threading = 0;
 int pause = 0;
 int blending = 0;
 
@@ -236,6 +236,7 @@ void draw_test( void )
 		}
 		break;
 	case 0:
+		spSetPerspectiveTextureMapping(1);
 		spSetAlphaTest( 0 );
 		/*spSetPattern8(0b10101010,
 		              0b11011101,
@@ -339,6 +340,7 @@ void draw_test( void )
 				  SP_ONE, -SP_ONE, -SP_ONE,
 				  SP_ONE, -SP_ONE, SP_ONE, spGetRGB(spFixedToInt((spSin(rotation*4)+SP_ONE)*127),spFixedToInt((spSin(rotation*2)+SP_ONE)*127),spFixedToInt((spSin(rotation)+SP_ONE)*127)) );
 		spDeactivatePattern();
+		spSetPerspectiveTextureMapping(0); spSetAffineTextureHack(0);
 		break;
 	}
 	spSetZSet( 0 );
@@ -352,11 +354,10 @@ void draw_test( void )
 
 	spFontDraw( 0, 2, 0, "Previous [L]", font );
 	spFontDrawRight( screen->w - 2, 2, 0, "[R] next", font );
-	switch (perspective)
+	switch (threading)
 	{
-		case 0: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective off", font ); break;
-		case 1: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective work around", font ); break;
-		case 2: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] perspective on", font ); break;
+		case 0: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] No draw thread", font ); break;
+		case 1: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] Extra draw thread", font ); break;
 	}
 	if (blending)
 		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] blending", font );
@@ -489,13 +490,8 @@ int calc_test( Uint32 steps )
 	if ( spGetInput()->button[SP_BUTTON_X] )
 	{
 		spGetInput()->button[SP_BUTTON_X] = 0;
-		perspective = (perspective+1) % 3;
-		switch (perspective)
-		{
-			case 0: spSetPerspectiveTextureMapping(0); spSetAffineTextureHack(0); break;
-			case 1: spSetAffineTextureHack(1); break;
-			case 2: spSetPerspectiveTextureMapping(1); break;
-		}
+		threading = (threading+1) % 2;
+		spDrawInExtraThread(threading);
 	}
 	if ( spGetInput()->button[SP_BUTTON_B] )
 	{

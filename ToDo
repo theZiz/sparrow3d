@@ -1,17 +1,20 @@
 Roadmap til next version (1.3.1):
 - drawing lines as parallel process
-	- usleep smaller
+	- SDL lock needs to be OUT of the internal triangle function!
 	- when state changes (zTest, zSet, etc.):
 		- waiting for stack empty
 		- stoping thread
 		- doing state change
 		- restarting new thread
-	- spBindTexture
-		- setting getting physical address for gp2x
-	- using the stack as ring buffer to keep the order
-	- init gp2x coprocessor
-	- faster mutex on ARM without SDL_Delay!
-	- mutex for the state of the process
+	- gp2x:
+		- zBuffer needs to be in upper mem!
+		- division buffer in upper mem!
+		- zfar in upper mem!
+		- init gp2x coprocessor
+		- faster mutex on ARM without SDL_Delay!
+		- mutex for the state of the process
+		- spBindTexture
+			- setting getting physical address for gp2x
 
 Roadmap til 1.4:
 - all 12 tutorials (4/12 done)

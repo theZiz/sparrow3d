@@ -72,9 +72,10 @@
 /* Define: SP_MAX_SCANLINES
  * 
  * That much scanlines will be cached at most in the parallel drawing thread */
-#define SP_MAX_SCANLINES 262144
-#define SP_MAX_SCANLINES_MOD 262143
+#define SP_MAX_SCANLINES 16384
+#define SP_MAX_SCANLINES_MOD 16383
 #define SP_MAX_SCANLINE_NO_CHECK
+#define SP_MAX_SCANLINES_WAIT_TIME 100
 
 // Functions: Setup and getter functions
 // These functions are for setting up all graphical stuff like the different per
@@ -760,6 +761,22 @@ PREFIX void spSetAlphaPattern(int alpha,int shift);
  * <spSetAlphaPattern>*/
 PREFIX void spSetAlphaPattern4x4(int alpha,int shift);
 
-PREFIX void spWaitDrawingThread();
+/* Function: spWaitForDrawingThread
+ * 
+ * If parallel processing of sparrowPrimitive is activated, this function waits
+ * until everything is drawn. If you want to draw stuff on your own, call this
+ * to be sure, that every change is done indeed! If no parallel processing is
+ * activated nothing happens.*/
+PREFIX void spWaitForDrawingThread();
+
+/* Function: spDrawInExtraThread
+ * 
+ * Determines, whether an extra thread is used for drawing. May be a bit slower
+ * (!) on systems with just one processor, but muuuuch faster on systems with
+ * at least two processors.
+ * 
+ * Parameters:
+ * value - 0 means no draw thread (default), 1 means an extra thread*/
+PREFIX void spDrawInExtraThread(int value);
 
 #endif
