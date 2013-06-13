@@ -297,8 +297,8 @@ inline void sp_intern_Triangle_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32
 		SDL_mutexP(spScanLineMutex);
 		if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
 			break;
-		SDL_mutexV(spScanLineMutex);	
-		SDL_Delay(1);
+		SDL_mutexV(spScanLineMutex);
+		usleep(200);
 	}
 	SDL_mutexV(spScanLineMutex);	
 	#endif
@@ -5873,8 +5873,8 @@ PREFIX void spWaitDrawingThread()
 		SDL_mutexP(spScanLineMutex);
 		if (spScanLineBegin == spScanLineEnd)
 			break;
-		SDL_mutexV(spScanLineMutex);	
-		SDL_Delay(1);
+		SDL_mutexV(spScanLineMutex);
+		usleep(200);
 	}
 	SDL_mutexV(spScanLineMutex);
 }

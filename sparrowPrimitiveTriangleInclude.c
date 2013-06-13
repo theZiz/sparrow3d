@@ -925,12 +925,10 @@
 			spScanLineBegin = (spScanLineBegin+1) & SP_MAX_SCANLINES_MOD;
 			SDL_mutexV(spScanLineMutex);
 		}
-		#ifndef DO_NOT_USE_DELAY
 		else
 		{
 			SDL_mutexV(spScanLineMutex);
-			SDL_Delay(1);
+			usleep(200);
 		}
-		#endif
 	}
 }
