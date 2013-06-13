@@ -69,6 +69,12 @@
 #include "sparrow3d.h"
 #include <SDL.h>
 
+/* Define: SP_MAX_SCANLINES
+ * 
+ * That much scanlines will be cached at most in the parallel drawing thread */
+#define SP_MAX_SCANLINES 4096
+#define SP_MAX_SCANLINES_MOD 4095
+
 // Functions: Setup and getter functions
 // These functions are for setting up all graphical stuff like the different per
 // pixel tests (z, alpha, pattern), sets (z), other optional optimizations and
@@ -752,5 +758,7 @@ PREFIX void spSetAlphaPattern(int alpha,int shift);
  * See Also:
  * <spSetAlphaPattern>*/
 PREFIX void spSetAlphaPattern4x4(int alpha,int shift);
+
+PREFIX void spWaitDrawingThread();
 
 #endif

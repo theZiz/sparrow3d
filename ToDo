@@ -1,25 +1,30 @@
 Roadmap til next version (1.3.1):
 - drawing lines as parallel process
-	- maximal size of stack as define
-	- spPrimitive init:
-		- init gp2x preprocessor
-		- Setting Stack (gp2x upper mem, else malloc)
-		- Setting Stack Pointer to 0
-		- Start of the background drawing Thread
+	+ maximal size of stack as define
+	+ spPrimitive init:
+		+ Setting Stack (gp2x upper mem, else malloc)
+		+ Setting Stack Pointer to 0
+		+ Start of the background drawing Thread
 	- when state changes (zTest, zSet, etc.):
 		- waiting for stack empty
 		- stoping thread
 		- doing state change
 		- restarting new thread
-	- spFlip:
-		- waiting for stack empty
-	- when horizental line shall be drawn:
-		- adding line to global stack instead of direct draw
-		- if stack is full, blocking until line can be added
+	+ spFlip:
+		+ waiting for stack empty
+	+ when horizental line shall be drawn:
+		+ adding line to global stack instead of direct draw
+		+ if stack is full, blocking until line can be added
+		+ mutex stuff!
 	- spBindTexture
 		- setting getting physical address for gp2x
-	- backGroundThread:
-		- draws if something in the stack, else SDL_Delay(1); (not on handhelds)
+	+ backGroundThread:
+		+ draws if something in the stack, else SDL_Delay(1); (not on handhelds)
+		+ mutex stuff!
+	- using the stack as ring buffer to keep the order
+	- init gp2x coprocessor
+	- faster mutex on ARM without SDL_Delay!
+	- mutex for the state of the process
 
 Roadmap til 1.4:
 - all 12 tutorials (4/12 done)

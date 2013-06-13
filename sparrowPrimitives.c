@@ -52,11 +52,28 @@ Uint8 spPattern[8] = {255,255,255,255,255,255,255,255}; //64 Bit, 8 Bytes, 4 Hal
 Sint32 spUsePattern = 0;
 int spPrimitivesIsInitialized = 0;
 Sint32 spBlending = SP_ONE;
+typedef struct {
+	 Sint32 x1;
+	 Sint32 z1;
+	 Sint32 x2;
+	 Sint32 z2;
+	 Sint32 y;
+	 Uint32 color;
+	 Sint32 sZ; } type_spScanLineCache;
+Sint32 spScanLineBegin;
+Sint32 spScanLineEnd;
+type_spScanLineCache *spScanLineCache;
+SDL_Thread *spScanLineThread = NULL;
+Sint32 spScanLineMessage;
+SDL_mutex* spScanLineMutex = NULL;
 
 PREFIX Sint32* spGetOne_over_x_pointer()
 {
 	return spOne_over_x_look_up;
 }
+
+void spStopDrawingThread();
+void spStartDrawingThread();
 
 PREFIX void spInitPrimitives()
 {
@@ -72,6 +89,16 @@ PREFIX void spInitPrimitives()
 	spOne_over_x_look_up[0] = 0;
 	spOne_over_x_look_up_fixed[0] = 0;
 	spSetZBufferCache( spZBufferCacheCount );
+	//Preparing the second processor of the gp2x:
+	//TODO
+	//Getting stack per malloc / mmap (gp2x)
+	spScanLineCache = (type_spScanLineCache*)malloc(sizeof(type_spScanLineCache)*SP_MAX_SCANLINES);
+	spScanLineBegin = 0;
+	spScanLineEnd = 0;
+	spScanLineMessage = 0;
+	spScanLineMutex = SDL_CreateMutex();
+	//Starting the background thread
+	spStartDrawingThread();
 }
 
 PREFIX void spQuitPrimitives()
@@ -86,6 +113,8 @@ PREFIX void spQuitPrimitives()
 		free( spTargetCache );
 	if ( spSizeCache )
 		free( spSizeCache );
+	spStopDrawingThread();
+	SDL_DestroyMutex( spScanLineMutex );
 }
 
 PREFIX void spSelectRenderTarget( SDL_Surface* target )
@@ -255,6 +284,263 @@ inline Sint32 z_div( Sint32 z, Sint32 d )
 	#undef __SPARROW_INTERNAL_PATTERN__
 
 
+inline void sp_intern_Triangle( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+{
+	int y;
+	if ( y2 < 0 )
+		return;
+	if ( y1 >= spTargetY )
+		return;
+		
+	SDL_LockSurface( spTarget );
+
+	Sint32 x4 = x1;
+	Sint32 y4 = y1;
+	Sint32 z4 = z1;
+	int div = y2 - y1;
+	if ( div != 0 )
+	{
+		int mul = y3 - y1;
+		Sint32 mul32 = mul * one_over_x( div );
+		x4 = x1 + ( ( x2 - x1 ) * mul32 >> SP_ACCURACY );
+		y4 = y3;
+		z4 = z1 + mul * z_div( z2 - z1, div );
+	}
+	Sint32 xl = x1 << SP_ACCURACY;
+	Sint32 zl = z1;
+	Sint32 sX_l = 0;
+	Sint32 sZ_l = 0;
+	if ( ( y1 - y2 ) != 0 )
+	{
+		Sint32 mul = one_over_x( y1 - y2 );
+		sX_l = ( x1 - x2 ) * mul;
+		if (spZTest || spZSet)
+			sZ_l = z_div( z1 - z2, y1 - y2 );
+	}
+
+	Sint32 xr = xl;
+	Sint32 sX_r = 0;
+	Sint32 zr = zl;
+	Sint32 sZ_r = 0;
+	if ( ( y1 - y3 ) != 0 )
+	{
+		Sint32 mul = one_over_x( y1 - y3 );
+		sX_r = ( x1 - x3 ) * mul;
+		if (spZTest || spZSet)
+			sZ_r = z_div( z1 - z3, y1 - y3 );
+	}
+
+	if ( y3 < 0 )
+	{
+		int diff = y3 - y1;
+		xl += sX_l * diff;
+		xr += sX_r * diff;
+		if (spZTest || spZSet)
+		{
+			zl += sZ_l * diff;
+			zr += sZ_r * diff;
+		}
+	}
+	else
+	{
+		if ( y1 < 0 )
+		{
+			int diff = -y1;
+			y1 = 0;
+			xl += sX_l * diff;
+			xr += sX_r * diff;
+			if (spZTest || spZSet)
+			{
+				zl += sZ_l * diff;
+				zr += sZ_r * diff;
+			}
+		}
+		if ( y3 >= spTargetY )
+			y3 = spTargetY - 1;
+
+		Sint32 sZ = 0;		
+		if (spZTest || spZSet)
+		{
+			if ( ( x4 - x3 ) != 0 )
+				sZ = z_div( z4 - z3, x4 - x3 );
+		}
+		if ( x4 < x3 )
+		{
+			for ( y = y1; y < y3; y++ )
+			{
+				//Adding to stack if not full!
+				while (1)
+				{
+					SDL_mutexP(spScanLineMutex);
+					if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
+						break;
+					SDL_mutexV(spScanLineMutex);	
+					SDL_Delay(1);
+				}
+				spScanLineCache[spScanLineEnd].x1 = xl >> SP_ACCURACY;
+				spScanLineCache[spScanLineEnd].z1 = zl;
+				spScanLineCache[spScanLineEnd].x2 = xr >> SP_ACCURACY;
+				spScanLineCache[spScanLineEnd].z2 = zr;
+				spScanLineCache[spScanLineEnd].y = y;
+				spScanLineCache[spScanLineEnd].color = color;
+				spScanLineCache[spScanLineEnd].sZ = sZ;
+				spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+				SDL_mutexV(spScanLineMutex);
+				xl += sX_l;
+				xr += sX_r;
+				if (spZTest || spZSet)
+				{
+					zl += sZ_l;
+					zr += sZ_r;
+				}
+			}
+		}
+		else
+		{
+			Sint32 sZ = 0;
+			if (spZTest || spZSet)
+			{
+				if ( ( x4 - x3 ) != 0 )
+					sZ = z_div( z4 - z3, x4 - x3 );
+			}
+			for ( y = y1; y < y3; y++ )
+			{
+				//Adding to stack
+				while (1)
+				{
+					SDL_mutexP(spScanLineMutex);
+					if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
+						break;
+					SDL_mutexV(spScanLineMutex);	
+					SDL_Delay(1);
+				}
+				spScanLineCache[spScanLineEnd].x1 = xr >> SP_ACCURACY;
+				spScanLineCache[spScanLineEnd].z1 = zr;
+				spScanLineCache[spScanLineEnd].x2 = xl >> SP_ACCURACY;
+				spScanLineCache[spScanLineEnd].z2 = zl;
+				spScanLineCache[spScanLineEnd].y = y;
+				spScanLineCache[spScanLineEnd].color = color;
+				spScanLineCache[spScanLineEnd].sZ = sZ;
+				spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+				SDL_mutexV(spScanLineMutex);
+				xl += sX_l;
+				xr += sX_r;
+				if (spZTest || spZSet)
+				{
+					zl += sZ_l;
+					zr += sZ_r;
+				}
+			}
+		}
+	}
+	
+	xr = x3 << SP_ACCURACY;
+	sX_r = 0;
+	if (spZTest || spZSet)
+	{
+		zr = z3;
+		sZ_r = 0;
+	}
+	if ( ( y2 - y3 ) != 0 )
+	{
+		Sint32 mul = one_over_x( y2 - y3 );
+		sX_r = ( x2 - x3 ) * mul;
+		if (spZTest || spZSet)
+			sZ_r = z_div( z2 - z3, y2 - y3 );
+	}
+
+	if ( y3 < 0 )
+	{
+		int diff = -y3;
+		y3 = 0;
+		xl += sX_l * diff;
+		xr += sX_r * diff;
+		if (spZTest || spZSet)
+		{
+			zl += sZ_l * diff;
+			zr += sZ_r * diff;
+		}
+	}
+	if ( y2 >= spTargetY )
+		y2 = spTargetY - 1;
+
+	Sint32 sZ = 0;
+	if (spZTest || spZSet)
+	{
+		if ( ( x4 - x3 ) != 0 )
+			sZ = z_div( z4 - z3, x4 - x3 );
+	}
+	if ( x4 < x3 )
+	{
+		for ( y = y3; y <= y2; y++ )
+		{
+			//Adding to stack
+			while (1)
+			{
+				SDL_mutexP(spScanLineMutex);
+				if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
+					break;
+				SDL_mutexV(spScanLineMutex);	
+				SDL_Delay(1);
+			}
+			spScanLineCache[spScanLineEnd].x1 = xl >> SP_ACCURACY;
+			spScanLineCache[spScanLineEnd].z1 = zl;
+			spScanLineCache[spScanLineEnd].x2 = xr >> SP_ACCURACY;
+			spScanLineCache[spScanLineEnd].z2 = zr;
+			spScanLineCache[spScanLineEnd].y = y;
+			spScanLineCache[spScanLineEnd].color = color;
+			spScanLineCache[spScanLineEnd].sZ = sZ;
+			spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+			SDL_mutexV(spScanLineMutex);
+			xl += sX_l;
+			xr += sX_r;
+			if (spZTest || spZSet)
+			{
+				zl += sZ_l;
+				zr += sZ_r;
+			}
+		}
+	}
+	else
+	{
+		Sint32 sZ = 0;
+		if (spZTest || spZSet)
+		{
+			if ( ( x4 - x3 ) != 0 )
+				sZ = z_div( z4 - z3, x4 - x3 );
+		}
+		for ( y = y3; y <= y2; y++ )
+		{
+			//Adding to stack
+			while (1)
+			{
+				SDL_mutexP(spScanLineMutex);
+				if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
+					break;
+				SDL_mutexV(spScanLineMutex);	
+				SDL_Delay(1);
+			}
+			spScanLineCache[spScanLineEnd].x1 = xr >> SP_ACCURACY;
+			spScanLineCache[spScanLineEnd].z1 = zr;
+			spScanLineCache[spScanLineEnd].x2 = xl >> SP_ACCURACY;
+			spScanLineCache[spScanLineEnd].z2 = zl;
+			spScanLineCache[spScanLineEnd].y = y;
+			spScanLineCache[spScanLineEnd].color = color;
+			spScanLineCache[spScanLineEnd].sZ = sZ;
+			spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+			SDL_mutexV(spScanLineMutex);
+			xl += sX_l;
+			xr += sX_r;
+			if (spZTest || spZSet)
+			{
+				zl += sZ_l;
+				zr += sZ_r;
+			}
+		}
+	}
+	SDL_UnlockSurface( spTarget );
+}
+
 PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
 {
 	if ( spBlending == 0)
@@ -305,80 +591,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 	if ( !result )
 		return 0;
 	
-	if ( spBlending == SP_ONE )
-	{
-		if ( spUsePattern )
-		{
-			if ( spZSet )
-			{
-				if ( spZTest )
-					sp_intern_Triangle_ztest_zset_pattern( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-				else
-					sp_intern_Triangle_zset_pattern      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-			}
-			else
-			{
-				if ( spZTest )
-					sp_intern_Triangle_ztest_pattern     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-				else
-					sp_intern_Triangle_pattern           ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-			}
-		}
-		else
-		{
-			if ( spZSet )
-			{
-				if ( spZTest )
-					sp_intern_Triangle_ztest_zset( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-				else
-					sp_intern_Triangle_zset      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-			}
-			else
-			{
-				if ( spZTest )
-					sp_intern_Triangle_ztest     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-				else
-					sp_intern_Triangle           ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-			}
-		}
-	}
-	else
-	{
-		if ( spUsePattern )
-		{
-			if ( spZSet )
-			{
-				if ( spZTest )
-					sp_intern_Triangle_blending_ztest_zset_pattern( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-				else
-					sp_intern_Triangle_blending_zset_pattern      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-			}
-			else
-			{
-				if ( spZTest )
-					sp_intern_Triangle_blending_ztest_pattern     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-				else
-					sp_intern_Triangle_blending_pattern           ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-			}
-		}
-		else
-		{
-			if ( spZSet )
-			{
-				if ( spZTest )
-					sp_intern_Triangle_blending_ztest_zset( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-				else
-					sp_intern_Triangle_blending_zset      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-			}
-			else
-			{
-				if ( spZTest )
-					sp_intern_Triangle_blending_ztest     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-				else
-					sp_intern_Triangle_blending           ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-			}
-		}
-	}
+	sp_intern_Triangle( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
 	return result;
 }
 
@@ -5865,4 +6078,108 @@ PREFIX void spSetAlphaPattern4x4(int alpha,int shift)
 	shift = shift & 15;
 	left = ringshift(left,shift);
 	spSetPattern32(left,left);
+}
+
+void spStopDrawingThread()
+{
+	if (spScanLineThread)
+	{
+		spScanLineMessage = 0; //Terminate!
+		SDL_WaitThread(spScanLineThread,NULL);
+		spScanLineThread = NULL;
+	}
+}
+
+PREFIX void spWaitDrawingThread()
+{
+	while (1)
+	{
+		SDL_mutexP(spScanLineMutex);
+		if (spScanLineBegin == spScanLineEnd)
+			break;
+		SDL_mutexV(spScanLineMutex);	
+		SDL_Delay(1);
+	}
+	SDL_mutexV(spScanLineMutex);
+}
+
+void spStartDrawingThread()
+{
+	if (spScanLineThread)
+		return;
+	spScanLineMessage = 1;
+	if ( spBlending == SP_ONE )
+	{
+		if ( spUsePattern )
+		{
+			if ( spZSet )
+			{
+				if ( spZTest )
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_zset_pattern, NULL);
+				else
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_zset_pattern, NULL);
+			}
+			else
+			{
+				if ( spZTest )
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_pattern, NULL);
+				else
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_pattern, NULL);
+			}
+		}
+		else
+		{
+			if ( spZSet )
+			{
+				if ( spZTest )
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_zset, NULL);
+				else
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_zset, NULL);
+			}
+			else
+			{
+				if ( spZTest )
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest, NULL);
+				else
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread, NULL);
+			}
+		}
+	}
+	else
+	{
+		if ( spUsePattern )
+		{
+			if ( spZSet )
+			{
+				if ( spZTest )
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_zset_pattern, NULL);
+				else
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_zset_pattern, NULL);
+			}
+			else
+			{
+				if ( spZTest )
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_pattern, NULL);
+				else
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_pattern, NULL);
+			}
+		}
+		else
+		{
+			if ( spZSet )
+			{
+				if ( spZTest )
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_zset, NULL);
+				else
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_zset, NULL);
+			}
+			else
+			{
+				if ( spZTest )
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest, NULL);
+				else
+					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending, NULL);
+			}
+		}
+	}
 }

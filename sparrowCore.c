@@ -1144,6 +1144,7 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 
 PREFIX void spFlip( void )
 {
+	spWaitDrawingThread();
 #ifdef CORE_DEBUG
 	spPrintDebug( "    Flip in" );
 #endif
