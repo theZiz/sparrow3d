@@ -340,7 +340,7 @@ void draw_test( void )
 				  SP_ONE, -SP_ONE, -SP_ONE,
 				  SP_ONE, -SP_ONE, SP_ONE, spGetRGB(spFixedToInt((spSin(rotation*4)+SP_ONE)*127),spFixedToInt((spSin(rotation*2)+SP_ONE)*127),spFixedToInt((spSin(rotation)+SP_ONE)*127)) );
 		spDeactivatePattern();
-		spSetPerspectiveTextureMapping(0); spSetAffineTextureHack(0);
+		spSetPerspectiveTextureMapping(0);
 		break;
 	}
 	spSetZSet( 0 );

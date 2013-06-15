@@ -53,16 +53,66 @@ Sint32 spUsePattern = 0;
 int spPrimitivesIsInitialized = 0;
 Sint32 spBlending = SP_ONE;
 typedef struct {
-	Sint32 x1;
-	Sint32 y1;
-	Sint32 z1;
-	Sint32 x2;
-	Sint32 y2;
-	Sint32 z2;
-	Sint32 x3;
-	Sint32 y3;
-	Sint32 z3;
-	Uint32 color;
+	Sint32 mode; //0 triangle, 1 texTriangle, 2 perspectiveTexTriangle, 3 rotozoom
+	union {
+		struct {
+			Sint32 x1;
+			Sint32 y1;
+			Sint32 z1;
+			Sint32 x2;
+			Sint32 y2;
+			Sint32 z2;
+			Sint32 x3;
+			Sint32 y3;
+			Sint32 z3;
+			Uint32 color; } triangle;
+		struct {
+			Sint32 x1;
+			Sint32 y1;
+			Sint32 z1;
+			Sint32 u1;
+			Sint32 v1;
+			Sint32 x2;
+			Sint32 y2;
+			Sint32 z2;
+			Sint32 u2;
+			Sint32 v2;
+			Sint32 x3;
+			Sint32 y3;
+			Sint32 z3;
+			Sint32 u3;
+			Sint32 v3;
+			Uint32 color; } texTriangle;
+		struct {
+			Sint32 x1;
+			Sint32 y1;
+			Sint32 z1;
+			Sint32 u1;
+			Sint32 v1;
+			Sint32 w1;
+			Sint32 x2;
+			Sint32 y2;
+			Sint32 z2;
+			Sint32 u2;
+			Sint32 v2;
+			Sint32 w2;
+			Sint32 x3;
+			Sint32 y3;
+			Sint32 z3;
+			Sint32 u3;
+			Sint32 v3;
+			Sint32 w3;
+			Uint32 color; } perspectiveTexTriangle;
+		struct {
+			Sint32 x1;
+			Sint32 x3;
+			Sint32 y1;
+			Sint32 y3;
+			Sint32 sx;
+			Sint32 sy;
+			Sint32 w;
+			Sint32 h; } rotozoom;
+	} primitive;
 } type_spScanLineCache;
 Sint32 spScanLineBegin = 0;
 Sint32 spScanLineEnd = 0;
@@ -302,16 +352,92 @@ inline void sp_intern_Triangle_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32
 	}
 	SDL_mutexV(spScanLineMutex);	
 	#endif
-	spScanLineCache[spScanLineEnd].x1 = x1;
-	spScanLineCache[spScanLineEnd].y1 = y1;
-	spScanLineCache[spScanLineEnd].z1 = z1;
-	spScanLineCache[spScanLineEnd].x2 = x2;
-	spScanLineCache[spScanLineEnd].y2 = y2;
-	spScanLineCache[spScanLineEnd].z2 = z2;
-	spScanLineCache[spScanLineEnd].x3 = x3;
-	spScanLineCache[spScanLineEnd].y3 = y3;
-	spScanLineCache[spScanLineEnd].z3 = z3;
-	spScanLineCache[spScanLineEnd].color = color;
+	spScanLineCache[spScanLineEnd].mode = 0;
+	spScanLineCache[spScanLineEnd].primitive.triangle.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.triangle.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.triangle.z1 = z1;
+	spScanLineCache[spScanLineEnd].primitive.triangle.x2 = x2;
+	spScanLineCache[spScanLineEnd].primitive.triangle.y2 = y2;
+	spScanLineCache[spScanLineEnd].primitive.triangle.z2 = z2;
+	spScanLineCache[spScanLineEnd].primitive.triangle.x3 = x3;
+	spScanLineCache[spScanLineEnd].primitive.triangle.y3 = y3;
+	spScanLineCache[spScanLineEnd].primitive.triangle.z3 = z3;
+	spScanLineCache[spScanLineEnd].primitive.triangle.color = color;
+	SDL_mutexP(spScanLineMutex);
+	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+	SDL_mutexV(spScanLineMutex);
+}
+
+inline void sp_intern_Triangle_tex_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color )
+{
+	//Adding to stack if not full!
+	#ifndef SP_MAX_SCANLINE_NO_CHECK
+	while (1)
+	{
+		SDL_mutexP(spScanLineMutex);
+		if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
+			break;
+		SDL_mutexV(spScanLineMutex);
+		spSleep(SP_MAX_SCANLINES_WAIT_TIME);
+	}
+	SDL_mutexV(spScanLineMutex);	
+	#endif
+	spScanLineCache[spScanLineEnd].mode = 1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.z1 = z1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.u1 = u1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.v1 = v1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.x2 = x2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.y2 = y2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.z2 = z2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.u2 = u2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.v2 = v2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.x3 = x3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.y3 = y3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.z3 = z3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.u3 = u3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.v3 = v3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.color = color;
+	SDL_mutexP(spScanLineMutex);
+	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+	SDL_mutexV(spScanLineMutex);
+}
+
+inline void sp_intern_Triangle_tex_overlord_perspect( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 w1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 w2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 w3, Uint32 color )
+{
+	//Adding to stack if not full!
+	#ifndef SP_MAX_SCANLINE_NO_CHECK
+	while (1)
+	{
+		SDL_mutexP(spScanLineMutex);
+		if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
+			break;
+		SDL_mutexV(spScanLineMutex);
+		spSleep(SP_MAX_SCANLINES_WAIT_TIME);
+	}
+	SDL_mutexV(spScanLineMutex);	
+	#endif
+	spScanLineCache[spScanLineEnd].mode = 2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z1 = z1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u1 = u1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w1 = w1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v1 = v1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x2 = x2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y2 = y2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z2 = z2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u2 = u2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v2 = v2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w2 = w2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x3 = x3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y3 = y3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z3 = z3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u3 = u3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v3 = v3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w3 = w3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.color = color;
 	SDL_mutexP(spScanLineMutex);
 	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
 	SDL_mutexV(spScanLineMutex);
@@ -763,6 +889,9 @@ PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1
 	int result = spGetPixelPosition( x1, y1 ) | spGetPixelPosition( x2, y2 ) | spGetPixelPosition( x3, y3 );
 	if ( !result )
 		return 0;
+	if (spUseParallelProcess)
+		sp_intern_Triangle_tex_overlord( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+	else
 	if ( spBlending == SP_ONE )
 	{
 		if ( spUsePattern )
@@ -1008,6 +1137,9 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 	int result = spGetPixelPosition( x1, y1 ) | spGetPixelPosition( x2, y2 ) | spGetPixelPosition( x3, y3 );
 	if ( !result )
 		return 0;
+	if (spUseParallelProcess)
+		sp_intern_Triangle_tex_overlord_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+	else
 	if ( spBlending == SP_ONE )
 	{
 		if ( spUsePattern )
@@ -5451,16 +5583,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 				else
@@ -5468,16 +5600,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 			}
@@ -5488,16 +5620,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 				else
@@ -5505,16 +5637,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_zoom(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 			}
@@ -5528,16 +5660,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_blending_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 				else
@@ -5545,16 +5677,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_blending_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 			}
@@ -5565,16 +5697,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_blending_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 				else
@@ -5582,16 +5714,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_blending_zoom(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 			}
@@ -6017,77 +6149,157 @@ void spStartDrawingThread()
 	spScanLineBegin = 0;
 	spScanLineEnd = 0;
 	spScanLineMessage = 1;
-	if ( spBlending == SP_ONE )
+	if ( spAlphaTest )
 	{
-		if ( spUsePattern )
+		if ( spBlending == SP_ONE )
 		{
-			if ( spZSet )
+			if ( spUsePattern )
 			{
-				if ( spZTest )
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_zset_pattern, NULL);
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_ztest_zset_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_zset_pattern, NULL);
+				}
 				else
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_zset_pattern, NULL);
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_ztest_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_pattern, NULL);
+				}
 			}
 			else
 			{
-				if ( spZTest )
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_pattern, NULL);
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_ztest_zset, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_zset, NULL);
+				}
 				else
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_pattern, NULL);
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_ztest, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha, NULL);
+				}
 			}
 		}
 		else
 		{
-			if ( spZSet )
+			if ( spUsePattern )
 			{
-				if ( spZTest )
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_zset, NULL);
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_ztest_zset_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_zset_pattern, NULL);
+				}
 				else
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_zset, NULL);
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_ztest_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_pattern, NULL);
+				}
 			}
 			else
 			{
-				if ( spZTest )
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest, NULL);
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_ztest_zset, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_zset, NULL);
+				}
 				else
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread, NULL);
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_ztest, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending, NULL);
+				}
 			}
 		}
 	}
 	else
 	{
-		if ( spUsePattern )
+		if ( spBlending == SP_ONE )
 		{
-			if ( spZSet )
+			if ( spUsePattern )
 			{
-				if ( spZTest )
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_zset_pattern, NULL);
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_zset_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_zset_pattern, NULL);
+				}
 				else
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_zset_pattern, NULL);
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_pattern, NULL);
+				}
 			}
 			else
 			{
-				if ( spZTest )
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_pattern, NULL);
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_zset, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_zset, NULL);
+				}
 				else
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_pattern, NULL);
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread, NULL);
+				}
 			}
 		}
 		else
 		{
-			if ( spZSet )
+			if ( spUsePattern )
 			{
-				if ( spZTest )
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_zset, NULL);
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_zset_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_zset_pattern, NULL);
+				}
 				else
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_zset, NULL);
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_pattern, NULL);
+				}
 			}
 			else
 			{
-				if ( spZTest )
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest, NULL);
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_zset, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_zset, NULL);
+				}
 				else
-					spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending, NULL);
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending, NULL);
+				}
 			}
 		}
 	}

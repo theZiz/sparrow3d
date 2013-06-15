@@ -2141,93 +2141,45 @@
 	#ifdef __SPARROW_INTERNAL_PATTERN__ 
 		#ifdef __SPARROW_INTERNAL_ALPHA__
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				#ifdef __GNUC__
-				inline void draw_zoom_ztest_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z,Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_ztest_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_ztest_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZTEST__
-				#ifdef __GNUC__
-				inline void draw_zoom_ztest_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_ztest_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_ztest_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZSET__
-				#ifdef __GNUC__
-				inline void draw_zoom_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#else
-				#ifdef __GNUC__
-				inline void draw_zoom_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#endif
 		#else
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				#ifdef __GNUC__
-				inline void draw_zoom_ztest_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_ztest_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_ztest_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZTEST__
-				#ifdef __GNUC__
-				inline void draw_zoom_ztest_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_ztest_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_ztest_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZSET__
-				#ifdef __GNUC__
-				inline void draw_zoom_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#else
-				#ifdef __GNUC__
-				inline void draw_zoom_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#endif
 		#endif
 	#else
 		#ifdef __SPARROW_INTERNAL_ALPHA__
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				#ifdef __GNUC__
-				inline void draw_zoom_ztest_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_ztest_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_ztest_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZTEST__
-				#ifdef __GNUC__
-				inline void draw_zoom_ztest_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_ztest_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_ztest_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZSET__
-				#ifdef __GNUC__
-				inline void draw_zoom_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#else
-				#ifdef __GNUC__
-				inline void draw_zoom_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#endif
 		#else
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				#ifdef __GNUC__
-				inline void draw_zoom_ztest_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_ztest_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_ztest_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZTEST__
-				#ifdef __GNUC__
-				inline void draw_zoom_ztest( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_ztest( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_ztest( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZSET__
-				#ifdef __GNUC__
-				inline void draw_zoom_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#else
-				#ifdef __GNUC__
-				inline void draw_zoom( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_zoom( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_zoom( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#endif
 		#endif
 	#endif
@@ -2235,93 +2187,45 @@
 	#ifdef __SPARROW_INTERNAL_PATTERN__ 
 		#ifdef __SPARROW_INTERNAL_ALPHA__
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_ztest_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z,Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_ztest_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_ztest_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZTEST__
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_ztest_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_ztest_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_ztest_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZSET__
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_zset_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#else
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_alpha_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#endif
 		#else
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_ztest_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_ztest_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_ztest_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZTEST__
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_ztest_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_ztest_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_ztest_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZSET__
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_zset_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#else
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_pattern( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#endif
 		#endif
 	#else
 		#ifdef __SPARROW_INTERNAL_ALPHA__
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_ztest_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_ztest_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_ztest_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZTEST__
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_ztest_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_ztest_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_ztest_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZSET__
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_zset_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#else
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_alpha( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#endif
 		#else
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_ztest_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_ztest_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_ztest_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZTEST__
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_ztest( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_ztest( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_ztest( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#elif defined __SPARROW_INTERNAL_ZSET__
-				#ifdef __GNUC__
-				inline void draw_blending_zoom_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom_zset( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 z, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#else
-				#ifdef __GNUC__
-				inline void draw_blending_zoom( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface) __attribute__((always_inline));
-				#endif
-				inline void draw_blending_zoom( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h, SDL_Surface* surface)
+				static void draw_blending_zoom( Sint32 x1, Sint32 x3, Sint32 y1, Sint32 y3, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h)
 			#endif
 		#endif
 	#endif
@@ -2438,101 +2342,7 @@
 }
 #endif
 
-#ifdef __SPARROW_INTERNAL_PERSPECT__
-	#ifdef __SPARROW_INTERNAL_ALPHA__
-		#ifdef __SPARROW_INTERNAL_BLENDING__
-			#ifdef __SPARROW_INTERNAL_PATTERN__
-				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					 int sp_intern_Triangle_thread_alpha_blending_ztest_zset_pattern_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZTEST__
-					 int sp_intern_Triangle_thread_alpha_blending_ztest_pattern_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZSET__	
-					 int sp_intern_Triangle_thread_alpha_blending_zset_pattern_perspect(void* reserved)
-				#else
-					 int sp_intern_Triangle_thread_alpha_blending_pattern_perspect(void* reserved)
-				#endif
-			#else
-				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					 int sp_intern_Triangle_thread_alpha_blending_ztest_zset_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZTEST__
-					 int sp_intern_Triangle_thread_alpha_blending_ztest_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZSET__	
-					 int sp_intern_Triangle_thread_alpha_blending_zset_perspect(void* reserved)
-				#else
-					 int sp_intern_Triangle_thread_alpha_blending_perspect(void* reserved)
-				#endif
-			#endif
-		#else
-			#ifdef __SPARROW_INTERNAL_PATTERN__
-				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					 int sp_intern_Triangle_thread_alpha_ztest_zset_pattern_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZTEST__
-					 int sp_intern_Triangle_thread_alpha_ztest_pattern_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZSET__	
-					 int sp_intern_Triangle_thread_alpha_zset_pattern_perspect(void* reserved)
-				#else
-					 int sp_intern_Triangle_thread_alpha_pattern_perspect(void* reserved)
-				#endif
-			#else
-				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					 int sp_intern_Triangle_thread_alpha_ztest_zset_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZTEST__
-					 int sp_intern_Triangle_thread_alpha_ztest_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZSET__	
-					 int sp_intern_Triangle_thread_alpha_zset_perspect(void* reserved)
-				#else
-					 int sp_intern_Triangle_thread_alpha_perspect(void* reserved)
-				#endif
-			#endif
-		#endif
-	#else
-		#ifdef __SPARROW_INTERNAL_BLENDING__
-			#ifdef __SPARROW_INTERNAL_PATTERN__
-				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					 int sp_intern_Triangle_thread_blending_ztest_zset_pattern_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZTEST__
-					 int sp_intern_Triangle_thread_blending_ztest_pattern_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZSET__	
-					 int sp_intern_Triangle_thread_blending_zset_pattern_perspect(void* reserved)
-				#else
-					 int sp_intern_Triangle_thread_blending_pattern_perspect(void* reserved)
-				#endif
-			#else
-				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					 int sp_intern_Triangle_thread_blending_ztest_zset_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZTEST__
-					 int sp_intern_Triangle_thread_blending_ztest_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZSET__	
-					 int sp_intern_Triangle_thread_blending_zset_perspect(void* reserved)
-				#else
-					 int sp_intern_Triangle_thread_blending_perspect(void* reserved)
-				#endif
-			#endif
-		#else
-			#ifdef __SPARROW_INTERNAL_PATTERN__
-				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					 int sp_intern_Triangle_thread_ztest_zset_pattern_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZTEST__
-					 int sp_intern_Triangle_thread_ztest_pattern_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZSET__	
-					 int sp_intern_Triangle_thread_zset_pattern_perspect(void* reserved)
-				#else
-					 int sp_intern_Triangle_thread_pattern_perspect(void* reserved)
-				#endif
-			#else
-				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					 int sp_intern_Triangle_thread_ztest_zset_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZTEST__
-					 int sp_intern_Triangle_thread_ztest_perspect(void* reserved)
-				#elif defined __SPARROW_INTERNAL_ZSET__	
-					 int sp_intern_Triangle_thread_zset_perspect(void* reserved)
-				#else
-					 int sp_intern_Triangle_thread_perspect(void* reserved)
-				#endif
-			#endif
-		#endif
-	#endif
-#else
+#ifndef __SPARROW_INTERNAL_PERSPECT__
 	#ifdef __SPARROW_INTERNAL_ALPHA__
 		#ifdef __SPARROW_INTERNAL_BLENDING__
 			#ifdef __SPARROW_INTERNAL_PATTERN__
@@ -2626,7 +2436,6 @@
 			#endif
 		#endif
 	#endif
-#endif
 {
 	//endless drawing loop
 	while (spScanLineMessage)
@@ -2636,199 +2445,1472 @@
 		if (spScanLineBegin != spScanLineEnd)
 		{
 			SDL_mutexV(spScanLineMutex);
-			#ifdef __SPARROW_INTERNAL_BLENDING__
-				#ifdef __SPARROW_INTERNAL_PATTERN__
-					#ifdef __SPARROW_INTERNAL_ZBOTH__
-						sp_intern_Triangle_blending_ztest_zset_pattern(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].z1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].z2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].z3,
-							spScanLineCache[spScanLineBegin].color);
-					#elif defined __SPARROW_INTERNAL_ZTEST__
-						sp_intern_Triangle_blending_ztest_pattern(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].z1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].z2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].z3,
-							spScanLineCache[spScanLineBegin].color);
-					#elif defined __SPARROW_INTERNAL_ZSET__	
-						sp_intern_Triangle_blending_zset_pattern(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].z1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].z2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].z3,
-							spScanLineCache[spScanLineBegin].color);
+			switch (spScanLineCache[spScanLineBegin].mode)
+			{
+				case 0: //Triangle
+				{
+					#ifdef __SPARROW_INTERNAL_BLENDING__
+						#ifdef __SPARROW_INTERNAL_PATTERN__
+							#ifdef __SPARROW_INTERNAL_ZBOTH__
+								sp_intern_Triangle_blending_ztest_zset_pattern(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#elif defined __SPARROW_INTERNAL_ZTEST__
+								sp_intern_Triangle_blending_ztest_pattern(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#elif defined __SPARROW_INTERNAL_ZSET__	
+								sp_intern_Triangle_blending_zset_pattern(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#else
+								sp_intern_Triangle_blending_pattern(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#endif
+						#else
+							#ifdef __SPARROW_INTERNAL_ZBOTH__
+								sp_intern_Triangle_blending_ztest_zset(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#elif defined __SPARROW_INTERNAL_ZTEST__
+								sp_intern_Triangle_blending_ztest(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#elif defined __SPARROW_INTERNAL_ZSET__	
+								sp_intern_Triangle_blending_zset(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#else
+								sp_intern_Triangle_blending(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#endif
+						#endif
 					#else
-						sp_intern_Triangle_blending_pattern(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].color);
+						#ifdef __SPARROW_INTERNAL_PATTERN__
+							#ifdef __SPARROW_INTERNAL_ZBOTH__
+								sp_intern_Triangle_ztest_zset_pattern(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#elif defined __SPARROW_INTERNAL_ZTEST__
+								sp_intern_Triangle_ztest_pattern(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#elif defined __SPARROW_INTERNAL_ZSET__	
+								sp_intern_Triangle_zset_pattern(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#else
+								sp_intern_Triangle_pattern(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#endif
+						#else
+							#ifdef __SPARROW_INTERNAL_ZBOTH__
+								sp_intern_Triangle_ztest_zset(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#elif defined __SPARROW_INTERNAL_ZTEST__
+								sp_intern_Triangle_ztest(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#elif defined __SPARROW_INTERNAL_ZSET__	
+								sp_intern_Triangle_zset(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.z3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#else
+								sp_intern_Triangle(
+									spScanLineCache[spScanLineBegin].primitive.triangle.x1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y1,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y2,
+									spScanLineCache[spScanLineBegin].primitive.triangle.x3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.y3,
+									spScanLineCache[spScanLineBegin].primitive.triangle.color);
+							#endif
+						#endif
 					#endif
-				#else
-					#ifdef __SPARROW_INTERNAL_ZBOTH__
-						sp_intern_Triangle_blending_ztest_zset(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].z1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].z2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].z3,
-							spScanLineCache[spScanLineBegin].color);
-					#elif defined __SPARROW_INTERNAL_ZTEST__
-						sp_intern_Triangle_blending_ztest(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].z1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].z2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].z3,
-							spScanLineCache[spScanLineBegin].color);
-					#elif defined __SPARROW_INTERNAL_ZSET__	
-						sp_intern_Triangle_blending_zset(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].z1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].z2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].z3,
-							spScanLineCache[spScanLineBegin].color);
-					#else
-						sp_intern_Triangle_blending(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].color);
+					break;
+				}
+				case 1: //texTriangle
+				{
+					#ifdef __SPARROW_INTERNAL_BLENDING__
+						#ifdef __SPARROW_INTERNAL_PATTERN__
+							#ifdef __SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_blending_tex_ztest_zset_alpha_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_blending_tex_ztest_alpha_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_blending_tex_zset_alpha_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#else
+									sp_intern_Triangle_blending_tex_alpha_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#endif
+							#else //__SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_blending_tex_ztest_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_blending_tex_ztest_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_blending_tex_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#else
+									sp_intern_Triangle_blending_tex_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#endif
+							#endif
+						#else //__SPARROW_INTERNAL_PATTERN__
+							#ifdef __SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_blending_tex_ztest_zset_alpha(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_blending_tex_ztest_alpha(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_blending_tex_zset_alpha(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#else
+									sp_intern_Triangle_blending_tex_alpha(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#endif
+							#else //__SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_blending_tex_ztest_zset(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_blending_tex_ztest(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_blending_tex_zset(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#else
+									sp_intern_Triangle_blending_tex(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#endif
+							#endif
+						#endif
+					#else //__SPARROW_INTERNAL_BLENDING__
+						#ifdef __SPARROW_INTERNAL_PATTERN__
+							#ifdef __SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_tex_ztest_zset_alpha_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_tex_ztest_alpha_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_tex_zset_alpha_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#else
+									sp_intern_Triangle_tex_alpha_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#endif
+							#else //__SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_tex_ztest_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_tex_ztest_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_tex_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#else
+									sp_intern_Triangle_tex_pattern(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#endif
+							#endif
+						#else //__SPARROW_INTERNAL_PATTERN__
+							#ifdef __SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_tex_ztest_zset_alpha(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_tex_ztest_alpha(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_tex_zset_alpha(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#else
+									sp_intern_Triangle_tex_alpha(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#endif
+							#else //__SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_tex_ztest_zset(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_tex_ztest(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_tex_zset(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#else
+									sp_intern_Triangle_tex(
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.texTriangle.color);
+								#endif
+							#endif
+						#endif
 					#endif
-				#endif
-			#else
-				#ifdef __SPARROW_INTERNAL_PATTERN__
-					#ifdef __SPARROW_INTERNAL_ZBOTH__
-						sp_intern_Triangle_ztest_zset_pattern(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].z1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].z2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].z3,
-							spScanLineCache[spScanLineBegin].color);
-					#elif defined __SPARROW_INTERNAL_ZTEST__
-						sp_intern_Triangle_ztest_pattern(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].z1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].z2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].z3,
-							spScanLineCache[spScanLineBegin].color);
-					#elif defined __SPARROW_INTERNAL_ZSET__	
-						sp_intern_Triangle_zset_pattern(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].z1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].z2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].z3,
-							spScanLineCache[spScanLineBegin].color);
-					#else
-						sp_intern_Triangle_pattern(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].color);
+					break;
+				}
+				case 2: //perspectiveTexTriangle
+				{
+					#ifdef __SPARROW_INTERNAL_BLENDING__
+						#ifdef __SPARROW_INTERNAL_PATTERN__
+							#ifdef __SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_blending_tex_ztest_zset_alpha_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_blending_tex_ztest_alpha_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_blending_tex_zset_alpha_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#else
+									sp_intern_Triangle_blending_tex_alpha_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#endif
+							#else //__SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_blending_tex_ztest_zset_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_blending_tex_ztest_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_blending_tex_zset_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#else
+									sp_intern_Triangle_blending_tex_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#endif
+							#endif
+						#else //__SPARROW_INTERNAL_PATTERN__
+							#ifdef __SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_blending_tex_ztest_zset_alpha_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_blending_tex_ztest_alpha_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_blending_tex_zset_alpha_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#else
+									sp_intern_Triangle_blending_tex_alpha_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#endif
+							#else //__SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_blending_tex_ztest_zset_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_blending_tex_ztest_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_blending_tex_zset_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#else
+									sp_intern_Triangle_blending_tex_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#endif
+							#endif
+						#endif
+					#else //__SPARROW_INTERNAL_BLENDING__
+						#ifdef __SPARROW_INTERNAL_PATTERN__
+							#ifdef __SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_tex_ztest_zset_alpha_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_tex_ztest_alpha_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_tex_zset_alpha_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#else
+									sp_intern_Triangle_tex_alpha_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#endif
+							#else //__SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_tex_ztest_zset_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_tex_ztest_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_tex_zset_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#else
+									sp_intern_Triangle_tex_pattern_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#endif
+							#endif
+						#else //__SPARROW_INTERNAL_PATTERN__
+							#ifdef __SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_tex_ztest_zset_alpha_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_tex_ztest_alpha_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_tex_zset_alpha_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#else
+									sp_intern_Triangle_tex_alpha_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#endif
+							#else //__SPARROW_INTERNAL_ALPHA__
+								#ifdef __SPARROW_INTERNAL_ZBOTH__
+									sp_intern_Triangle_tex_ztest_zset_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZTEST__
+									sp_intern_Triangle_tex_ztest_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#elif defined __SPARROW_INTERNAL_ZSET__
+									sp_intern_Triangle_tex_zset_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.z3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#else
+									sp_intern_Triangle_tex_perspect(
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w1,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w2,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.x3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.y3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.u3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.v3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.w3,
+										spScanLineCache[spScanLineBegin].primitive.perspectiveTexTriangle.color);
+								#endif
+							#endif
+						#endif
 					#endif
-				#else
-					#ifdef __SPARROW_INTERNAL_ZBOTH__
-						sp_intern_Triangle_ztest_zset(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].z1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].z2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].z3,
-							spScanLineCache[spScanLineBegin].color);
-					#elif defined __SPARROW_INTERNAL_ZTEST__
-						sp_intern_Triangle_ztest(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].z1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].z2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].z3,
-							spScanLineCache[spScanLineBegin].color);
-					#elif defined __SPARROW_INTERNAL_ZSET__	
-						sp_intern_Triangle_zset(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].z1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].z2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].z3,
-							spScanLineCache[spScanLineBegin].color);
-					#else
-						sp_intern_Triangle(
-							spScanLineCache[spScanLineBegin].x1,
-							spScanLineCache[spScanLineBegin].y1,
-							spScanLineCache[spScanLineBegin].x2,
-							spScanLineCache[spScanLineBegin].y2,
-							spScanLineCache[spScanLineBegin].x3,
-							spScanLineCache[spScanLineBegin].y3,
-							spScanLineCache[spScanLineBegin].color);
-					#endif
-				#endif
-			#endif
+					break;
+				}
+			}
 			SDL_mutexP(spScanLineMutex);
 			spScanLineBegin = (spScanLineBegin+1) & SP_MAX_SCANLINES_MOD;
 			SDL_mutexV(spScanLineMutex);
@@ -2840,3 +3922,4 @@
 		}
 	}
 }
+#endif
