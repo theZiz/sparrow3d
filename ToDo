@@ -1,5 +1,16 @@
 Roadmap til next version (1.3.1):
 - drawing lines as parallel process
+	- More Primitives on Second Processor
+		- Rectangle
+		- Bordered Rectangle
+		- Ellipse
+		- Borderer Ellipse
+		- Blit
+		- Rotozoom
+			- optimized
+			- generic
+		- Line
+			- maybe new line algo
 	- SDL lock needs to be OUT of the internal triangle function!
 	- Doing my own mutex
 	- Working with "NO_PERSPECTIVE"
