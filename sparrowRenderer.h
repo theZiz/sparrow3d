@@ -231,7 +231,7 @@ typedef struct spLightStruct
  * top - the top border of the frustum
  * znear - z position auf the near plane
  * zfar - z position of the far plane*/
-void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
+PREFIX void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
 							Sint32 znear, Sint32 zfar );
 							
 							

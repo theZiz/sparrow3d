@@ -26,6 +26,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 int spWindowX = 0;
 int spWindowY = 0;
 int spZoom;
@@ -936,7 +940,7 @@ void spClickVirtualKey(int steps)
 		ptr = (char*)spVirtualKeyboardMapShift;
 	
 	SDL_keysym key = {spVirtualKeyboardMap[spVirtualKeyboardY][spVirtualKeyboardX],
-		spVirtualKeyboardMap[spVirtualKeyboardY][spVirtualKeyboardX],0,
+		(SDLKey)spVirtualKeyboardMap[spVirtualKeyboardY][spVirtualKeyboardX],(SDLMod)0,
 		ptr[spVirtualKeyboardY*20+spVirtualKeyboardX]};
   
 	if (spVirtualLastKey.sym == key.sym)
@@ -1043,7 +1047,7 @@ void spHandleVirtualKeyboard( int steps )
 	if (noButton)
 	{
 		spShiftStillPressed = 0;
-		spVirtualLastKey.sym = 0;
+		spVirtualLastKey.sym = (SDLKey)0;
 		spVirtualLastKeyCountDown = 0;
 	}
 }
@@ -1827,11 +1831,10 @@ PREFIX void spSleep(Uint32 microSeconds)
 			t = 1;
 		SDL_Delay(t);
 	#elif defined WIN32
-		#warning Implement me better for windows pleeeease. :)
-		int t = microSeconds/1000;
-		if (t <= 0)
-			t = 1;
-		SDL_Delay(t);	
+		//#warning Implement me better for windows pleeeease. :)
+		// There is no better way, sorry :)
+		Uint32 t = microSeconds/1000;
+		SDL_Delay( (t < 1 ? 1 : t) );	
 	#else
 	usleep(microSeconds);
 	#endif
