@@ -3921,5 +3921,6 @@
 			spSleep(SP_MAX_SCANLINES_WAIT_TIME);
 		}
 	}
+	return 0;
 }
 #endif

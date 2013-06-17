@@ -17,6 +17,7 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 #include "sparrowText.h"
+#include "sparrowFile.h"
 #include <stdlib.h>
 #include <string.h>
 

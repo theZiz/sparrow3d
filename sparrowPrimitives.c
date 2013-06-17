@@ -2776,7 +2776,11 @@ typedef struct {Sint32 x,z;} spInternalLineRedPoint;
 
 inline void spInternalHorizentalLine(Sint32 xl,Sint32 zl,Sint32 xr,Sint32 zr,Sint32 y,Sint32 color)
 {
+#ifdef _MSC_VER
+	spInternalLineRedPoint *stack = new spInternalLineRedPoint[(xr-xl)*2+2];
+#else
 	spInternalLineRedPoint stack[(xr-xl)*2+2];
+#endif
 	stack[0].x = xl;
 	stack[0].z = zl;
 	stack[1].x = xr;
@@ -2806,11 +2810,18 @@ inline void spInternalHorizentalLine(Sint32 xl,Sint32 zl,Sint32 xr,Sint32 zr,Sin
 			stack[++stack_counter] = right;
 		}
 	}
+#ifdef _MSC_VER
+	delete[] stack;
+#endif
 }
 
 inline void spInternalLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Uint32 color )
 {
+#ifdef _MSC_VER
+	spInternalLinePoint *stack = new spInternalLinePoint[abs(y1-y2)*2+2];
+#else
 	spInternalLinePoint stack[abs(y1-y2)*2+2];
+#endif
 	if (y1 < y2)
 	{
 		stack[0].x = x1;
@@ -2887,6 +2898,9 @@ inline void spInternalLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y
 				stack[++stack_counter] = right;
 			}
 		}
+#ifdef _MSC_VER
+	delete[] stack;
+#endif
 }
 
 PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Uint32 color )
