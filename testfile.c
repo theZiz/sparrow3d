@@ -6,7 +6,7 @@
  For feedback and questions about my Files and Projects please mail me,
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
-#include "../sparrow3d/sparrow3d.h"
+#include <sparrow3d.h>
 
 int main( int argc, char **argv )
 {

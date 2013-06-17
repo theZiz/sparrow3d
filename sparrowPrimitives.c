@@ -52,11 +52,84 @@ Uint8 spPattern[8] = {255,255,255,255,255,255,255,255}; //64 Bit, 8 Bytes, 4 Hal
 Sint32 spUsePattern = 0;
 int spPrimitivesIsInitialized = 0;
 Sint32 spBlending = SP_ONE;
+typedef struct {
+	Sint32 mode; //0 triangle, 1 texTriangle, 2 perspectiveTexTriangle, 3 rotozoom
+	union {
+		struct {
+			Sint32 x1;
+			Sint32 y1;
+			Sint32 z1;
+			Sint32 x2;
+			Sint32 y2;
+			Sint32 z2;
+			Sint32 x3;
+			Sint32 y3;
+			Sint32 z3;
+			Uint32 color; } triangle;
+		struct {
+			Sint32 x1;
+			Sint32 y1;
+			Sint32 z1;
+			Sint32 u1;
+			Sint32 v1;
+			Sint32 x2;
+			Sint32 y2;
+			Sint32 z2;
+			Sint32 u2;
+			Sint32 v2;
+			Sint32 x3;
+			Sint32 y3;
+			Sint32 z3;
+			Sint32 u3;
+			Sint32 v3;
+			Uint32 color; } texTriangle;
+		struct {
+			Sint32 x1;
+			Sint32 y1;
+			Sint32 z1;
+			Sint32 u1;
+			Sint32 v1;
+			Sint32 w1;
+			Sint32 x2;
+			Sint32 y2;
+			Sint32 z2;
+			Sint32 u2;
+			Sint32 v2;
+			Sint32 w2;
+			Sint32 x3;
+			Sint32 y3;
+			Sint32 z3;
+			Sint32 u3;
+			Sint32 v3;
+			Sint32 w3;
+			Uint32 color; } perspectiveTexTriangle;
+		struct {
+			Sint32 x1;
+			Sint32 x3;
+			Sint32 y1;
+			Sint32 y3;
+			Sint32 sx;
+			Sint32 sy;
+			Sint32 w;
+			Sint32 h; } rotozoom;
+	} primitive;
+} type_spScanLineCache;
+Sint32 spScanLineBegin = 0;
+Sint32 spScanLineEnd = 0;
+type_spScanLineCache *spScanLineCache = NULL;
+SDL_Thread *spScanLineThread = NULL;
+Sint32 spScanLineMessage = 0;
+SDL_mutex* spScanLineMutex = NULL;
+Sint32 spUseParallelProcess = 0;
 
 PREFIX Sint32* spGetOne_over_x_pointer()
 {
 	return spOne_over_x_look_up;
 }
+
+void spRestartDrawingThread();
+void spStopDrawingThread();
+void spStartDrawingThread();
 
 PREFIX void spInitPrimitives()
 {
@@ -72,6 +145,9 @@ PREFIX void spInitPrimitives()
 	spOne_over_x_look_up[0] = 0;
 	spOne_over_x_look_up_fixed[0] = 0;
 	spSetZBufferCache( spZBufferCacheCount );
+	//Preparing the second processor of the gp2x:
+	//TODO
+	spScanLineMutex = SDL_CreateMutex();
 }
 
 PREFIX void spQuitPrimitives()
@@ -86,6 +162,11 @@ PREFIX void spQuitPrimitives()
 		free( spTargetCache );
 	if ( spSizeCache )
 		free( spSizeCache );
+	if ( spUseParallelProcess )
+		spStopDrawingThread();
+	SDL_DestroyMutex( spScanLineMutex );
+	if ( spScanLineCache ) //TODO: Not on the gp2x!
+		free( spScanLineCache );
 }
 
 PREFIX void spSelectRenderTarget( SDL_Surface* target )
@@ -121,6 +202,7 @@ PREFIX Sint32* spGetRenderTargetZBuffer()
 
 PREFIX void spBindTexture( SDL_Surface* texture )
 {
+	spWaitForDrawingThread();
 	spTexture = texture;
 	if ( texture == NULL )
 	{
@@ -140,6 +222,7 @@ PREFIX void spBindTexture( SDL_Surface* texture )
 
 PREFIX void spClearTarget( Uint32 color )
 {
+	spWaitForDrawingThread();
 	//testfill with CLEAR_PER_FRAME = 64 with SDL_FillRect: 27 fps
 	//testfill with CLEAR_PER_FRAME = 64 assembler spHorizentalLine: 32 fps
 	//testfill with CLEAR_PER_FRAME = 128 with SDL_FillRect: 14 fps
@@ -255,6 +338,111 @@ inline Sint32 z_div( Sint32 z, Sint32 d )
 	#undef __SPARROW_INTERNAL_PATTERN__
 
 
+inline void sp_intern_Triangle_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+{
+	//Adding to stack if not full!
+	#ifndef SP_MAX_SCANLINE_NO_CHECK
+	while (1)
+	{
+		SDL_mutexP(spScanLineMutex);
+		if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
+			break;
+		SDL_mutexV(spScanLineMutex);
+		spSleep(SP_MAX_SCANLINES_WAIT_TIME);
+	}
+	SDL_mutexV(spScanLineMutex);	
+	#endif
+	spScanLineCache[spScanLineEnd].mode = 0;
+	spScanLineCache[spScanLineEnd].primitive.triangle.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.triangle.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.triangle.z1 = z1;
+	spScanLineCache[spScanLineEnd].primitive.triangle.x2 = x2;
+	spScanLineCache[spScanLineEnd].primitive.triangle.y2 = y2;
+	spScanLineCache[spScanLineEnd].primitive.triangle.z2 = z2;
+	spScanLineCache[spScanLineEnd].primitive.triangle.x3 = x3;
+	spScanLineCache[spScanLineEnd].primitive.triangle.y3 = y3;
+	spScanLineCache[spScanLineEnd].primitive.triangle.z3 = z3;
+	spScanLineCache[spScanLineEnd].primitive.triangle.color = color;
+	SDL_mutexP(spScanLineMutex);
+	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+	SDL_mutexV(spScanLineMutex);
+}
+
+inline void sp_intern_Triangle_tex_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color )
+{
+	//Adding to stack if not full!
+	#ifndef SP_MAX_SCANLINE_NO_CHECK
+	while (1)
+	{
+		SDL_mutexP(spScanLineMutex);
+		if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
+			break;
+		SDL_mutexV(spScanLineMutex);
+		spSleep(SP_MAX_SCANLINES_WAIT_TIME);
+	}
+	SDL_mutexV(spScanLineMutex);	
+	#endif
+	spScanLineCache[spScanLineEnd].mode = 1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.z1 = z1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.u1 = u1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.v1 = v1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.x2 = x2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.y2 = y2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.z2 = z2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.u2 = u2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.v2 = v2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.x3 = x3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.y3 = y3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.z3 = z3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.u3 = u3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.v3 = v3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.color = color;
+	SDL_mutexP(spScanLineMutex);
+	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+	SDL_mutexV(spScanLineMutex);
+}
+
+inline void sp_intern_Triangle_tex_overlord_perspect( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 w1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 w2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 w3, Uint32 color )
+{
+	//Adding to stack if not full!
+	#ifndef SP_MAX_SCANLINE_NO_CHECK
+	while (1)
+	{
+		SDL_mutexP(spScanLineMutex);
+		if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
+			break;
+		SDL_mutexV(spScanLineMutex);
+		spSleep(SP_MAX_SCANLINES_WAIT_TIME);
+	}
+	SDL_mutexV(spScanLineMutex);	
+	#endif
+	spScanLineCache[spScanLineEnd].mode = 2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z1 = z1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u1 = u1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w1 = w1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v1 = v1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x2 = x2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y2 = y2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z2 = z2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u2 = u2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v2 = v2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w2 = w2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x3 = x3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y3 = y3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z3 = z3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u3 = u3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v3 = v3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w3 = w3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.color = color;
+	SDL_mutexP(spScanLineMutex);
+	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+	SDL_mutexV(spScanLineMutex);
+}
+
 PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
 {
 	if ( spBlending == 0)
@@ -305,77 +493,82 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 	if ( !result )
 		return 0;
 	
-	if ( spBlending == SP_ONE )
-	{
-		if ( spUsePattern )
-		{
-			if ( spZSet )
-			{
-				if ( spZTest )
-					sp_intern_Triangle_ztest_zset_pattern( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-				else
-					sp_intern_Triangle_zset_pattern      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-			}
-			else
-			{
-				if ( spZTest )
-					sp_intern_Triangle_ztest_pattern     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-				else
-					sp_intern_Triangle_pattern           ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-			}
-		}
-		else
-		{
-			if ( spZSet )
-			{
-				if ( spZTest )
-					sp_intern_Triangle_ztest_zset( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-				else
-					sp_intern_Triangle_zset      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-			}
-			else
-			{
-				if ( spZTest )
-					sp_intern_Triangle_ztest     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-				else
-					sp_intern_Triangle           ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
-			}
-		}
-	}
+	if (spUseParallelProcess)
+		sp_intern_Triangle_overlord( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
 	else
 	{
-		if ( spUsePattern )
+		if ( spBlending == SP_ONE )
 		{
-			if ( spZSet )
+			if ( spUsePattern )
 			{
-				if ( spZTest )
-					sp_intern_Triangle_blending_ztest_zset_pattern( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				if ( spZSet )
+				{
+					if ( spZTest )
+						sp_intern_Triangle_ztest_zset_pattern( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_zset_pattern      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				}
 				else
-					sp_intern_Triangle_blending_zset_pattern      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				{
+					if ( spZTest )
+						sp_intern_Triangle_ztest_pattern     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_pattern           ( x1, y1, x2, y2, x3, y3, color );
+				}
 			}
 			else
 			{
-				if ( spZTest )
-					sp_intern_Triangle_blending_ztest_pattern     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				if ( spZSet )
+				{
+					if ( spZTest )
+						sp_intern_Triangle_ztest_zset( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_zset      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				}
 				else
-					sp_intern_Triangle_blending_pattern           ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				{
+					if ( spZTest )
+						sp_intern_Triangle_ztest     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle           ( x1, y1, x2, y2, x3, y3, color );
+				}
 			}
 		}
 		else
 		{
-			if ( spZSet )
+			if ( spUsePattern )
 			{
-				if ( spZTest )
-					sp_intern_Triangle_blending_ztest_zset( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				if ( spZSet )
+				{
+					if ( spZTest )
+						sp_intern_Triangle_blending_ztest_zset_pattern( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_blending_zset_pattern      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				}
 				else
-					sp_intern_Triangle_blending_zset      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				{
+					if ( spZTest )
+						sp_intern_Triangle_blending_ztest_pattern     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_blending_pattern           ( x1, y1, x2, y2, x3, y3, color );
+				}
 			}
 			else
 			{
-				if ( spZTest )
-					sp_intern_Triangle_blending_ztest     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				if ( spZSet )
+				{
+					if ( spZTest )
+						sp_intern_Triangle_blending_ztest_zset( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_blending_zset      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				}
 				else
-					sp_intern_Triangle_blending           ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+				{
+					if ( spZTest )
+						sp_intern_Triangle_blending_ztest     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+					else
+						sp_intern_Triangle_blending           ( x1, y1, x2, y2, x3, y3, color );
+				}
 			}
 		}
 	}
@@ -386,7 +579,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 #define __SPARROW_INTERNAL_BLENDING__
 	#ifndef NO_PERSPECTIVE
 	#define __SPARROW_INTERNAL_PERSPECT__
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -400,7 +593,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -416,7 +609,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 
 		// with pattern
 		#define __SPARROW_INTERNAL_PATTERN__
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -430,7 +623,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -447,7 +640,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 
 	#undef __SPARROW_INTERNAL_PERSPECT__
 	#endif
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -461,7 +654,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -477,7 +670,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 
 		// with pattern
 		#define __SPARROW_INTERNAL_PATTERN__
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -491,7 +684,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -509,7 +702,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 	#undef __SPARROW_INTERNAL_BLENDING__
 	#ifndef NO_PERSPECTIVE
 	#define __SPARROW_INTERNAL_PERSPECT__
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -523,7 +716,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -539,7 +732,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 
 		// with pattern
 		#define __SPARROW_INTERNAL_PATTERN__
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -553,7 +746,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -570,7 +763,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 
 	#undef __SPARROW_INTERNAL_PERSPECT__
 	#endif
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -584,7 +777,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -600,7 +793,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 
 		// with pattern
 		#define __SPARROW_INTERNAL_PATTERN__
-		#define __SPARROW_INTERNAL_ALPHA___
+		#define __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -614,7 +807,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZNOTHING__
 
-		#undef __SPARROW_INTERNAL_ALPHA___
+		#undef __SPARROW_INTERNAL_ALPHA__
 			#define __SPARROW_INTERNAL_ZBOTH__
 			#include "sparrowPrimitiveTexTriangleInclude.c"
 			#undef __SPARROW_INTERNAL_ZBOTH__
@@ -696,6 +889,9 @@ PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1
 	int result = spGetPixelPosition( x1, y1 ) | spGetPixelPosition( x2, y2 ) | spGetPixelPosition( x3, y3 );
 	if ( !result )
 		return 0;
+	if (spUseParallelProcess)
+		sp_intern_Triangle_tex_overlord( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+	else
 	if ( spBlending == SP_ONE )
 	{
 		if ( spUsePattern )
@@ -941,6 +1137,9 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 	int result = spGetPixelPosition( x1, y1 ) | spGetPixelPosition( x2, y2 ) | spGetPixelPosition( x3, y3 );
 	if ( !result )
 		return 0;
+	if (spUseParallelProcess)
+		sp_intern_Triangle_tex_overlord_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+	else
 	if ( spBlending == SP_ONE )
 	{
 		if ( spUsePattern )
@@ -1192,6 +1391,7 @@ PREFIX int spPerspectiveQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Si
 
 PREFIX void spReAllocateZBuffer()
 {
+	spWaitForDrawingThread();
 	//in Cache?
 	int cacheline;
 	for ( cacheline = 0; cacheline < spZBufferCacheCount; cacheline++ )
@@ -1216,6 +1416,7 @@ PREFIX void spReAllocateZBuffer()
 
 PREFIX void spResetZBuffer()
 {
+	spWaitForDrawingThread();
 	int i;
 	Sint32 s = spZFar-spZNear;
 	if ( spZBuffer )
@@ -1225,21 +1426,32 @@ PREFIX void spResetZBuffer()
 
 PREFIX void spSetZTest( Uint32 test )
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spZTest = test;
+	spStartDrawingThread();
 }
 
 PREFIX void spSetZSet( Uint32 test )
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spZSet = test;
+	spStartDrawingThread();
 }
 
 PREFIX void spSetAlphaTest( Uint32 test )
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spAlphaTest = test;
+	spStartDrawingThread();
 }
 
 PREFIX void spSetBlending( Sint32 value )
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	if (value <= 0)
 		spBlending = 0;
 	else
@@ -1247,6 +1459,7 @@ PREFIX void spSetBlending( Sint32 value )
 		spBlending = SP_ONE;
 	else
 		spBlending = value;
+	spStartDrawingThread();
 }
 
 PREFIX void spSetAffineTextureHack( Uint32 test )
@@ -2458,6 +2671,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 
 PREFIX void spSetZBufferCache( Uint32 value )
 {
+	spWaitForDrawingThread();
 	if ( spZBufferCache )
 		free( spZBufferCache );
 	if ( spTargetCache )
@@ -5369,16 +5583,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 				else
@@ -5386,16 +5600,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 			}
@@ -5406,16 +5620,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 				else
@@ -5423,16 +5637,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_zoom(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_zoom(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 			}
@@ -5446,16 +5660,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_blending_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 				else
@@ -5463,16 +5677,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_blending_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 			}
@@ -5483,16 +5697,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_blending_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 				else
@@ -5500,16 +5714,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h,surface);
+							draw_blending_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h);
 						else
-							draw_blending_zoom(x1,x3,y1,y3,sx,sy,w,h,surface);
+							draw_blending_zoom(x1,x3,y1,y3,sx,sy,w,h);
 					}
 				}
 			}
@@ -5572,7 +5786,7 @@ PREFIX Sint32 spGetVerticalOrigin()
 	return spVerticalOrigin;
 }
 
-int log_2(int x)
+static int log_2(int x)
 {
 	int mom = 1 << 31;
 	int l = 31;
@@ -5586,6 +5800,7 @@ int log_2(int x)
 
 PREFIX void spSetZFar(Sint32 zfar)
 {
+	spWaitForDrawingThread();
 	spZFar = zfar;
 	//For division optimization we need the logarithm of the biggest w component,
 	//that will happen while rendering
@@ -5602,6 +5817,7 @@ PREFIX Sint32 spGetZFar()
 
 PREFIX void spSetZNear(Sint32 znear)
 {
+	spWaitForDrawingThread();
 	spZNear = znear;
 }
 
@@ -5612,6 +5828,7 @@ PREFIX Sint32 spGetZNear()
 
 PREFIX void spAddWhiteLayer(int alpha)
 {
+	spWaitForDrawingThread();
   int i;
   int goal = spTargetScanLine*spTargetY;
   for (i=0;i<goal;i++)
@@ -5638,6 +5855,7 @@ PREFIX void spAddWhiteLayer(int alpha)
 
 PREFIX void spAddBlackLayer(int alpha)
 {
+	spWaitForDrawingThread();
   int i;
   int goal = spTargetScanLine*spTargetY;
   for (i=0;i<goal;i++)
@@ -5664,6 +5882,8 @@ PREFIX void spAddBlackLayer(int alpha)
 
 PREFIX void spSetPattern32(Uint32 first_32_bit,Uint32 last_32_bit)
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spPattern[0] = first_32_bit >> 24;
 	spPattern[1] = first_32_bit >> 16;
 	spPattern[2] = first_32_bit >>  8;
@@ -5673,10 +5893,13 @@ PREFIX void spSetPattern32(Uint32 first_32_bit,Uint32 last_32_bit)
 	spPattern[6] = last_32_bit >>  8;
 	spPattern[7] = last_32_bit      ;
 	spUsePattern = (first_32_bit != ((Uint32)0xFFFFFFFF)) || (last_32_bit != ((Uint32)0xFFFFFFFF));
+	spStartDrawingThread();
 }
 
 PREFIX void spSetPattern64(Uint64 pattern)
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spPattern[0] = pattern >> 56;
 	spPattern[1] = pattern >> 48;
 	spPattern[2] = pattern >> 40;
@@ -5686,10 +5909,13 @@ PREFIX void spSetPattern64(Uint64 pattern)
 	spPattern[6] = pattern >>  8;
 	spPattern[7] = pattern      ;
 	spUsePattern = pattern != ((Uint64)0xFFFFFFFFFFFFFFFF);
+	spStartDrawingThread();
 }
 
 PREFIX void spSetPattern8(Uint8 line1,Uint8 line2,Uint8 line3,Uint8 line4,Uint8 line5,Uint8 line6,Uint8 line7,Uint8 line8)
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spPattern[0] = line1;
 	spPattern[1] = line2;
 	spPattern[2] = line3;
@@ -5701,16 +5927,21 @@ PREFIX void spSetPattern8(Uint8 line1,Uint8 line2,Uint8 line3,Uint8 line4,Uint8 
 	spUsePattern = line1 != 255 || line2 != 255 || line3 != 255 ||
 	               line4 != 255 || line5 != 255 || line6 != 255 ||
 	               line7 != 255 || line8 != 255;
-
+	spStartDrawingThread();
 }
 
 PREFIX void spDeactivatePattern()
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	spUsePattern = 0;
+	spStartDrawingThread();
 }
 
 PREFIX void spSetAlphaPattern(int alpha,int shift)
 {
+	spWaitForDrawingThread();
+	spStopDrawingThread();
 	alpha = alpha + 3 >> 2; //alpha = (alpha+3) / 4;
 	//now alpha is the count of bits, that should be set.
 	int pos = shift & 63; //pos = shift % 64;
@@ -5736,6 +5967,10 @@ PREFIX void spSetAlphaPattern(int alpha,int shift)
 			}
 		}
 	}
+	spUsePattern = spPattern[1] != 255 || spPattern[2] != 255 || spPattern[3] != 255 ||
+	               spPattern[4] != 255 || spPattern[5] != 255 || spPattern[6] != 255 ||
+	               spPattern[7] != 255 || spPattern[8] != 255;
+	spStartDrawingThread();
 }
 
 #define ringshift(left,shift) ((left << shift) | (left >> 32-shift))
@@ -5755,114 +5990,327 @@ PREFIX void spSetAlphaPattern4x4(int alpha,int shift)
 			 * 0100 0100
 			 * 0000 0000
 			 * 0000 0000 */
-			left = 4456448;
+			left = 4456448LL;
 			break;
 		case 2:
 			/* 0000 0000
 			 * 0100 0100
 			 * 0000 0000
 			 * 0001 0001 */
-			left = 4456465;
+			left = 4456465LL;
 			break;
 		case 3:
 			/* 0000 0000
 			 * 0100 0100
 			 * 0000 0000
 			 * 0101 0101 */
-			left = 4456533;
+			left = 4456533LL;
 			break;
 		case 4:
 			/* 0000 0000
 			 * 0101 0101
 			 * 0000 0000
 			 * 0101 0101 */
-			left = 5570645;
+			left = 5570645LL;
 			break;
 		case 5:
 			/* 1000 1000
 			 * 0101 0101
 			 * 0000 0000
 			 * 0101 0101 */
-			left = 2287272021;
+			left = 2287272021LL;
 			break;
 		case 6:
 			/* 1000 1000
 			 * 0101 0101
 			 * 0010 0010
 			 * 0101 0101 */
-			left = 2287280725;
+			left = 2287280725LL;
 			break;
 		case 7:
 			/* 1000 1000
 			 * 0101 0101
 			 * 1010 1010
 			 * 0101 0101 */
-			left = 2287315541;
+			left = 2287315541LL;
 			break;
 		case 8:
 			/* 1010 1010
 			 * 0101 0101
 			 * 1010 1010
 			 * 0101 0101 */
-			left = 2857740885;
+			left = 2857740885LL;
 			break;
 		case 9:
 			/* 1010 1010
 			 * 0101 0101
 			 * 1110 1110
 			 * 0101 0101 */
-			left = 2857758293;
+			left = 2857758293LL;
 			break;
 		case 10:
 			/* 1011 1011
 			 * 0101 0101
 			 * 1110 1110
 			 * 0101 0101 */
-			left = 3142970965;
+			left = 3142970965LL;
 			break;
 		case 11:
 			/* 1011 1011
 			 * 0101 0101
 			 * 1111 1111
 			 * 0101 0101 */
-			left = 3142975317;
+			left = 3142975317LL;
 			break;
 		case 12:
 			/* 1111 1111
 			 * 0101 0101
 			 * 1111 1111
 			 * 0101 0101 */
-			left = 4283826005;
+			left = 4283826005LL;
 			break;
 		case 13:
 			/* 1111 1111
 			 * 0101 0101
 			 * 1111 1111
 			 * 1101 1101 */
-			left = 4283826141;
+			left = 4283826141LL;
 			break;
 		case 14:
 			/* 1111 1111
 			 * 0111 0111
 			 * 1111 1111
 			 * 1101 1101 */
-			left = 4286054365;
+			left = 4286054365LL;
 			break;
 		case 15:
 			/* 1111 1111
 			 * 0111 0111
 			 * 1111 1111
 			 * 1111 1111 */
-			left = 4286054399;
+			left = 4286054399LL;
 		case 16:
 			/* 1111 1111
 			 * 1111 1111
 			 * 1111 1111
 			 * 1111 1111 */
-			left = 4294967295;
+			left = 4294967295LL;
 			break;
 	}
 	shift = shift & 15;
 	left = ringshift(left,shift);
 	spSetPattern32(left,left);
+}
+
+void spRestartDrawingThread()
+{
+	if (!spUseParallelProcess)
+		return;
+	spWaitForDrawingThread();
+	spStopDrawingThread();
+	spStartDrawingThread();
+}
+
+void spStopDrawingThread()
+{
+	if (spScanLineThread)
+	{
+		spScanLineMessage = 0; //Terminate!
+		SDL_WaitThread(spScanLineThread,NULL);
+		spScanLineThread = NULL;
+	}
+}
+
+PREFIX void spWaitForDrawingThread()
+{
+	if (!spUseParallelProcess)
+		return;
+	while (1)
+	{
+		SDL_mutexP(spScanLineMutex);
+		if (spScanLineBegin == spScanLineEnd)
+			break;
+		SDL_mutexV(spScanLineMutex);
+		spSleep(SP_MAX_SCANLINES_WAIT_TIME);
+	}
+	SDL_mutexV(spScanLineMutex);
+}
+
+void spStartDrawingThread()
+{
+	if (!spUseParallelProcess)
+		return;
+	if (spScanLineThread)
+		return;
+		
+	if ( spScanLineCache == NULL ) //TODO: The gp2x just gets an adress of the upper memory
+		spScanLineCache = (type_spScanLineCache*)malloc(sizeof(type_spScanLineCache)*SP_MAX_SCANLINES);
+
+	spScanLineBegin = 0;
+	spScanLineEnd = 0;
+	spScanLineMessage = 1;
+	if ( spAlphaTest )
+	{
+		if ( spBlending == SP_ONE )
+		{
+			if ( spUsePattern )
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_ztest_zset_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_zset_pattern, NULL);
+				}
+				else
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_ztest_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_pattern, NULL);
+				}
+			}
+			else
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_ztest_zset, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_zset, NULL);
+				}
+				else
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_ztest, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha, NULL);
+				}
+			}
+		}
+		else
+		{
+			if ( spUsePattern )
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_ztest_zset_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_zset_pattern, NULL);
+				}
+				else
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_ztest_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_pattern, NULL);
+				}
+			}
+			else
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_ztest_zset, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_zset, NULL);
+				}
+				else
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_ztest, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending, NULL);
+				}
+			}
+		}
+	}
+	else
+	{
+		if ( spBlending == SP_ONE )
+		{
+			if ( spUsePattern )
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_zset_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_zset_pattern, NULL);
+				}
+				else
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_pattern, NULL);
+				}
+			}
+			else
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_zset, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_zset, NULL);
+				}
+				else
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread, NULL);
+				}
+			}
+		}
+		else
+		{
+			if ( spUsePattern )
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_zset_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_zset_pattern, NULL);
+				}
+				else
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_pattern, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_pattern, NULL);
+				}
+			}
+			else
+			{
+				if ( spZSet )
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_zset, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_zset, NULL);
+				}
+				else
+				{
+					if ( spZTest )
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest, NULL);
+					else
+						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending, NULL);
+				}
+			}
+		}
+	}
+}
+
+PREFIX void spDrawInExtraThread(int value)
+{
+	spWaitForDrawingThread();
+	spUseParallelProcess = value;
+	if (value == 0)
+		spStopDrawingThread();
+	else
+		spStartDrawingThread();
 }

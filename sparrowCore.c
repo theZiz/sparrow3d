@@ -1136,7 +1136,7 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 		}
 		#ifndef DO_NOT_USE_DELAY
 		if (diffticks == 0)
-			SDL_Delay(1);
+			spSleep(200);
 		#endif
 	}
 	return back;
@@ -1144,6 +1144,7 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 
 PREFIX void spFlip( void )
 {
+	spWaitForDrawingThread();
 #ifdef CORE_DEBUG
 	spPrintDebug( "    Flip in" );
 #endif
@@ -1815,4 +1816,23 @@ PREFIX void spStereoMergeSurfaces(SDL_Surface* left,SDL_Surface* right,int cross
 	}
 	SDL_UnlockSurface(left);	
 	SDL_UnlockSurface(right);
+}
+
+PREFIX void spSleep(Uint32 microSeconds)
+{
+	#ifdef REALGP2X
+		//TODO: Implement!
+		int t = microSeconds/1000;
+		if (t <= 0)
+			t = 1;
+		SDL_Delay(t);
+	#elif defined WIN32
+		#warning Implement me better for windows pleeeease. :)
+		int t = microSeconds/1000;
+		if (t <= 0)
+			t = 1;
+		SDL_Delay(t);	
+	#else
+	usleep(microSeconds);
+	#endif
 }
