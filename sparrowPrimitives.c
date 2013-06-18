@@ -53,14 +53,16 @@ int spPrimitivesIsInitialized = 0;
 Sint32 spBlending = SP_ONE;
 typedef struct {
 	Sint32 mode; //0 triangle, 1 texTriangle, 2 perspectiveTexTriangle, 3 rotozoom
+	//informations for setPixel:
 	Sint32 textureX;
 	Sint32 textureScanLine;
 	Sint32 textureY;
+	Uint8  pattern[8];
+	//informations for the "tree of choices" in the different functions (2^5 = 32 states)
 	Sint32 ztest;
 	Sint32 zset;
 	Sint32 alphaTest;
 	Sint32 usePattern;
-	Uint8  pattern[8];
 	Sint32 blending;
 	union {
 		struct {
