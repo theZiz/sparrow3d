@@ -54,6 +54,16 @@ int spPrimitivesIsInitialized = 0;
 Sint32 spBlending = SP_ONE;
 typedef struct {
 	Sint32 mode; //0 triangle, 1 texTriangle, 2 perspectiveTexTriangle, 3 rotozoom
+	Sint32 textureX;
+	Sint32 textureScanLine;
+	Sint32 textureY;
+	Sint32 textureXY;
+	Sint32 ztest;
+	Sint32 zset;
+	Sint32 alphaTest;
+	Sint32 usePattern;
+	Uint8  pattern[8];
+	Sint32 blending;
 	union {
 		struct {
 			Sint32 x1;
@@ -121,6 +131,39 @@ SDL_Thread *spScanLineThread = NULL;
 Sint32 spScanLineMessage = 0;
 SDL_mutex* spScanLineMutex = NULL;
 Sint32 spUseParallelProcess = 0;
+
+#ifndef SP_MAX_SCANLINE_NO_CHECK
+#define CIRCLE_ON_FULL_STACK \
+	while (1) \
+	{ \
+		SDL_mutexP(spScanLineMutex); \
+		if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin) \
+			break; \
+		SDL_mutexV(spScanLineMutex); \
+		spSleep(SP_MAX_SCANLINES_WAIT_TIME); \
+	} \
+	SDL_mutexV(spScanLineMutex);
+#else
+#define CIRCLE_ON_FULL_STACK {}
+#endif
+
+
+#define setup_stack_struct(pos_,mode_) \
+	spScanLineCache[(pos_)].mode = (mode_); \
+	spScanLineCache[(pos_)].textureX = spTextureX; \
+	spScanLineCache[(pos_)].textureScanLine = spTextureScanLine; \
+	spScanLineCache[(pos_)].textureY = spTextureY; \
+	spScanLineCache[(pos_)].textureXY = spTextureXY; \
+	spScanLineCache[(pos_)].ztest = spZTest; \
+	spScanLineCache[(pos_)].zset = spZSet; \
+	spScanLineCache[(pos_)].alphaTest = spAlphaTest; \
+	spScanLineCache[(pos_)].usePattern = spUsePattern; \
+	{ \
+		int i; \
+		for (i = 0; i < 8; i++) \
+			spScanLineCache[(pos_)].pattern[i] = spPattern[i]; \
+	} \
+	spScanLineCache[(pos_)].blending = spBlending;
 
 PREFIX Sint32* spGetOne_over_x_pointer()
 {
@@ -273,86 +316,14 @@ inline Sint32 z_div( Sint32 z, Sint32 d )
 /* ************* Include of the pixel functions / defines *********** */
 #include "sparrowPrimitiveSetPixelInclude.c"
 
-/* ************* Include of the triangle functions *********** */
-
-#define __SPARROW_INTERNAL_BLENDING__
-
-	#define __SPARROW_INTERNAL_ZBOTH__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZBOTH__
-	#define __SPARROW_INTERNAL_ZTEST__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZTEST__
-	#define __SPARROW_INTERNAL_ZSET__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZSET__
-	#define __SPARROW_INTERNAL_ZNOTHING__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZNOTHING__
-
-	// with pattern
-	#define __SPARROW_INTERNAL_PATTERN__
-	#define __SPARROW_INTERNAL_ZBOTH__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZBOTH__
-	#define __SPARROW_INTERNAL_ZTEST__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZTEST__
-	#define __SPARROW_INTERNAL_ZSET__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZSET__
-	#define __SPARROW_INTERNAL_ZNOTHING__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZNOTHING__
-	#undef __SPARROW_INTERNAL_PATTERN__
-
-#undef __SPARROW_INTERNAL_BLENDING__
-
-	#define __SPARROW_INTERNAL_ZBOTH__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZBOTH__
-	#define __SPARROW_INTERNAL_ZTEST__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZTEST__
-	#define __SPARROW_INTERNAL_ZSET__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZSET__
-	#define __SPARROW_INTERNAL_ZNOTHING__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZNOTHING__
-
-	// with pattern
-	#define __SPARROW_INTERNAL_PATTERN__
-	#define __SPARROW_INTERNAL_ZBOTH__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZBOTH__
-	#define __SPARROW_INTERNAL_ZTEST__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZTEST__
-	#define __SPARROW_INTERNAL_ZSET__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZSET__
-	#define __SPARROW_INTERNAL_ZNOTHING__
-	#include "sparrowPrimitiveTriangleInclude.c"
-	#undef __SPARROW_INTERNAL_ZNOTHING__
-	#undef __SPARROW_INTERNAL_PATTERN__
-
+/* ************* Tree-Include of the triangle functions *********** */
+#include "sparrowPrimitiveHelperBlending.c"
 
 inline void sp_intern_Triangle_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
 {
 	//Adding to stack if not full!
-	#ifndef SP_MAX_SCANLINE_NO_CHECK
-	while (1)
-	{
-		SDL_mutexP(spScanLineMutex);
-		if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
-			break;
-		SDL_mutexV(spScanLineMutex);
-		spSleep(SP_MAX_SCANLINES_WAIT_TIME);
-	}
-	SDL_mutexV(spScanLineMutex);	
-	#endif
-	spScanLineCache[spScanLineEnd].mode = 0;
+	CIRCLE_ON_FULL_STACK
+	setup_stack_struct(spScanLineEnd,0)
 	spScanLineCache[spScanLineEnd].primitive.triangle.x1 = x1;
 	spScanLineCache[spScanLineEnd].primitive.triangle.y1 = y1;
 	spScanLineCache[spScanLineEnd].primitive.triangle.z1 = z1;
@@ -371,18 +342,8 @@ inline void sp_intern_Triangle_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32
 inline void sp_intern_Triangle_tex_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color )
 {
 	//Adding to stack if not full!
-	#ifndef SP_MAX_SCANLINE_NO_CHECK
-	while (1)
-	{
-		SDL_mutexP(spScanLineMutex);
-		if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
-			break;
-		SDL_mutexV(spScanLineMutex);
-		spSleep(SP_MAX_SCANLINES_WAIT_TIME);
-	}
-	SDL_mutexV(spScanLineMutex);	
-	#endif
-	spScanLineCache[spScanLineEnd].mode = 1;
+	CIRCLE_ON_FULL_STACK
+	setup_stack_struct(spScanLineEnd,1)
 	spScanLineCache[spScanLineEnd].primitive.texTriangle.x1 = x1;
 	spScanLineCache[spScanLineEnd].primitive.texTriangle.y1 = y1;
 	spScanLineCache[spScanLineEnd].primitive.texTriangle.z1 = z1;
@@ -407,18 +368,8 @@ inline void sp_intern_Triangle_tex_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Si
 inline void sp_intern_Triangle_tex_overlord_perspect( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 w1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 w2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 w3, Uint32 color )
 {
 	//Adding to stack if not full!
-	#ifndef SP_MAX_SCANLINE_NO_CHECK
-	while (1)
-	{
-		SDL_mutexP(spScanLineMutex);
-		if (((spScanLineEnd+1) & SP_MAX_SCANLINES_MOD) != spScanLineBegin)
-			break;
-		SDL_mutexV(spScanLineMutex);
-		spSleep(SP_MAX_SCANLINES_WAIT_TIME);
-	}
-	SDL_mutexV(spScanLineMutex);	
-	#endif
-	spScanLineCache[spScanLineEnd].mode = 2;
+	CIRCLE_ON_FULL_STACK
+	setup_stack_struct(spScanLineEnd,2)
 	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x1 = x1;
 	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y1 = y1;
 	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z1 = z1;
@@ -574,253 +525,6 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 	}
 	return result;
 }
-
-/* ************ Include of the texture triangle functions *********** */
-#define __SPARROW_INTERNAL_BLENDING__
-	#ifndef NO_PERSPECTIVE
-	#define __SPARROW_INTERNAL_PERSPECT__
-		#define __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-
-		#undef __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-
-		// with pattern
-		#define __SPARROW_INTERNAL_PATTERN__
-		#define __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-
-		#undef __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-		#undef __SPARROW_INTERNAL_PATTERN__
-
-	#undef __SPARROW_INTERNAL_PERSPECT__
-	#endif
-		#define __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-
-		#undef __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-
-		// with pattern
-		#define __SPARROW_INTERNAL_PATTERN__
-		#define __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-
-		#undef __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-		#undef __SPARROW_INTERNAL_PATTERN__
-
-	#undef __SPARROW_INTERNAL_BLENDING__
-	#ifndef NO_PERSPECTIVE
-	#define __SPARROW_INTERNAL_PERSPECT__
-		#define __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-
-		#undef __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-
-		// with pattern
-		#define __SPARROW_INTERNAL_PATTERN__
-		#define __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-
-		#undef __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-		#undef __SPARROW_INTERNAL_PATTERN__
-
-	#undef __SPARROW_INTERNAL_PERSPECT__
-	#endif
-		#define __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-
-		#undef __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-
-		// with pattern
-		#define __SPARROW_INTERNAL_PATTERN__
-		#define __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-
-		#undef __SPARROW_INTERNAL_ALPHA__
-			#define __SPARROW_INTERNAL_ZBOTH__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZBOTH__
-			#define __SPARROW_INTERNAL_ZTEST__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZTEST__
-			#define __SPARROW_INTERNAL_ZSET__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZSET__
-			#define __SPARROW_INTERNAL_ZNOTHING__
-			#include "sparrowPrimitiveTexTriangleInclude.c"
-			#undef __SPARROW_INTERNAL_ZNOTHING__
-		#undef __SPARROW_INTERNAL_PATTERN__
 
 PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color )
 {
@@ -1614,7 +1318,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u, v, 65535 );
+								draw_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spPattern);
 								v++;
 							}
 							u++;
@@ -1625,7 +1329,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u, v, spBlending );
+								blit_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1689,7 +1393,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_zset_alpha_pattern( x, y, z, u, v, 65535 );
+								draw_pixel_tex_zset_alpha_pattern( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spPattern );
 								v++;
 							}
 							u++;
@@ -1700,7 +1404,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_zset_alpha_pattern( x, y, z, u, v, spBlending );
+								blit_pixel_tex_zset_alpha_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1770,7 +1474,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_alpha_pattern( x, y, z, u, v, 65535 );
+								draw_pixel_tex_ztest_alpha_pattern( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spPattern );
 								v++;
 							}
 							u++;
@@ -1781,7 +1485,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_alpha_pattern( x, y, z, u, v, spBlending );
+								blit_pixel_tex_ztest_alpha_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1845,7 +1549,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_alpha_pattern( x, y, u, v, 65535 );
+								draw_pixel_tex_alpha_pattern( x, y, u, v,65535,spTexturePixel,spTextureScanLine,spPattern);
 								v++;
 							}
 							u++;
@@ -1856,7 +1560,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_alpha_pattern( x, y, u, v, spBlending );
+								blit_pixel_tex_alpha_pattern( x, y, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1929,7 +1633,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_zset_pattern( x, y, z, u, v, 65535 );
+								draw_pixel_tex_ztest_zset_pattern( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spPattern);
 								v++;
 							}
 							u++;
@@ -1940,7 +1644,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_zset_pattern( x, y, z, u, v, spBlending );
+								blit_pixel_tex_ztest_zset_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -2004,7 +1708,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_zset_pattern( x, y, z, u, v, 65535 );
+								draw_pixel_tex_zset_pattern( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spPattern);
 								v++;
 							}
 							u++;
@@ -2015,7 +1719,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_zset_pattern( x, y, z, u, v, spBlending );
+								blit_pixel_tex_zset_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -2084,7 +1788,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_pattern( x, y, z, u, v, 65535 );
+								draw_pixel_tex_ztest_pattern( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spPattern);
 								v++;
 							}
 							u++;
@@ -2095,7 +1799,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_pattern( x, y, z, u, v, spBlending );
+								blit_pixel_tex_ztest_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -2159,7 +1863,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_pattern( x, y, u, v, 65535 );
+								draw_pixel_tex_pattern( x, y, u, v,65535,spTexturePixel,spTextureScanLine,spPattern);
 								v++;
 							}
 							u++;
@@ -2170,7 +1874,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_pattern( x, y, u, v, spBlending );
+								blit_pixel_tex_pattern( x, y, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -2245,7 +1949,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_zset_alpha( x, y, z, u, v, 65535 );
+								draw_pixel_tex_ztest_zset_alpha( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine);
 								v++;
 							}
 							u++;
@@ -2256,7 +1960,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_zset_alpha( x, y, z, u, v, spBlending );
+								blit_pixel_tex_ztest_zset_alpha( x, y, z, u, v,spTexturePixel,spTextureScanLine, spBlending );
 								v++;
 							}
 							u++;
@@ -2382,7 +2086,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_alpha( x, y, z, u, v, 65535 );
+								draw_pixel_tex_ztest_alpha( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine);
 								v++;
 							}
 							u++;
@@ -2393,7 +2097,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_alpha( x, y, z, u, v, spBlending );
+								blit_pixel_tex_ztest_alpha( x, y, z, u, v,spTexturePixel,spTextureScanLine, spBlending );
 								v++;
 							}
 							u++;
@@ -2484,7 +2188,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_zset( x, y, z, u, v, 65535 );
+								draw_pixel_tex_ztest_zset( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine);
 								v++;
 							}
 							u++;
@@ -2495,7 +2199,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_zset( x, y, z, u, v, spBlending );
+								blit_pixel_tex_ztest_zset( x, y, z, u, v,spTexturePixel,spTextureScanLine, spBlending );
 								v++;
 							}
 							u++;
@@ -2621,7 +2325,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest( x, y, z, u, v, 65535 );
+								draw_pixel_tex_ztest( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine);
 								v++;
 							}
 							u++;
@@ -2632,7 +2336,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest( x, y, z, u, v, spBlending );
+								blit_pixel_tex_ztest( x, y, z, u, v,spTexturePixel,spTextureScanLine, spBlending );
 								v++;
 							}
 							u++;
@@ -2702,16 +2406,16 @@ PREFIX void spSetCulling( char value )
 			if ( spZSet ) \
 			{ \
 				if ( spZTest ) \
-					draw_pixel_ztest_zset_pattern( x, y, z, color ) \
+					draw_pixel_ztest_zset_pattern( x, y, z, color , spPattern) \
 				else \
-					draw_pixel_zset_pattern( x, y, z, color ) \
+					draw_pixel_zset_pattern( x, y, z, color, spPattern ) \
 			} \
 			else \
 			{ \
 				if ( spZTest ) \
-					draw_pixel_ztest_pattern( x, y, z, color ) \
+					draw_pixel_ztest_pattern( x, y, z, color, spPattern ) \
 				else \
-					draw_pixel_pattern( x, y, color ) \
+					draw_pixel_pattern( x, y, color, spPattern ) \
 			} \
 		} \
 		else \
@@ -2739,16 +2443,16 @@ PREFIX void spSetCulling( char value )
 			if ( spZSet ) \
 			{ \
 				if ( spZTest ) \
-					draw_blending_pixel_ztest_zset_pattern( x, y, z, color, spBlending ) \
+					draw_blending_pixel_ztest_zset_pattern( x, y, z, color, spPattern, spBlending ) \
 				else \
-					draw_blending_pixel_zset_pattern( x, y, z, color, spBlending ) \
+					draw_blending_pixel_zset_pattern( x, y, z, color, spPattern, spBlending ) \
 			} \
 			else \
 			{ \
 				if ( spZTest ) \
-					draw_blending_pixel_ztest_pattern( x, y, z, color, spBlending ) \
+					draw_blending_pixel_ztest_pattern( x, y, z, color, spPattern, spBlending ) \
 				else \
-					draw_blending_pixel_pattern( x, y, color, spBlending ) \
+					draw_blending_pixel_pattern( x, y, color, spPattern, spBlending ) \
 			} \
 		} \
 		else \
@@ -2941,7 +2645,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_pixel_ztest_zset_pattern( x1, y1, z1, color )
+							draw_pixel_ztest_zset_pattern( x1, y1, z1, color, spPattern )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -2972,7 +2676,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_pixel_zset_pattern( x1, y1, z1, color )
+							draw_pixel_zset_pattern( x1, y1, z1, color, spPattern )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -3006,7 +2710,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_pixel_ztest_pattern( x1, y1, z1, color )
+							draw_pixel_ztest_pattern( x1, y1, z1, color, spPattern )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -3036,7 +2740,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_pixel_pattern( x1, y1, color )
+							draw_pixel_pattern( x1, y1, color, spPattern )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -3206,7 +2910,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_blending_pixel_ztest_zset_pattern( x1, y1, z1, color, spBlending )
+							draw_blending_pixel_ztest_zset_pattern( x1, y1, z1, color, spPattern, spBlending )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -3237,7 +2941,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_blending_pixel_zset_pattern( x1, y1, z1, color, spBlending )
+							draw_blending_pixel_zset_pattern( x1, y1, z1, color, spPattern, spBlending )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -3271,7 +2975,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_blending_pixel_ztest_pattern( x1, y1, z1, color, spBlending )
+							draw_blending_pixel_ztest_pattern( x1, y1, z1, color, spPattern, spBlending )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -3301,7 +3005,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_blending_pixel_pattern( x1, y1, color, spBlending )
+							draw_blending_pixel_pattern( x1, y1, color, spPattern, spBlending )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -3495,22 +3199,22 @@ PREFIX void spRectangle( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint3
 				if ( spBlending == SP_ONE)
 					for ( ; x1 <= x2; x1++ )
 						for ( y = y1; y <= y2; y++ )
-							draw_pixel_ztest_zset_pattern( x1, y, z, color )
+							draw_pixel_ztest_zset_pattern( x1, y, z, color, spPattern )
 				else
 					for ( ; x1 <= x2; x1++ )
 						for ( y = y1; y <= y2; y++ )
-							draw_blending_pixel_ztest_zset_pattern( x1, y, z, color, spBlending )
+							draw_blending_pixel_ztest_zset_pattern( x1, y, z, color, spPattern, spBlending )
 			}
 			else
 			{
 				if (spBlending == SP_ONE)
 					for ( ; x1 <= x2; x1++ )
 						for ( y = y1; y <= y2; y++ )
-							draw_pixel_zset_pattern( x1, y, z, color )
+							draw_pixel_zset_pattern( x1, y, z, color, spPattern )
 				else
 					for ( ; x1 <= x2; x1++ )
 						for ( y = y1; y <= y2; y++ )
-							draw_blending_pixel_zset_pattern( x1, y, z, color , spBlending)				
+							draw_blending_pixel_zset_pattern( x1, y, z, color, spPattern , spBlending)				
 			}
 		}
 		else
@@ -3520,22 +3224,22 @@ PREFIX void spRectangle( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint3
 				if (spBlending == SP_ONE)
 					for ( ; x1 <= x2; x1++ )
 						for ( y = y1; y <= y2; y++ )
-							draw_pixel_ztest_pattern( x1, y, z, color )
+							draw_pixel_ztest_pattern( x1, y, z, color, spPattern )
 				else
 					for ( ; x1 <= x2; x1++ )
 						for ( y = y1; y <= y2; y++ )
-							draw_blending_pixel_ztest_pattern( x1, y, z, color, spBlending )				
+							draw_blending_pixel_ztest_pattern( x1, y, z, color, spPattern, spBlending )				
 			}
 			else
 			{
 				if (spBlending == SP_ONE)
 					for ( ; x1 <= x2; x1++ )
 						for ( y = y1; y <= y2; y++ )
-							draw_pixel_pattern( x1, y, color )
+							draw_pixel_pattern( x1, y, color, spPattern )
 				else
 					for ( ; x1 <= x2; x1++ )
 						for ( y = y1; y <= y2; y++ )
-							draw_blending_pixel_pattern( x1, y, color, spBlending )				
+							draw_blending_pixel_pattern( x1, y, color, spPattern, spBlending )				
 			}
 		}
 	}
@@ -3644,38 +3348,38 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 					//top border
 					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_ztest_zset_pattern( cx, cy, z, color )
+							draw_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern )
 					//left & right border
 					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
 					{
 						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_pixel_ztest_zset_pattern( cx, cy, z, color )
+							draw_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern )
 						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_pixel_ztest_zset_pattern( cx, cy, z, color )
+							draw_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern )
 					}
 					//bottom border
 					for ( ; cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_ztest_zset_pattern( cx, cy, z, color )
+							draw_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern )
 				}
 				else
 				{
 					//top border
 					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_zset_pattern( cx, cy, z, color )
+							draw_pixel_zset_pattern( cx, cy, z, color, spPattern )
 					//left & right border
 					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
 					{
 						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_pixel_zset_pattern( cx, cy, z, color )
+							draw_pixel_zset_pattern( cx, cy, z, color, spPattern )
 						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_pixel_zset_pattern( cx, cy, z, color )
+							draw_pixel_zset_pattern( cx, cy, z, color, spPattern )
 					}
 					//bottom border
 					for ( ; cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_zset_pattern( cx, cy, z, color )
+							draw_pixel_zset_pattern( cx, cy, z, color, spPattern )
 				}
 			}
 			else
@@ -3685,38 +3389,38 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 					//top border
 					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_ztest_pattern( cx, cy, z, color )
+							draw_pixel_ztest_pattern( cx, cy, z, color, spPattern )
 					//left & right border
 					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
 					{
 						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_pixel_ztest_pattern( cx, cy, z, color )
+							draw_pixel_ztest_pattern( cx, cy, z, color, spPattern )
 						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_pixel_ztest_pattern( cx, cy, z, color )
+							draw_pixel_ztest_pattern( cx, cy, z, color, spPattern )
 					}
 					//bottom border
 					for ( ; cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_ztest_pattern( cx, cy, z, color )
+							draw_pixel_ztest_pattern( cx, cy, z, color, spPattern )
 				}
 				else
 				{
 					//top border
 					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_pattern( cx, cy, color )
+							draw_pixel_pattern( cx, cy, color, spPattern )
 					//left & right border
 					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
 					{
 						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_pixel_pattern( cx, cy, color )
+							draw_pixel_pattern( cx, cy, color, spPattern )
 						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_pixel_pattern( cx, cy, color )
+							draw_pixel_pattern( cx, cy, color, spPattern )
 					}
 					//bottom border
 					for ( ; cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_pattern( cx, cy, color )
+							draw_pixel_pattern( cx, cy, color, spPattern )
 				}
 			}
 		}
@@ -3817,38 +3521,38 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 					//top border
 					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_zset_pattern( cx, cy, z, color, spBlending )
+							draw_blending_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern, spBlending )
 					//left & right border
 					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
 					{
 						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_blending_pixel_ztest_zset_pattern( cx, cy, z, color, spBlending )
+							draw_blending_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern, spBlending )
 						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_zset_pattern( cx, cy, z, color, spBlending )
+							draw_blending_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern, spBlending )
 					}
 					//bottom border
 					for ( ; cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_zset_pattern( cx, cy, z, color, spBlending )
+							draw_blending_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern, spBlending )
 				}
 				else
 				{
 					//top border
 					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_zset_pattern( cx, cy, z, color, spBlending )
+							draw_blending_pixel_zset_pattern( cx, cy, z, color, spPattern, spBlending )
 					//left & right border
 					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
 					{
 						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_blending_pixel_zset_pattern( cx, cy, z, color, spBlending )
+							draw_blending_pixel_zset_pattern( cx, cy, z, color, spPattern, spBlending )
 						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_blending_pixel_zset_pattern( cx, cy, z, color, spBlending )
+							draw_blending_pixel_zset_pattern( cx, cy, z, color, spPattern, spBlending )
 					}
 					//bottom border
 					for ( ; cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_zset_pattern( cx, cy, z, color, spBlending )
+							draw_blending_pixel_zset_pattern( cx, cy, z, color, spPattern, spBlending )
 				}
 			}
 			else
@@ -3858,38 +3562,38 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 					//top border
 					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_pattern( cx, cy, z, color, spBlending )
+							draw_blending_pixel_ztest_pattern( cx, cy, z, color, spPattern, spBlending )
 					//left & right border
 					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
 					{
 						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_blending_pixel_ztest_pattern( cx, cy, z, color, spBlending )
+							draw_blending_pixel_ztest_pattern( cx, cy, z, color, spPattern, spBlending )
 						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_pattern( cx, cy, z, color, spBlending )
+							draw_blending_pixel_ztest_pattern( cx, cy, z, color, spPattern, spBlending )
 					}
 					//bottom border
 					for ( ; cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_pattern( cx, cy, z, color, spBlending )
+							draw_blending_pixel_ztest_pattern( cx, cy, z, color, spPattern, spBlending )
 				}
 				else
 				{
 					//top border
 					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_pattern( cx, cy, color, spBlending )
+							draw_blending_pixel_pattern( cx, cy, color, spPattern, spBlending )
 					//left & right border
 					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
 					{
 						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_blending_pixel_pattern( cx, cy, color, spBlending )
+							draw_blending_pixel_pattern( cx, cy, color, spPattern, spBlending )
 						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_blending_pixel_pattern( cx, cy, color, spBlending )
+							draw_blending_pixel_pattern( cx, cy, color, spPattern, spBlending )
 					}
 					//bottom border
 					for ( ; cy <= y2; cy++ )
 						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_pattern( cx, cy, color, spBlending )
+							draw_blending_pixel_pattern( cx, cy, color, spPattern, spBlending )
 				}
 			}
 		}
@@ -4028,7 +3732,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
 					}
 				}
 				else
@@ -4044,7 +3748,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
 					}
 				}
 			}
@@ -4063,7 +3767,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern )
 					}
 				}
 				else
@@ -4079,7 +3783,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_pixel_pattern( x1 + x, y1 + y, color )
+							draw_pixel_pattern( x1 + x, y1 + y, color, spPattern )
 					}
 				}
 			}
@@ -4177,7 +3881,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 					}
 				}
 				else
@@ -4193,7 +3897,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 					}
 				}
 			}
@@ -4212,7 +3916,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 					}
 				}
 				else
@@ -4228,7 +3932,7 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spBlending )
+							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spPattern, spBlending )
 					}
 				}
 			}
@@ -4384,7 +4088,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
 					}
 					//middle
 					for (; y < ry - by && y <= ryr; y++ )
@@ -4404,9 +4108,9 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX_out > rxr)
 							RX_out = rxr;
 						for (x = LX_out;x < LX_in; x++)
-							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
 						for (x = RX_in;x < RX_out; x++)
-							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
 					}
 					//down
 					for (; y <= ryr; y++ )
@@ -4419,7 +4123,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
 					}
 				}
 				else
@@ -4437,7 +4141,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
 					}
 					//middle
 					for (; y < ry - by && y <= ryr; y++ )
@@ -4457,9 +4161,9 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX_out > rxr)
 							RX_out = rxr;
 						for (x = LX_out;x < LX_in; x++)
-							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
 						for (x = RX_in;x < RX_out; x++)
-							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
 					}
 					//down
 					for (; y <= ryr; y++ )
@@ -4472,7 +4176,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
 					}
 				}
 			}
@@ -4493,7 +4197,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern )
 					}
 					//middle
 					for (; y < ry - by && y <= ryr; y++ )
@@ -4513,9 +4217,9 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX_out > rxr)
 							RX_out = rxr;
 						for (x = LX_out;x < LX_in; x++)
-							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern )
 						for (x = RX_in;x < RX_out; x++)
-							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern )
 					}
 					//down
 					for (; y <= ryr; y++ )
@@ -4528,7 +4232,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color )
+							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern )
 					}
 				}
 				else
@@ -4546,7 +4250,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_pixel_pattern( x1 + x, y1 + y, color )
+							draw_pixel_pattern( x1 + x, y1 + y, color, spPattern )
 					}
 					//middle
 					for (; y < ry - by && y <= ryr; y++ )
@@ -4566,9 +4270,9 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX_out > rxr)
 							RX_out = rxr;
 						for (x = LX_out;x < LX_in; x++)
-							draw_pixel_pattern( x1 + x, y1 + y, color )
+							draw_pixel_pattern( x1 + x, y1 + y, color, spPattern )
 						for (x = RX_in;x < RX_out; x++)
-							draw_pixel_pattern( x1 + x, y1 + y, color )
+							draw_pixel_pattern( x1 + x, y1 + y, color, spPattern )
 					}
 					//down
 					for (; y <= ryr; y++ )
@@ -4581,7 +4285,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_pixel_pattern( x1 + x, y1 + y, color )
+							draw_pixel_pattern( x1 + x, y1 + y, color, spPattern )
 					}
 				}
 			}
@@ -4829,7 +4533,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 					}
 					//middle
 					for (; y < ry - by && y <= ryr; y++ )
@@ -4849,9 +4553,9 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX_out > rxr)
 							RX_out = rxr;
 						for (x = LX_out;x < LX_in; x++)
-							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 						for (x = RX_in;x < RX_out; x++)
-							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 					}
 					//down
 					for (; y <= ryr; y++ )
@@ -4864,7 +4568,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 					}
 				}
 				else
@@ -4882,7 +4586,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 					}
 					//middle
 					for (; y < ry - by && y <= ryr; y++ )
@@ -4902,9 +4606,9 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX_out > rxr)
 							RX_out = rxr;
 						for (x = LX_out;x < LX_in; x++)
-							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 						for (x = RX_in;x < RX_out; x++)
-							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 					}
 					//down
 					for (; y <= ryr; y++ )
@@ -4917,7 +4621,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 					}
 				}
 			}
@@ -4938,7 +4642,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 					}
 					//middle
 					for (; y < ry - by && y <= ryr; y++ )
@@ -4958,9 +4662,9 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX_out > rxr)
 							RX_out = rxr;
 						for (x = LX_out;x < LX_in; x++)
-							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 						for (x = RX_in;x < RX_out; x++)
-							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 					}
 					//down
 					for (; y <= ryr; y++ )
@@ -4973,7 +4677,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spBlending )
+							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
 					}
 				}
 				else
@@ -4991,7 +4695,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spBlending )
+							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spPattern, spBlending )
 					}
 					//middle
 					for (; y < ry - by && y <= ryr; y++ )
@@ -5011,9 +4715,9 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX_out > rxr)
 							RX_out = rxr;
 						for (x = LX_out;x < LX_in; x++)
-							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spBlending )
+							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spPattern, spBlending )
 						for (x = RX_in;x < RX_out; x++)
-							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spBlending )
+							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spPattern, spBlending )
 					}
 					//down
 					for (; y <= ryr; y++ )
@@ -5026,7 +4730,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 						if (RX > rxr)
 							RX = rxr;
 						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spBlending )
+							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spPattern, spBlending )
 					}
 				}
 			}

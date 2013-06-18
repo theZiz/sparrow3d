@@ -138,23 +138,23 @@
 		{
 			#ifdef __SPARROW_INTERNAL_BLENDING__
 				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					draw_blending_pixel_ztest_zset_pattern( x, y, z, color, spBlending )
+					draw_blending_pixel_ztest_zset_pattern( x, y, z, color,spPattern, spBlending )
 				#elif defined __SPARROW_INTERNAL_ZTEST__
-					draw_blending_pixel_ztest_pattern( x, y, z, color, spBlending )
+					draw_blending_pixel_ztest_pattern( x, y, z, color,spPattern, spBlending )
 				#elif defined __SPARROW_INTERNAL_ZSET__
-					draw_blending_pixel_zset_pattern( x, y, z, color, spBlending )
+					draw_blending_pixel_zset_pattern( x, y, z, color,spPattern, spBlending )
 				#else
-					draw_blending_pixel_pattern( x, y, color, spBlending )
+					draw_blending_pixel_pattern( x, y, color,spPattern, spBlending )
 				#endif
 			#else
 				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					draw_pixel_ztest_zset_pattern( x, y, z, color )
+					draw_pixel_ztest_zset_pattern( x, y, z, color,spPattern )
 				#elif defined __SPARROW_INTERNAL_ZTEST__
-					draw_pixel_ztest_pattern( x, y, z, color )
+					draw_pixel_ztest_pattern( x, y, z, color,spPattern )
 				#elif defined __SPARROW_INTERNAL_ZSET__
-					draw_pixel_zset_pattern( x, y, z, color )
+					draw_pixel_zset_pattern( x, y, z, color,spPattern )
 				#else
-					draw_pixel_pattern( x, y, color )
+					draw_pixel_pattern( x, y, color,spPattern )
 				#endif
 			#endif
 			#ifndef __SPARROW_INTERNAL_ZNOTHING__			
