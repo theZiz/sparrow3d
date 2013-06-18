@@ -1,7 +1,5 @@
 Roadmap til next version (1.3.1):
 - drawing lines as parallel process
-	- in SetPixel:
-		textureX, textureY
 	- More Primitives on Second Processor
 		- Rectangle
 		- Bordered Rectangle

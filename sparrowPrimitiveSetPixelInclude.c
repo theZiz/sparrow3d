@@ -134,7 +134,7 @@
 /* ********************************** */
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -146,12 +146,12 @@
 		} \
 	}
 #else
-	#define draw_pixel_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
@@ -160,7 +160,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -171,11 +171,11 @@
 		} \
 	}
 #else
-	#define draw_pixel_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
@@ -184,7 +184,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
 		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
@@ -193,10 +193,10 @@
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
 	}
 #else
-	#define draw_pixel_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
@@ -204,7 +204,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex(x,y,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
@@ -212,9 +212,9 @@
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
 	}
 #else
-	#define draw_pixel_tex(x,y,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
@@ -222,7 +222,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -243,12 +243,12 @@
 		} \
 	}
 #else
-	#define draw_pixel_blending_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -266,7 +266,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -286,11 +286,11 @@
 		} \
 	}
 #else
-	#define draw_pixel_blending_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -308,7 +308,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
 		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
@@ -326,10 +326,10 @@
 		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
 	}
 #else
-	#define draw_pixel_blending_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -346,7 +346,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex(x,y,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
@@ -363,9 +363,9 @@
 		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
 	}
 #else
-	#define draw_pixel_blending_tex(x,y,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -388,7 +388,7 @@
 #define reciprocal_w_clip(parameter,w) ((parameter >> SP_HALF_ACCURACY)*(spOne_over_x_look_up_fixed[(w>>spMaxWLogDiff) & (SP_ONE-1)]>>spMaxWLogDiff) >> SP_ACCURACY)
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -402,14 +402,14 @@
 		} \
 	}
 #else
-	#define draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			Sint32 uw = reciprocal_w_clip(u,w); \
 			Sint32 vw = reciprocal_w_clip(v,w); \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
@@ -418,7 +418,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -431,13 +431,13 @@
 		} \
 	}
 #else
-	#define draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			Sint32 uw = reciprocal_w_clip(u,w); \
 			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
@@ -446,7 +446,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
 		Sint32 uw = reciprocal_w_clip(u,w); \
@@ -457,12 +457,12 @@
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
 	}
 #else
-	#define draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
@@ -470,7 +470,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
@@ -480,11 +480,11 @@
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
 	}
 #else
-	#define draw_pixel_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
@@ -492,7 +492,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -515,14 +515,14 @@
 		} \
 	}
 #else
-	#define draw_pixel_blending_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			Sint32 uw = reciprocal_w_clip(u,w); \
 			Sint32 vw = reciprocal_w_clip(v,w); \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -540,7 +540,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -562,13 +562,13 @@
 		} \
 	}
 #else
-	#define draw_pixel_blending_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			Sint32 uw = reciprocal_w_clip(u,w); \
 			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -586,7 +586,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
 		Sint32 uw = reciprocal_w_clip(u,w); \
@@ -606,12 +606,12 @@
 		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
 	}
 #else
-	#define draw_pixel_blending_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -628,7 +628,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
@@ -647,11 +647,11 @@
 		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
 	}
 #else
-	#define draw_pixel_blending_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -668,76 +668,76 @@
 #endif
 
 // + Pattern
-#define draw_pixel_tex_ztest_zset_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_ztest_zset_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_ztest_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_ztest_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_zset_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_zset_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_pattern(x,y,u,v,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_pattern(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex(x,y,u,v,color,texturePixel,textureScanLine)}
+		draw_pixel_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_ztest_zset_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_ztest_zset_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_ztest_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_ztest_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_zset_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_zset_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_pattern_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_pattern_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_blending_tex_ztest_zset_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_ztest_zset_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_ztest_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_ztest_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_zset_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_zset_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_pattern(x,y,u,v,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_pattern(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex(x,y,u,v,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_ztest_zset_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_ztest_zset_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_ztest_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_ztest_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_zset_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_zset_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_pattern_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_pattern_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
 /* ******************************************** */
 /* draw_pixel functions with textures and alpha */
 /* ******************************************** */
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -752,11 +752,11 @@
 		} \
 	}
 #else
-	#define draw_pixel_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 			if (pixel != SP_ALPHA_COLOR) \
 			{ \
 				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -769,7 +769,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -781,11 +781,11 @@
 		} \
 	}
 #else
-	#define draw_pixel_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 			if (pixel != SP_ALPHA_COLOR) \
 				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -795,7 +795,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
@@ -807,9 +807,9 @@
 		} \
 	}
 #else
-	#define draw_pixel_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -821,7 +821,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
@@ -830,9 +830,9 @@
 																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
 	}
 #else
-	#define draw_pixel_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -841,7 +841,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -858,13 +858,13 @@
 		} \
 	}
 #else
-	#define draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			Sint32 uw = reciprocal_w_clip(u,w); \
 			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 			if (pixel != SP_ALPHA_COLOR) \
 			{ \
 				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -877,7 +877,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -891,13 +891,13 @@
 		} \
 	}
 #else
-	#define draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			Sint32 uw = reciprocal_w_clip(u,w); \
 			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 			if (pixel != SP_ALPHA_COLOR) \
 				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -907,7 +907,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
@@ -921,11 +921,11 @@
 		} \
 	}
 #else
-	#define draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -937,7 +937,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
@@ -948,11 +948,11 @@
 																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
 	}
 #else
-	#define draw_pixel_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine) \
+	#define draw_pixel_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -963,7 +963,7 @@
 
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -987,11 +987,11 @@
 		} \
 	}
 #else
-	#define draw_pixel_blending_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 			if (pixel != SP_ALPHA_COLOR) \
 			{ \
 				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -1013,7 +1013,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -1036,11 +1036,11 @@
 		} \
 	}
 #else
-	#define draw_pixel_blending_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 			if (pixel != SP_ALPHA_COLOR) \
 			{ \
 				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
@@ -1061,7 +1061,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
@@ -1082,9 +1082,9 @@
 		} \
 	}
 #else
-	#define draw_pixel_blending_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -1105,7 +1105,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
@@ -1125,9 +1125,9 @@
 		} \
 	}
 #else
-	#define draw_pixel_blending_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
@@ -1147,7 +1147,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -1173,13 +1173,13 @@
 		} \
 	}
 #else
-	#define draw_pixel_blending_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			Sint32 uw = reciprocal_w_clip(u,w); \
 			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 			if (pixel != SP_ALPHA_COLOR) \
 			{ \
 				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -1201,7 +1201,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -1226,13 +1226,13 @@
 		} \
 	}
 #else
-	#define draw_pixel_blending_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			Sint32 uw = reciprocal_w_clip(u,w); \
 			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 			if (pixel != SP_ALPHA_COLOR) \
 			{ \
 				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
@@ -1253,7 +1253,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
@@ -1276,11 +1276,11 @@
 		} \
 	}
 #else
-	#define draw_pixel_blending_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -1301,7 +1301,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
@@ -1323,11 +1323,11 @@
 		} \
 	}
 #else
-	#define draw_pixel_blending_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,blend) \
+	#define draw_pixel_blending_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=spTextureX)?spTextureX-1:(uw)) + (((vw)<0)?0:((vw)>=spTextureY)?spTextureY-1:(vw)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
@@ -1348,71 +1348,71 @@
 
 
 // + Pattern
-#define draw_pixel_tex_ztest_zset_alpha_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_ztest_zset_alpha_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_ztest_alpha_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_ztest_alpha_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_zset_alpha_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_zset_alpha_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_alpha_pattern(x,y,u,v,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_alpha_pattern(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_ztest_zset_alpha_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_ztest_zset_alpha_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_ztest_alpha_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_ztest_alpha_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_zset_alpha_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_zset_alpha_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY)}
 
-#define draw_pixel_tex_alpha_pattern_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,pattern) \
+#define draw_pixel_tex_alpha_pattern_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine)}
+		draw_pixel_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY)}
 
 
 
-#define draw_pixel_blending_tex_ztest_zset_alpha_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_ztest_zset_alpha_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_ztest_alpha_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_ztest_alpha_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_zset_alpha_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_zset_alpha_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_alpha_pattern(x,y,u,v,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_alpha_pattern(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_ztest_zset_alpha_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_ztest_zset_alpha_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_ztest_alpha_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_ztest_alpha_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_zset_alpha_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_zset_alpha_pattern_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define draw_pixel_blending_tex_alpha_pattern_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,pattern,blend) \
+#define draw_pixel_blending_tex_alpha_pattern_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_pixel_blending_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,blend)}
+		draw_pixel_blending_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend)}
 
 
 /* *********************************************** */
@@ -1420,7 +1420,7 @@
 /* *********************************************** */
 
 #ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_ztest_zset(x,y,z,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_ztest_zset(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -1438,12 +1438,12 @@
 		} \
 	}
 #else
-	#define blit_pixel_tex_ztest_zset(x,y,z,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_ztest_zset(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
 			Sint32 one_minus_blend = SP_ONE - (blend); \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = \
@@ -1458,7 +1458,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_ztest(x,y,z,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_ztest(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -1475,11 +1475,11 @@
 		} \
 	}
 #else
-	#define blit_pixel_tex_ztest(x,y,z,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_ztest(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
 			Sint32 one_minus_blend = SP_ONE - (blend); \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = \
@@ -1494,7 +1494,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_zset(x,y,z,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_zset(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
 		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
@@ -1509,10 +1509,10 @@
 		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
 	}
 #else
-	#define blit_pixel_tex_zset(x,y,z,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_zset(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
 		Sint32 one_minus_blend = SP_ONE - (blend); \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = \
@@ -1526,7 +1526,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex(x,y,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
@@ -1540,9 +1540,9 @@
 		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
 	}
 #else
-	#define blit_pixel_tex(x,y,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
 		Sint32 one_minus_blend = SP_ONE - (blend); \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = \
@@ -1556,28 +1556,28 @@
 #endif
 
 // + Pattern
-#define blit_pixel_tex_ztest_zset_pattern(x,y,z,u,v,texturePixel,textureScanLine,pattern,blend) \
+#define blit_pixel_tex_ztest_zset_pattern(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_ztest_zset(x,y,z,u,v,texturePixel,textureScanLine,blend)}
+		blit_pixel_tex_ztest_zset(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define blit_pixel_tex_ztest_pattern(x,y,z,u,v,texturePixel,textureScanLine,pattern,blend) \
+#define blit_pixel_tex_ztest_pattern(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_ztest(x,y,z,u,v,texturePixel,textureScanLine,blend)}
+		blit_pixel_tex_ztest(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define blit_pixel_tex_zset_pattern(x,y,z,u,v,texturePixel,textureScanLine,pattern,blend) \
+#define blit_pixel_tex_zset_pattern(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_zset(x,y,z,u,v,texturePixel,textureScanLine,blend)}
+		blit_pixel_tex_zset(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define blit_pixel_tex_pattern(x,y,u,v,texturePixel,textureScanLine,pattern,blend) \
+#define blit_pixel_tex_pattern(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex(x,y,u,v,texturePixel,textureScanLine,blend)}
+		blit_pixel_tex(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
 
 /* ********************************************************* */
 /* draw_pixel functions with textures and alpha and blending */
 /* ********************************************************* */
 
 #ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_ztest_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_ztest_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -1598,11 +1598,11 @@
 		} \
 	}
 #else
-	#define blit_pixel_tex_ztest_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_ztest_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 			if (pixel != SP_ALPHA_COLOR) \
 			{ \
 				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -1621,7 +1621,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_ztest_alpha(x,y,z,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_ztest_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
@@ -1641,11 +1641,11 @@
 		} \
 	}
 #else
-	#define blit_pixel_tex_ztest_alpha(x,y,z,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_ztest_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 			if (pixel != SP_ALPHA_COLOR) \
 			{ \
 				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
@@ -1663,7 +1663,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
@@ -1681,9 +1681,9 @@
 		} \
 	}
 #else
-	#define blit_pixel_tex_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -1701,7 +1701,7 @@
 #endif
 
 #ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_alpha(x,y,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_alpha(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
@@ -1718,9 +1718,9 @@
 		} \
 	}
 #else
-	#define blit_pixel_tex_alpha(x,y,u,v,texturePixel,textureScanLine,blend) \
+	#define blit_pixel_tex_alpha(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=spTextureX)?spTextureX-1:(u)) + (((v)<0)?0:((v)>=spTextureY)?spTextureY-1:(v)) * textureScanLine];  \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
@@ -1737,18 +1737,18 @@
 #endif
 
 //+ Pattern
-#define blit_pixel_tex_ztest_zset_alpha_pattern(x,y,z,u,v,texturePixel,textureScanLine,pattern,blend) \
+#define blit_pixel_tex_ztest_zset_alpha_pattern(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_ztest_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,blend)}
+		blit_pixel_tex_ztest_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define blit_pixel_tex_ztest_alpha_pattern(x,y,z,u,v,texturePixel,textureScanLine,pattern,blend) \
+#define blit_pixel_tex_ztest_alpha_pattern(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_ztest_alpha(x,y,z,u,v,texturePixel,textureScanLine,blend)}
+		blit_pixel_tex_ztest_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define blit_pixel_tex_zset_alpha_pattern(x,y,z,u,v,texturePixel,textureScanLine,pattern,blend) \
+#define blit_pixel_tex_zset_alpha_pattern(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,blend)}
+		blit_pixel_tex_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
 
-#define blit_pixel_tex_alpha_pattern(x,y,u,v,texturePixel,textureScanLine,pattern,blend) \
+#define blit_pixel_tex_alpha_pattern(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_alpha(x,y,u,v,texturePixel,textureScanLine,blend)}
+		blit_pixel_tex_alpha(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}

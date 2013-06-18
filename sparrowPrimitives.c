@@ -37,7 +37,6 @@ Sint32 spTargetY = 0;
 Sint32 spTextureX = 0;
 Sint32 spTextureScanLine = 0; //if the surface is even, same as spTextureX, else +1.
 Sint32 spTextureY = 0;
-Sint32 spTextureXY = 0;
 Sint32 spOne_over_x_look_up[1 << SP_ACCURACY];
 Sint32 spOne_over_x_look_up_fixed[1 << SP_ACCURACY];
 Uint32 spZBufferCacheCount = 16;
@@ -57,7 +56,6 @@ typedef struct {
 	Sint32 textureX;
 	Sint32 textureScanLine;
 	Sint32 textureY;
-	Sint32 textureXY;
 	Sint32 ztest;
 	Sint32 zset;
 	Sint32 alphaTest;
@@ -153,7 +151,6 @@ Sint32 spUseParallelProcess = 0;
 	spScanLineCache[(pos_)].textureX = spTextureX; \
 	spScanLineCache[(pos_)].textureScanLine = spTextureScanLine; \
 	spScanLineCache[(pos_)].textureY = spTextureY; \
-	spScanLineCache[(pos_)].textureXY = spTextureXY; \
 	spScanLineCache[(pos_)].ztest = spZTest; \
 	spScanLineCache[(pos_)].zset = spZSet; \
 	spScanLineCache[(pos_)].alphaTest = spAlphaTest; \
@@ -252,14 +249,12 @@ PREFIX void spBindTexture( SDL_Surface* texture )
 		spTextureScanLine = 0;
 		spTextureX = 0;
 		spTextureY = 0;
-		spTextureXY = 0;
 		spTexturePixel = NULL;
 		return;
 	}
 	spTextureScanLine = texture->pitch/texture->format->BytesPerPixel;
 	spTextureX = texture->w;
 	spTextureY = texture->h;
-	spTextureXY = spTextureScanLine * spTextureY;
 	spTexturePixel = ( Uint16* )texture->pixels;
 }
 
@@ -1306,7 +1301,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureScanLine = spTextureScanLine;
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
-					Sint32 oldTextureXY = spTextureXY;
 					Uint16* oldTexturePixel = spTexturePixel;
 	
 					spBindTexture( surface );
@@ -1318,7 +1312,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spPattern);
+								draw_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
 								v++;
 							}
 							u++;
@@ -1329,7 +1323,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
+								blit_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1338,7 +1332,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
-					spTextureXY = oldTextureXY;
 					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
@@ -1382,7 +1375,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureScanLine = spTextureScanLine;
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
-					Sint32 oldTextureXY = spTextureXY;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
@@ -1393,7 +1385,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_zset_alpha_pattern( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spPattern );
+								draw_pixel_tex_zset_alpha_pattern( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern );
 								v++;
 							}
 							u++;
@@ -1404,7 +1396,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_zset_alpha_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
+								blit_pixel_tex_zset_alpha_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1414,7 +1406,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
-					spTextureXY = oldTextureXY;
 					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
@@ -1463,7 +1454,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureScanLine = spTextureScanLine;
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
-					Sint32 oldTextureXY = spTextureXY;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
@@ -1474,7 +1464,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_alpha_pattern( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spPattern );
+								draw_pixel_tex_ztest_alpha_pattern( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern );
 								v++;
 							}
 							u++;
@@ -1485,7 +1475,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_alpha_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
+								blit_pixel_tex_ztest_alpha_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1494,7 +1484,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
-					spTextureXY = oldTextureXY;
 					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
@@ -1538,7 +1527,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureScanLine = spTextureScanLine;
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
-					Sint32 oldTextureXY = spTextureXY;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
@@ -1549,7 +1537,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_alpha_pattern( x, y, u, v,65535,spTexturePixel,spTextureScanLine,spPattern);
+								draw_pixel_tex_alpha_pattern( x, y, u, v,65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
 								v++;
 							}
 							u++;
@@ -1560,7 +1548,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_alpha_pattern( x, y, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
+								blit_pixel_tex_alpha_pattern( x, y, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1570,7 +1558,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
-					spTextureXY = oldTextureXY;
 					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
@@ -1622,7 +1609,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureScanLine = spTextureScanLine;
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
-					Sint32 oldTextureXY = spTextureXY;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
@@ -1633,7 +1619,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_zset_pattern( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spPattern);
+								draw_pixel_tex_ztest_zset_pattern( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
 								v++;
 							}
 							u++;
@@ -1644,7 +1630,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_zset_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
+								blit_pixel_tex_ztest_zset_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1653,7 +1639,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
-					spTextureXY = oldTextureXY;
 					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
@@ -1697,7 +1682,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureScanLine = spTextureScanLine;
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
-					Sint32 oldTextureXY = spTextureXY;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
@@ -1708,7 +1692,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_zset_pattern( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spPattern);
+								draw_pixel_tex_zset_pattern( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
 								v++;
 							}
 							u++;
@@ -1719,7 +1703,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_zset_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
+								blit_pixel_tex_zset_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1728,7 +1712,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
-					spTextureXY = oldTextureXY;
 					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
@@ -1777,7 +1760,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureScanLine = spTextureScanLine;
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
-					Sint32 oldTextureXY = spTextureXY;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
@@ -1788,7 +1770,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_pattern( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spPattern);
+								draw_pixel_tex_ztest_pattern( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
 								v++;
 							}
 							u++;
@@ -1799,7 +1781,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
+								blit_pixel_tex_ztest_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1808,7 +1790,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
-					spTextureXY = oldTextureXY;
 					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
@@ -1852,7 +1833,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureScanLine = spTextureScanLine;
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
-					Sint32 oldTextureXY = spTextureXY;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
@@ -1863,7 +1843,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_pattern( x, y, u, v,65535,spTexturePixel,spTextureScanLine,spPattern);
+								draw_pixel_tex_pattern( x, y, u, v,65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
 								v++;
 							}
 							u++;
@@ -1874,7 +1854,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_pattern( x, y, u, v,spTexturePixel,spTextureScanLine,spPattern, spBlending );
+								blit_pixel_tex_pattern( x, y, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1883,7 +1863,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
-					spTextureXY = oldTextureXY;
 					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
@@ -1938,7 +1917,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureScanLine = spTextureScanLine;
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
-					Sint32 oldTextureXY = spTextureXY;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
@@ -1949,7 +1927,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_zset_alpha( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine);
+								draw_pixel_tex_ztest_zset_alpha( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY);
 								v++;
 							}
 							u++;
@@ -1960,7 +1938,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_zset_alpha( x, y, z, u, v,spTexturePixel,spTextureScanLine, spBlending );
+								blit_pixel_tex_ztest_zset_alpha( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY, spBlending );
 								v++;
 							}
 							u++;
@@ -1969,7 +1947,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
-					spTextureXY = oldTextureXY;
 					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
@@ -2075,7 +2052,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureScanLine = spTextureScanLine;
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
-					Sint32 oldTextureXY = spTextureXY;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
@@ -2086,7 +2062,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_alpha( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine);
+								draw_pixel_tex_ztest_alpha( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY);
 								v++;
 							}
 							u++;
@@ -2097,7 +2073,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_alpha( x, y, z, u, v,spTexturePixel,spTextureScanLine, spBlending );
+								blit_pixel_tex_ztest_alpha( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY, spBlending );
 								v++;
 							}
 							u++;
@@ -2106,7 +2082,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
-					spTextureXY = oldTextureXY;
 					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
@@ -2177,7 +2152,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureScanLine = spTextureScanLine;
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
-					Sint32 oldTextureXY = spTextureXY;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
@@ -2188,7 +2162,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest_zset( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine);
+								draw_pixel_tex_ztest_zset( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY);
 								v++;
 							}
 							u++;
@@ -2199,7 +2173,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_zset( x, y, z, u, v,spTexturePixel,spTextureScanLine, spBlending );
+								blit_pixel_tex_ztest_zset( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY, spBlending );
 								v++;
 							}
 							u++;
@@ -2208,7 +2182,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
-					spTextureXY = oldTextureXY;
 					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
@@ -2314,7 +2287,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureScanLine = spTextureScanLine;
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
-					Sint32 oldTextureXY = spTextureXY;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
 					SDL_LockSurface( spTarget );
@@ -2325,7 +2297,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								draw_pixel_tex_ztest( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine);
+								draw_pixel_tex_ztest( x, y, z, u, v,65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY);
 								v++;
 							}
 							u++;
@@ -2336,7 +2308,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest( x, y, z, u, v,spTexturePixel,spTextureScanLine, spBlending );
+								blit_pixel_tex_ztest( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY, spBlending );
 								v++;
 							}
 							u++;
@@ -2345,7 +2317,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
-					spTextureXY = oldTextureXY;
 					spTexturePixel = oldTexturePixel;
 					SDL_UnlockSurface( spTarget );
 				}
@@ -5268,7 +5239,6 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 	Sint32 oldTextureScanLine = spTextureScanLine;
 	Sint32 oldTextureX = spTextureY;
 	Sint32 oldTextureY = spTextureX;
-	Sint32 oldTextureXY = spTextureXY;
 	Uint16* oldTexturePixel = spTexturePixel;
 	spBindTexture( surface );
 
@@ -5466,7 +5436,6 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 	spTextureScanLine = oldTextureScanLine;
 	spTextureX = oldTextureY;
 	spTextureY = oldTextureX;
-	spTextureXY = oldTextureXY;
 	spTexturePixel = oldTexturePixel;
 }
 
