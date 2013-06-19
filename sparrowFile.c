@@ -418,44 +418,51 @@ PREFIX void spFileSortList(spFileListPointer* list,spFileSortType sortBy)
 		return;
 	//Creating quick sort array
 	int count = (*list)->count;
-	spFileListPointer array[count];
+#ifdef _MSC_VER
+	spFileListPointer *sarray = new spFileListPointer[count];
+#else
+	spFileListPointer sarray[count];
+#endif
 	int i;
 	spFileListPointer mom = *list;
 	for (i = 0; i < count; i++)
 	{
-		array[i] = mom;
+		sarray[i] = mom;
 		mom = mom->next;
 	}
 	switch (sortBy)
 	{
 		case SP_FILE_SORT_BY_NAME:
-			qsort(array,count,sizeof(spFileListPointer),internalCompareByName);
+			qsort(sarray,count,sizeof(spFileListPointer),internalCompareByName);
 			break;
 		case SP_FILE_SORT_BY_NAME | SP_FILE_SORT_BACKWARDS:
-			qsort(array,count,sizeof(spFileListPointer),internalCompareByNameBackwards);
+			qsort(sarray,count,sizeof(spFileListPointer),internalCompareByNameBackwards);
 			break;
 		case SP_FILE_SORT_BY_TYPE:
-			qsort(array,count,sizeof(spFileListPointer),internalCompareByType);
+			qsort(sarray,count,sizeof(spFileListPointer),internalCompareByType);
 			break;
 		case SP_FILE_SORT_BY_TYPE | SP_FILE_SORT_BACKWARDS:
-			qsort(array,count,sizeof(spFileListPointer),internalCompareByTypeBackwards);
+			qsort(sarray,count,sizeof(spFileListPointer),internalCompareByTypeBackwards);
 			break;
 		case SP_FILE_SORT_BY_TYPE_AND_NAME:
-			qsort(array,count,sizeof(spFileListPointer),internalCompareByTypeName);
+			qsort(sarray,count,sizeof(spFileListPointer),internalCompareByTypeName);
 			break;
 		case SP_FILE_SORT_BY_TYPE_AND_NAME | SP_FILE_SORT_BACKWARDS:
-			qsort(array,count,sizeof(spFileListPointer),internalCompareByTypeNameBackwards);
+			qsort(sarray,count,sizeof(spFileListPointer),internalCompareByTypeNameBackwards);
 			break;
 	}
 
-	*list = array[0];
+	*list = sarray[0];
 	(*list)->prev = NULL;
 	(*list)->count = count;
 	for (i = 1; i < count; i++)
 	{
-		array[i  ]->prev = array[i-1];
-		array[i-1]->next = array[  i];
+		sarray[i  ]->prev = sarray[i-1];
+		sarray[i-1]->next = sarray[  i];
 	}
-	array[count-1]->next = NULL;
+	sarray[count-1]->next = NULL;
 
+#ifdef _MSC_VER
+	delete[] sarray;
+#endif
 }
