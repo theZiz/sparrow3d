@@ -26,92 +26,92 @@
 	#ifdef __SPARROW_INTERNAL_PATTERN__
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
 			#ifdef __GNUC__
-			inline void draw_blending_line_ztest_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+			inline void draw_blending_line_ztest_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ ) __attribute__((always_inline));
 			#endif
-			inline void draw_blending_line_ztest_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+			inline void draw_blending_line_ztest_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ )
 		#elif defined __SPARROW_INTERNAL_ZTEST__
 			#ifdef __GNUC__
-			inline void draw_blending_line_ztest_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+			inline void draw_blending_line_ztest_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ ) __attribute__((always_inline));
 			#endif
-			inline void draw_blending_line_ztest_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+			inline void draw_blending_line_ztest_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ )
 		#elif defined __SPARROW_INTERNAL_ZSET__
 			#ifdef __GNUC__
-			inline void draw_blending_line_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+			inline void draw_blending_line_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ ) __attribute__((always_inline));
 			#endif
-			inline void draw_blending_line_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+			inline void draw_blending_line_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ )
 		#else
 			#ifdef __GNUC__
-			inline void draw_blending_line_pattern( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color ) __attribute__((always_inline));
+			inline void draw_blending_line_pattern( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending ) __attribute__((always_inline));
 			#endif
-			inline void draw_blending_line_pattern( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color )
+			inline void draw_blending_line_pattern( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#endif
 	#else
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
 			#ifdef __GNUC__
-			inline void draw_blending_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+			inline void draw_blending_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ ) __attribute__((always_inline));
 			#endif
-			inline void draw_blending_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+			inline void draw_blending_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ )
 		#elif defined __SPARROW_INTERNAL_ZTEST__
 			#ifdef __GNUC__
-			inline void draw_blending_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+			inline void draw_blending_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ ) __attribute__((always_inline));
 			#endif
-			inline void draw_blending_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+			inline void draw_blending_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ )
 		#elif defined __SPARROW_INTERNAL_ZSET__
 			#ifdef __GNUC__
-			inline void draw_blending_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+			inline void draw_blending_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ ) __attribute__((always_inline));
 			#endif
-			inline void draw_blending_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+			inline void draw_blending_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ )
 		#else
 			#ifdef __GNUC__
-			inline void draw_blending_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color ) __attribute__((always_inline));
+			inline void draw_blending_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending ) __attribute__((always_inline));
 			#endif
-			inline void draw_blending_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color )
+			inline void draw_blending_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#endif
 	#endif
 #else
 	#ifdef __SPARROW_INTERNAL_PATTERN__
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
 			#ifdef __GNUC__
-			inline void draw_line_ztest_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+			inline void draw_line_ztest_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ ) __attribute__((always_inline));
 			#endif
-			inline void draw_line_ztest_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+			inline void draw_line_ztest_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ )
 		#elif defined __SPARROW_INTERNAL_ZTEST__
 			#ifdef __GNUC__
-			inline void draw_line_ztest_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+			inline void draw_line_ztest_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ ) __attribute__((always_inline));
 			#endif
-			inline void draw_line_ztest_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+			inline void draw_line_ztest_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ )
 		#elif defined __SPARROW_INTERNAL_ZSET__
 			#ifdef __GNUC__
-			inline void draw_line_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+			inline void draw_line_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ ) __attribute__((always_inline));
 			#endif
-			inline void draw_line_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+			inline void draw_line_zset_pattern( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ )
 		#else
 			#ifdef __GNUC__
-			inline void draw_line_pattern( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color ) __attribute__((always_inline));
+			inline void draw_line_pattern( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending ) __attribute__((always_inline));
 			#endif
-			inline void draw_line_pattern( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color )
+			inline void draw_line_pattern( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#endif
 	#else
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
 			#ifdef __GNUC__
-			inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+			inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ ) __attribute__((always_inline));
 			#endif
-			inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+			inline void draw_line_ztest_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ )
 		#elif defined __SPARROW_INTERNAL_ZTEST__
 			#ifdef __GNUC__
-			inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+			inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ ) __attribute__((always_inline));
 			#endif
-			inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+			inline void draw_line_ztest( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ )
 		#elif defined __SPARROW_INTERNAL_ZSET__
 			#ifdef __GNUC__
-			inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ ) __attribute__((always_inline));
+			inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ ) __attribute__((always_inline));
 			#endif
-			inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Sint32 sZ )
+			inline void draw_line_zset( Sint32 x1, Sint32 z1, Sint32 x2, Sint32 z2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending, Sint32 sZ )
 		#else
 			#ifdef __GNUC__
-			inline void draw_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color ) __attribute__((always_inline));
+			inline void draw_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending ) __attribute__((always_inline));
 			#endif
-			inline void draw_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color )
+			inline void draw_line( Sint32 x1, Sint32 x2, Sint32 y, Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#endif
 	#endif
 #endif
@@ -203,45 +203,45 @@
 #ifdef __SPARROW_INTERNAL_BLENDING__
 	#ifdef __SPARROW_INTERNAL_PATTERN__
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
-			static void sp_intern_Triangle_blending_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+			static void sp_intern_Triangle_blending_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#elif defined __SPARROW_INTERNAL_ZTEST__
-			static void sp_intern_Triangle_blending_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_blending_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#elif defined __SPARROW_INTERNAL_ZSET__	
-			static void sp_intern_Triangle_blending_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_blending_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#else
-			static void sp_intern_Triangle_blending_pattern( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color )
+			static void sp_intern_Triangle_blending_pattern( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#endif
 	#else
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
-			static void sp_intern_Triangle_blending_ztest_zset( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+			static void sp_intern_Triangle_blending_ztest_zset( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#elif defined __SPARROW_INTERNAL_ZTEST__
-			static void sp_intern_Triangle_blending_ztest( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_blending_ztest( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#elif defined __SPARROW_INTERNAL_ZSET__	
-			static void sp_intern_Triangle_blending_zset( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_blending_zset( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#else
-			static void sp_intern_Triangle_blending( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color )
+			static void sp_intern_Triangle_blending( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#endif
 	#endif
 #else
 	#ifdef __SPARROW_INTERNAL_PATTERN__
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
-			static void sp_intern_Triangle_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+			static void sp_intern_Triangle_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#elif defined __SPARROW_INTERNAL_ZTEST__
-			static void sp_intern_Triangle_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#elif defined __SPARROW_INTERNAL_ZSET__	
-			static void sp_intern_Triangle_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_zset_pattern( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#else
-			static void sp_intern_Triangle_pattern( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color )
+			static void sp_intern_Triangle_pattern( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#endif
 	#else
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
-			static void sp_intern_Triangle_ztest_zset( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+			static void sp_intern_Triangle_ztest_zset( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#elif defined __SPARROW_INTERNAL_ZTEST__
-			static void sp_intern_Triangle_ztest( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_ztest( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#elif defined __SPARROW_INTERNAL_ZSET__	
-			static void sp_intern_Triangle_zset( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
+			static void sp_intern_Triangle_zset( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#else
-			static void sp_intern_Triangle( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color )
+			static void sp_intern_Triangle( Sint32 x1, Sint32 y1,   Sint32 x2, Sint32 y2,   Sint32 x3, Sint32 y3,   Uint32 color, Uint8* spPattern, Sint32 spBlending )
 		#endif
 	#endif
 #endif
@@ -341,60 +341,60 @@
 					#ifdef __SPARROW_INTERNAL_PATTERN__
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
 							draw_blending_line_ztest_zset_pattern( xl >> SP_ACCURACY, zl,
-													xr >> SP_ACCURACY, zr, y, color, sZ );
+													xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
 							draw_blending_line_ztest_pattern( xl >> SP_ACCURACY, zl,
-											 xr >> SP_ACCURACY, zr, y, color, sZ );
+											 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__	
 							draw_blending_line_zset_pattern( xl >> SP_ACCURACY, zl,
-											xr >> SP_ACCURACY, zr, y, color, sZ );
+											xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 						#else
 							draw_blending_line_pattern( xl >> SP_ACCURACY, 
-										 xr >> SP_ACCURACY, y, color);
+										 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
 							draw_blending_line_ztest_zset( xl >> SP_ACCURACY, zl,
-													xr >> SP_ACCURACY, zr, y, color, sZ );
+													xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
 							draw_blending_line_ztest( xl >> SP_ACCURACY, zl,
-											 xr >> SP_ACCURACY, zr, y, color, sZ );
+											 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__	
 							draw_blending_line_zset( xl >> SP_ACCURACY, zl,
-											xr >> SP_ACCURACY, zr, y, color, sZ );
+											xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 						#else
 							draw_blending_line( xl >> SP_ACCURACY, 
-										 xr >> SP_ACCURACY, y, color);
+										 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
 						#endif
 					#endif
 				#else
 					#ifdef __SPARROW_INTERNAL_PATTERN__
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
 							draw_line_ztest_zset_pattern( xl >> SP_ACCURACY, zl,
-													xr >> SP_ACCURACY, zr, y, color, sZ );
+													xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
 							draw_line_ztest_pattern( xl >> SP_ACCURACY, zl,
-											 xr >> SP_ACCURACY, zr, y, color, sZ );
+											 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__	
 							draw_line_zset_pattern( xl >> SP_ACCURACY, zl,
-											xr >> SP_ACCURACY, zr, y, color, sZ );
+											xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 						#else
 							draw_line_pattern( xl >> SP_ACCURACY, 
-										 xr >> SP_ACCURACY, y, color);
+										 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
 							draw_line_ztest_zset( xl >> SP_ACCURACY, zl,
-													xr >> SP_ACCURACY, zr, y, color, sZ );
+													xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
 							draw_line_ztest( xl >> SP_ACCURACY, zl,
-											 xr >> SP_ACCURACY, zr, y, color, sZ );
+											 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__	
 							draw_line_zset( xl >> SP_ACCURACY, zl,
-											xr >> SP_ACCURACY, zr, y, color, sZ );
+											xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 						#else
 							draw_line( xl >> SP_ACCURACY, 
-										 xr >> SP_ACCURACY, y, color);
+										 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
 						#endif
 					#endif
 				#endif
@@ -419,60 +419,60 @@
 					#ifdef __SPARROW_INTERNAL_PATTERN__
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
 							draw_blending_line_ztest_zset_pattern( xr >> SP_ACCURACY, zr,
-													xl >> SP_ACCURACY, zl, y, color, sZ );
+													xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
 							draw_blending_line_ztest_pattern( xr >> SP_ACCURACY, zr,
-											 xl >> SP_ACCURACY, zl, y, color, sZ );
+											 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__	
 							draw_blending_line_zset_pattern( xr >> SP_ACCURACY, zr,
-											xl >> SP_ACCURACY, zl, y, color, sZ );
+											xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 						#else
 							draw_blending_line_pattern( xr >> SP_ACCURACY, 
-										 xl >> SP_ACCURACY, y, color);
+										 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
 							draw_blending_line_ztest_zset( xr >> SP_ACCURACY, zr,
-													xl >> SP_ACCURACY, zl, y, color, sZ );
+													xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
 							draw_blending_line_ztest( xr >> SP_ACCURACY, zr,
-											 xl >> SP_ACCURACY, zl, y, color, sZ );
+											 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__	
 							draw_blending_line_zset( xr >> SP_ACCURACY, zr,
-											xl >> SP_ACCURACY, zl, y, color, sZ );
+											xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 						#else
 							draw_blending_line( xr >> SP_ACCURACY, 
-										 xl >> SP_ACCURACY, y, color);
+										 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
 						#endif
 					#endif
 				#else
 					#ifdef __SPARROW_INTERNAL_PATTERN__
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
 							draw_line_ztest_zset_pattern( xr >> SP_ACCURACY, zr,
-													xl >> SP_ACCURACY, zl, y, color, sZ );
+													xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
 							draw_line_ztest_pattern( xr >> SP_ACCURACY, zr,
-											 xl >> SP_ACCURACY, zl, y, color, sZ );
+											 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__	
 							draw_line_zset_pattern( xr >> SP_ACCURACY, zr,
-											xl >> SP_ACCURACY, zl, y, color, sZ );
+											xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 						#else
 							draw_line_pattern( xr >> SP_ACCURACY, 
-										 xl >> SP_ACCURACY, y, color);
+										 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
 						#endif
 					#else
 						#ifdef __SPARROW_INTERNAL_ZBOTH__
 							draw_line_ztest_zset( xr >> SP_ACCURACY, zr,
-													xl >> SP_ACCURACY, zl, y, color, sZ );
+													xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZTEST__
 							draw_line_ztest( xr >> SP_ACCURACY, zr,
-											 xl >> SP_ACCURACY, zl, y, color, sZ );
+											 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 						#elif defined __SPARROW_INTERNAL_ZSET__	
 							draw_line_zset( xr >> SP_ACCURACY, zr,
-											xl >> SP_ACCURACY, zl, y, color, sZ );
+											xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 						#else
 							draw_line( xr >> SP_ACCURACY, 
-										 xl >> SP_ACCURACY, y, color);
+										 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
 						#endif
 					#endif
 				#endif
@@ -528,60 +528,60 @@
 				#ifdef __SPARROW_INTERNAL_PATTERN__
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
 						draw_blending_line_ztest_zset_pattern( xl >> SP_ACCURACY, zl,
-												xr >> SP_ACCURACY, zr, y, color, sZ );
+												xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZTEST__
 						draw_blending_line_ztest_pattern( xl >> SP_ACCURACY, zl,
-										 xr >> SP_ACCURACY, zr, y, color, sZ );
+										 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZSET__	
 						draw_blending_line_zset_pattern( xl >> SP_ACCURACY, zl,
-										xr >> SP_ACCURACY, zr, y, color, sZ );
+										xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 					#else
 						draw_blending_line_pattern( xl >> SP_ACCURACY, 
-									 xr >> SP_ACCURACY, y, color);
+									 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
 					#endif
 				#else
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
 						draw_blending_line_ztest_zset( xl >> SP_ACCURACY, zl,
-												xr >> SP_ACCURACY, zr, y, color, sZ );
+												xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZTEST__
 						draw_blending_line_ztest( xl >> SP_ACCURACY, zl,
-										 xr >> SP_ACCURACY, zr, y, color, sZ );
+										 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZSET__	
 						draw_blending_line_zset( xl >> SP_ACCURACY, zl,
-										xr >> SP_ACCURACY, zr, y, color, sZ );
+										xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 					#else
 						draw_blending_line( xl >> SP_ACCURACY, 
-									 xr >> SP_ACCURACY, y, color);
+									 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
 					#endif
 				#endif
 			#else
 				#ifdef __SPARROW_INTERNAL_PATTERN__
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
 						draw_line_ztest_zset_pattern( xl >> SP_ACCURACY, zl,
-												xr >> SP_ACCURACY, zr, y, color, sZ );
+												xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZTEST__
 						draw_line_ztest_pattern( xl >> SP_ACCURACY, zl,
-										 xr >> SP_ACCURACY, zr, y, color, sZ );
+										 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZSET__	
 						draw_line_zset_pattern( xl >> SP_ACCURACY, zl,
-										xr >> SP_ACCURACY, zr, y, color, sZ );
+										xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 					#else
 						draw_line_pattern( xl >> SP_ACCURACY, 
-									 xr >> SP_ACCURACY, y, color);
+									 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
 					#endif
 				#else
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
 						draw_line_ztest_zset( xl >> SP_ACCURACY, zl,
-												xr >> SP_ACCURACY, zr, y, color, sZ );
+												xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZTEST__
 						draw_line_ztest( xl >> SP_ACCURACY, zl,
-										 xr >> SP_ACCURACY, zr, y, color, sZ );
+										 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZSET__	
 						draw_line_zset( xl >> SP_ACCURACY, zl,
-										xr >> SP_ACCURACY, zr, y, color, sZ );
+										xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 					#else
 						draw_line( xl >> SP_ACCURACY, 
-									 xr >> SP_ACCURACY, y, color);
+									 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
 					#endif
 				#endif
 			#endif
@@ -606,60 +606,60 @@
 				#ifdef __SPARROW_INTERNAL_PATTERN__
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
 						draw_blending_line_ztest_zset_pattern( xr >> SP_ACCURACY, zr,
-												xl >> SP_ACCURACY, zl, y, color, sZ );
+												xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZTEST__
 						draw_blending_line_ztest_pattern( xr >> SP_ACCURACY, zr,
-										 xl >> SP_ACCURACY, zl, y, color, sZ );
+										 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZSET__	
 						draw_blending_line_zset_pattern( xr >> SP_ACCURACY, zr,
-										xl >> SP_ACCURACY, zl, y, color, sZ );
+										xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 					#else
 						draw_blending_line_pattern( xr >> SP_ACCURACY, 
-									 xl >> SP_ACCURACY, y, color);
+									 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
 					#endif
 				#else
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
 						draw_blending_line_ztest_zset( xr >> SP_ACCURACY, zr,
-												xl >> SP_ACCURACY, zl, y, color, sZ );
+												xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZTEST__
 						draw_blending_line_ztest( xr >> SP_ACCURACY, zr,
-										 xl >> SP_ACCURACY, zl, y, color, sZ );
+										 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZSET__	
 						draw_blending_line_zset( xr >> SP_ACCURACY, zr,
-										xl >> SP_ACCURACY, zl, y, color, sZ );
+										xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 					#else
 						draw_blending_line( xr >> SP_ACCURACY, 
-									 xl >> SP_ACCURACY, y, color);
+									 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
 					#endif
 				#endif
 			#else
 				#ifdef __SPARROW_INTERNAL_PATTERN__
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
 						draw_line_ztest_zset_pattern( xr >> SP_ACCURACY, zr,
-												xl >> SP_ACCURACY, zl, y, color, sZ );
+												xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZTEST__
 						draw_line_ztest_pattern( xr >> SP_ACCURACY, zr,
-										 xl >> SP_ACCURACY, zl, y, color, sZ );
+										 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZSET__	
 						draw_line_zset_pattern( xr >> SP_ACCURACY, zr,
-										xl >> SP_ACCURACY, zl, y, color, sZ );
+										xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 					#else
 						draw_line_pattern( xr >> SP_ACCURACY, 
-									 xl >> SP_ACCURACY, y, color);
+									 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
 					#endif
 				#else
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
 						draw_line_ztest_zset( xr >> SP_ACCURACY, zr,
-												xl >> SP_ACCURACY, zl, y, color, sZ );
+												xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZTEST__
 						draw_line_ztest( xr >> SP_ACCURACY, zr,
-										 xl >> SP_ACCURACY, zl, y, color, sZ );
+										 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 					#elif defined __SPARROW_INTERNAL_ZSET__	
 						draw_line_zset( xr >> SP_ACCURACY, zr,
-										xl >> SP_ACCURACY, zl, y, color, sZ );
+										xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
 					#else
 						draw_line( xr >> SP_ACCURACY, 
-									 xl >> SP_ACCURACY, y, color);
+									 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
 					#endif
 				#endif
 			#endif

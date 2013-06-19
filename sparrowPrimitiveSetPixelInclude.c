@@ -385,7 +385,8 @@
 //Perspective
 
 //#define reciprocal_w_clip(parameter,w) (spMulLow(parameter,spDiv(SP_ONE,(w>>spMaxWLogDiff))>>spMaxWLogDiff) >> SP_ACCURACY)
-#define reciprocal_w_clip(parameter,w) ((parameter >> SP_HALF_ACCURACY)*(spOne_over_x_look_up_fixed[(w>>spMaxWLogDiff) & (SP_ONE-1)]>>spMaxWLogDiff) >> SP_ACCURACY)
+#define reciprocal_w_clip(parameter,w) ((parameter >> SP_HALF_ACCURACY)*(spOne_over_x_look_up_fixed[(w>>spMaxWLogDiff+SP_MAGIC_W_CLIP_ACCURACY_CONSTANT) & (SP_ONE-1)]>>spMaxWLogDiff) >> SP_ACCURACY)
+//#define reciprocal_w_clip(parameter,w) ((parameter)/(w>>SP_MAGIC_W_CLIP_ACCURACY_CONSTANT))
 
 #ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \

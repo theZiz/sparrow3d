@@ -1470,17 +1470,17 @@ PREFIX void spProjectPoint3D( Sint32 x, Sint32 y, Sint32 z, Sint32 *px, Sint32 *
 	spMulModellView( x, y, z, &tx1, &ty1, &tz1, &tw1 );
 	if ( withModelview )
 	{
-		x = spMul( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1) + spProjection[12];
-		y = spMul( spProjection[ 5], ty1 ) + spMul(spProjection[ 9], tz1);
-		z = spMul( spProjection[10], tz1 ) + spProjection[14];
+		x = spMulHigh( spProjection[ 0], tx1 ) + spMul(spProjection[ 8], tz1) + spProjection[12];
+		y = spMulHigh( spProjection[ 5], ty1 ) + spMul(spProjection[ 9], tz1);
+		z = spMulHigh( spProjection[10], tz1 ) + spProjection[14];
 	}
 	else
 	{
-		x = spMul( spProjection[ 0], x ) + spMul(spProjection[ 8], tz1) + spProjection[12];
-		y = spMul( spProjection[ 5], y ) + spMul(spProjection[ 9], tz1);
-		z = spMul( spProjection[10], tz1 ) + spProjection[14];
+		x = spMulHigh( spProjection[ 0], x ) + spMul(spProjection[ 8], tz1) + spProjection[12];
+		y = spMulHigh( spProjection[ 5], y ) + spMul(spProjection[ 9], tz1);
+		z = spMulHigh( spProjection[10], tz1 ) + spProjection[14];
 	}
-	*w = spMul( spProjection[11], tz1 );
+	*w = spMulHigh( spProjection[11], tz1 );
 	if ( *w == 0 )
 		*w = 1;
 	Sint32 nx1 = spDiv( x, *w ) >> SP_HALF_ACCURACY;

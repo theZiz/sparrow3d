@@ -54,13 +54,14 @@ Sint32 spBlending = SP_ONE;
 typedef struct {
 	Sint32 mode; //0 triangle, 1 texTriangle, 2 perspectiveTexTriangle, 3 rotozoom
 	//informations for setPixel:
+	Uint16* texturePixel;
 	Sint32 textureX;
 	Sint32 textureScanLine;
 	Sint32 textureY;
 	Uint8  pattern[8];
 	//informations for the "tree of choices" in the different functions (2^5 = 32 states)
-	Sint32 ztest;
-	Sint32 zset;
+	Sint32 zTest;
+	Sint32 zSet;
 	Sint32 alphaTest;
 	Sint32 usePattern;
 	Sint32 blending;
@@ -153,8 +154,8 @@ Sint32 spUseParallelProcess = 0;
 	spScanLineCache[(pos_)].textureX = spTextureX; \
 	spScanLineCache[(pos_)].textureScanLine = spTextureScanLine; \
 	spScanLineCache[(pos_)].textureY = spTextureY; \
-	spScanLineCache[(pos_)].ztest = spZTest; \
-	spScanLineCache[(pos_)].zset = spZSet; \
+	spScanLineCache[(pos_)].zTest = spZTest; \
+	spScanLineCache[(pos_)].zSet = spZSet; \
 	spScanLineCache[(pos_)].alphaTest = spAlphaTest; \
 	spScanLineCache[(pos_)].usePattern = spUsePattern; \
 	{ \
@@ -244,7 +245,6 @@ PREFIX Sint32* spGetRenderTargetZBuffer()
 
 PREFIX void spBindTexture( SDL_Surface* texture )
 {
-	spWaitForDrawingThread();
 	spTexture = texture;
 	if ( texture == NULL )
 	{
@@ -315,6 +315,8 @@ inline Sint32 z_div( Sint32 z, Sint32 d )
 
 /* ************* Tree-Include of the triangle functions *********** */
 #include "sparrowPrimitiveHelperBlending.c"
+
+#include "sparrowPrimitiveDrawingThread.c"
 
 inline void sp_intern_Triangle_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
 {
@@ -452,16 +454,16 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_ztest_zset_pattern( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+						sp_intern_Triangle_ztest_zset_pattern( x1, y1, z1, x2, y2, z2, x3, y3, z3, color, spPattern, spBlending );
 					else
-						sp_intern_Triangle_zset_pattern      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+						sp_intern_Triangle_zset_pattern      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_ztest_pattern     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+						sp_intern_Triangle_ztest_pattern     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color, spPattern, spBlending );
 					else
-						sp_intern_Triangle_pattern           ( x1, y1, x2, y2, x3, y3, color );
+						sp_intern_Triangle_pattern           ( x1, y1, x2, y2, x3, y3, color, spPattern, spBlending );
 				}
 			}
 			else
@@ -469,16 +471,16 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_ztest_zset( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+						sp_intern_Triangle_ztest_zset( x1, y1, z1, x2, y2, z2, x3, y3, z3, color, spPattern, spBlending );
 					else
-						sp_intern_Triangle_zset      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+						sp_intern_Triangle_zset      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_ztest     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+						sp_intern_Triangle_ztest     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color, spPattern, spBlending );
 					else
-						sp_intern_Triangle           ( x1, y1, x2, y2, x3, y3, color );
+						sp_intern_Triangle           ( x1, y1, x2, y2, x3, y3, color, spPattern, spBlending );
 				}
 			}
 		}
@@ -489,16 +491,16 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_ztest_zset_pattern( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+						sp_intern_Triangle_blending_ztest_zset_pattern( x1, y1, z1, x2, y2, z2, x3, y3, z3, color, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_zset_pattern      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+						sp_intern_Triangle_blending_zset_pattern      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_ztest_pattern     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+						sp_intern_Triangle_blending_ztest_pattern     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_pattern           ( x1, y1, x2, y2, x3, y3, color );
+						sp_intern_Triangle_blending_pattern           ( x1, y1, x2, y2, x3, y3, color, spPattern, spBlending );
 				}
 			}
 			else
@@ -506,16 +508,16 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_ztest_zset( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+						sp_intern_Triangle_blending_ztest_zset( x1, y1, z1, x2, y2, z2, x3, y3, z3, color, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_zset      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+						sp_intern_Triangle_blending_zset      ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_ztest     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
+						sp_intern_Triangle_blending_ztest     ( x1, y1, z1, x2, y2, z2, x3, y3, z3, color, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending           ( x1, y1, x2, y2, x3, y3, color );
+						sp_intern_Triangle_blending           ( x1, y1, x2, y2, x3, y3, color, spPattern, spBlending );
 				}
 			}
 		}
@@ -1127,32 +1129,21 @@ PREFIX void spResetZBuffer()
 
 PREFIX void spSetZTest( Uint32 test )
 {
-	spWaitForDrawingThread();
-	spStopDrawingThread();
 	spZTest = test;
-	spStartDrawingThread();
 }
 
 PREFIX void spSetZSet( Uint32 test )
 {
-	spWaitForDrawingThread();
-	spStopDrawingThread();
 	spZSet = test;
-	spStartDrawingThread();
 }
 
 PREFIX void spSetAlphaTest( Uint32 test )
 {
-	spWaitForDrawingThread();
-	spStopDrawingThread();
 	spAlphaTest = test;
-	spStartDrawingThread();
 }
 
 PREFIX void spSetBlending( Sint32 value )
 {
-	spWaitForDrawingThread();
-	spStopDrawingThread();
 	if (value <= 0)
 		spBlending = 0;
 	else
@@ -1160,7 +1151,6 @@ PREFIX void spSetBlending( Sint32 value )
 		spBlending = SP_ONE;
 	else
 		spBlending = value;
-	spStartDrawingThread();
 }
 
 PREFIX void spSetAffineTextureHack( Uint32 test )
@@ -1241,6 +1231,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 {
 	if (spBlending == 0)
 		return;
+	spWaitForDrawingThread();
 	int addu;
 	switch (spHorizontalOrigin)
 	{
@@ -5557,8 +5548,6 @@ PREFIX void spAddBlackLayer(int alpha)
 
 PREFIX void spSetPattern32(Uint32 first_32_bit,Uint32 last_32_bit)
 {
-	spWaitForDrawingThread();
-	spStopDrawingThread();
 	spPattern[0] = first_32_bit >> 24;
 	spPattern[1] = first_32_bit >> 16;
 	spPattern[2] = first_32_bit >>  8;
@@ -5568,13 +5557,10 @@ PREFIX void spSetPattern32(Uint32 first_32_bit,Uint32 last_32_bit)
 	spPattern[6] = last_32_bit >>  8;
 	spPattern[7] = last_32_bit      ;
 	spUsePattern = (first_32_bit != ((Uint32)0xFFFFFFFF)) || (last_32_bit != ((Uint32)0xFFFFFFFF));
-	spStartDrawingThread();
 }
 
 PREFIX void spSetPattern64(Uint64 pattern)
 {
-	spWaitForDrawingThread();
-	spStopDrawingThread();
 	spPattern[0] = pattern >> 56;
 	spPattern[1] = pattern >> 48;
 	spPattern[2] = pattern >> 40;
@@ -5584,13 +5570,10 @@ PREFIX void spSetPattern64(Uint64 pattern)
 	spPattern[6] = pattern >>  8;
 	spPattern[7] = pattern      ;
 	spUsePattern = pattern != ((Uint64)0xFFFFFFFFFFFFFFFF);
-	spStartDrawingThread();
 }
 
 PREFIX void spSetPattern8(Uint8 line1,Uint8 line2,Uint8 line3,Uint8 line4,Uint8 line5,Uint8 line6,Uint8 line7,Uint8 line8)
 {
-	spWaitForDrawingThread();
-	spStopDrawingThread();
 	spPattern[0] = line1;
 	spPattern[1] = line2;
 	spPattern[2] = line3;
@@ -5602,21 +5585,15 @@ PREFIX void spSetPattern8(Uint8 line1,Uint8 line2,Uint8 line3,Uint8 line4,Uint8 
 	spUsePattern = line1 != 255 || line2 != 255 || line3 != 255 ||
 	               line4 != 255 || line5 != 255 || line6 != 255 ||
 	               line7 != 255 || line8 != 255;
-	spStartDrawingThread();
 }
 
 PREFIX void spDeactivatePattern()
 {
-	spWaitForDrawingThread();
-	spStopDrawingThread();
 	spUsePattern = 0;
-	spStartDrawingThread();
 }
 
 PREFIX void spSetAlphaPattern(int alpha,int shift)
 {
-	spWaitForDrawingThread();
-	spStopDrawingThread();
 	alpha = alpha + 3 >> 2; //alpha = (alpha+3) / 4;
 	//now alpha is the count of bits, that should be set.
 	int pos = shift & 63; //pos = shift % 64;
@@ -5645,7 +5622,6 @@ PREFIX void spSetAlphaPattern(int alpha,int shift)
 	spUsePattern = spPattern[1] != 255 || spPattern[2] != 255 || spPattern[3] != 255 ||
 	               spPattern[4] != 255 || spPattern[5] != 255 || spPattern[6] != 255 ||
 	               spPattern[7] != 255 || spPattern[8] != 255;
-	spStartDrawingThread();
 }
 
 #define ringshift(left,shift) ((left << shift) | (left >> 32-shift))
@@ -5824,160 +5800,7 @@ void spStartDrawingThread()
 	spScanLineBegin = 0;
 	spScanLineEnd = 0;
 	spScanLineMessage = 1;
-	if ( spAlphaTest )
-	{
-		if ( spBlending == SP_ONE )
-		{
-			if ( spUsePattern )
-			{
-				if ( spZSet )
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_ztest_zset_pattern, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_zset_pattern, NULL);
-				}
-				else
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_ztest_pattern, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_pattern, NULL);
-				}
-			}
-			else
-			{
-				if ( spZSet )
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_ztest_zset, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_zset, NULL);
-				}
-				else
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_ztest, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha, NULL);
-				}
-			}
-		}
-		else
-		{
-			if ( spUsePattern )
-			{
-				if ( spZSet )
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_ztest_zset_pattern, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_zset_pattern, NULL);
-				}
-				else
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_ztest_pattern, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_pattern, NULL);
-				}
-			}
-			else
-			{
-				if ( spZSet )
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_ztest_zset, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_zset, NULL);
-				}
-				else
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending_ztest, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_alpha_blending, NULL);
-				}
-			}
-		}
-	}
-	else
-	{
-		if ( spBlending == SP_ONE )
-		{
-			if ( spUsePattern )
-			{
-				if ( spZSet )
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_zset_pattern, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_zset_pattern, NULL);
-				}
-				else
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_pattern, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_pattern, NULL);
-				}
-			}
-			else
-			{
-				if ( spZSet )
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest_zset, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_zset, NULL);
-				}
-				else
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_ztest, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread, NULL);
-				}
-			}
-		}
-		else
-		{
-			if ( spUsePattern )
-			{
-				if ( spZSet )
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_zset_pattern, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_zset_pattern, NULL);
-				}
-				else
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_pattern, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_pattern, NULL);
-				}
-			}
-			else
-			{
-				if ( spZSet )
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest_zset, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_zset, NULL);
-				}
-				else
-				{
-					if ( spZTest )
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending_ztest, NULL);
-					else
-						spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread_blending, NULL);
-				}
-			}
-		}
-	}
+	spScanLineThread = SDL_CreateThread(sp_intern_Triangle_thread, NULL);
 }
 
 PREFIX void spDrawInExtraThread(int value)

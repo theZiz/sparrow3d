@@ -77,6 +77,8 @@
 #define SP_MAX_SCANLINE_NO_CHECK
 #define SP_MAX_SCANLINES_WAIT_TIME 100
 
+#define SP_MAGIC_W_CLIP_ACCURACY_CONSTANT 8
+
 // Functions: Setup and getter functions
 // These functions are for setting up all graphical stuff like the different per
 // pixel tests (z, alpha, pattern), sets (z), other optional optimizations and
