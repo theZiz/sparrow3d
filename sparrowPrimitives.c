@@ -151,8 +151,9 @@ Sint32 spUseParallelProcess = 0;
 
 #define setup_stack_struct(pos_,mode_) \
 	spScanLineCache[(pos_)].mode = (mode_); \
-	spScanLineCache[(pos_)].textureX = spTextureX; \
+	spScanLineCache[(pos_)].texturePixel = spTexturePixel; \
 	spScanLineCache[(pos_)].textureScanLine = spTextureScanLine; \
+	spScanLineCache[(pos_)].textureX = spTextureX; \
 	spScanLineCache[(pos_)].textureY = spTextureY; \
 	spScanLineCache[(pos_)].zTest = spZTest; \
 	spScanLineCache[(pos_)].zSet = spZSet; \
@@ -214,12 +215,15 @@ PREFIX void spQuitPrimitives()
 
 PREFIX void spSelectRenderTarget( SDL_Surface* target )
 {
+	if (spTarget)
+		SDL_UnlockSurface( spTarget );
 	spTarget = target;
 	spTargetScanLine = target->pitch/target->format->BytesPerPixel;
 	spTargetX = target->w;
 	spTargetY = target->h;
 	spTargetPixel = ( Uint16* )target->pixels;
 	spReAllocateZBuffer();
+	SDL_LockSurface( spTarget );
 }
 
 PREFIX SDL_Surface* spGetRenderTarget()
@@ -227,15 +231,23 @@ PREFIX SDL_Surface* spGetRenderTarget()
 	return spTarget;
 }
 
-PREFIX Uint16* spLockRenderTarget()
+PREFIX void spLockRenderTarget()
 {
-	SDL_LockSurface( spTarget );
-	return (Uint16*)(spTarget->pixels);
+	if (spTarget)
+		SDL_LockSurface( spTarget );
+}
+
+PREFIX Uint16* spGetTargetPixel()
+{
+	if (spTarget)
+		return (Uint16*)(spTarget->pixels);
+	return NULL;
 }
 
 PREFIX void spUnlockRenderTarget()
 {
-	SDL_UnlockSurface( spTarget );
+	if (spTarget)
+		SDL_UnlockSurface( spTarget );
 }
 
 PREFIX Sint32* spGetRenderTargetZBuffer()
@@ -268,11 +280,11 @@ PREFIX void spClearTarget( Uint32 color )
 	//testfill with CLEAR_PER_FRAME = 128 with SDL_FillRect: 14 fps
 	//testfill with CLEAR_PER_FRAME = 128 assembler spHorizentalLine: 17 fps
 	#ifdef ARMCPU
-		SDL_LockSurface(spTarget);
 		spHorizentalLine(spTargetPixel,0,0,spTargetScanLine*spTargetY,color,0,0,0);
-		SDL_UnlockSurface(spTarget);
 	#else
+		spUnlockRenderTarget();
 		SDL_FillRect( spTarget, NULL, color );
+		spLockRenderTarget();
 	#endif
 }
 
@@ -604,16 +616,16 @@ PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_zset_alpha_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_tex_ztest_zset_alpha_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_zset_alpha_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_tex_zset_alpha_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_alpha_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_tex_ztest_alpha_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_alpha_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+						sp_intern_Triangle_tex_alpha_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 			else
@@ -621,16 +633,16 @@ PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_zset_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_tex_ztest_zset_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_zset_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_tex_zset_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_tex_ztest_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+						sp_intern_Triangle_tex_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 		}
@@ -641,16 +653,16 @@ PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_zset_alpha( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_tex_ztest_zset_alpha( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_zset_alpha      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_tex_zset_alpha      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_alpha     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_tex_ztest_alpha     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_alpha           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+						sp_intern_Triangle_tex_alpha           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 			else
@@ -658,16 +670,16 @@ PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_zset( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_tex_ztest_zset( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_zset      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_tex_zset      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_tex_ztest     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+						sp_intern_Triangle_tex           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 		}
@@ -681,16 +693,16 @@ PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_zset_alpha_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_ztest_zset_alpha_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_zset_alpha_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_zset_alpha_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_alpha_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_ztest_alpha_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_alpha_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_alpha_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 			else
@@ -698,16 +710,16 @@ PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_zset_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_ztest_zset_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_zset_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_zset_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_ztest_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 		}
@@ -718,16 +730,16 @@ PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_zset_alpha( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_ztest_zset_alpha( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_zset_alpha      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_zset_alpha      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_alpha     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_ztest_alpha     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_alpha           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_alpha           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 			else
@@ -735,16 +747,16 @@ PREFIX int spTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_zset( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_ztest_zset( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_zset      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_zset      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color );
+						sp_intern_Triangle_blending_tex_ztest     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color );
+						sp_intern_Triangle_blending_tex           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 		}
@@ -852,16 +864,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_zset_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_ztest_zset_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_zset_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_zset_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_ztest_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_alpha_pattern_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_alpha_pattern_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 			else
@@ -869,16 +881,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_zset_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_ztest_zset_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_zset_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_zset_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_ztest_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_pattern_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_pattern_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 		}
@@ -889,16 +901,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_zset_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_ztest_zset_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_zset_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_zset_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_ztest_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_alpha_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_alpha_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 			else
@@ -906,16 +918,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_zset_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_ztest_zset_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_zset_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_zset_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_ztest_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color );
+						sp_intern_Triangle_tex_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 		}
@@ -929,16 +941,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_zset_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_ztest_zset_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_zset_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_zset_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_ztest_alpha_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_alpha_pattern_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_alpha_pattern_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 			else
@@ -946,16 +958,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_zset_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_ztest_zset_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_zset_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_zset_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_ztest_pattern_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_pattern_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_pattern_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 		}
@@ -966,16 +978,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_zset_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_ztest_zset_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_zset_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_zset_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_ztest_alpha_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_alpha_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_alpha_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 			else
@@ -983,16 +995,16 @@ PREFIX int spPerspectiveTriangle_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_zset_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_ztest_zset_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_zset_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_zset_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_ztest_perspect( x1, y1, z1, u1, v1, w1, x2, y2, z2, u2, v2, w2, x3, y3, z3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color );
+						sp_intern_Triangle_blending_tex_perspect( x1, y1, u1, v1, w1, x2, y2, u2, v2, w2, x3, y3, u3, v3, w3, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 		}
@@ -1297,7 +1309,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Uint16* oldTexturePixel = spTexturePixel;
 	
 					spBindTexture( surface );
-					SDL_LockSurface( spTarget );
 					int u = sx;
 					if (spBlending == SP_ONE)
 						for ( x = x1; x < x2; x++ )
@@ -1326,7 +1337,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
 					spTexturePixel = oldTexturePixel;
-					SDL_UnlockSurface( spTarget );
 				}
 				else
 				{
@@ -1370,7 +1380,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureY = spTextureX;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
-					SDL_LockSurface( spTarget );
 					int u = sx;
 					if (spBlending == SP_ONE)
 						for ( x = x1; x < x2; x++ )
@@ -1400,7 +1409,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
 					spTexturePixel = oldTexturePixel;
-					SDL_UnlockSurface( spTarget );
 				}
 			}
 			else
@@ -1449,7 +1457,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureY = spTextureX;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
-					SDL_LockSurface( spTarget );
 					int u = sx;
 					if (spBlending == SP_ONE)
 						for ( x = x1; x < x2; x++ )
@@ -1478,7 +1485,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
 					spTexturePixel = oldTexturePixel;
-					SDL_UnlockSurface( spTarget );
 				}
 				else
 				{
@@ -1522,7 +1528,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureY = spTextureX;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
-					SDL_LockSurface( spTarget );
 					int u = sx;
 					if (spBlending == SP_ONE)
 						for ( x = x1; x < x2; x++ )
@@ -1552,7 +1557,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
 					spTexturePixel = oldTexturePixel;
-					SDL_UnlockSurface( spTarget );
 				}
 			}
 		}
@@ -1604,7 +1608,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureY = spTextureX;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
-					SDL_LockSurface( spTarget );
 					int u = sx;
 					if (spBlending == SP_ONE)
 						for ( x = x1; x < x2; x++ )
@@ -1633,7 +1636,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
 					spTexturePixel = oldTexturePixel;
-					SDL_UnlockSurface( spTarget );
 				}
 				else
 				{
@@ -1677,7 +1679,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureY = spTextureX;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
-					SDL_LockSurface( spTarget );
 					int u = sx;
 					if (spBlending == SP_ONE)
 						for ( x = x1; x < x2; x++ )
@@ -1706,7 +1707,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
 					spTexturePixel = oldTexturePixel;
-					SDL_UnlockSurface( spTarget );
 				}
 			}
 			else
@@ -1755,7 +1755,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureY = spTextureX;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
-					SDL_LockSurface( spTarget );
 					int u = sx;
 					if (spBlending == SP_ONE)
 						for ( x = x1; x < x2; x++ )
@@ -1784,7 +1783,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
 					spTexturePixel = oldTexturePixel;
-					SDL_UnlockSurface( spTarget );
 				}
 				else
 				{
@@ -1828,7 +1826,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureY = spTextureX;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
-					SDL_LockSurface( spTarget );
 					int u = sx;
 					if (spBlending == SP_ONE)
 						for ( x = x1; x < x2; x++ )
@@ -1857,7 +1854,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
 					spTexturePixel = oldTexturePixel;
-					SDL_UnlockSurface( spTarget );
 				}
 			}
 		}
@@ -1912,7 +1908,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureY = spTextureX;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
-					SDL_LockSurface( spTarget );
 					int u = sx;
 					if (spBlending == SP_ONE)
 						for ( x = x1; x < x2; x++ )
@@ -1941,7 +1936,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
 					spTexturePixel = oldTexturePixel;
-					SDL_UnlockSurface( spTarget );
 				}
 				else
 				{
@@ -1996,7 +1990,9 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					SDL_SetColorKey( surface, SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
 					if (spBlending != SP_ONE)
 						SDL_SetAlpha( surface, SDL_SRCALPHA, spBlending * SDL_ALPHA_OPAQUE >> SP_ACCURACY);
+					spUnlockRenderTarget();
 					SDL_BlitSurface( surface, &src, spTarget, &dest );
+					spLockRenderTarget();
 					if (spBlending != SP_ONE)
 						SDL_SetAlpha( surface, 0, SDL_ALPHA_OPAQUE );
 				}
@@ -2047,7 +2043,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureY = spTextureX;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
-					SDL_LockSurface( spTarget );
 					int u = sx;
 					if (spBlending == SP_ONE)
 						for ( x = x1; x < x2; x++ )
@@ -2076,7 +2071,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
 					spTexturePixel = oldTexturePixel;
-					SDL_UnlockSurface( spTarget );
 				}
 				else
 				{
@@ -2093,7 +2087,9 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					SDL_SetColorKey( surface, SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
 					if (spBlending != SP_ONE)
 						SDL_SetAlpha( surface, SDL_SRCALPHA, spBlending * SDL_ALPHA_OPAQUE >> SP_ACCURACY);
+					spUnlockRenderTarget();
 					SDL_BlitSurface( surface, &src, spTarget, &dest );
+					spLockRenderTarget();
 					if (spBlending != SP_ONE)
 						SDL_SetAlpha( surface, 0, SDL_ALPHA_OPAQUE );
 				}
@@ -2147,7 +2143,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureY = spTextureX;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
-					SDL_LockSurface( spTarget );
 					int u = sx;
 					if (spBlending)
 						for ( x = x1; x < x2; x++ )
@@ -2176,7 +2171,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
 					spTexturePixel = oldTexturePixel;
-					SDL_UnlockSurface( spTarget );
 				}
 				else
 				{
@@ -2231,7 +2225,9 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					SDL_SetColorKey( surface, 0, 0 );
 					if (spBlending != SP_ONE)
 						SDL_SetAlpha( surface, SDL_SRCALPHA, spBlending * SDL_ALPHA_OPAQUE >> SP_ACCURACY);
+					spUnlockRenderTarget();
 					SDL_BlitSurface( surface, &src, spTarget, &dest );
+					spLockRenderTarget();
 					if (spBlending != SP_ONE)
 						SDL_SetAlpha( surface, 0, SDL_ALPHA_OPAQUE );
 				}
@@ -2282,7 +2278,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureY = spTextureX;
 					Uint16* oldTexturePixel = spTexturePixel;
 					spBindTexture( surface );
-					SDL_LockSurface( spTarget );
 					int u = sx;
 					if (spBlending == SP_ONE)
 						for ( x = x1; x < x2; x++ )
@@ -2311,7 +2306,6 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					spTextureX = oldTextureY;
 					spTextureY = oldTextureX;
 					spTexturePixel = oldTexturePixel;
-					SDL_UnlockSurface( spTarget );
 				}
 				else
 				{
@@ -2328,7 +2322,9 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					SDL_SetColorKey( surface, 0, 0 );
 					if (spBlending != SP_ONE)
 						SDL_SetAlpha( surface, SDL_SRCALPHA, spBlending * SDL_ALPHA_OPAQUE >> SP_ACCURACY);
+					spUnlockRenderTarget();
 					SDL_BlitSurface( surface, &src, spTarget, &dest );
+					spLockRenderTarget();
 					if (spBlending != SP_ONE)
 						SDL_SetAlpha( surface, 0, SDL_ALPHA_OPAQUE );
 				}
@@ -2592,7 +2588,6 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 		z2 = t;
 	}
 
-	SDL_LockSurface( spTarget );
 	Sint32 dx = abs( x2 - x1 );
 	Sint32 dy = abs( y2 - y1 );
 	Sint32 div = dx+dy;
@@ -2600,7 +2595,6 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 	{
 		if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
 			draw_pixel_ztest_zset( x1, y1, z1, color )
-		SDL_UnlockSurface( spTarget );
 		return;
 	}
 	if ( spBlending == SP_ONE )
@@ -3133,7 +3127,6 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 			}
 		}
 	}
-	SDL_UnlockSurface( spTarget );
 }
 
 PREFIX void spRectangle( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint32 color )
@@ -3167,7 +3160,6 @@ PREFIX void spRectangle( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint3
 	if ( y2 >= spTargetY ) y2 = spTargetY - 1;
 	if ( x1 < 0 )          x1 = 0;
 	if ( y1 < 0 )          y1 = 0;
-	SDL_LockSurface( spTarget );
 	if ( spUsePattern )
 	{
 		if ( spZSet )
@@ -3274,7 +3266,6 @@ PREFIX void spRectangle( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint3
 			}
 		}
 	}
-	SDL_UnlockSurface( spTarget );
 }
 
 PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Sint32 bx, Sint32 by, Uint32 color )
@@ -3314,7 +3305,6 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 	if ( y2 >= spTargetY ) y2 = spTargetY - 1;
 	if ( x1 < 0 )          x1 = 0;
 	if ( y1 < 0 )          y1 = 0;
-	SDL_LockSurface( spTarget );
 	if ( spBlending == SP_ONE)
 	{
 		if ( spUsePattern )
@@ -3661,7 +3651,6 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 			}
 		}
 	}
-	SDL_UnlockSurface( spTarget );
 }
 
 PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint32 color )
@@ -3690,7 +3679,6 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 	if ( y + ryl < 0 )          ryl = -y;
 	Sint32 x1 = x;
 	Sint32 y1 = y;
-	SDL_LockSurface( spTarget );
 	if ( spBlending == SP_ONE )
 	{
 		if ( spUsePattern )
@@ -3989,7 +3977,6 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 			}
 		}
 	}
-	SDL_UnlockSurface( spTarget );
 }
 
 PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Sint32 bx, Sint32 by, Uint32 color )
@@ -4044,7 +4031,6 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 	Sint32 y1 = y;
 	Sint32 XX_mul = spDiv( rx * rx << SP_ACCURACY, ry * ry << SP_ACCURACY );
 	Sint32 XXB_mul = spDiv( ( rx - bx ) * ( rx - bx ) << SP_ACCURACY, ( ry - by ) * ( ry - by ) << SP_ACCURACY );
-	SDL_LockSurface( spTarget );
 	if ( spBlending == SP_ONE )
 	{
 		if ( spUsePattern )
@@ -4935,8 +4921,6 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 			}
 		}
 	}
-	SDL_UnlockSurface( spTarget );
-
 }
 
 PREFIX int spGetPixelPosition( Sint32 x, Sint32 y )
@@ -5034,16 +5018,16 @@ inline void sp_intern_Triangle_tex_inter( Sint32 x1, Sint32 y1, Sint32 z1, Sint3
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_zset_alpha_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_ztest_zset_alpha_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_zset_alpha_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_zset_alpha_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_alpha_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_ztest_alpha_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_alpha_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_alpha_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 			else
@@ -5051,16 +5035,16 @@ inline void sp_intern_Triangle_tex_inter( Sint32 x1, Sint32 y1, Sint32 z1, Sint3
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_zset_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_ztest_zset_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_zset_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_zset_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_ztest_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 		}
@@ -5071,16 +5055,16 @@ inline void sp_intern_Triangle_tex_inter( Sint32 x1, Sint32 y1, Sint32 z1, Sint3
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_zset_alpha( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_ztest_zset_alpha( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_zset_alpha      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_zset_alpha      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_alpha     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_ztest_alpha     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_alpha           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_alpha           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 			else
@@ -5088,16 +5072,16 @@ inline void sp_intern_Triangle_tex_inter( Sint32 x1, Sint32 y1, Sint32 z1, Sint3
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest_zset( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_ztest_zset( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex_zset      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_zset      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_tex_ztest     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_tex_ztest     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_tex           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535 );
+						sp_intern_Triangle_tex           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 		}
@@ -5111,16 +5095,16 @@ inline void sp_intern_Triangle_tex_inter( Sint32 x1, Sint32 y1, Sint32 z1, Sint3
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_zset_alpha_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_ztest_zset_alpha_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_zset_alpha_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_zset_alpha_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_alpha_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_ztest_alpha_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_alpha_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_alpha_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 			else
@@ -5128,16 +5112,16 @@ inline void sp_intern_Triangle_tex_inter( Sint32 x1, Sint32 y1, Sint32 z1, Sint3
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_zset_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_ztest_zset_pattern( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_zset_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_zset_pattern      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_ztest_pattern     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_pattern           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 		}
@@ -5148,16 +5132,16 @@ inline void sp_intern_Triangle_tex_inter( Sint32 x1, Sint32 y1, Sint32 z1, Sint3
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_zset_alpha( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_ztest_zset_alpha( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_zset_alpha      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_zset_alpha      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_alpha     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_ztest_alpha     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_alpha           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_alpha           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 			else
@@ -5165,16 +5149,16 @@ inline void sp_intern_Triangle_tex_inter( Sint32 x1, Sint32 y1, Sint32 z1, Sint3
 				if ( spZSet )
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest_zset( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_ztest_zset( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex_zset      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_zset      ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 				else
 				{
 					if ( spZTest )
-						sp_intern_Triangle_blending_tex_ztest     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex_ztest     ( x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, x3, y3, z3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 					else
-						sp_intern_Triangle_blending_tex           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535 );
+						sp_intern_Triangle_blending_tex           ( x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, 65535, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
 				}
 			}
 		}
@@ -5264,16 +5248,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h);
+							draw_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 				}
 				else
@@ -5281,16 +5265,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h);
+							draw_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 				}
 			}
@@ -5301,16 +5285,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h);
+							draw_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 				}
 				else
@@ -5318,16 +5302,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_zoom(x1,x3,y1,y3,sx,sy,w,h);
+							draw_zoom(x1,x3,y1,y3,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 				}
 			}
@@ -5341,16 +5325,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_blending_zoom_ztest_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_blending_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_blending_zoom_zset_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_blending_zoom_ztest_alpha_pattern(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_blending_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h);
+							draw_blending_zoom_alpha_pattern(x1,x3,y1,y3,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 				}
 				else
@@ -5358,16 +5342,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_blending_zoom_ztest_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_blending_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_blending_zoom_zset_pattern(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_blending_zoom_ztest_pattern(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_blending_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h);
+							draw_blending_zoom_pattern(x1,x3,y1,y3,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 				}
 			}
@@ -5378,16 +5362,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_blending_zoom_ztest_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_blending_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_blending_zoom_zset_alpha(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_blending_zoom_ztest_alpha(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_blending_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h);
+							draw_blending_zoom_alpha(x1,x3,y1,y3,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 				}
 				else
@@ -5395,16 +5379,16 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 					if ( spZSet )
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_blending_zoom_ztest_zset(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_blending_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_blending_zoom_zset(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 					else
 					{
 						if ( spZTest )
-							draw_blending_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h);
+							draw_blending_zoom_ztest(x1,x3,y1,y3,z,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 						else
-							draw_blending_zoom(x1,x3,y1,y3,sx,sy,w,h);
+							draw_blending_zoom(x1,x3,y1,y3,sx,sy,w,h, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending);
 					}
 				}
 			}

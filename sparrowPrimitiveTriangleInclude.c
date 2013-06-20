@@ -252,8 +252,6 @@
 	if ( y1 >= spTargetY )
 		return;
 		
-	SDL_LockSurface( spTarget );
-
 	Sint32 x4 = x1;
 	Sint32 y4 = y1;
 	#ifndef __SPARROW_INTERNAL_ZNOTHING__
@@ -671,5 +669,4 @@
 			#endif
 		}
 	}
-	SDL_UnlockSurface( spTarget );
 }

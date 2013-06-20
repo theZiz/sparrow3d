@@ -163,7 +163,7 @@ makeBuildDir:
 sparrowCore.o: sparrowCore.c sparrowCore.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
 
-sparrowPrimitives.o: sparrowPrimitives.c sparrowPrimitives.h sparrowPrimitiveSetPixelInclude.c sparrowPrimitiveTriangleInclude.c sparrowPrimitiveTexTriangleInclude.c
+sparrowPrimitives.o: sparrowPrimitives.c sparrowPrimitives.h sparrowPrimitiveSetPixelInclude.c sparrowPrimitiveTriangleInclude.c sparrowPrimitiveTexTriangleInclude.c sparrowPrimitiveDrawingThread.c sparrowPrimitiveDrawingThread.c sparrowPrimitiveHelperBlending.c sparrowPrimitiveHelperPattern.c sparrowPrimitiveHelperPerspective.c sparrowPrimitiveHelperZStuff.c
 	$(CPP) $(CFLAGS) -fPIC -c sparrowPrimitives.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
 
 sparrowPrimitivesAsm.o: sparrowPrimitivesAsm.c sparrowPrimitives.h

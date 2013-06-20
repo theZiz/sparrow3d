@@ -122,11 +122,11 @@ PREFIX void spSelectRenderTarget( SDL_Surface* target );
  * SDL_Surface* - the render target*/
 PREFIX SDL_Surface* spGetRenderTarget();
 
-/* Function: spLockRenderTarget
+
+/* Function: spGetTargetPixel
  * 
- * Locks the RenderTarget and returns a pointer to the raw 16 bit pixel data.
- * Keep in mind to change the zBuffer too, if you need it and to unlock at
- * the end!
+ * Returns a pointer to the raw 16 bit pixel data. Keep in mind to change the
+ * zBuffer too, if you need it!
  * 
  * Returns:
  * Uint16* - 16 bit int pointer / array for free access. Keep the dimension of
@@ -134,12 +134,24 @@ PREFIX SDL_Surface* spGetRenderTarget();
  * renderTarget->pitch/renderTarget->format->BytesPerPixel * renderTarget->h.
  * 
  * See Also:
- * <spUnlockRenderTarget>, <spGetRenderTargetZBuffer>*/
-PREFIX Uint16* spLockRenderTarget();
+ * <spGetRenderTargetZBuffer>*/
+PREFIX Uint16* spGetTargetPixel();
+
+/* Function: spLockRenderTarget
+ * 
+ * Locks the RenderTarget. Per default the target surface is locked all the
+ * time, so only call this function, if you called <spUnlockRenderTarget>
+ * before.
+ * 
+ * See Also:
+ * <spUnlockRenderTarget>*/
+PREFIX void spLockRenderTarget();
 
 /* Function: spUnlockRenderTarget
  * 
- * Unlocks the RenderTarget locked by <spLockRenderTarget>
+ * Unlocks the RenderTarget. At default the sparrow3d targets are locked, so
+ * if you lock it e.g. for SDL calls, don't forget to lock it afterwards with
+ * <spLockRenderTarget>.
  * 
  * See Also:
  * <spLockRenderTarget>
