@@ -116,6 +116,46 @@ typedef struct {
 			Uint32 color; } perspectiveTexTriangle;
 		struct {
 			Sint32 x1;
+			Sint32 y1;
+			Sint32 x2;
+			Sint32 y2;
+			Sint32 z;
+			Uint32 color; } rectangle;
+		struct {
+			Sint32 x1;
+			Sint32 y1;
+			Sint32 x2;
+			Sint32 y2;
+			Sint32 z;
+			Sint32 bx;
+			Sint32 by;
+			Uint32 color; } rectangleBorder;
+		struct {
+			Sint32 x1;
+			Sint32 y1;
+			Sint32 rxl;
+			Sint32 rxr;
+			Sint32 rx;
+			Sint32 ryl;
+			Sint32 ryr;
+			Sint32 ry;
+			Sint32 z;
+			Uint32 color; } ellipse;
+		struct {
+			Sint32 x1;
+			Sint32 y1;
+			Sint32 rxl;
+			Sint32 rxr;
+			Sint32 rx;
+			Sint32 ryl;
+			Sint32 ryr;
+			Sint32 ry;
+			Sint32 z;
+			Sint32 bx;
+			Sint32 by;
+			Uint32 color; } ellipseBorder;
+		struct {
+			Sint32 x1;
 			Sint32 x3;
 			Sint32 y1;
 			Sint32 y3;
@@ -147,24 +187,6 @@ Sint32 spUseParallelProcess = 0;
 #else
 #define CIRCLE_ON_FULL_STACK {}
 #endif
-
-
-#define setup_stack_struct(pos_,mode_) \
-	spScanLineCache[(pos_)].mode = (mode_); \
-	spScanLineCache[(pos_)].texturePixel = spTexturePixel; \
-	spScanLineCache[(pos_)].textureScanLine = spTextureScanLine; \
-	spScanLineCache[(pos_)].textureX = spTextureX; \
-	spScanLineCache[(pos_)].textureY = spTextureY; \
-	spScanLineCache[(pos_)].zTest = spZTest; \
-	spScanLineCache[(pos_)].zSet = spZSet; \
-	spScanLineCache[(pos_)].alphaTest = spAlphaTest; \
-	spScanLineCache[(pos_)].usePattern = spUsePattern; \
-	{ \
-		int i; \
-		for (i = 0; i < 8; i++) \
-			spScanLineCache[(pos_)].pattern[i] = spPattern[i]; \
-	} \
-	spScanLineCache[(pos_)].blending = spBlending;
 
 PREFIX Sint32* spGetOne_over_x_pointer()
 {
@@ -329,81 +351,6 @@ inline Sint32 z_div( Sint32 z, Sint32 d )
 #include "sparrowPrimitiveHelperBlending.c"
 
 #include "sparrowPrimitiveDrawingThread.c"
-
-inline void sp_intern_Triangle_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
-{
-	//Adding to stack if not full!
-	CIRCLE_ON_FULL_STACK
-	setup_stack_struct(spScanLineEnd,0)
-	spScanLineCache[spScanLineEnd].primitive.triangle.x1 = x1;
-	spScanLineCache[spScanLineEnd].primitive.triangle.y1 = y1;
-	spScanLineCache[spScanLineEnd].primitive.triangle.z1 = z1;
-	spScanLineCache[spScanLineEnd].primitive.triangle.x2 = x2;
-	spScanLineCache[spScanLineEnd].primitive.triangle.y2 = y2;
-	spScanLineCache[spScanLineEnd].primitive.triangle.z2 = z2;
-	spScanLineCache[spScanLineEnd].primitive.triangle.x3 = x3;
-	spScanLineCache[spScanLineEnd].primitive.triangle.y3 = y3;
-	spScanLineCache[spScanLineEnd].primitive.triangle.z3 = z3;
-	spScanLineCache[spScanLineEnd].primitive.triangle.color = color;
-	SDL_mutexP(spScanLineMutex);
-	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
-	SDL_mutexV(spScanLineMutex);
-}
-
-inline void sp_intern_Triangle_tex_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color )
-{
-	//Adding to stack if not full!
-	CIRCLE_ON_FULL_STACK
-	setup_stack_struct(spScanLineEnd,1)
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.x1 = x1;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.y1 = y1;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.z1 = z1;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.u1 = u1;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.v1 = v1;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.x2 = x2;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.y2 = y2;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.z2 = z2;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.u2 = u2;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.v2 = v2;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.x3 = x3;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.y3 = y3;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.z3 = z3;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.u3 = u3;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.v3 = v3;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.color = color;
-	SDL_mutexP(spScanLineMutex);
-	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
-	SDL_mutexV(spScanLineMutex);
-}
-
-inline void sp_intern_Triangle_tex_overlord_perspect( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 w1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 w2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 w3, Uint32 color )
-{
-	//Adding to stack if not full!
-	CIRCLE_ON_FULL_STACK
-	setup_stack_struct(spScanLineEnd,2)
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x1 = x1;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y1 = y1;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z1 = z1;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u1 = u1;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w1 = w1;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v1 = v1;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x2 = x2;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y2 = y2;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z2 = z2;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u2 = u2;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v2 = v2;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w2 = w2;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x3 = x3;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y3 = y3;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z3 = z3;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u3 = u3;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v3 = v3;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w3 = w3;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.color = color;
-	SDL_mutexP(spScanLineMutex);
-	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
-	SDL_mutexV(spScanLineMutex);
-}
 
 PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
 {
@@ -1327,7 +1274,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
+								draw_pixel_blending_tex_ztest_zset_alpha_pattern( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1398,7 +1345,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_zset_alpha_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
+								draw_pixel_blending_tex_zset_alpha_pattern( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1475,7 +1422,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_alpha_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
+								draw_pixel_blending_tex_ztest_alpha_pattern( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1546,7 +1493,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_alpha_pattern( x, y, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
+								draw_pixel_blending_tex_alpha_pattern( x, y, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1626,7 +1573,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_zset_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
+								draw_pixel_blending_tex_ztest_zset_pattern( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1697,7 +1644,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_zset_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
+								draw_pixel_blending_tex_zset_pattern( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1773,7 +1720,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_pattern( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
+								draw_pixel_blending_tex_ztest_pattern( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1844,7 +1791,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_pattern( x, y, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
+								draw_pixel_blending_tex_pattern( x, y, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern, spBlending );
 								v++;
 							}
 							u++;
@@ -1926,7 +1873,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_zset_alpha( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY, spBlending );
+								draw_pixel_blending_tex_ztest_zset_alpha( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY, spBlending );
 								v++;
 							}
 							u++;
@@ -2061,7 +2008,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_alpha( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY, spBlending );
+								draw_pixel_blending_tex_ztest_alpha( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY, spBlending );
 								v++;
 							}
 							u++;
@@ -2161,7 +2108,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest_zset( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY, spBlending );
+								draw_pixel_blending_tex_ztest_zset( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY, spBlending );
 								v++;
 							}
 							u++;
@@ -2296,7 +2243,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							int v = sy;
 							for ( y = y1; y < y2; y++ )
 							{
-								blit_pixel_tex_ztest( x, y, z, u, v,spTexturePixel,spTextureScanLine,spTextureX,spTextureY, spBlending );
+								draw_pixel_blending_tex_ztest( x, y, z, u, v, 65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY, spBlending );
 								v++;
 							}
 							u++;
@@ -2403,16 +2350,16 @@ PREFIX void spSetCulling( char value )
 			if ( spZSet ) \
 			{ \
 				if ( spZTest ) \
-					draw_blending_pixel_ztest_zset_pattern( x, y, z, color, spPattern, spBlending ) \
+					draw_pixel_blending_ztest_zset_pattern( x, y, z, color, spPattern, spBlending ) \
 				else \
-					draw_blending_pixel_zset_pattern( x, y, z, color, spPattern, spBlending ) \
+					draw_pixel_blending_zset_pattern( x, y, z, color, spPattern, spBlending ) \
 			} \
 			else \
 			{ \
 				if ( spZTest ) \
-					draw_blending_pixel_ztest_pattern( x, y, z, color, spPattern, spBlending ) \
+					draw_pixel_blending_ztest_pattern( x, y, z, color, spPattern, spBlending ) \
 				else \
-					draw_blending_pixel_pattern( x, y, color, spPattern, spBlending ) \
+					draw_pixel_blending_pattern( x, y, color, spPattern, spBlending ) \
 			} \
 		} \
 		else \
@@ -2420,16 +2367,16 @@ PREFIX void spSetCulling( char value )
 			if ( spZSet ) \
 			{ \
 				if ( spZTest ) \
-					draw_blending_pixel_ztest_zset( x, y, z, color, spBlending ) \
+					draw_pixel_blending_ztest_zset( x, y, z, color, spBlending ) \
 				else \
-					draw_blending_pixel_zset( x, y, z, color, spBlending ) \
+					draw_pixel_blending_zset( x, y, z, color, spBlending ) \
 			} \
 			else \
 			{ \
 				if ( spZTest ) \
-					draw_blending_pixel_ztest( x, y, z, color, spBlending ) \
+					draw_pixel_blending_ztest( x, y, z, color, spBlending ) \
 				else \
-					draw_blending_pixel( x, y, color, spBlending ) \
+					draw_pixel_blending( x, y, color, spBlending ) \
 			} \
 		} \
 	} \
@@ -2575,6 +2522,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 		return;
 	if (spZTest && z1 < 0 && z2 < 0)
 		return;
+	spWaitForDrawingThread();
 	if ( x1 > x2 )
 	{
 		Sint32 t = x1;
@@ -2882,7 +2830,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_blending_pixel_ztest_zset_pattern( x1, y1, z1, color, spPattern, spBlending )
+							draw_pixel_blending_ztest_zset_pattern( x1, y1, z1, color, spPattern, spBlending )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -2913,7 +2861,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_blending_pixel_zset_pattern( x1, y1, z1, color, spPattern, spBlending )
+							draw_pixel_blending_zset_pattern( x1, y1, z1, color, spPattern, spBlending )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -2947,7 +2895,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_blending_pixel_ztest_pattern( x1, y1, z1, color, spPattern, spBlending )
+							draw_pixel_blending_ztest_pattern( x1, y1, z1, color, spPattern, spBlending )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -2977,7 +2925,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_blending_pixel_pattern( x1, y1, color, spPattern, spBlending )
+							draw_pixel_blending_pattern( x1, y1, color, spPattern, spBlending )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -3013,7 +2961,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_blending_pixel_ztest_zset( x1, y1, z1, color, spBlending )
+							draw_pixel_blending_ztest_zset( x1, y1, z1, color, spBlending )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -3044,7 +2992,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_blending_pixel_zset( x1, y1, z1, color, spBlending )
+							draw_pixel_blending_zset( x1, y1, z1, color, spBlending )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -3078,7 +3026,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_blending_pixel_ztest( x1, y1, z1, color, spBlending )
+							draw_pixel_blending_ztest( x1, y1, z1, color, spBlending )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -3108,7 +3056,7 @@ PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint3
 					while ( 1 )
 					{
 						if ( x1 >= 0 && x1 < spTargetX && y1 >= 0 && y1 < spTargetY )
-							draw_blending_pixel( x1, y1, color, spBlending )
+							draw_pixel_blending( x1, y1, color, spBlending )
 						if ( x1 == x2 && y1 == y2 )
 							break;
 						Sint32 e2 = 2 * err;
@@ -3160,6 +3108,9 @@ PREFIX void spRectangle( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint3
 	if ( y2 >= spTargetY ) y2 = spTargetY - 1;
 	if ( x1 < 0 )          x1 = 0;
 	if ( y1 < 0 )          y1 = 0;
+	if ( spUseParallelProcess )
+		sp_intern_Rectangle_overlord(x1,y1,x2,y2,z,color);
+	else
 	if ( spUsePattern )
 	{
 		if ( spZSet )
@@ -3167,49 +3118,33 @@ PREFIX void spRectangle( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint3
 			if ( spZTest )
 			{
 				if ( spBlending == SP_ONE)
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_pixel_ztest_zset_pattern( x1, y, z, color, spPattern )
+					sp_intern_Rectangle_ztest_zset_pattern( x1, y1, x2, y2, z, color, spPattern, spBlending);
 				else
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_blending_pixel_ztest_zset_pattern( x1, y, z, color, spPattern, spBlending )
+					sp_intern_Rectangle_blending_ztest_zset_pattern( x1, y1, x2, y2, z, color, spPattern, spBlending);
 			}
 			else
 			{
-				if (spBlending == SP_ONE)
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_pixel_zset_pattern( x1, y, z, color, spPattern )
+				if ( spBlending == SP_ONE)
+					sp_intern_Rectangle_zset_pattern( x1, y1, x2, y2, z, color, spPattern, spBlending);
 				else
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_blending_pixel_zset_pattern( x1, y, z, color, spPattern , spBlending)				
+					sp_intern_Rectangle_blending_zset_pattern( x1, y1, x2, y2, z, color, spPattern, spBlending);
 			}
 		}
 		else
 		{
 			if ( spZTest )
 			{
-				if (spBlending == SP_ONE)
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_pixel_ztest_pattern( x1, y, z, color, spPattern )
+				if ( spBlending == SP_ONE)
+					sp_intern_Rectangle_ztest_pattern( x1, y1, x2, y2, z, color, spPattern, spBlending);
 				else
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_blending_pixel_ztest_pattern( x1, y, z, color, spPattern, spBlending )				
+					sp_intern_Rectangle_blending_ztest_pattern( x1, y1, x2, y2, z, color, spPattern, spBlending);
 			}
 			else
 			{
-				if (spBlending == SP_ONE)
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_pixel_pattern( x1, y, color, spPattern )
+				if ( spBlending == SP_ONE)
+					sp_intern_Rectangle_pattern( x1, y1, x2, y2, z, color, spPattern, spBlending);
 				else
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_blending_pixel_pattern( x1, y, color, spPattern, spBlending )				
+					sp_intern_Rectangle_blending_pattern( x1, y1, x2, y2, z, color, spPattern, spBlending);
 			}
 		}
 	}
@@ -3219,50 +3154,34 @@ PREFIX void spRectangle( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint3
 		{
 			if ( spZTest )
 			{
-				if (spBlending == SP_ONE)
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_pixel_ztest_zset( x1, y, z, color )
+				if ( spBlending == SP_ONE)
+					sp_intern_Rectangle_ztest_zset( x1, y1, x2, y2, z, color, spPattern, spBlending);
 				else
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_blending_pixel_ztest_zset( x1, y, z, color , spBlending)				
+					sp_intern_Rectangle_blending_ztest_zset( x1, y1, x2, y2, z, color, spPattern, spBlending);
 			}
 			else
 			{
-				if (spBlending == SP_ONE)
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_pixel_zset( x1, y, z, color )
+				if ( spBlending == SP_ONE)
+					sp_intern_Rectangle_zset( x1, y1, x2, y2, z, color, spPattern, spBlending);
 				else
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_blending_pixel_zset( x1, y, z, color, spBlending )				
+					sp_intern_Rectangle_blending_zset( x1, y1, x2, y2, z, color, spPattern, spBlending);
 			}
 		}
 		else
 		{
 			if ( spZTest )
 			{
-				if (spBlending == SP_ONE)
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_pixel_ztest( x1, y, z, color )
+				if ( spBlending == SP_ONE)
+					sp_intern_Rectangle_ztest( x1, y1, x2, y2, z, color, spPattern, spBlending);
 				else
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_blending_pixel_ztest( x1, y, z, color , spBlending)
+					sp_intern_Rectangle_blending_ztest( x1, y1, x2, y2, z, color, spPattern, spBlending);
 			}
 			else
 			{
-				if (spBlending == SP_ONE)
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_pixel( x1, y, color )
+				if ( spBlending == SP_ONE)
+					sp_intern_Rectangle( x1, y1, x2, y2, z, color, spPattern, spBlending);
 				else
-					for ( ; x1 <= x2; x1++ )
-						for ( y = y1; y <= y2; y++ )
-							draw_blending_pixel( x1, y, color , spBlending)
+					sp_intern_Rectangle_blending( x1, y1, x2, y2, z, color, spPattern, spBlending);
 			}
 		}
 	}
@@ -3305,349 +3224,80 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 	if ( y2 >= spTargetY ) y2 = spTargetY - 1;
 	if ( x1 < 0 )          x1 = 0;
 	if ( y1 < 0 )          y1 = 0;
-	if ( spBlending == SP_ONE)
+	if ( spUseParallelProcess )
+		sp_intern_RectangleBorder_overlord(x1,y1,x2,y2,z,bx,by,color);
+	else
+	if ( spUsePattern )
 	{
-		if ( spUsePattern )
+		if ( spZSet )
 		{
-			if ( spZSet )
+			if ( spZTest )
 			{
-				if ( spZTest )
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern )
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_RectangleBorder_ztest_zset_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 				else
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_zset_pattern( cx, cy, z, color, spPattern )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_pixel_zset_pattern( cx, cy, z, color, spPattern )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_pixel_zset_pattern( cx, cy, z, color, spPattern )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_zset_pattern( cx, cy, z, color, spPattern )
-				}
+					sp_intern_RectangleBorder_blending_ztest_zset_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 			}
 			else
 			{
-				if ( spZTest )
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_ztest_pattern( cx, cy, z, color, spPattern )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_pixel_ztest_pattern( cx, cy, z, color, spPattern )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_pixel_ztest_pattern( cx, cy, z, color, spPattern )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_ztest_pattern( cx, cy, z, color, spPattern )
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_RectangleBorder_zset_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 				else
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_pattern( cx, cy, color, spPattern )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_pixel_pattern( cx, cy, color, spPattern )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_pixel_pattern( cx, cy, color, spPattern )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_pattern( cx, cy, color, spPattern )
-				}
+					sp_intern_RectangleBorder_blending_zset_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 			}
 		}
 		else
 		{
-			if ( spZSet )
+			if ( spZTest )
 			{
-				if ( spZTest )
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_ztest_zset( cx, cy, z, color )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_pixel_ztest_zset( cx, cy, z, color )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_pixel_ztest_zset( cx, cy, z, color )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_ztest_zset( cx, cy, z, color )
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_RectangleBorder_ztest_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 				else
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_zset( cx, cy, z, color )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_pixel_zset( cx, cy, z, color )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_pixel_zset( cx, cy, z, color )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_zset( cx, cy, z, color )
-				}
+					sp_intern_RectangleBorder_blending_ztest_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 			}
 			else
 			{
-				if ( spZTest )
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_ztest( cx, cy, z, color )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_pixel_ztest( cx, cy, z, color )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_pixel_ztest( cx, cy, z, color )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel_ztest( cx, cy, z, color )
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_RectangleBorder_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 				else
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel( cx, cy, color )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_pixel( cx, cy, color )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_pixel( cx, cy, color )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_pixel( cx, cy, color )
-				}
+					sp_intern_RectangleBorder_blending_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 			}
 		}
 	}
 	else
 	{
-		if ( spUsePattern )
+		if ( spZSet )
 		{
-			if ( spZSet )
+			if ( spZTest )
 			{
-				if ( spZTest )
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern, spBlending )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_blending_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern, spBlending )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern, spBlending )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_zset_pattern( cx, cy, z, color, spPattern, spBlending )
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_RectangleBorder_ztest_zset( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 				else
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_zset_pattern( cx, cy, z, color, spPattern, spBlending )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_blending_pixel_zset_pattern( cx, cy, z, color, spPattern, spBlending )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_blending_pixel_zset_pattern( cx, cy, z, color, spPattern, spBlending )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_zset_pattern( cx, cy, z, color, spPattern, spBlending )
-				}
+					sp_intern_RectangleBorder_blending_ztest_zset( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 			}
 			else
 			{
-				if ( spZTest )
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_pattern( cx, cy, z, color, spPattern, spBlending )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_blending_pixel_ztest_pattern( cx, cy, z, color, spPattern, spBlending )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_pattern( cx, cy, z, color, spPattern, spBlending )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_pattern( cx, cy, z, color, spPattern, spBlending )
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_RectangleBorder_zset( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 				else
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_pattern( cx, cy, color, spPattern, spBlending )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_blending_pixel_pattern( cx, cy, color, spPattern, spBlending )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_blending_pixel_pattern( cx, cy, color, spPattern, spBlending )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_pattern( cx, cy, color, spPattern, spBlending )
-				}
+					sp_intern_RectangleBorder_blending_zset( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 			}
 		}
 		else
 		{
-			if ( spZSet )
+			if ( spZTest )
 			{
-				if ( spZTest )
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_zset( cx, cy, z, color, spBlending )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_blending_pixel_ztest_zset( cx, cy, z, color, spBlending )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_zset( cx, cy, z, color, spBlending )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_ztest_zset( cx, cy, z, color, spBlending )
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_RectangleBorder_ztest( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 				else
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_zset( cx, cy, z, color, spBlending )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_blending_pixel_zset( cx, cy, z, color, spBlending )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_blending_pixel_zset( cx, cy, z, color, spBlending )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_zset( cx, cy, z, color, spBlending )
-				}
+					sp_intern_RectangleBorder_blending_ztest( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 			}
 			else
 			{
-				if ( spZTest )
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_ztest( cx, cy, z, color, spBlending )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_blending_pixel_ztest( cx, cy, z, color, spBlending )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_blending_pixel_ztest( cx, cy, z, color, spBlending )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel_ztest( cx, cy, z, color, spBlending )
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_RectangleBorder( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 				else
-				{
-					//top border
-					for ( cy = y1; cy < y - addv + by && cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel( cx, cy, color, spBlending )
-					//left & right border
-					for ( ; cy < y - addv + h - by && cy <= y2; cy++ )
-					{
-						for ( cx = x1; cx <= x - addu + bx && cx <= x2; cx++ )
-							draw_blending_pixel( cx, cy, color, spBlending )
-						for ( cx = x - addu + w - bx; cx <= x2; cx++ )
-							draw_blending_pixel( cx, cy, color, spBlending )
-					}
-					//bottom border
-					for ( ; cy <= y2; cy++ )
-						for ( cx = x1; cx <= x2; cx++ )
-							draw_blending_pixel( cx, cy, color, spBlending )
-				}
+					sp_intern_RectangleBorder_blending( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
 			}
 		}
 	}
@@ -3679,301 +3329,80 @@ PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint3
 	if ( y + ryl < 0 )          ryl = -y;
 	Sint32 x1 = x;
 	Sint32 y1 = y;
-	if ( spBlending == SP_ONE )
+	if ( spUseParallelProcess )
+		sp_intern_Ellipse_overlord(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color);
+	else
+	if ( spUsePattern )
 	{
-		if ( spUsePattern )
+		if ( spZSet )
 		{
-			if ( spZSet )
+			if ( spZTest )
 			{
-				if ( spZTest )
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_Ellipse_ztest_zset_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
-					}
-				}
+					sp_intern_Ellipse_blending_ztest_zset_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 			}
 			else
 			{
-				if ( spZTest )
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_Ellipse_zset_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_pattern( x1 + x, y1 + y, color, spPattern )
-					}
-				}
+					sp_intern_Ellipse_blending_zset_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 			}
 		}
 		else
 		{
-			if ( spZSet )
+			if ( spZTest )
 			{
-				if ( spZTest )
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_zset( x1 + x, y1 + y, z, color )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_Ellipse_ztest_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_zset( x1 + x, y1 + y, z, color )
-					}
-				}
+					sp_intern_Ellipse_blending_ztest_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 			}
 			else
 			{
-				if ( spZTest )
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest( x1 + x, y1 + y, z, color )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_Ellipse_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel( x1 + x, y1 + y, color )
-					}
-				}
+					sp_intern_Ellipse_blending_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 			}
 		}
 	}
 	else
 	{
-		if ( spUsePattern )
+		if ( spZSet )
 		{
-			if ( spZSet )
+			if ( spZTest )
 			{
-				if ( spZTest )
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_Ellipse_ztest_zset(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-					}
-				}
+					sp_intern_Ellipse_blending_ztest_zset(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 			}
 			else
 			{
-				if ( spZTest )
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_Ellipse_zset(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spPattern, spBlending )
-					}
-				}
+					sp_intern_Ellipse_blending_zset(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 			}
 		}
 		else
 		{
-			if ( spZSet )
+			if ( spZTest )
 			{
-				if ( spZTest )
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_zset( x1 + x, y1 + y, z, color, spBlending )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_Ellipse_ztest(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_zset( x1 + x, y1 + y, z, color, spBlending )
-					}
-				}
+					sp_intern_Ellipse_blending_ztest(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 			}
 			else
 			{
-				if ( spZTest )
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest( x1 + x, y1 + y, z, color, spBlending )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_Ellipse(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor = one_over_x(ry);
-					for ( y = ryl; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel( x1 + x, y1 + y, color, spBlending )
-					}
-				}
+					sp_intern_Ellipse_blending(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,color,spPattern,spBlending);
 			}
 		}
 	}
@@ -4031,893 +3460,80 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 	Sint32 y1 = y;
 	Sint32 XX_mul = spDiv( rx * rx << SP_ACCURACY, ry * ry << SP_ACCURACY );
 	Sint32 XXB_mul = spDiv( ( rx - bx ) * ( rx - bx ) << SP_ACCURACY, ( ry - by ) * ( ry - by ) << SP_ACCURACY );
-	if ( spBlending == SP_ONE )
+	if ( spUseParallelProcess )
+		sp_intern_EllipseBorder_overlord(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color);
+	else
+	if ( spUsePattern )
 	{
-		if ( spUsePattern )
+		if ( spZSet )
 		{
-			if ( spZSet )
+			if ( spZTest )
 			{
-				if ( spZTest )
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
-						for (x = RX_in;x < RX_out; x++)
-							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_EllipseBorder_ztest_zset_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
-						for (x = RX_in;x < RX_out; x++)
-							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern )
-					}
-				}
+					sp_intern_EllipseBorder_blending_ztest_zset_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 			}
 			else
 			{
-				if ( spZTest )
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern )
-						for (x = RX_in;x < RX_out; x++)
-							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_EllipseBorder_zset_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_pattern( x1 + x, y1 + y, color, spPattern )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_pixel_pattern( x1 + x, y1 + y, color, spPattern )
-						for (x = RX_in;x < RX_out; x++)
-							draw_pixel_pattern( x1 + x, y1 + y, color, spPattern )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_pattern( x1 + x, y1 + y, color, spPattern )
-					}
-				}
+					sp_intern_EllipseBorder_blending_zset_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 			}
 		}
 		else
 		{
-			if ( spZSet )
+			if ( spZTest )
 			{
-				if ( spZTest )
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_zset( x1 + x, y1 + y, z, color )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_pixel_ztest_zset( x1 + x, y1 + y, z, color )
-						for (x = RX_in;x < RX_out; x++)
-							draw_pixel_ztest_zset( x1 + x, y1 + y, z, color )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest_zset( x1 + x, y1 + y, z, color )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_EllipseBorder_ztest_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_zset( x1 + x, y1 + y, z, color )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_pixel_zset( x1 + x, y1 + y, z, color )
-						for (x = RX_in;x < RX_out; x++)
-							draw_pixel_zset( x1 + x, y1 + y, z, color )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_zset( x1 + x, y1 + y, z, color )
-					}
-				}
+					sp_intern_EllipseBorder_blending_ztest_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 			}
 			else
 			{
-				if ( spZTest )
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest( x1 + x, y1 + y, z, color )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_pixel_ztest( x1 + x, y1 + y, z, color )
-						for (x = RX_in;x < RX_out; x++)
-							draw_pixel_ztest( x1 + x, y1 + y, z, color )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel_ztest( x1 + x, y1 + y, z, color )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_EllipseBorder_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel( x1 + x, y1 + y, color )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_pixel( x1 + x, y1 + y, color )
-						for (x = RX_in;x < RX_out; x++)
-							draw_pixel( x1 + x, y1 + y, color )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_pixel( x1 + x, y1 + y, color )
-					}
-				}
+					sp_intern_EllipseBorder_blending_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 			}
 		}
 	}
 	else
 	{
-		if ( spUsePattern )
+		if ( spZSet )
 		{
-			if ( spZSet )
+			if ( spZTest )
 			{
-				if ( spZTest )
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-						for (x = RX_in;x < RX_out; x++)
-							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_EllipseBorder_ztest_zset(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-						for (x = RX_in;x < RX_out; x++)
-							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_zset_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-					}
-				}
+					sp_intern_EllipseBorder_blending_ztest_zset(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 			}
 			else
 			{
-				if ( spZTest )
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-						for (x = RX_in;x < RX_out; x++)
-							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_pattern( x1 + x, y1 + y, z, color, spPattern, spBlending )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_EllipseBorder_zset(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spPattern, spBlending )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spPattern, spBlending )
-						for (x = RX_in;x < RX_out; x++)
-							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spPattern, spBlending )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_pattern( x1 + x, y1 + y, color, spPattern, spBlending )
-					}
-				}
+					sp_intern_EllipseBorder_blending_zset(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 			}
 		}
 		else
 		{
-			if ( spZSet )
+			if ( spZTest )
 			{
-				if ( spZTest )
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_zset( x1 + x, y1 + y, z, color, spBlending )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_blending_pixel_ztest_zset( x1 + x, y1 + y, z, color, spBlending )
-						for (x = RX_in;x < RX_out; x++)
-							draw_blending_pixel_ztest_zset( x1 + x, y1 + y, z, color, spBlending )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest_zset( x1 + x, y1 + y, z, color, spBlending )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_EllipseBorder_ztest(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_zset( x1 + x, y1 + y, z, color, spBlending )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_blending_pixel_zset( x1 + x, y1 + y, z, color, spBlending )
-						for (x = RX_in;x < RX_out; x++)
-							draw_blending_pixel_zset( x1 + x, y1 + y, z, color, spBlending )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_zset( x1 + x, y1 + y, z, color, spBlending )
-					}
-				}
+					sp_intern_EllipseBorder_blending_ztest(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 			}
 			else
 			{
-				if ( spZTest )
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest( x1 + x, y1 + y, z, color, spBlending )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_blending_pixel_ztest( x1 + x, y1 + y, z, color, spBlending )
-						for (x = RX_in;x < RX_out; x++)
-							draw_blending_pixel_ztest( x1 + x, y1 + y, z, color, spBlending )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel_ztest( x1 + x, y1 + y, z, color, spBlending )
-					}
-				}
+				if ( spBlending == SP_ONE)
+					sp_intern_EllipseBorder(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 				else
-				{
-					Sint32 factor_out = one_over_x(ry);
-					Sint32 factor_in  = one_over_x(ry-by);
-					//up
-					for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel( x1 + x, y1 + y, color, spBlending )
-					}
-					//middle
-					for (; y < ry - by && y <= ryr; y++ )
-					{
-						Sint32 angel_out = spAsin(y*factor_out);
-						Sint32 angel_in  = spAsin(y*factor_in);
-						Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
-						Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
-						Sint32 LX_in  = -RX_in;
-						Sint32 LX_out = -RX_out;
-						if (LX_in < rxl)
-							LX_in = rxl;
-						if (LX_out < rxl)
-							LX_out = rxl;
-						if (RX_in > rxr)
-							RX_in = rxr;
-						if (RX_out > rxr)
-							RX_out = rxr;
-						for (x = LX_out;x < LX_in; x++)
-							draw_blending_pixel( x1 + x, y1 + y, color, spBlending )
-						for (x = RX_in;x < RX_out; x++)
-							draw_blending_pixel( x1 + x, y1 + y, color, spBlending )
-					}
-					//down
-					for (; y <= ryr; y++ )
-					{
-						Sint32 angel = spAsin(y*factor_out);
-						Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
-						Sint32 LX = -RX;
-						if (LX < rxl)
-							LX = rxl;
-						if (RX > rxr)
-							RX = rxr;
-						for (x = LX;x <= RX; x++)
-							draw_blending_pixel( x1 + x, y1 + y, color, spBlending )
-					}
-				}
+					sp_intern_EllipseBorder_blending(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 			}
 		}
 	}

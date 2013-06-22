@@ -1,3 +1,171 @@
+#define setup_stack_struct(pos_,mode_) \
+	spScanLineCache[(pos_)].mode = (mode_); \
+	spScanLineCache[(pos_)].texturePixel = spTexturePixel; \
+	spScanLineCache[(pos_)].textureScanLine = spTextureScanLine; \
+	spScanLineCache[(pos_)].textureX = spTextureX; \
+	spScanLineCache[(pos_)].textureY = spTextureY; \
+	spScanLineCache[(pos_)].zTest = spZTest; \
+	spScanLineCache[(pos_)].zSet = spZSet; \
+	spScanLineCache[(pos_)].alphaTest = spAlphaTest; \
+	spScanLineCache[(pos_)].usePattern = spUsePattern; \
+	{ \
+		int i; \
+		for (i = 0; i < 8; i++) \
+			spScanLineCache[(pos_)].pattern[i] = spPattern[i]; \
+	} \
+	spScanLineCache[(pos_)].blending = spBlending;
+
+inline void sp_intern_Triangle_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
+{
+	//Adding to stack if not full!
+	CIRCLE_ON_FULL_STACK
+	setup_stack_struct(spScanLineEnd,0)
+	spScanLineCache[spScanLineEnd].primitive.triangle.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.triangle.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.triangle.z1 = z1;
+	spScanLineCache[spScanLineEnd].primitive.triangle.x2 = x2;
+	spScanLineCache[spScanLineEnd].primitive.triangle.y2 = y2;
+	spScanLineCache[spScanLineEnd].primitive.triangle.z2 = z2;
+	spScanLineCache[spScanLineEnd].primitive.triangle.x3 = x3;
+	spScanLineCache[spScanLineEnd].primitive.triangle.y3 = y3;
+	spScanLineCache[spScanLineEnd].primitive.triangle.z3 = z3;
+	spScanLineCache[spScanLineEnd].primitive.triangle.color = color;
+	SDL_mutexP(spScanLineMutex);
+	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+	SDL_mutexV(spScanLineMutex);
+}
+
+inline void sp_intern_Triangle_tex_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color )
+{
+	//Adding to stack if not full!
+	CIRCLE_ON_FULL_STACK
+	setup_stack_struct(spScanLineEnd,1)
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.z1 = z1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.u1 = u1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.v1 = v1;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.x2 = x2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.y2 = y2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.z2 = z2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.u2 = u2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.v2 = v2;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.x3 = x3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.y3 = y3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.z3 = z3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.u3 = u3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.v3 = v3;
+	spScanLineCache[spScanLineEnd].primitive.texTriangle.color = color;
+	SDL_mutexP(spScanLineMutex);
+	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+	SDL_mutexV(spScanLineMutex);
+}
+
+inline void sp_intern_Triangle_tex_overlord_perspect( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 w1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 w2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 w3, Uint32 color )
+{
+	//Adding to stack if not full!
+	CIRCLE_ON_FULL_STACK
+	setup_stack_struct(spScanLineEnd,2)
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z1 = z1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u1 = u1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w1 = w1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v1 = v1;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x2 = x2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y2 = y2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z2 = z2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u2 = u2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v2 = v2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w2 = w2;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x3 = x3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y3 = y3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z3 = z3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u3 = u3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v3 = v3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w3 = w3;
+	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.color = color;
+	SDL_mutexP(spScanLineMutex);
+	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+	SDL_mutexV(spScanLineMutex);
+}
+
+inline void sp_intern_Rectangle_overlord( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color)
+{
+	//Adding to stack if not full!
+	CIRCLE_ON_FULL_STACK
+	setup_stack_struct(spScanLineEnd,3)
+	spScanLineCache[spScanLineEnd].primitive.rectangle.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.rectangle.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.rectangle.x2 = x2;
+	spScanLineCache[spScanLineEnd].primitive.rectangle.y2 = y2;
+	spScanLineCache[spScanLineEnd].primitive.rectangle.z = z;
+	spScanLineCache[spScanLineEnd].primitive.rectangle.color = color;
+	SDL_mutexP(spScanLineMutex);
+	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+	SDL_mutexV(spScanLineMutex);
+}
+
+inline void sp_intern_RectangleBorder_overlord( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color)
+{
+	//Adding to stack if not full!
+	CIRCLE_ON_FULL_STACK
+	setup_stack_struct(spScanLineEnd,4)
+	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.x2 = x2;
+	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.y2 = y2;
+	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.z = z;
+	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.bx = bx;
+	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.by = by;
+	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.color = color;
+	SDL_mutexP(spScanLineMutex);
+	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+	SDL_mutexV(spScanLineMutex);
+}
+
+inline void sp_intern_Ellipse_overlord( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color)
+{
+	//Adding to stack if not full!
+	CIRCLE_ON_FULL_STACK
+	setup_stack_struct(spScanLineEnd,5)
+	spScanLineCache[spScanLineEnd].primitive.ellipse.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.ellipse.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.ellipse.rxl = rxl;
+	spScanLineCache[spScanLineEnd].primitive.ellipse.rxr = rxr;
+	spScanLineCache[spScanLineEnd].primitive.ellipse.rx = rx;
+	spScanLineCache[spScanLineEnd].primitive.ellipse.ryl = ryl;
+	spScanLineCache[spScanLineEnd].primitive.ellipse.ryr = ryr;
+	spScanLineCache[spScanLineEnd].primitive.ellipse.ry = ry;
+	spScanLineCache[spScanLineEnd].primitive.ellipse.z = z;
+	spScanLineCache[spScanLineEnd].primitive.ellipse.color = color;
+	SDL_mutexP(spScanLineMutex);
+	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+	SDL_mutexV(spScanLineMutex);
+}
+
+inline void sp_intern_EllipseBorder_overlord( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color)
+{
+	//Adding to stack if not full!
+	CIRCLE_ON_FULL_STACK
+	setup_stack_struct(spScanLineEnd,6)
+	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.x1 = x1;
+	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.y1 = y1;
+	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.rxl = rxl;
+	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.rxr = rxr;
+	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.rx = rx;
+	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.ryl = ryl;
+	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.ryr = ryr;
+	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.ry = ry;
+	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.z = z;
+	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.bx = bx;
+	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.by = by;
+	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.color = color;
+	SDL_mutexP(spScanLineMutex);
+	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
+	SDL_mutexV(spScanLineMutex);
+}
+
 int sp_intern_Triangle_thread(void* reserved)
 {
 	//endless drawing loop
@@ -2035,6 +2203,1022 @@ int sp_intern_Triangle_thread(void* reserved)
 											spScanLineCache[spScanLineBegin].pattern,
 											spScanLineCache[spScanLineBegin].blending);
 								}
+							}
+						}
+					}
+					break;
+				}
+				case 3: //rectangle
+				{
+					if ( spScanLineCache[spScanLineBegin].usePattern )
+					{
+						if ( spScanLineCache[spScanLineBegin].zSet )
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Rectangle_ztest_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Rectangle_blending_ztest_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Rectangle_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Rectangle_blending_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+						else
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Rectangle_ztest_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Rectangle_blending_ztest_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Rectangle_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Rectangle_blending_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+					}
+					else
+					{
+						if ( spScanLineCache[spScanLineBegin].zSet )
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Rectangle_ztest_zset(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Rectangle_blending_ztest_zset(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Rectangle_zset(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Rectangle_blending_zset(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+						else
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Rectangle_ztest(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Rectangle_blending_ztes(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Rectangle(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Rectangle_blending(
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+					}
+					break;
+				}
+				case 4: //rectangleBorder
+				{
+					if ( spScanLineCache[spScanLineBegin].usePattern )
+					{
+						if ( spScanLineCache[spScanLineBegin].zSet )
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_RectangleBorder_ztest_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_RectangleBorder_blending_ztest_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_RectangleBorder_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_RectangleBorder_blending_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+						else
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_RectangleBorder_ztest_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_RectangleBorder_blending_ztest_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_RectangleBorder_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_RectangleBorder_blending_pattern(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+					}
+					else
+					{
+						if ( spScanLineCache[spScanLineBegin].zSet )
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_RectangleBorder_ztest_zset(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_RectangleBorder_blending_ztest_zset(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_RectangleBorder_zset(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_RectangleBorder_blending_zset(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+						else
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_RectangleBorder_ztest(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_RectangleBorder_blending_ztes(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_RectangleBorder(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_RectangleBorder_blending(
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y2,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+					}
+					break;
+				}
+				case 5: //ellipse
+				{
+					if ( spScanLineCache[spScanLineBegin].usePattern )
+					{
+						if ( spScanLineCache[spScanLineBegin].zSet )
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Ellipse_ztest_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Ellipse_blending_ztest_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Ellipse_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Ellipse_blending_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+						else
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Ellipse_ztest_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Ellipse_blending_ztest_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Ellipse_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Ellipse_blending_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+					}
+					else
+					{
+						if ( spScanLineCache[spScanLineBegin].zSet )
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Ellipse_ztest_zset(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Ellipse_blending_ztest_zset(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Ellipse_zset(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Ellipse_blending_zset(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+						else
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Ellipse_ztest(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Ellipse_blending_ztes(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_Ellipse(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_Ellipse_blending(
+										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+					}
+					break;
+				}
+				case 6: //ellipseBorder
+				{
+					if ( spScanLineCache[spScanLineBegin].usePattern )
+					{
+						if ( spScanLineCache[spScanLineBegin].zSet )
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_EllipseBorder_ztest_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_EllipseBorder_blending_ztest_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_EllipseBorder_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_EllipseBorder_blending_zset_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+						else
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_EllipseBorder_ztest_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_EllipseBorder_blending_ztest_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_EllipseBorder_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_EllipseBorder_blending_pattern(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+					}
+					else
+					{
+						if ( spScanLineCache[spScanLineBegin].zSet )
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_EllipseBorder_ztest_zset(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_EllipseBorder_blending_ztest_zset(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_EllipseBorder_zset(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_EllipseBorder_blending_zset(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+						}
+						else
+						{
+							if ( spScanLineCache[spScanLineBegin].zTest )
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_EllipseBorder_ztest(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_EllipseBorder_blending_ztes(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+							}
+							else
+							{
+								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+									sp_intern_EllipseBorder(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
+								else
+									sp_intern_EllipseBorder_blending(
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryl,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ryr,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.ry,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.z,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.bx,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.by,
+										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
+										spScanLineCache[spScanLineBegin].pattern,
+										spScanLineCache[spScanLineBegin].blending);
 							}
 						}
 					}

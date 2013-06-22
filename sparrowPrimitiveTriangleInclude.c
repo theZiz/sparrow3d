@@ -138,13 +138,13 @@
 		{
 			#ifdef __SPARROW_INTERNAL_BLENDING__
 				#ifdef __SPARROW_INTERNAL_ZBOTH__
-					draw_blending_pixel_ztest_zset_pattern( x, y, z, color,spPattern, spBlending )
+					draw_pixel_blending_ztest_zset_pattern( x, y, z, color,spPattern, spBlending )
 				#elif defined __SPARROW_INTERNAL_ZTEST__
-					draw_blending_pixel_ztest_pattern( x, y, z, color,spPattern, spBlending )
+					draw_pixel_blending_ztest_pattern( x, y, z, color,spPattern, spBlending )
 				#elif defined __SPARROW_INTERNAL_ZSET__
-					draw_blending_pixel_zset_pattern( x, y, z, color,spPattern, spBlending )
+					draw_pixel_blending_zset_pattern( x, y, z, color,spPattern, spBlending )
 				#else
-					draw_blending_pixel_pattern( x, y, color,spPattern, spBlending )
+					draw_pixel_blending_pattern( x, y, color,spPattern, spBlending )
 				#endif
 			#else
 				#ifdef __SPARROW_INTERNAL_ZBOTH__
@@ -167,13 +167,13 @@
 			for ( x = x1; x <= x2; x++ )
 			{
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
-				draw_blending_pixel_ztest_zset( x, y, z, color, spBlending)
+				draw_pixel_blending_ztest_zset( x, y, z, color, spBlending)
 			#elif defined __SPARROW_INTERNAL_ZTEST__
-				draw_blending_pixel_ztest( x, y, z, color, spBlending)
+				draw_pixel_blending_ztest( x, y, z, color, spBlending)
 			#elif defined __SPARROW_INTERNAL_ZSET__
-				draw_blending_pixel_zset( x, y, z, color, spBlending)
+				draw_pixel_blending_zset( x, y, z, color, spBlending)
 			#else
-				draw_blending_pixel( x, y, color, spBlending )
+				draw_pixel_blending( x, y, color, spBlending )
 			#endif
 			#ifndef __SPARROW_INTERNAL_ZNOTHING__			
 				z += sZ;
@@ -670,3 +670,330 @@
 		}
 	}
 }
+
+#ifdef __SPARROW_INTERNAL_BLENDING__
+	#ifdef __SPARROW_INTERNAL_PATTERN__
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			#define pixel_macro(x1,y,z,color) draw_pixel_blending_ztest_zset_pattern( x1, y, z, color, spPattern, spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			#define pixel_macro(x1,y,z,color) draw_pixel_blending_ztest_pattern( x1, y, z, color, spPattern, spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			#define pixel_macro(x1,y,z,color) draw_pixel_blending_zset_pattern( x1, y, z, color, spPattern, spBlending )
+		#else
+			#define pixel_macro(x1,y,z,color) draw_pixel_blending_pattern( x1, y, color, spPattern, spBlending )
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			#define pixel_macro(x1,y,z,color) draw_pixel_blending_ztest_zset( x1, y, z, color, spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			#define pixel_macro(x1,y,z,color) draw_pixel_blending_ztest( x1, y, z, color, spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			#define pixel_macro(x1,y,z,color) draw_pixel_blending_zset( x1, y, z, color, spBlending )
+		#else
+			#define pixel_macro(x1,y,z,color) draw_pixel_blending( x1, y, color, spBlending )
+		#endif
+	#endif
+#else
+	#ifdef __SPARROW_INTERNAL_PATTERN__
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			#define pixel_macro(x1,y,z,color) draw_pixel_ztest_zset_pattern( x1, y, z, color, spPattern )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			#define pixel_macro(x1,y,z,color) draw_pixel_ztest_pattern( x1, y, z, color, spPattern )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			#define pixel_macro(x1,y,z,color) draw_pixel_zset_pattern( x1, y, z, color, spPattern )
+		#else
+			#define pixel_macro(x1,y,z,color) draw_pixel_pattern( x1, y, color, spPattern )
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			#define pixel_macro(x1,y,z,color) draw_pixel_ztest_zset( x1, y, z, color )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			#define pixel_macro(x1,y,z,color) draw_pixel_ztest( x1, y, z, color )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			#define pixel_macro(x1,y,z,color) draw_pixel_zset( x1, y, z, color )
+		#else
+			#define pixel_macro(x1,y,z,color) draw_pixel( x1, y, color )
+		#endif
+	#endif
+#endif
+
+#ifdef __SPARROW_INTERNAL_BLENDING__
+	#ifdef __SPARROW_INTERNAL_PATTERN__
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_Rectangle_blending_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_Rectangle_blending_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_Rectangle_blending_zset_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_Rectangle_blending_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_Rectangle_blending_ztest_zset( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_Rectangle_blending_ztest( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_Rectangle_blending_zset( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_Rectangle_blending( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#endif
+#else
+	#ifdef __SPARROW_INTERNAL_PATTERN__
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_Rectangle_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_Rectangle_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_Rectangle_zset_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_Rectangle_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_Rectangle_ztest_zset( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_Rectangle_ztest( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_Rectangle_zset( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_Rectangle( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#endif
+#endif
+{
+	int y;
+	for ( ; x1 <= x2; x1++ )
+		for ( y = y1; y <= y2; y++ )
+			pixel_macro(x1,y,z,color)
+}
+
+#ifdef __SPARROW_INTERNAL_BLENDING__
+	#ifdef __SPARROW_INTERNAL_PATTERN__
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_RectangleBorder_blending_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_RectangleBorder_blending_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_RectangleBorder_blending_zset_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_RectangleBorder_blending_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_RectangleBorder_blending_ztest_zset( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_RectangleBorder_blending_ztest( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_RectangleBorder_blending_zset( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_RectangleBorder_blending( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#endif
+#else
+	#ifdef __SPARROW_INTERNAL_PATTERN__
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_RectangleBorder_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_RectangleBorder_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_RectangleBorder_zset_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_RectangleBorder_pattern( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_RectangleBorder_ztest_zset( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_RectangleBorder_ztest( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_RectangleBorder_zset( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_RectangleBorder( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#endif
+#endif
+{
+	int cx,cy;
+	//top border
+	for ( cy = y1; cy < y1 + by && cy <= y2; cy++ )
+		for ( cx = x1; cx <= x2; cx++ )
+			pixel_macro( cx, cy, z, color )
+	//left & right border
+	for ( ; cy < y2 - by && cy <= y2; cy++ )
+	{
+		for ( cx = x1; cx <= x1 + bx && cx <= x2; cx++ )
+			pixel_macro( cx, cy, z, color )
+		for ( cx = x2 - bx; cx <= x2; cx++ )
+			pixel_macro( cx, cy, z, color )
+	}
+	//bottom border
+	for ( ; cy <= y2; cy++ )
+		for ( cx = x1; cx <= x2; cx++ )
+			pixel_macro( cx, cy, z, color )
+}
+
+#ifdef __SPARROW_INTERNAL_BLENDING__
+	#ifdef __SPARROW_INTERNAL_PATTERN__
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_Ellipse_blending_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_Ellipse_blending_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_Ellipse_blending_zset_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_Ellipse_blending_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_Ellipse_blending_ztest_zset( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_Ellipse_blending_ztest( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_Ellipse_blending_zset( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_Ellipse_blending( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#endif
+#else
+	#ifdef __SPARROW_INTERNAL_PATTERN__
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_Ellipse_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_Ellipse_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_Ellipse_zset_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_Ellipse_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_Ellipse_ztest_zset( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_Ellipse_ztest( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_Ellipse_zset( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_Ellipse( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#endif
+#endif
+{
+	int x,y;
+	Sint32 factor = one_over_x(ry);
+	for ( y = ryl; y <= ryr; y++ )
+	{
+		Sint32 angel = spAsin(y*factor);
+		Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+		Sint32 LX = -RX;
+		if (LX < rxl)
+			LX = rxl;
+		if (RX > rxr)
+			RX = rxr;
+		for (x = LX;x <= RX; x++)
+			pixel_macro( x1 + x, y1 + y, z, color )
+	}
+}
+
+#ifdef __SPARROW_INTERNAL_BLENDING__
+	#ifdef __SPARROW_INTERNAL_PATTERN__
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_EllipseBorder_blending_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_EllipseBorder_blending_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_EllipseBorder_blending_zset_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_EllipseBorder_blending_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_EllipseBorder_blending_ztest_zset( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_EllipseBorder_blending_ztest( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_EllipseBorder_blending_zset( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_EllipseBorder_blending( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#endif
+#else
+	#ifdef __SPARROW_INTERNAL_PATTERN__
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_EllipseBorder_ztest_zset_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_EllipseBorder_ztest_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_EllipseBorder_zset_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_EllipseBorder_pattern( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_ZBOTH__
+			static void sp_intern_EllipseBorder_ztest_zset( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZTEST__
+			static void sp_intern_EllipseBorder_ztest( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#elif defined __SPARROW_INTERNAL_ZSET__	
+			static void sp_intern_EllipseBorder_zset( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#else
+			static void sp_intern_EllipseBorder( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color, Uint8* spPattern, Sint32 spBlending )
+		#endif
+	#endif
+#endif
+{
+	int x,y;
+	Sint32 factor_out = one_over_x(ry);
+	Sint32 factor_in  = one_over_x(ry-by);
+	//up
+	for ( y = ryl; y <= -ry + by && y <= ryr; y++ )
+	{
+		Sint32 angel = spAsin(y*factor_out);
+		Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+		Sint32 LX = -RX;
+		if (LX < rxl)
+			LX = rxl;
+		if (RX > rxr)
+			RX = rxr;
+		for (x = LX;x <= RX; x++)
+			pixel_macro( x1 + x, y1 + y, z, color)
+	}
+	//middle
+	for (; y < ry - by && y <= ryr; y++ )
+	{
+		Sint32 angel_out = spAsin(y*factor_out);
+		Sint32 angel_in  = spAsin(y*factor_in);
+		Sint32 RX_in  = spCos(angel_in)*(rx-bx) >> SP_ACCURACY;
+		Sint32 RX_out = spCos(angel_out)*rx >> SP_ACCURACY;
+		Sint32 LX_in  = -RX_in;
+		Sint32 LX_out = -RX_out;
+		if (LX_in < rxl)
+			LX_in = rxl;
+		if (LX_out < rxl)
+			LX_out = rxl;
+		if (RX_in > rxr)
+			RX_in = rxr;
+		if (RX_out > rxr)
+			RX_out = rxr;
+		for (x = LX_out;x < LX_in; x++)
+			pixel_macro( x1 + x, y1 + y, z, color)
+		for (x = RX_in;x < RX_out; x++)
+			pixel_macro( x1 + x, y1 + y, z, color)
+	}
+	//down
+	for (; y <= ryr; y++ )
+	{
+		Sint32 angel = spAsin(y*factor_out);
+		Sint32 RX = spCos(angel)*rx >> SP_ACCURACY;
+		Sint32 LX = -RX;
+		if (LX < rxl)
+			LX = rxl;
+		if (RX > rxr)
+			RX = rxr;
+		for (x = LX;x <= RX; x++)
+			pixel_macro( x1 + x, y1 + y, z, color)
+	}
+}
+
+#undef pixel_macro
+

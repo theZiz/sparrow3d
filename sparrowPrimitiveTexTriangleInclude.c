@@ -21,6 +21,196 @@
  * way to get the code fast and still understanable. The only
  * alternative I used before was massive copy and paste, which is
  * bollocks. */
+ 
+#ifdef __SPARROW_INTERNAL_BLENDING__
+	#ifdef __SPARROW_INTERNAL_PERSPECT__
+		#ifdef __SPARROW_INTERNAL_PATTERN__
+			#ifdef __SPARROW_INTERNAL_ALPHA__
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_zset_alpha_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_alpha_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_zset_alpha_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_alpha_pattern_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
+				#endif
+			#else
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_zset_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_zset_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_pattern_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
+				#endif
+			#endif
+		#else
+			#ifdef __SPARROW_INTERNAL_ALPHA__
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_zset_alpha_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_alpha_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_zset_alpha_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_alpha_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#endif
+			#else
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_zset_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_zset_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#endif
+			#endif
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_PATTERN__
+			#ifdef __SPARROW_INTERNAL_ALPHA__
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_zset_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_zset_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_alpha_pattern( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
+				#endif
+			#else
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_zset_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY,spPattern, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY,spPattern, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_zset_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY,spPattern, spBlending );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_pattern( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY,spPattern, spBlending );
+				#endif
+			#endif
+		#else
+			#ifdef __SPARROW_INTERNAL_ALPHA__
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_zset_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_zset_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_alpha( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#endif
+			#else
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest_zset( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_ztest( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex_zset( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_blending_tex( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
+				#endif
+			#endif
+		#endif
+	#endif
+#else
+	#ifdef __SPARROW_INTERNAL_PERSPECT__
+		#ifdef __SPARROW_INTERNAL_PATTERN__
+			#ifdef __SPARROW_INTERNAL_ALPHA__
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_zset_alpha_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_alpha_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_zset_alpha_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_alpha_pattern_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#endif
+			#else
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_zset_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_zset_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_pattern_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#endif
+			#endif
+		#else
+			#ifdef __SPARROW_INTERNAL_ALPHA__
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_zset_alpha_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_alpha_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_zset_alpha_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_alpha_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#endif
+			#else
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_zset_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_zset_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#endif
+			#endif
+		#endif
+	#else
+		#ifdef __SPARROW_INTERNAL_PATTERN__
+			#ifdef __SPARROW_INTERNAL_ALPHA__
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_zset_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_alpha_pattern( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#endif
+			#else
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_zset_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_zset_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_pattern( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
+				#endif
+			#endif
+		#else
+			#ifdef __SPARROW_INTERNAL_ALPHA__
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_zset_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_zset_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_alpha( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#endif
+			#else
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest_zset( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_ztest( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY);
+				#elif defined __SPARROW_INTERNAL_ZSET__
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex_zset( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#else
+					#define pixel_macro(x,y,z,u,v,color) draw_pixel_tex( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
+				#endif
+			#endif
+		#endif
+	#endif
+#endif
 
 #ifndef __SPARROW_INTERNAL_BLENDING__
 	#ifdef __SPARROW_INTERNAL_PERSPECT__
@@ -433,195 +623,7 @@
 	int x;
 	for ( x = x1; x <= x2; x++ )
 	{
-		#ifdef __SPARROW_INTERNAL_BLENDING__
-			#ifdef __SPARROW_INTERNAL_PERSPECT__
-				#ifdef __SPARROW_INTERNAL_PATTERN__
-					#ifdef __SPARROW_INTERNAL_ALPHA__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_blending_tex_ztest_zset_alpha_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_blending_tex_ztest_alpha_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_blending_tex_zset_alpha_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
-						#else
-							draw_pixel_blending_tex_alpha_pattern_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_blending_tex_ztest_zset_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_blending_tex_ztest_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_blending_tex_zset_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
-						#else
-							draw_pixel_blending_tex_pattern_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
-						#endif
-					#endif
-				#else
-					#ifdef __SPARROW_INTERNAL_ALPHA__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_blending_tex_ztest_zset_alpha_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_blending_tex_ztest_alpha_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_blending_tex_zset_alpha_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#else
-							draw_pixel_blending_tex_alpha_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_blending_tex_ztest_zset_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_blending_tex_ztest_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_blending_tex_zset_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#else
-							draw_pixel_blending_tex_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#endif
-					#endif
-				#endif
-			#else
-				#ifdef __SPARROW_INTERNAL_PATTERN__
-					#ifdef __SPARROW_INTERNAL_ALPHA__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_blending_tex_ztest_zset_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_blending_tex_ztest_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_blending_tex_zset_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
-						#else
-							draw_pixel_blending_tex_alpha_pattern( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern, spBlending );
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_blending_tex_ztest_zset_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY,spPattern, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_blending_tex_ztest_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY,spPattern, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_blending_tex_zset_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY,spPattern, spBlending );
-						#else
-							draw_pixel_blending_tex_pattern( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY,spPattern, spBlending );
-						#endif
-					#endif
-				#else
-					#ifdef __SPARROW_INTERNAL_ALPHA__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_blending_tex_ztest_zset_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_blending_tex_ztest_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_blending_tex_zset_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#else
-							draw_pixel_blending_tex_alpha( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_blending_tex_ztest_zset( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_blending_tex_ztest( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_blending_tex_zset( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#else
-							draw_pixel_blending_tex( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spBlending );
-						#endif
-					#endif
-				#endif
-			#endif
-		#else
-			#ifdef __SPARROW_INTERNAL_PERSPECT__
-				#ifdef __SPARROW_INTERNAL_PATTERN__
-					#ifdef __SPARROW_INTERNAL_ALPHA__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_tex_ztest_zset_alpha_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_tex_ztest_alpha_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_tex_zset_alpha_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#else
-							draw_pixel_tex_alpha_pattern_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_tex_ztest_zset_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_tex_ztest_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_tex_zset_pattern_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#else
-							draw_pixel_tex_pattern_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#endif
-					#endif
-				#else
-					#ifdef __SPARROW_INTERNAL_ALPHA__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_tex_ztest_zset_alpha_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_tex_ztest_alpha_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_tex_zset_alpha_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#else
-							draw_pixel_tex_alpha_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_tex_ztest_zset_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_tex_ztest_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_tex_zset_perspect( x, y, z, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#else
-							draw_pixel_tex_perspect( x, y, u, v, w, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#endif
-					#endif
-				#endif
-			#else
-				#ifdef __SPARROW_INTERNAL_PATTERN__
-					#ifdef __SPARROW_INTERNAL_ALPHA__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_tex_ztest_zset_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_tex_ztest_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_tex_zset_alpha_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#else
-							draw_pixel_tex_alpha_pattern( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_tex_ztest_zset_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_tex_ztest_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_tex_zset_pattern( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#else
-							draw_pixel_tex_pattern( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY, spPattern );
-						#endif
-					#endif
-				#else
-					#ifdef __SPARROW_INTERNAL_ALPHA__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_tex_ztest_zset_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_tex_ztest_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_tex_zset_alpha( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#else
-							draw_pixel_tex_alpha( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_tex_ztest_zset( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_tex_ztest( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY);
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_tex_zset( x, y, z, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#else
-							draw_pixel_tex( x, y, u >> SP_ACCURACY, v >> SP_ACCURACY, color, spTexturePixel, spTextureScanLine, spTextureX, spTextureY );
-						#endif
-					#endif
-				#endif
-			#endif
-		#endif
+		pixel_macro( x, y, z, u, v, color)
 		u += sU;
 		v += sV;
 		#ifdef __SPARROW_INTERNAL_PERSPECT__
@@ -2244,101 +2246,11 @@
 		Sint32 v = spIntToFixed(sy);
 		for (y = y1; y < y3; y++)
 		{
-			#ifdef __SPARROW_INTERNAL_BLENDING__
-				#ifdef __SPARROW_INTERNAL_PATTERN__
-					#ifdef __SPARROW_INTERNAL_ALPHA__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							blit_pixel_tex_ztest_zset_alpha_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern,spBlending);
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							blit_pixel_tex_ztest_alpha_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern,spBlending);
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							blit_pixel_tex_zset_alpha_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern,spBlending);
-						#else
-							blit_pixel_tex_alpha_pattern(x,y,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern,spBlending);
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							blit_pixel_tex_ztest_zset_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern,spBlending);
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							blit_pixel_tex_ztest_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern,spBlending);
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							blit_pixel_tex_zset_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern,spBlending);
-						#else
-							blit_pixel_tex_pattern(x,y,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern,spBlending);
-						#endif
-					#endif
-				#else
-					#ifdef __SPARROW_INTERNAL_ALPHA__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							blit_pixel_tex_ztest_zset_alpha(x,y,z,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spBlending);
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							blit_pixel_tex_ztest_alpha(x,y,z,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spBlending);
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							blit_pixel_tex_zset_alpha(x,y,z,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spBlending);
-						#else
-							blit_pixel_tex_alpha(x,y,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spBlending);
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							blit_pixel_tex_ztest_zset(x,y,z,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spBlending);
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							blit_pixel_tex_ztest(x,y,z,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spBlending);
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							blit_pixel_tex_zset(x,y,z,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spBlending);
-						#else
-							blit_pixel_tex(x,y,spFixedToInt(u),spFixedToInt(v),spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spBlending);
-						#endif
-					#endif
-				#endif
-			#else
-				#ifdef __SPARROW_INTERNAL_PATTERN__
-					#ifdef __SPARROW_INTERNAL_ALPHA__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_tex_ztest_zset_alpha_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_tex_ztest_alpha_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_tex_zset_alpha_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
-						#else
-							draw_pixel_tex_alpha_pattern(x,y,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_tex_ztest_zset_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_tex_ztest_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_tex_zset_pattern(x,y,z,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
-						#else
-							draw_pixel_tex_pattern(x,y,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY,spPattern);
-						#endif
-					#endif
-				#else
-					#ifdef __SPARROW_INTERNAL_ALPHA__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_tex_ztest_zset_alpha(x,y,z,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY);
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_tex_ztest_alpha(x,y,z,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY);
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_tex_zset_alpha(x,y,z,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY);
-						#else
-							draw_pixel_tex_alpha(x,y,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY);
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_pixel_tex_ztest_zset(x,y,z,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY);
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_pixel_tex_ztest(x,y,z,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY);
-						#elif defined __SPARROW_INTERNAL_ZSET__
-							draw_pixel_tex_zset(x,y,z,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY);
-						#else
-							draw_pixel_tex(x,y,spFixedToInt(u),spFixedToInt(v),65535,spTexturePixel,spTextureScanLine,spTextureX,spTextureY);
-						#endif
-					#endif
-				#endif
-			#endif
+			pixel_macro(x,y,z,u,v,65535)
 			v += dv;
 		}
 	}
 }
 #endif
+
+#undef pixel_macro

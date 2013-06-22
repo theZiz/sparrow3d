@@ -44,7 +44,7 @@
 #define draw_pixel(x,y,color) \
 	{spTargetPixel[(x) + (y) * spTargetScanLine] = (color);}
 	
-#define draw_blending_pixel_ztest_zset(x,y,z,color,blend) \
+#define draw_pixel_blending_ztest_zset(x,y,z,color,blend) \
 	{if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{\
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z);\
@@ -58,7 +58,7 @@
 		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
 		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    );}}
 
-#define draw_blending_pixel_ztest(x,y,z,color,blend) \
+#define draw_pixel_blending_ztest(x,y,z,color,blend) \
 	{if ( (z) > spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
@@ -71,7 +71,7 @@
 			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
 			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    );}}
 
-#define draw_blending_pixel_zset(x,y,z,color,blend) \
+#define draw_pixel_blending_zset(x,y,z,color,blend) \
 	{	Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
 		Sint32 one_minus_blend = SP_ONE - (blend); \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = \
@@ -83,7 +83,7 @@
 		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z);}
 
-#define draw_blending_pixel(x,y,color,blend) \
+#define draw_pixel_blending(x,y,color,blend) \
 	{	Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
 		Sint32 one_minus_blend = SP_ONE - (blend); \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = \
@@ -112,21 +112,21 @@
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
 		draw_pixel(x,y,color)}
 
-#define draw_blending_pixel_ztest_zset_pattern(x,y,z,color,pattern,blend) \
+#define draw_pixel_blending_ztest_zset_pattern(x,y,z,color,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_blending_pixel_ztest_zset(x,y,z,color,blend)}
+		draw_pixel_blending_ztest_zset(x,y,z,color,blend)}
 
-#define draw_blending_pixel_ztest_pattern(x,y,z,color,pattern,blend) \
+#define draw_pixel_blending_ztest_pattern(x,y,z,color,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_blending_pixel_ztest(x,y,z,color,blend)}
+		draw_pixel_blending_ztest(x,y,z,color,blend)}
 
-#define draw_blending_pixel_zset_pattern(x,y,z,color,pattern,blend) \
+#define draw_pixel_blending_zset_pattern(x,y,z,color,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_blending_pixel_zset(x,y,z,color,blend)}
+		draw_pixel_blending_zset(x,y,z,color,blend)}
 
-#define draw_blending_pixel_pattern(x,y,color,pattern,blend) \
+#define draw_pixel_blending_pattern(x,y,color,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		draw_blending_pixel(x,y,color,blend)}
+		draw_pixel_blending(x,y,color,blend)}
 
 
 /* ********************************** */
@@ -1414,342 +1414,3 @@
 #define draw_pixel_blending_tex_alpha_pattern_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
 	{if ((pattern[y & 7] >> (x & 7)) & 1) \
 		draw_pixel_blending_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend)}
-
-
-/* *********************************************** */
-/* blit_pixel functions with textures and blending */
-/* *********************************************** */
-
-#ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_ztest_zset(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel  = texturePixel[(u) + (v) * textureScanLine];  \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-			  ( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#else
-	#define blit_pixel_tex_ztest_zset(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-			  ( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_ztest(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-			  ( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#else
-	#define blit_pixel_tex_ztest(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-			  ( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_zset(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-		Sint32 one_minus_blend = SP_ONE - (blend); \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = \
-			( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-	}
-#else
-	#define blit_pixel_tex_zset(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
-		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-		Sint32 one_minus_blend = SP_ONE - (blend); \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = \
-			( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-		Sint32 one_minus_blend = SP_ONE - (blend); \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = \
-			( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-	}
-#else
-	#define blit_pixel_tex(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
-		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-		Sint32 one_minus_blend = SP_ONE - (blend); \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = \
-			( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-	}
-#endif
-
-// + Pattern
-#define blit_pixel_tex_ztest_zset_pattern(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
-	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_ztest_zset(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
-
-#define blit_pixel_tex_ztest_pattern(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
-	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_ztest(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
-
-#define blit_pixel_tex_zset_pattern(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
-	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_zset(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
-
-#define blit_pixel_tex_pattern(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
-	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
-
-/* ********************************************************* */
-/* draw_pixel functions with textures and alpha and blending */
-/* ********************************************************* */
-
-#ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_ztest_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-				Sint32 one_minus_blend = SP_ONE - (blend); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = \
-					( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-				+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-			} \
-		} \
-	}
-#else
-	#define blit_pixel_tex_ztest_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-				Sint32 one_minus_blend = SP_ONE - (blend); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = \
-					( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-				+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-			} \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_ztest_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{\
-				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-				Sint32 one_minus_blend = SP_ONE - (blend); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = \
-					( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-				+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-			} \
-		} \
-	}
-#else
-	#define blit_pixel_tex_ztest_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-				Sint32 one_minus_blend = SP_ONE - (blend); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = \
-					( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-				+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-			} \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-		if (pixel != SP_ALPHA_COLOR) \
-		{ \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#else
-	#define blit_pixel_tex_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
-		if (pixel != SP_ALPHA_COLOR) \
-		{ \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define blit_pixel_tex_alpha(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-		if (pixel != SP_ALPHA_COLOR) \
-		{ \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#else
-	#define blit_pixel_tex_alpha(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
-		if (pixel != SP_ALPHA_COLOR) \
-		{ \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine];  \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#endif
-
-//+ Pattern
-#define blit_pixel_tex_ztest_zset_alpha_pattern(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
-	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_ztest_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
-
-#define blit_pixel_tex_ztest_alpha_pattern(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
-	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_ztest_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
-
-#define blit_pixel_tex_zset_alpha_pattern(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
-	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_zset_alpha(x,y,z,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}
-
-#define blit_pixel_tex_alpha_pattern(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,pattern,blend) \
-	{if ((pattern[y & 7] >> (x & 7)) & 1) \
-		blit_pixel_tex_alpha(x,y,u,v,texturePixel,textureScanLine,textureX,textureY,blend)}

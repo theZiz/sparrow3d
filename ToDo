@@ -1,26 +1,18 @@
 Roadmap til next version (1.3.1):
 - drawing primitives as parallel process
-	- zFar needs to be passed
 	- z-division buffer goes to drawing thread
 	- drawing thread extra compile!
-	- texTriangleFunctions need 
 	- More Primitives on Second Processor
-		- Rectangle
-		- Bordered Rectangle
-		- Ellipse
-		- Borderer Ellipse
-		- Blit
 		- Rotozoom
 			- optimized
 			- generic
-		- Line
-			- maybe new line algo
 	- SDL lock needs to be OUT of the internal triangle function!
 	- Working with "NO_PERSPECTIVE"
 	- gp2x:
 		- zBuffer needs to be in upper mem!
 		- division buffer in upper mem!
 		- zfar in upper mem!
+		- all math functions to upper mem!
 		- init gp2x coprocessor
 		- mutex for the state of the process
 		- spBindTexture
