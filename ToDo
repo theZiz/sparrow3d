@@ -1,13 +1,5 @@
 Roadmap til next version (1.3.1):
 - drawing primitives as parallel process
-	- z-division buffer goes to drawing thread
-	- drawing thread extra compile!
-	- More Primitives on Second Processor
-		- Rotozoom
-			- optimized
-			- generic
-	- SDL lock needs to be OUT of the internal triangle function!
-	- Working with "NO_PERSPECTIVE"
 	- gp2x:
 		- zBuffer needs to be in upper mem!
 		- division buffer in upper mem!
@@ -24,6 +16,8 @@ Roadmap til 1.4:
 - GUI
 
 general Roadmap:
+- rotozoom on second processor
+- all blits on second processor
 - third device layer (controlled by sparrowCore)
   - axis are exactly the same
   - as much buttons createable as you want

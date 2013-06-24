@@ -1,172 +1,28 @@
-#define setup_stack_struct(pos_,mode_) \
-	spScanLineCache[(pos_)].mode = (mode_); \
-	spScanLineCache[(pos_)].texturePixel = spTexturePixel; \
-	spScanLineCache[(pos_)].textureScanLine = spTextureScanLine; \
-	spScanLineCache[(pos_)].textureX = spTextureX; \
-	spScanLineCache[(pos_)].textureY = spTextureY; \
-	spScanLineCache[(pos_)].zTest = spZTest; \
-	spScanLineCache[(pos_)].zSet = spZSet; \
-	spScanLineCache[(pos_)].alphaTest = spAlphaTest; \
-	spScanLineCache[(pos_)].usePattern = spUsePattern; \
-	{ \
-		int i; \
-		for (i = 0; i < 8; i++) \
-			spScanLineCache[(pos_)].pattern[i] = spPattern[i]; \
-	} \
-	spScanLineCache[(pos_)].blending = spBlending;
+#include "sparrowPrimitiveDrawingThread.h"
 
-inline void sp_intern_Triangle_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 x3, Sint32 y3, Sint32 z3, Uint32 color )
-{
-	//Adding to stack if not full!
-	CIRCLE_ON_FULL_STACK
-	setup_stack_struct(spScanLineEnd,0)
-	spScanLineCache[spScanLineEnd].primitive.triangle.x1 = x1;
-	spScanLineCache[spScanLineEnd].primitive.triangle.y1 = y1;
-	spScanLineCache[spScanLineEnd].primitive.triangle.z1 = z1;
-	spScanLineCache[spScanLineEnd].primitive.triangle.x2 = x2;
-	spScanLineCache[spScanLineEnd].primitive.triangle.y2 = y2;
-	spScanLineCache[spScanLineEnd].primitive.triangle.z2 = z2;
-	spScanLineCache[spScanLineEnd].primitive.triangle.x3 = x3;
-	spScanLineCache[spScanLineEnd].primitive.triangle.y3 = y3;
-	spScanLineCache[spScanLineEnd].primitive.triangle.z3 = z3;
-	spScanLineCache[spScanLineEnd].primitive.triangle.color = color;
-	SDL_mutexP(spScanLineMutex);
-	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
-	SDL_mutexV(spScanLineMutex);
-}
+Sint32  spScanLineBegin = 0;
+Sint32  spScanLineEnd = 0;
+type_spScanLineCache  *spScanLineCache = NULL;
+SDL_Thread  *spScanLineThread = NULL;
+Sint32  spScanLineMessage = 0;
+SDL_mutex*  spScanLineMutex = NULL;
 
-inline void sp_intern_Triangle_tex_overlord( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Uint32 color )
-{
-	//Adding to stack if not full!
-	CIRCLE_ON_FULL_STACK
-	setup_stack_struct(spScanLineEnd,1)
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.x1 = x1;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.y1 = y1;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.z1 = z1;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.u1 = u1;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.v1 = v1;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.x2 = x2;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.y2 = y2;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.z2 = z2;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.u2 = u2;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.v2 = v2;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.x3 = x3;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.y3 = y3;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.z3 = z3;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.u3 = u3;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.v3 = v3;
-	spScanLineCache[spScanLineEnd].primitive.texTriangle.color = color;
-	SDL_mutexP(spScanLineMutex);
-	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
-	SDL_mutexV(spScanLineMutex);
-}
+Sint32* spZBuffer = NULL;
+Sint32 spTargetX = 0;
+Sint32 spTargetY = 0;
+Uint16* spTargetPixel = NULL;
+Sint32 spTargetScanLine = 0;
 
-inline void sp_intern_Triangle_tex_overlord_perspect( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1, Sint32 w1, Sint32 x2, Sint32 y2, Sint32 z2, Sint32 u2, Sint32 v2, Sint32 w2, Sint32 x3, Sint32 y3, Sint32 z3, Sint32 u3, Sint32 v3, Sint32 w3, Uint32 color )
-{
-	//Adding to stack if not full!
-	CIRCLE_ON_FULL_STACK
-	setup_stack_struct(spScanLineEnd,2)
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x1 = x1;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y1 = y1;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z1 = z1;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u1 = u1;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w1 = w1;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v1 = v1;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x2 = x2;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y2 = y2;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z2 = z2;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u2 = u2;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v2 = v2;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w2 = w2;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.x3 = x3;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.y3 = y3;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.z3 = z3;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.u3 = u3;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.v3 = v3;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.w3 = w3;
-	spScanLineCache[spScanLineEnd].primitive.perspectiveTexTriangle.color = color;
-	SDL_mutexP(spScanLineMutex);
-	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
-	SDL_mutexV(spScanLineMutex);
-}
+Sint32 spOne_over_x_look_up_fixed[1 << SP_ACCURACY];
+Sint32 spMaxWLogDiff = 3;
 
-inline void sp_intern_Rectangle_overlord( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Uint32 color)
-{
-	//Adding to stack if not full!
-	CIRCLE_ON_FULL_STACK
-	setup_stack_struct(spScanLineEnd,3)
-	spScanLineCache[spScanLineEnd].primitive.rectangle.x1 = x1;
-	spScanLineCache[spScanLineEnd].primitive.rectangle.y1 = y1;
-	spScanLineCache[spScanLineEnd].primitive.rectangle.x2 = x2;
-	spScanLineCache[spScanLineEnd].primitive.rectangle.y2 = y2;
-	spScanLineCache[spScanLineEnd].primitive.rectangle.z = z;
-	spScanLineCache[spScanLineEnd].primitive.rectangle.color = color;
-	SDL_mutexP(spScanLineMutex);
-	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
-	SDL_mutexV(spScanLineMutex);
-}
+/* ************* Include of the pixel functions / defines *********** */
+#include "sparrowPrimitiveSetPixelInclude.c"
 
-inline void sp_intern_RectangleBorder_overlord( Sint32 x1, Sint32 y1, Sint32 x2, Sint32 y2, Sint32 z, Sint32 bx, Sint32 by, Uint32 color)
-{
-	//Adding to stack if not full!
-	CIRCLE_ON_FULL_STACK
-	setup_stack_struct(spScanLineEnd,4)
-	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.x1 = x1;
-	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.y1 = y1;
-	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.x2 = x2;
-	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.y2 = y2;
-	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.z = z;
-	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.bx = bx;
-	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.by = by;
-	spScanLineCache[spScanLineEnd].primitive.rectangleBorder.color = color;
-	SDL_mutexP(spScanLineMutex);
-	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
-	SDL_mutexV(spScanLineMutex);
-}
+/* ************* Tree-Include of the triangle functions *********** */
+#include "sparrowPrimitiveHelperBlending.c"
 
-inline void sp_intern_Ellipse_overlord( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Uint32 color)
-{
-	//Adding to stack if not full!
-	CIRCLE_ON_FULL_STACK
-	setup_stack_struct(spScanLineEnd,5)
-	spScanLineCache[spScanLineEnd].primitive.ellipse.x1 = x1;
-	spScanLineCache[spScanLineEnd].primitive.ellipse.y1 = y1;
-	spScanLineCache[spScanLineEnd].primitive.ellipse.rxl = rxl;
-	spScanLineCache[spScanLineEnd].primitive.ellipse.rxr = rxr;
-	spScanLineCache[spScanLineEnd].primitive.ellipse.rx = rx;
-	spScanLineCache[spScanLineEnd].primitive.ellipse.ryl = ryl;
-	spScanLineCache[spScanLineEnd].primitive.ellipse.ryr = ryr;
-	spScanLineCache[spScanLineEnd].primitive.ellipse.ry = ry;
-	spScanLineCache[spScanLineEnd].primitive.ellipse.z = z;
-	spScanLineCache[spScanLineEnd].primitive.ellipse.color = color;
-	SDL_mutexP(spScanLineMutex);
-	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
-	SDL_mutexV(spScanLineMutex);
-}
-
-inline void sp_intern_EllipseBorder_overlord( Sint32 x1, Sint32 y1, Sint32 rxl, Sint32 rxr, Sint32 rx, Sint32 ryl, Sint32 ryr, Sint32 ry, Sint32 z, Sint32 bx, Sint32 by, Uint32 color)
-{
-	//Adding to stack if not full!
-	CIRCLE_ON_FULL_STACK
-	setup_stack_struct(spScanLineEnd,6)
-	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.x1 = x1;
-	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.y1 = y1;
-	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.rxl = rxl;
-	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.rxr = rxr;
-	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.rx = rx;
-	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.ryl = ryl;
-	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.ryr = ryr;
-	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.ry = ry;
-	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.z = z;
-	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.bx = bx;
-	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.by = by;
-	spScanLineCache[spScanLineEnd].primitive.ellipseBorder.color = color;
-	SDL_mutexP(spScanLineMutex);
-	spScanLineEnd = (spScanLineEnd+1) & SP_MAX_SCANLINES_MOD;
-	SDL_mutexV(spScanLineMutex);
-}
-
-int sp_intern_Triangle_thread(void* reserved)
+int sp_intern_drawing_thread(void* reserved)
 {
 	//endless drawing loop
 	while (spScanLineMessage)
@@ -1274,6 +1130,7 @@ int sp_intern_Triangle_thread(void* reserved)
 					}
 					break;
 				}
+				#ifndef NO_PERSPECTIVE
 				case 2: //perspectiveTexTriangle
 				{
 					if ( spScanLineCache[spScanLineBegin].blending == SP_ONE )
@@ -2208,6 +2065,7 @@ int sp_intern_Triangle_thread(void* reserved)
 					}
 					break;
 				}
+				#endif
 				case 3: //rectangle
 				{
 					if ( spScanLineCache[spScanLineBegin].usePattern )
@@ -2377,7 +2235,7 @@ int sp_intern_Triangle_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
 								else
-									sp_intern_Rectangle_blending_ztes(
+									sp_intern_Rectangle_blending_ztest(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x2,
@@ -2609,7 +2467,7 @@ int sp_intern_Triangle_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
 								else
-									sp_intern_RectangleBorder_blending_ztes(
+									sp_intern_RectangleBorder_blending_ztest(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x2,
@@ -2873,7 +2731,7 @@ int sp_intern_Triangle_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
 								else
-									sp_intern_Ellipse_blending_ztes(
+									sp_intern_Ellipse_blending_ztest(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
 										spScanLineCache[spScanLineBegin].primitive.ellipse.rxl,
@@ -3169,7 +3027,7 @@ int sp_intern_Triangle_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
 								else
-									sp_intern_EllipseBorder_blending_ztes(
+									sp_intern_EllipseBorder_blending_ztest(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.rxl,

@@ -42,7 +42,7 @@ void draw_test( void )
 	spClearTarget(01234);
 	spSetZSet(0);
 	spSetZTest(0);
-	Uint16* pixeldata = spLockRenderTarget();
+	Uint16* pixeldata = spGetTargetPixel();
 	int x;
 	for (x = 0;x < GRAPH_SIZE; x++)
 	{
