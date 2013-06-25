@@ -1,5 +1,9 @@
 #include "sparrowPrimitiveDrawingThread.h"
 
+#ifdef GP2X
+	#include <SDL_thread.h>
+#endif
+
 Sint32  spScanLineBegin = 0;
 Sint32  spScanLineEnd = 0;
 type_spScanLineCache  *spScanLineCache = NULL;
@@ -15,6 +19,40 @@ Sint32 spTargetScanLine = 0;
 
 Sint32 spOne_over_x_look_up_fixed[1 << SP_ACCURACY];
 Sint32 spMaxWLogDiff = 3;
+
+#ifdef __GNUC__
+inline Sint32 one_over_x( Sint32 x ) __attribute__((always_inline));
+#endif
+inline Sint32 one_over_x( Sint32 x )
+{
+	if ( x > 0 )
+	{
+		if ( x < ( 1 << SP_ACCURACY ) )
+			return spOne_over_x_look_up[x];
+		if ( x == ( 1 << SP_ACCURACY ) )
+			return 1;
+		return 0;
+	}
+	if ( x > ( -1 << SP_ACCURACY ) )
+		return -spOne_over_x_look_up[-x];
+	if ( x == ( -1 << SP_ACCURACY ) )
+		return -1;
+	return 0;
+}
+
+#ifdef __GNUC__
+inline Sint32 z_div( Sint32 z, Sint32 d ) __attribute__((always_inline));
+#endif
+inline Sint32 z_div( Sint32 z, Sint32 d )
+{
+#ifdef REALGP2X
+	return spMulHigh( z, one_over_x( d ));
+#else
+	if ( d == 0 )
+		return 0;
+	return ((z)+((d)>>1)) / (d);
+#endif
+}
 
 /* ************* Include of the pixel functions / defines *********** */
 #include "sparrowPrimitiveSetPixelInclude.c"

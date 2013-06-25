@@ -362,39 +362,7 @@ PREFIX void spClearTarget( Uint32 color )
 	#endif
 }
 
-#ifdef __GNUC__
-inline Sint32 one_over_x( Sint32 x ) __attribute__((always_inline));
-#endif
-inline Sint32 one_over_x( Sint32 x )
-{
-	if ( x > 0 )
-	{
-		if ( x < ( 1 << SP_ACCURACY ) )
-			return spOne_over_x_look_up[x];
-		if ( x == ( 1 << SP_ACCURACY ) )
-			return 1;
-		return 0;
-	}
-	if ( x > ( -1 << SP_ACCURACY ) )
-		return -spOne_over_x_look_up[-x];
-	if ( x == ( -1 << SP_ACCURACY ) )
-		return -1;
-	return 0;
-}
 
-#ifdef __GNUC__
-inline Sint32 z_div( Sint32 z, Sint32 d ) __attribute__((always_inline));
-#endif
-inline Sint32 z_div( Sint32 z, Sint32 d )
-{
-#ifdef REALGP2X
-	return spMulHigh( z, one_over_x( d ));
-#else
-	if ( d == 0 )
-		return 0;
-	return ((z)+((d)>>1)) / (d);
-#endif
-}
 
 PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, Sint32 z2,   Sint32 x3, Sint32 y3, Sint32 z3,   Uint32 color )
 {
@@ -4227,7 +4195,7 @@ PREFIX void spSetPattern64(Uint64 pattern)
 	spPattern[5] = pattern >> 16;
 	spPattern[6] = pattern >>  8;
 	spPattern[7] = pattern      ;
-	spUsePattern = pattern != ((Uint64)0xFFFFFFFFFFFFFFFF);
+	spUsePattern = pattern != ((Uint64)0xFFFFFFFFFFFFFFFFLL);
 }
 
 PREFIX void spSetPattern8(Uint8 line1,Uint8 line2,Uint8 line3,Uint8 line4,Uint8 line5,Uint8 line6,Uint8 line7,Uint8 line8)
