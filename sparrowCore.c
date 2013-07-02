@@ -219,12 +219,12 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	spWindow = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
 #elif defined DINGUX
-	//spScreen = SDL_SetVideoMode( x, y, 16	, SDL_HWSURFACE | SDL_FULLSCREEN );
-	//SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
-	//spWindow = SDL_DisplayFormat( surface );
-	//SDL_FreeSurface( surface );
-	spScreen = NULL;
-	spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN );
+	spScreen = SDL_SetVideoMode( x, y, 16	, SDL_HWSURFACE | SDL_FULLSCREEN );
+	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
+	spWindow = SDL_DisplayFormat( surface );
+	SDL_FreeSurface( surface );
+	//spScreen = NULL;
+	//spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN );
 #elif defined GCW
 	//spScreen = SDL_SetVideoMode( x, y, 32	, SDL_HWSURFACE | SDL_FULLSCREEN);
 	//spWindow = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xF800, 0x07E0, 0x001F, 0 ); //16 Bit rrrrrggggggbbbbb
@@ -1181,9 +1181,9 @@ PREFIX void spFlip( void )
 	ioctl(fbdev, FBIO_WAITFORVSYNC, &arg);*/
 	SDL_Flip( spWindow );
 #elif defined DINGUX
-	//SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
-	//SDL_Flip(spScreen);
-	SDL_Flip( spWindow );
+	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
+	SDL_Flip(spScreen);
+	//SDL_Flip( spWindow );
 #elif defined GCW
 	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
 	SDL_Flip(spScreen);
