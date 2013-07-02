@@ -72,7 +72,7 @@ char spVirtualKeyboardMapShift[3][20] =
 	 {'[', ']', '{','}','?',  1 ,'A','S','D','F','G','H','J','K','L',            '*','4','5','6','+'},
 	 {'/','\\', '<','>','\'','Z','X','C','V',' ',' ',' ','B','N','M',            '0','1','2','3','='}};
 	 //1 is "shift"...
-
+int spLastAxisType = 0; //digital
 
 typedef struct sp_cache_struct *sp_cache_pointer;
 typedef struct sp_cache_struct {
@@ -154,6 +154,11 @@ PREFIX void spInitCore( void )
 	spWindow = NULL;
 	spDone = 0;
 	spFPS = 0;
+	#ifdef CAANOO
+		spLastAxisType = 1;
+	#else
+		spLastAxisType = 0;
+	#endif
 	spResetButtonsState();
 	spResetAxisState();
 	for (i = 0; i < SP_INPUT_AXIS_COUNT; i++)
@@ -521,18 +526,22 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_LEFT:
 					spGenericInput.axis[0] = -1;
 					spGenericInput.analog_axis[0] = SP_ANALOG_AXIS_MIN;
+					spLastAxisType = 0;
 					break;
 				case SDLK_RIGHT:
 					spGenericInput.axis[0] = 1;
 					spGenericInput.analog_axis[0] = SP_ANALOG_AXIS_MAX;
+					spLastAxisType = 0;
 					break;
 				case SDLK_UP:
 					spGenericInput.axis[1] = -1;
 					spGenericInput.analog_axis[1] = SP_ANALOG_AXIS_MIN;
+					spLastAxisType = 0;
 					break;
 				case SDLK_DOWN:
 					spGenericInput.axis[1] = 1;
 					spGenericInput.analog_axis[1] = SP_ANALOG_AXIS_MAX;
+					spLastAxisType = 0;
 					break;
 			#ifdef DINGUX
 				case SDLK_RETURN:
@@ -678,6 +687,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					{
 						spGenericInput.axis[0] = 0;
 						spGenericInput.analog_axis[0] = 0;
+						spLastAxisType = 0;
 					}
 					break;
 				case SDLK_RIGHT:
@@ -685,6 +695,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					{
 						spGenericInput.axis[0] = 0;
 						spGenericInput.analog_axis[0] = 0;
+						spLastAxisType = 0;
 					}
 					break;
 				case SDLK_UP:
@@ -692,6 +703,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					{
 						spGenericInput.axis[1] = 0;
 						spGenericInput.analog_axis[1] = 0;
+						spLastAxisType = 0;
 					}
 					break;
 				case SDLK_DOWN:
@@ -699,6 +711,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					{
 						spGenericInput.axis[1] = 0;
 						spGenericInput.analog_axis[1] = 0;
+						spLastAxisType = 0;
 					}
 					break;
 			#ifdef DINGUX
@@ -835,18 +848,21 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				{
 					spGenericInput.axis[event.jaxis.axis & 1] = -1;
 					sp_axis_was_used[event.jaxis.axis & 1] = -1;
+					spLastAxisType = 1;
 				}
 				else
 				if ( event.jaxis.value > SP_JOYSTICK_MAX_TRIGGER_ON && sp_axis_was_used[event.jaxis.axis & 1] != 1)
 				{
 					spGenericInput.axis[event.jaxis.axis & 1] = 1;
 					sp_axis_was_used[event.jaxis.axis & 1] = 1;
+					spLastAxisType = 1;
 				}
 				else
 				if (event.jaxis.value > SP_JOYSTICK_MIN_TRIGGER_OFF && event.jaxis.value < SP_JOYSTICK_MAX_TRIGGER_OFF)
 				{
 					spGenericInput.axis[event.jaxis.axis & 1] = 0;
 					sp_axis_was_used[event.jaxis.axis & 1] = 0;
+					spLastAxisType = 1;
 				}
 				break;
 			case SDL_QUIT:
@@ -1840,4 +1856,9 @@ PREFIX void spSleep(Uint32 microSeconds)
 	#else
 	usleep(microSeconds);
 	#endif
+}
+
+PREFIX int spGetLastAxisType()
+{
+	return spLastAxisType;
 }

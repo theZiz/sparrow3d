@@ -89,6 +89,15 @@
 #define SP_VIRTUAL_KEYBOARD_IF_NEEDED 1
 #define SP_VIRTUAL_KEYBOARD_ALWAYS 2
 
+/* Defines: Return types for spGetLastAxisType
+ * 
+ * Return types for <spGetLastAxisType>.
+ * 
+ * SP_DIGITAL_AXIS - digital input was used
+ * SP_ANALOG_AXIS - analog input was used*/
+#define SP_DIGITAL_AXIS 0
+#define SP_ANALOG_AXIS 1
+
 /* Define: SP_CACHE_SIZE
  * 
  * The size of the surface cache */
@@ -245,6 +254,19 @@ PREFIX void spResetButtonsState( void );
  * <spResetButtonsState>*/
 PREFIX void spResetAxisState( void );
 
+/* Function: spGetLastAxisType
+ * 
+ * Gives you the last used axis type (digital or analog). In fact
+ * sparrow3d "merges" these types, but sometimes it may be usefull to
+ * know, which fart made the smell. ;)
+ * 
+ * Returns:
+ * int - SP_DIGITAL_AXIS (0) if the last axis was digital or
+ * SP_ANALOG_AXIS (1) if the last axis was analog. Most devices return
+ * either analog or digital because of missing digital or analog input.
+ * Pandora is a counterexample*/
+PREFIX int spGetLastAxisType();
+
 /* Function: spPollKeyboardInput
  * 
  * Prints all following keyboard input (that is numbers, letters and symbols)
@@ -329,6 +351,15 @@ PREFIX SDL_Surface* spGetVirtualKeyboard();
  * deactivate emulation.
  * ok_button - the button for clicking the "mouse"*/
 PREFIX void spSetTouchscreenEmulationButtons(int switch_button,int ok_button);
+
+/* Function: spSleep
+ * 
+ * Waits the given microseconds (!). On some systems (e.g. linux) it gives the
+ * time to other threads and processes, which is quite usefull.
+ * 
+ * Parameters:
+ * microSeconds - the time to wait in microseconds*/
+PREFIX void spSleep(Uint32 microSeconds);
 
 /* Function: spQuitCore
  * 
@@ -540,12 +571,5 @@ PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgrou
  * above)*/
 PREFIX void spStereoMergeSurfaces(SDL_Surface* left,SDL_Surface* right,int crossed);
 
-/* Function: spSleep
- * 
- * Waits the given microseconds (!). On some systems (e.g. linux) it gives the
- * time to other threads and processes, which is quite usefull.
- * 
- * Parameters:
- * microSeconds - the time to wait in microseconds*/
-PREFIX void spSleep(Uint32 microSeconds);
 #endif
+
