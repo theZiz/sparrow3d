@@ -30,6 +30,10 @@
 #include <windows.h>
 #endif
 
+#if defined CLOSEDDINGUX
+	#define DOUBLEBUFFERING_BLIT_AND_FLIP
+#endif
+
 int spWindowX = 0;
 int spWindowY = 0;
 int spZoom;
@@ -208,42 +212,18 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	int recallSelectRenderTarget = 0;
 	if (spWindow == spGetRenderTarget())
 		recallSelectRenderTarget = 1;
-#ifdef GP2X
-	spScreen = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE );
+#if defined DOUBLEBUFFERING_BLIT || defined DOUBLEBUFFERING_BLIT_AND_FLIP
+	spScreen = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_FULLSCREEN );
 	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
 	spWindow = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
-#elif defined CAANOO
-	spScreen = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE );
-	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
-	spWindow = SDL_DisplayFormat( surface );
-	SDL_FreeSurface( surface );
-#elif defined DINGUX
-	spScreen = SDL_SetVideoMode( x, y, 16	, SDL_HWSURFACE | SDL_FULLSCREEN );
-	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
-	spWindow = SDL_DisplayFormat( surface );
-	SDL_FreeSurface( surface );
-	//spScreen = NULL;
-	//spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN );
-#elif defined GCW
-	//spScreen = SDL_SetVideoMode( x, y, 32	, SDL_HWSURFACE | SDL_FULLSCREEN);
-	//spWindow = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xF800, 0x07E0, 0x001F, 0 ); //16 Bit rrrrrggggggbbbbb
-	spScreen = SDL_SetVideoMode( x, y, 16	, SDL_HWSURFACE | SDL_FULLSCREEN );
-	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
-	spWindow = SDL_DisplayFormat( surface );
-	SDL_FreeSurface( surface );
-#elif defined PANDORA
-	spScreen = NULL;
-	spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
-#elif defined MAEMO
-	spScreen = NULL;
-	spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
 #else
-	/*x=800;
-	y=480;*/
 	spScreen = NULL;
-	spWindow = SDL_SetVideoMode( x, y, 16, SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | ( allowresize ? SDL_RESIZABLE : 0 ) | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
-	//spWindow=SDL_SetVideoMode(x,y,16,SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_NOFRAME);
+	#ifdef X86CPU
+		spWindow = SDL_SetVideoMode( x, y, 16, SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | ( allowresize ? SDL_RESIZABLE : 0 ) | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
+	#else
+		spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
+	#endif
 #endif
 	if ( x % 2 != 0 )
 		spWindowX = x + 1;
@@ -1172,24 +1152,13 @@ PREFIX void spFlip( void )
 	spPrintDebug( "    Flip in" );
 #endif
 	//The Flip
-#ifdef GP2X
+#ifdef DOUBLEBUFFERING_BLIT
 	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
-#elif defined CAANOO
-	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
-#elif defined PANDORA
-	/*int arg = 0;
-	ioctl(fbdev, FBIO_WAITFORVSYNC, &arg);*/
-	SDL_Flip( spWindow );
-#elif defined DINGUX
+#elif defined DOUBLEBUFFERING_BLIT_AND_FLIP
 	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
 	SDL_Flip(spScreen);
-	//SDL_Flip( spWindow );
-#elif defined GCW
-	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
-	SDL_Flip(spScreen);
-#else //PC
+#else
 	SDL_Flip( spWindow );
-	//SDL_UpdateRect(spWindow, 0, 0, 0, 0);
 #endif
 #ifdef CORE_DEBUG
 	spPrintDebug( "    Flip out" );
