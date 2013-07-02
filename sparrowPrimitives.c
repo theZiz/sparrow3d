@@ -4438,3 +4438,10 @@ PREFIX void spDrawInExtraThread(int value)
 	else
 		spStartDrawingThread();
 }
+
+
+PREFIX void spUpdateTargetPixels()
+{
+	if (spTarget)
+		spTargetPixel = ( Uint16* )spTarget->pixels;	
+}

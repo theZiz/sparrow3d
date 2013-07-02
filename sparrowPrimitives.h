@@ -793,4 +793,9 @@ PREFIX void spWaitForDrawingThread();
  * value - 0 means no draw thread (default), 1 means an extra thread*/
 PREFIX void spDrawInExtraThread(int value);
 
+/* Function: spUpdateTargetPixels
+ * 
+ * Updates the internal pixels pointer used by sparrow3d. Used by
+ * <spFlip> for compatibility with Double- or even Triplebuffering. */
+PREFIX void spUpdateTargetPixels();
 #endif

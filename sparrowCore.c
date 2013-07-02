@@ -1191,6 +1191,7 @@ PREFIX void spFlip( void )
 #ifdef CORE_DEBUG
 	spPrintDebug( "    Flip out" );
 #endif
+	spUpdateTargetPixels();
 	spLockRenderTarget();
 }
 
