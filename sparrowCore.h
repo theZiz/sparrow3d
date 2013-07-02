@@ -327,6 +327,16 @@ PREFIX int spIsKeyboardPolled();
  * shiftDesign - like _design_, but it is shown, if Shift is enabled.*/
 PREFIX void spSetVirtualKeyboard(int state,int x,int y,int width,int height,SDL_Surface* design,SDL_Surface* shiftDesign);
 
+/* Function: spGetVirtualKeyboardState
+ * 
+ * Gives the virtual keyboard state set by <spSetVirtualKeyboard>.
+ * 
+ * Returns:
+ * int - the state. The value can be <SP_VIRTUAL_KEYBOARD_NEVER> or
+ * <SP_VIRTUAL_KEYBOARD_ALWAYS>. <SP_VIRTUAL_KEYBOARD_IF_NEEDED> is
+ * translated to one of those above at setup */
+PREFIX int spGetVirtualKeyboardState();
+
 /* Function: spGetVirtualKeyboard
  * 
  * This functions returns the precalculated and prescaled keyboard design.

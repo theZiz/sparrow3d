@@ -450,7 +450,7 @@ void draw_test( void )
 		sprintf(buffer,"%sv",buffer);
 	}	
 	spFontDraw( 2, font->maxheight*2, 0, buffer, font );
-	if (spIsKeyboardPolled())
+	if (spIsKeyboardPolled() && spGetVirtualKeyboardState() == SP_VIRTUAL_KEYBOARD_ALWAYS)
 		spBlitSurface(screen->w/2,screen->h-spGetVirtualKeyboard()->h/2,0,spGetVirtualKeyboard());
 	spFlip();
 }
