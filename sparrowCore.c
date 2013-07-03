@@ -1610,8 +1610,10 @@ PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 
 PREFIX void spScale2XSmooth(SDL_Surface* source,SDL_Surface* destination)
 {
-	SDL_LockSurface( source );
-	SDL_LockSurface( destination );
+	if (spGetRenderTarget() != source)
+		SDL_LockSurface( source );
+	if (spGetRenderTarget() != destination)
+		SDL_LockSurface( destination );
 	Uint16* src = (Uint16*)(source->pixels);
 	Uint16* dst = (Uint16*)(destination->pixels);
 	int src_w = source->pitch >> 1;
@@ -1665,14 +1667,18 @@ PREFIX void spScale2XSmooth(SDL_Surface* source,SDL_Surface* destination)
 	A = spScaleA((src_w-1),(source->h-1)); B = P; C = spScaleC((src_w-1),(source->h-1)); D = P;
 	spScalePixel((src_w-1)*2,(source->h-1)*2);
 
-	SDL_UnlockSurface( source );
-	SDL_UnlockSurface( destination );
+	if (spGetRenderTarget() != source)
+		SDL_UnlockSurface( source );
+	if (spGetRenderTarget() != destination)
+		SDL_UnlockSurface( destination );
 }
 
 PREFIX void spScale2XFast(SDL_Surface* source,SDL_Surface* destination)
 {
-	SDL_LockSurface( source );
-	SDL_LockSurface( destination );
+	if (spGetRenderTarget() != source)
+		SDL_LockSurface( source );
+	if (spGetRenderTarget() != destination)
+		SDL_LockSurface( destination );
 	int src_w = source->pitch >> 1;
 	int dst_w = destination->pitch >> 1;
 	Uint16* src = (Uint16*)(source->pixels);
@@ -1691,10 +1697,80 @@ PREFIX void spScale2XFast(SDL_Surface* source,SDL_Surface* destination)
 			dst[X+1 +(Y+1)*dst_w] = P;
 		}
 	}
-	SDL_UnlockSurface( source );
-	SDL_UnlockSurface( destination );
+	if (spGetRenderTarget() != source)
+		SDL_UnlockSurface( source );
+	if (spGetRenderTarget() != destination)
+		SDL_UnlockSurface( destination );
 }
 
+PREFIX void spScaleDownSmooth(SDL_Surface* source,SDL_Surface* destination)
+{
+	if (spGetRenderTarget() != source)
+		SDL_LockSurface( source );
+	if (spGetRenderTarget() != destination)
+		SDL_LockSurface( destination );
+	int src_w = source->pitch >> 1;
+	int dst_w = destination->pitch >> 1;
+	Uint16* src = (Uint16*)(source->pixels);
+	Uint16* dst = (Uint16*)(destination->pixels);
+	int x,y;
+	for (y = 0; y < destination->h; y++)
+	{
+		int Y = y*2;
+		for (x = 0; x < destination->w; x++)
+		{
+			int X = x*2;
+			Uint32 C = src[X+Y*src_w];
+			int r = C & 63488;
+			int g = C & 2016;
+			int b = C & 31;
+			C = src[X+1+Y*src_w];
+			r += C & 63488;
+			g += C & 2016;
+			b += C & 31;
+			C = src[X+(Y+1)*src_w];
+			r += C & 63488;
+			g += C & 2016;
+			b += C & 31;
+			C = src[X+1+(Y+1)*src_w];
+			r += C & 63488;
+			g += C & 2016;
+			b += C & 31;
+			dst[x+y*dst_w] = ((r>>2) & 63488) | ((g >> 2) & 2016) | ((b >> 2) & 31);
+		}
+	}
+	if (spGetRenderTarget() != source)
+		SDL_UnlockSurface( source );
+	if (spGetRenderTarget() != destination)
+		SDL_UnlockSurface( destination );
+}
+
+PREFIX void spScaleDownFast(SDL_Surface* source,SDL_Surface* destination)
+{
+	if (spGetRenderTarget() != source)
+		SDL_LockSurface( source );
+	if (spGetRenderTarget() != destination)
+		SDL_LockSurface( destination );
+	int src_w = source->pitch >> 1;
+	int dst_w = destination->pitch >> 1;
+	Uint16* src = (Uint16*)(source->pixels);
+	Uint16* dst = (Uint16*)(destination->pixels);
+	int x,y;
+	for (y = 0; y < destination->h; y++)
+	{
+		int Y = y*2;
+		for (x = 0; x < destination->w; x++)
+		{
+			int X = x*2;
+			Uint32 C = src[X+Y*src_w];
+			dst[x+y*dst_w] = C;
+		}
+	}
+	if (spGetRenderTarget() != source)
+		SDL_UnlockSurface( source );
+	if (spGetRenderTarget() != destination)
+		SDL_UnlockSurface( destination );
+}
 PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgroundcolor)
 {
 	SDL_LockSurface( surface );

@@ -537,7 +537,7 @@ PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
  * height of the source surface.
  * 
  * See Also:
- * <spScale2XSmooth>*/
+ * <spScale2XSmooth>, <spScaleDownFast>, <spScaleDownSmooth>*/
 PREFIX void spScale2XFast(SDL_Surface* source,SDL_Surface* destination);
 
 /* Function: spScale2XSmooth
@@ -551,8 +551,38 @@ PREFIX void spScale2XFast(SDL_Surface* source,SDL_Surface* destination);
  * height of the source surface.
  * 
  * See Also:
- * <spScale2XFast>*/
+ * <spScale2XFast>, <spScaleDownFast>, <spScaleDownSmooth>*/
 PREFIX void spScale2XSmooth(SDL_Surface* source,SDL_Surface* destination);
+
+/* Function: spScaleDownFast
+ * 
+ * Copies and scales down source to destination very fast. Attention!
+ * Destination HAVE TO HAVE the size source->w/2*source->h/2!
+ * Furthermore the pixel depth must be 2 (16 bit graphics).
+ * 
+ * Parameters:
+ * source - source surface
+ * destination - destination surface. Have to have the double width and double
+ * height of the source surface.
+ * 
+ * See Also:
+ * <spScale2XSmooth>, <spScale2XFast>, <spScaleDownSmooth>*/
+PREFIX void spScaleDownFast(SDL_Surface* source,SDL_Surface* destination);
+
+/* Function: spScaleDownSmooth
+ * 
+ * Copies and scales down source to destination with anti aliasing.
+ * Attention! Destination HAVE TO HAVE the size source->w/2*source->h/2!
+ * Furthermore the pixel depth must be 2 (16 bit graphics).
+ * 
+ * Parameters:
+ * source - source surface
+ * destination - destination surface. Have to have the double width and double
+ * height of the source surface.
+ * 
+ * See Also:
+ * <spScale2XSmooth>, <spScale2XFast>, <spScaleDownFast>*/
+PREFIX void spScaleDownSmooth(SDL_Surface* source,SDL_Surface* destination);
 
 /* Function: spAddBorder
  * 
