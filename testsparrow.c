@@ -590,10 +590,11 @@ int main( int argc, char **argv )
 	spUsePrecalculatedNormals(1);
 	resize( screen->w, screen->h );
 	//Textures loading
-	garfield = spLoadSurface( "./data/garfield.png" );
-	check = spLoadSurface( "./data/check.png" );
-	pepper = spLoadSurface( "./data/pepper.png" );
-	scientist = spLoadSurface( "./data/science_guy_frames01.png" );
+	Sint32 zoom = spFloatToFixed(1.0f);
+	garfield = spLoadSurfaceZoom( "./data/garfield.png",zoom);
+	check = spLoadSurfaceZoom( "./data/check.png",zoom);
+	pepper = spLoadSurfaceZoom( "./data/pepper.png",zoom);
+	scientist = spLoadSurface( "./data/science_guy_frames01.png");
 	
 	spBindTexture( garfield );
 

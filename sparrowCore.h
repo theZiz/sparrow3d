@@ -405,6 +405,20 @@ PREFIX Sint32 spGetSizeFactor( void );
  * SDL_Surface* - the loaded surface*/
 PREFIX SDL_Surface* spLoadSurface( char* name );
 
+/* Function: spLoadSurfaceZoom
+ * 
+ * Loads and zoomes a 16 Surface needed by the engine. If enabled it will be
+ * cached. Every zoom level is cached particular.
+ * 
+ * Parameters:
+ * char* - filename of the image to load
+ * zoom - fixed point zoom value. SP_ONE will not zoom, greater values will
+ * increase, smaller values decrease the surface.
+ * 
+ * Returns:
+ * SDL_Surface* - the loaded and zoomed surface*/
+PREFIX SDL_Surface* spLoadSurfaceZoom( char* name, Sint32 zoom);
+
 /* Function: spCopySurface
  * 
  * This creates a "copy" of a surface. If caching is enabled, it just
@@ -511,6 +525,71 @@ PREFIX Uint16 spGetRGB(int r, int g, int b );
  * Returns:
  * Uint16 - 16 bit color value*/
 #define spGetFastRGB(r,g,b) ((((r) >> 3)<<11)+(((g) >> 2)<<5)+((b) >> 3))
+
+/* Function: spGetRFromColor
+ * 
+ * Gives you the red value of a color. The result is an 8bit integer.
+ * 
+ * Parameters:
+ * color - the color
+ * 
+ * Returns:
+ * int - the red value*/
+#define spGetRFromColor(color) (( (color)         >> 11) << 3 )
+/* Function: spGetGFromColor
+ * 
+ * Gives you the green value of a color. The result is an 8bit integer.
+ * 
+ * Parameters:
+ * color - the color
+ * 
+ * Returns:
+ * int - the green value*/
+#define spGetGFromColor(color) ((((color) & 2016) >>  5) << 2 )
+/* Function: spGetBFromColor
+ * 
+ * Gives you the blue value of a color. The result is an 8bit integer.
+ * 
+ * Parameters:
+ * color - the color
+ * 
+ * Returns:
+ * int - the blue value*/
+#define spGetBFromColor(color) (( (color) &   31       ) << 3 )
+
+/* Function: spGetRawRFromColor
+ * 
+ * Gives you the red value of a color. The result is a 5bit integer and can
+ * easily (and fast) be recalculated to a color via color = (r<<11) | (g<<5) | b;
+ * 
+ * Parameters:
+ * color - the color
+ * 
+ * Returns:
+ * int - the red value*/
+#define spGetRawRFromColor(color) ( (color)         >> 11)
+/* Function: spGetRawGFromColor
+ * 
+ * Gives you the greeen value of a color. The result is a 6bit integer and can
+ * easily (and fast) be recalculated to a color via color = (r<<11) | (g<<5) | b;
+ * 
+ * Parameters:
+ * color - the color
+ * 
+ * Returns:
+ * int - the green value*/
+#define spGetRawGFromColor(color) (((color) & 2016) >>  5)
+/* Function: spGetRawBFromColor
+ * 
+ * Gives you the blue value of a color. The result is a 5bit integer and can
+ * easily (and fast) be recalculated to a color via color = (r<<11) | (g<<5) | b;
+ * 
+ * Parameters:
+ * color - the color
+ * 
+ * Returns:
+ * int - the blue value*/
+#define spGetRawBFromColor(color) ( (color) &   31       )
 
 /* Function: spGetHSV
  * 
