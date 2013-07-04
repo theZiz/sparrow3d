@@ -419,6 +419,14 @@ PREFIX SDL_Surface* spLoadSurface( char* name );
  * SDL_Surface* - the loaded and zoomed surface*/
 PREFIX SDL_Surface* spLoadSurfaceZoom( char* name, Sint32 zoom);
 
+/* Funtion: spLastCachedSurfaceWasLoadedFirstTime
+ * 
+ * Says, whether the last loaded and cached surface was loaded the first time
+ * 
+ * Returns:
+ * int - 1 if it was the first time, 0 if it wasn't*/
+PREFIX int spLastCachedSurfaceWasLoadedFirstTime();
+
 /* Function: spCopySurface
  * 
  * This creates a "copy" of a surface. If caching is enabled, it just

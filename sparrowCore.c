@@ -77,6 +77,7 @@ char spVirtualKeyboardMapShift[3][20] =
 	 {'/','\\', '<','>','\'','Z','X','C','V',' ',' ',' ','B','N','M',            '0','1','2','3','='}};
 	 //1 is "shift"...
 int spLastAxisType = 0; //digital
+int spLastFirstTime = 0;
 
 typedef struct sp_cache_struct *sp_cache_pointer;
 typedef struct sp_cache_struct {
@@ -1274,29 +1275,7 @@ SDL_Surface* spLoadUncachedSurfaceZoom( char* name, Sint32 zoom)
 	int h = spFixedToInt(zoom*surface->h);
 	SDL_Surface* temp = SDL_CreateRGBSurface( SDL_HWSURFACE, w, h, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
 	SDL_Surface* result = SDL_DisplayFormat( temp );
-	
-	Sint32 du = spDivHigh(SP_ONE,zoom);
-	Sint32 dv = spDivHigh(SP_ONE,zoom);
-	Sint32 u = 0;
-	SDL_LockSurface(surface);
-	SDL_LockSurface(result);
-	Uint16* SURFACE = (Uint16*)surface->pixels;
-	Uint16* RESULT  = (Uint16*)result->pixels;
-	Sint32 sW = surface->pitch/surface->format->BytesPerPixel;
-	Sint32 rW =  result->pitch/ result->format->BytesPerPixel;
-	int x,y;
-	for (x = 0; x < w; x++)
-	{
-		u += du;
-		Sint32 v = 0;
-		for (y = 0; y < h; y++)
-		{
-			RESULT[ x + y * rW ] = SURFACE[ spFixedToInt(u) + spFixedToInt(v) * sW ];
-			v += dv;
-		}
-	}
-	SDL_UnlockSurface(surface);
-	SDL_UnlockSurface(result);
+	spInternalZoomBlit(surface,0,0,surface->w,surface->h,result,0,0,result->w,result->h);
 	SDL_FreeSurface( surface );
 	SDL_FreeSurface( temp );
 	return result;
@@ -1395,7 +1374,10 @@ PREFIX SDL_Surface* spLoadSurfaceZoom( char* name, Sint32 zoom)
 			sprintf(nameTemp,"%s_//ZOOM//MEOW//ZOOM//%i",name,zoom); //This filename SHOULDN'T exist ANYWHERE.
 		sp_cache_pointer c = sp_get_cached_surface_by_name(nameTemp);
 		if (c)
+		{
 			c->ref++;
+			spLastFirstTime = 0;
+		}
 		else
 		{
 			//not found, creating and adding
@@ -1405,7 +1387,7 @@ PREFIX SDL_Surface* spLoadSurfaceZoom( char* name, Sint32 zoom)
 			c = (sp_cache_pointer)malloc(sizeof(sp_cache));
 			c->surface = surface;
 			c->name = (char*)malloc(strlen(nameTemp)+1);
-			sprintf(c->name,"%s",name);
+			sprintf(c->name,"%s",nameTemp);
 			c->ref = 1;
 			c->name_hash = 0;
 			int i;
@@ -1426,12 +1408,18 @@ PREFIX SDL_Surface* spLoadSurfaceZoom( char* name, Sint32 zoom)
 				c->next = c;
 			}
 			sp_first_cache_line = c;
+			spLastFirstTime = 1;
 		}
 		free(nameTemp);
 		return c->surface;
 	}
 	else
 		return spLoadUncachedSurface(name);
+}
+
+PREFIX int spLastCachedSurfaceWasLoadedFirstTime()
+{
+	return spLastFirstTime;
 }
 
 PREFIX SDL_Surface* spLoadSurface( char* name )
