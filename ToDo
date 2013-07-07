@@ -14,10 +14,12 @@ Roadmap til 1.4:
 - all 12 tutorials (4/12 done)
 - Network (with threads)
 - GUI
+- Skeleton
 
 general Roadmap:
 - rotozoom on second processor
 - all blits on second processor
+	- with hardware blitter
 - third device layer (controlled by sparrowCore)
   - axis are exactly the same
   - as much buttons createable as you want

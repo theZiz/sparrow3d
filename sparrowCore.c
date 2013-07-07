@@ -77,6 +77,7 @@ char spVirtualKeyboardMapShift[3][20] =
 	 {'/','\\', '<','>','\'','Z','X','C','V',' ',' ',' ','B','N','M',            '0','1','2','3','='}};
 	 //1 is "shift"...
 int spLastAxisType = 0; //digital
+int spLastFirstTime = 0;
 
 typedef struct sp_cache_struct *sp_cache_pointer;
 typedef struct sp_cache_struct {
@@ -1252,37 +1253,6 @@ PREFIX Sint32 spGetSizeFactor( void )
 SDL_Surface* spLoadUncachedSurface( char* name )
 {
 	SDL_Surface* surface = IMG_Load( name );
-	/*printf("%s: %i\n",name,surface->format->BitsPerPixel);
-	if (surface->format->BitsPerPixel==32) //removing alpha
-	{
-	  SDL_LockSurface(surface);
-	  Uint8* pixel = (Uint8*)(surface->pixels);
-	  int x,y;
-	  for (x = 0; x < surface->w; x++)
-	    for (y = 0; y < surface->h; y++)
-	    {
-	      if (pixel[(x+y*surface->w)*4+3] > 128)
-	      {
-	        pixel[(x+y*surface->w)*4+3] = 255;
-	        if (pixel[(x+y*surface->w)*4+0] == 255 &&
-	            pixel[(x+y*surface->w)*4+1] == 0   &&
-	            pixel[(x+y*surface->w)*4+2] == 255 ) //removing pink
-	        {
-	          pixel[(x+y*surface->w)*4+0] = 247;
-	          pixel[(x+y*surface->w)*4+2] = 247;
-	        }
-	      }
-	      else
-	      {
-	        pixel[(x+y*surface->w)*4+0] = 255;
-	        pixel[(x+y*surface->w)*4+1] = 0;
-	        pixel[(x+y*surface->w)*4+2] = 255;
-	        pixel[(x+y*surface->w)*4+3] = 255;
-	      }
-	    }
-
-	  SDL_UnlockSurface(surface);
-	}*/
 	if ( !surface )
 	{
 		printf( "Failed to load surface \"%s\", uncool...\n", name );
@@ -1291,6 +1261,23 @@ SDL_Surface* spLoadUncachedSurface( char* name )
 	}
 	SDL_Surface* result = SDL_ConvertSurface( surface , spWindow->format, spWindow->flags);
 	SDL_FreeSurface( surface );
+	return result;
+}
+
+SDL_Surface* spLoadUncachedSurfaceZoom( char* name, Sint32 zoom)
+{
+	if (zoom == SP_ONE)
+		return spLoadUncachedSurface( name );
+	SDL_Surface* surface = spLoadUncachedSurface( name );
+	if ( !surface )
+		return NULL;
+	int w = spFixedToInt(zoom*surface->w);
+	int h = spFixedToInt(zoom*surface->h);
+	SDL_Surface* temp = SDL_CreateRGBSurface( SDL_HWSURFACE, w, h, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
+	SDL_Surface* result = SDL_DisplayFormat( temp );
+	spInternalZoomBlit(surface,0,0,surface->w,surface->h,result,0,0,result->w,result->h);
+	SDL_FreeSurface( surface );
+	SDL_FreeSurface( temp );
 	return result;
 }
 
@@ -1376,23 +1363,31 @@ PREFIX SDL_Surface* spUniqueCopySurface( SDL_Surface* surface )
 	return result;
 }
 
-PREFIX SDL_Surface* spLoadSurface( char* name )
+PREFIX SDL_Surface* spLoadSurfaceZoom( char* name, Sint32 zoom)
 {
 	if (sp_caching)
 	{
-		sp_cache_pointer c = sp_get_cached_surface_by_name(name);
+		char* nameTemp = (char*)malloc(strlen(name)+32); //extra space for the number
+		if (zoom == SP_ONE)
+			sprintf(nameTemp,"%s",name);
+		else
+			sprintf(nameTemp,"%s_//ZOOM//MEOW//ZOOM//%i",name,zoom); //This filename SHOULDN'T exist ANYWHERE.
+		sp_cache_pointer c = sp_get_cached_surface_by_name(nameTemp);
 		if (c)
+		{
 			c->ref++;
+			spLastFirstTime = 0;
+		}
 		else
 		{
 			//not found, creating and adding
-			SDL_Surface *surface = spLoadUncachedSurface(name);
+			SDL_Surface *surface = spLoadUncachedSurfaceZoom(name,zoom);
 			if (surface == NULL)
 				return NULL; //Null surfaces are not cached...
 			c = (sp_cache_pointer)malloc(sizeof(sp_cache));
 			c->surface = surface;
-			c->name = (char*)malloc(strlen(name)+1);
-			sprintf(c->name,"%s",name);
+			c->name = (char*)malloc(strlen(nameTemp)+1);
+			sprintf(c->name,"%s",nameTemp);
 			c->ref = 1;
 			c->name_hash = 0;
 			int i;
@@ -1413,11 +1408,23 @@ PREFIX SDL_Surface* spLoadSurface( char* name )
 				c->next = c;
 			}
 			sp_first_cache_line = c;
+			spLastFirstTime = 1;
 		}
+		free(nameTemp);
 		return c->surface;
 	}
 	else
 		return spLoadUncachedSurface(name);
+}
+
+PREFIX int spLastCachedSurfaceWasLoadedFirstTime()
+{
+	return spLastFirstTime;
+}
+
+PREFIX SDL_Surface* spLoadSurface( char* name )
+{
+	spLoadSurfaceZoom( name, SP_ONE );
 }
 
 PREFIX void spEnableCaching()
