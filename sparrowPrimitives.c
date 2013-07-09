@@ -4118,58 +4118,22 @@ PREFIX Sint32 spGetZNear()
 	return spZNear;
 }
 
-PREFIX void spAddWhiteLayer(int alpha)
+PREFIX void spAddColorToTarget(Uint16 destColor,Sint32 interpolation)
 {
 	spWaitForDrawingThread();
   int i;
   int goal = spTargetScanLine*spTargetY;
   for (i=0;i<goal;i++)
-  {
-    int r=( spTargetPixel[i]>>11     )*8+alpha;
-    if (r>255)
-      r=255;
-    if (r<0)
-      r=0;
-    int g=((spTargetPixel[i]>>5) & 63)*4+alpha;
-    if (g>255)
-      g=255;
-    if (g<0)
-      g=0;
-    int b=( spTargetPixel[i]     & 31)*8+alpha;
-    if (b>255)
-      b=255;
-    if (b<0)
-      b=0;
-    spTargetPixel[i]=spGetFastRGB(r,g,b);
-  }
-
+    spTargetPixel[i]=spAddColor(spTargetPixel[i],destColor,interpolation);
 }
 
-PREFIX void spAddBlackLayer(int alpha)
+PREFIX void spInterpolateTargetToColor(Uint16 destColor,Sint32 interpolation)
 {
 	spWaitForDrawingThread();
   int i;
   int goal = spTargetScanLine*spTargetY;
   for (i=0;i<goal;i++)
-  {
-    int r=( spTargetPixel[i]>>11     )*8-alpha;
-    if (r>255)
-      r=255;
-    if (r<0)
-      r=0;
-    int g=((spTargetPixel[i]>>5) & 63)*4-alpha;
-    if (g>255)
-      g=255;
-    if (g<0)
-      g=0;
-    int b=( spTargetPixel[i]     & 31)*8-alpha;
-    if (b>255)
-      b=255;
-    if (b<0)
-      b=0;
-    spTargetPixel[i]=spGetFastRGB(r,g,b);
-  }
-
+    spTargetPixel[i]=spInterpolateColor(spTargetPixel[i],destColor,interpolation);
 }
 
 PREFIX void spSetPattern32(Uint32 first_32_bit,Uint32 last_32_bit)
