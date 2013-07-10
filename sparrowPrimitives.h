@@ -661,33 +661,34 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
  * engineWindowX,engineWindowY - size of the pixel array*/
 PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint32 color_, Uint32 check, Sint32 engineWindowX, Sint32 engineWindowY );
 
-/* Function: spAddWhiteLayer
+/* Function: spAddColorToTarget
  * 
- * Adds a transparent white layer to the target surface. Slow, but
- * usefull for menu fade in and out. No z test, z set, alpha
- * test and pattern test!
+ * Adds a colored layer to the target surface. Slow, but usefull for menu fade
+ * in and out. No z test, z set, alpha test and pattern test! If the color is
+ * brighter than white, it is clamped.
  * 
  * Parameters:
- * alpha - how much shall be added? Goes from 0 (nothing happens) to 255
- * (complete white)
+ * destColor - color to add
+ * interpolation - how many parts of destColor shall be added? 0 means nothing,
+ * SP_ONE all
  * 
  * See Also:
- * <spAddBlackLayer>*/
-PREFIX void spAddWhiteLayer(int alpha);
+ * <spInterpolateTargetToColor>*/
+PREFIX void spAddColorToTarget(Uint16 destColor,Sint32 interpolation);
 
 /* Function: spAddBlackLayer
  * 
- * Adds a transparent black layer to the target surface. Slow, but
- * usefull for menu fade in and out. No z test, z set, alpha
- * test and pattern test!
+ * Interpolates the target to a color. Slow, but usefull for menu fade
+ * in and out. No z test, z set, alpha test and pattern test!
  * 
  * Parameters:
- * alpha - how much shall be added? Goes from 0 (nothing happens) to 255
- * (complete black)
+ * destColor - color to interpolate to
+ * interpolation - how many parts of destColor shall be added? 0 means the
+ * target isn't changed, with SP_ONE only destColor is left
  * 
  * See Also:
- * <spAddWhiteLayer>*/
-PREFIX void spAddBlackLayer(int alpha);
+ * <spAddColorToTarget>*/
+PREFIX void spInterpolateTargetToColor(Uint16 destColor,Sint32 interpolation);
 
 /* Functions: Pattern functions
  * 

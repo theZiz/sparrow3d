@@ -698,5 +698,15 @@ PREFIX void spAddBorder(SDL_Surface* surface, Uint16 borderColor,Uint16 backgrou
  * above)*/
 PREFIX void spStereoMergeSurfaces(SDL_Surface* left,SDL_Surface* right,int crossed);
 
+#define spInterpolateColor(color1,color2,interpolation) (\
+		((spFixedToInt(spGetRawRFromColor(color1)*(SP_ONE-(interpolation))+spGetRawRFromColor(color2)*(interpolation)) << 11) & 63488) | \
+		((spFixedToInt(spGetRawGFromColor(color1)*(SP_ONE-(interpolation))+spGetRawGFromColor(color2)*(interpolation)) <<  5) & 2016) | \
+		((spFixedToInt(spGetRawBFromColor(color1)*(SP_ONE-(interpolation))+spGetRawBFromColor(color2)*(interpolation))      ) & 31))
+
+#define spAddColor(color1,color2,interpolation) (\
+		((spMin(31,spFixedToInt(spIntToFixed(spGetRawRFromColor(color1))+spGetRawRFromColor(color2)*(interpolation))) << 11) & 63488) | \
+		((spMin(63,spFixedToInt(spIntToFixed(spGetRawGFromColor(color1))+spGetRawGFromColor(color2)*(interpolation))) <<  5) & 2016) | \
+		((spMin(31,spFixedToInt(spIntToFixed(spGetRawBFromColor(color1))+spGetRawBFromColor(color2)*(interpolation)))      ) & 31))
+
 #endif
 
