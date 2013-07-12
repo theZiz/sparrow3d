@@ -800,5 +800,12 @@ PREFIX void spDrawInExtraThread(int value);
  * <spFlip> for compatibility with Double- or even Triplebuffering. */
 PREFIX void spUpdateTargetPixels();
 
+/* Function: spFloodFill
+ * 
+ * Fills the target at the given position with a color using flood fill.
+ * 
+ * Parameters:
+ * x,y - position to start filling
+ * color - color to fill*/
 PREFIX void spFloodFill(int x,int y,Uint16 color);
 #endif
