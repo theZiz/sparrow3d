@@ -799,4 +799,6 @@ PREFIX void spDrawInExtraThread(int value);
  * Updates the internal pixels pointer used by sparrow3d. Used by
  * <spFlip> for compatibility with Double- or even Triplebuffering. */
 PREFIX void spUpdateTargetPixels();
+
+PREFIX void spFloodFill(int x,int y,Uint16 color);
 #endif

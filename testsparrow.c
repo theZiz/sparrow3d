@@ -15,6 +15,8 @@ SDL_Surface *garfield;
 SDL_Surface *check;
 SDL_Surface *pepper;
 SDL_Surface *scientist;
+SDL_Surface *yin;
+SDL_Surface *yang;
 spModelPointer mesh;
 spModelPointer wheel[15];
 spSpritePointer sprite;
@@ -32,6 +34,8 @@ char no_movement = 0;
 int threading = 0;
 int pause = 0;
 int blending = 0;
+
+#define TEST_COUNT 8
 
 void draw_test( void )
 {
@@ -60,6 +64,41 @@ void draw_test( void )
 	spSetLightColor(0,SP_ONE,SP_ONE,SP_ONE);
 	switch ( test )
 	{
+	case 7:
+		spSetPerspectiveTextureMapping(1);
+		spSetBlending( spFloatToFixed(0.5f));
+		spTranslate(0,0,spIntToFixed(-3));
+		spRotateX( SP_PI/4 );
+		//spRotateY( SP_PI/4 );
+		memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) ); //glPush()
+		spRotateZ( - rotation * 4 );
+		spBindTexture(yin);
+		spQuadTex3D( - spFloatToFixed( 1.00f ),   spFloatToFixed( 1.00f ), 0,          1,          1,
+		             - spFloatToFixed( 1.00f ), - spFloatToFixed( 1.00f ), 0,          1, yin->h - 1,
+		               spFloatToFixed( 1.00f ), - spFloatToFixed( 1.00f ), 0, yin->w - 1, yin->h - 1,
+		               spFloatToFixed( 1.00f ),   spFloatToFixed( 1.00f ), 0, yin->w - 1,          1, 65535);
+		spQuadTex3D(   spFloatToFixed( 1.00f ),   spFloatToFixed( 1.00f ), 0, yin->w - 1,          1,
+		               spFloatToFixed( 1.00f ), - spFloatToFixed( 1.00f ), 0, yin->w - 1, yin->h - 1,
+		             - spFloatToFixed( 1.00f ), - spFloatToFixed( 1.00f ), 0,          1, yin->h - 1,
+		             - spFloatToFixed( 1.00f ),   spFloatToFixed( 1.00f ), 0,          1,          1, 65535);
+		memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) ); //glPop()
+
+		memcpy( matrix, spGetMatrix(), 16 * sizeof( Sint32 ) ); //glPush()
+		spRotateX( SP_PI/2 );
+		spRotateZ( - rotation * 4 );
+		spBindTexture(yang);
+		spQuadTex3D( - spFloatToFixed( 1.00f ),   spFloatToFixed( 1.00f ), 0,          1,          1,
+		             - spFloatToFixed( 1.00f ), - spFloatToFixed( 1.00f ), 0,          1, yin->h - 1,
+		               spFloatToFixed( 1.00f ), - spFloatToFixed( 1.00f ), 0, yin->w - 1, yin->h - 1,
+		               spFloatToFixed( 1.00f ),   spFloatToFixed( 1.00f ), 0, yin->w - 1,          1, 65535);
+		spQuadTex3D(   spFloatToFixed( 1.00f ),   spFloatToFixed( 1.00f ), 0, yin->w - 1,          1,
+		               spFloatToFixed( 1.00f ), - spFloatToFixed( 1.00f ), 0, yin->w - 1, yin->h - 1,
+		             - spFloatToFixed( 1.00f ), - spFloatToFixed( 1.00f ), 0,          1, yin->h - 1,
+		             - spFloatToFixed( 1.00f ),   spFloatToFixed( 1.00f ), 0,          1,          1, 65535);
+		memcpy( spGetMatrix(), matrix, 16 * sizeof( Sint32 ) ); //glPop()
+		spSetBlending( SP_ONE );
+		spSetPerspectiveTextureMapping(1);
+		break;
 	case 6:
 		spSetAlphaTest( 0 );
 		spTranslate( 0, 0, spFloatToFixed( -8.0f ));
@@ -386,6 +425,9 @@ void draw_test( void )
 	case 6:
 		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 7:\nMAKE IT STOP!", font );
 		break;
+	case 7:
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 8:\nCosmos and stuff", font );
+		break;
 	}
 	if ( quality )
 		spFontDraw( 0, screen->h - font->maxheight, 0, "Light On [A]", font );
@@ -505,12 +547,12 @@ int calc_test( Uint32 steps )
 	if ( spGetInput()->button[SP_BUTTON_R] )
 	{
 		spGetInput()->button[SP_BUTTON_R] = 0;
-		test = ( test + 1 ) % 7;
+		test = ( test + 1 ) % TEST_COUNT;
 	}
 	if ( spGetInput()->button[SP_BUTTON_L] )
 	{
 		spGetInput()->button[SP_BUTTON_L] = 0;
-		test = ( test + 6 ) % 7;
+		test = ( test + TEST_COUNT -1 ) % TEST_COUNT;
 	}
 	if ( spGetInput()->button[SP_BUTTON_Y] )
 	{
@@ -586,7 +628,6 @@ int main( int argc, char **argv )
 
 	//Setup
 	screen = spCreateDefaultWindow();
-	spSelectRenderTarget(screen);
 	spUsePrecalculatedNormals(1);
 	resize( screen->w, screen->h );
 	//Textures loading
@@ -595,7 +636,16 @@ int main( int argc, char **argv )
 	check = spLoadSurfaceZoom( "./data/check.png",zoom);
 	pepper = spLoadSurfaceZoom( "./data/pepper.png",zoom);
 	scientist = spLoadSurface( "./data/science_guy_frames01.png");
+	yin = spLoadSurface( "./data/yinyang.png" );
+	yang = spUniqueCopySurface( yin );
+	spSelectRenderTarget(yin);
+	spFloodFill(384,384,SP_ALPHA_COLOR);
+	spFloodFill(256,128,SP_ALPHA_COLOR);
+	spSelectRenderTarget(yang);
+	spFloodFill(128,128,SP_ALPHA_COLOR);
+	spFloodFill(256,384,SP_ALPHA_COLOR);
 	
+	spSelectRenderTarget(screen);
 	spBindTexture( garfield );
 
 	//Mesh loading
@@ -625,6 +675,8 @@ int main( int argc, char **argv )
 	spDeleteSurface( check );
 	spDeleteSurface( pepper );
 	spDeleteSurface( scientist );
+	spDeleteSurface( yin );
+	spDeleteSurface( yang );
 	spQuitCore();
 	printf( "Average fps: %.1f\n", ( float )fpssum / ( float )divisor );
 	return 0;

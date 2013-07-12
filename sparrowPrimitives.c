@@ -4409,3 +4409,31 @@ PREFIX void spUpdateTargetPixels()
 	if (spTarget)
 		spTargetPixel = ( Uint16* )spTarget->pixels;	
 }
+
+#define FLOOD_PIXEL(x,y) spTargetPixel[(x) + (y) * spTargetScanLine]
+
+void floodFill(int x,int y,Uint16 newColor,Uint16 oldColor)
+{
+	if (x < 0)
+		return;
+	if (y < 0)
+		return;
+	if (x >= spTargetX)
+		return;
+	if (y >= spTargetY)
+		return;
+	if (FLOOD_PIXEL(x,y) != oldColor)
+		return;
+	FLOOD_PIXEL(x,y) = newColor;
+	floodFill(x-1,y,newColor,oldColor);
+	floodFill(x+1,y,newColor,oldColor);
+	floodFill(x,y-1,newColor,oldColor);
+	floodFill(x,y+1,newColor,oldColor);
+}
+
+PREFIX void spFloodFill(int x,int y,Uint16 color)
+{
+	if (FLOOD_PIXEL(x,y) == color)
+		return;
+	floodFill(x,y,color,FLOOD_PIXEL(x,y));
+}
