@@ -40,8 +40,7 @@
 # DYNAMIC says, which libraries will be linked dynamicly. Most of the time these
 # are all used libraries, but some systems also need static linking, too. Because
 # as default no library is linked static, STATIC is not defined yet.
-DYNAMIC =  -lSDL_mixer -lSDL_ttf -lSDL_image -lSDL -lm
-# -lSDL_net
+DYNAMIC =  -lSDL_mixer -lSDL_ttf -lSDL_image -lSDL -lm -lSDL_net
 
 # CFLAGS defines some globale flags for gcc. Even on the gp2x with only 16 KB
 # CPU Cache, -O3 is faster than -Os. So most things you don't have to change

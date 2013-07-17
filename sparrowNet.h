@@ -20,9 +20,26 @@
 #ifndef _SPARROW_NET_H
 #define _SPARROW_NET_H
 
+#include "sparrowDefines.h"
+
 /* File: sparrowNet
  * 
  * SparrowNet / libSparrowNet will be the networking part of sparrow3D.
  * However, at the moment, nothing is implemented.*/
+ 
+typedef struct spNetC4AScoreStruct *spNetC4AScorePointer;
+typedef struct spNetC4AScoreStruct {
+	spNetC4AScorePointer next;
+} spNetC4AScoreType;
+
+
+/* Just definitions! Not working! */
+PREFIX char* spNetC4AGetPrid(char* prid,int max_len);
+
+PREFIX spNetC4AScorePointer spNetC4AGetScore(char* prid,char* game);
+
+PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer firstScore);
+
+PREFIX void spNetC4ACommitScore(char* prid,char* game,int score,spNetC4AScorePointer firstScore);
 
 #endif
