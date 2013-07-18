@@ -1063,7 +1063,11 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 	//time since the last frame
 	Uint32 steps = 0;
 	//time from the last calculation
-	oldticks = SDL_GetTicks();
+	#ifdef DEBUG_SLOWMOTION
+		oldticks = SDL_GetTicks()/DEBUG_SLOWMOTION;
+	#else
+		oldticks = SDL_GetTicks();
+	#endif
 	//time of the current loop pass
 	newticks = oldticks;
 
@@ -1073,7 +1077,11 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 		spPrintDebug( "Start mainloop" );
 #endif
 		oldticks = newticks;
-		newticks = SDL_GetTicks();
+		#ifdef DEBUG_SLOWMOTION
+			newticks = SDL_GetTicks()/DEBUG_SLOWMOTION;
+		#else
+			newticks = SDL_GetTicks();
+		#endif
 		Uint32 diffticks = newticks-oldticks;
 #ifdef F100
 		//mouse movement emulation: *untested*
@@ -1905,17 +1913,29 @@ PREFIX void spSleep(Uint32 microSeconds)
 {
 	#ifdef REALGP2X
 		//TODO: Implement!
-		int t = microSeconds/1000;
+		#ifdef DEBUG_SLOWMOTION
+			int t = microSeconds/1000*DEBUG_SLOWMOTION;
+		#else
+			int t = microSeconds/1000;
+		#endif
 		if (t <= 0)
 			t = 1;
 		SDL_Delay(t);
 	#elif defined WIN32
 		//#warning Implement me better for windows pleeeease. :)
 		// There is no better way, sorry :)
-		Uint32 t = microSeconds/1000;
+		#ifdef DEBUG_SLOWMOTION
+			int t = microSeconds/1000*DEBUG_SLOWMOTION;
+		#else
+			int t = microSeconds/1000;
+		#endif
 		SDL_Delay( (t < 1 ? 1 : t) );	
 	#else
-	usleep(microSeconds);
+		#ifdef DEBUG_SLOWMOTION
+			usleep(microSeconds*DEBUG_SLOWMOTION);
+		#else
+			usleep(microSeconds);
+		#endif
 	#endif
 }
 

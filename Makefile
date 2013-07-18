@@ -94,6 +94,11 @@ SDL_PATH = -I/usr/include/SDL
 # even on faster hardware. ;)
 # CFLAGS += -DFAST_DIVISION -DFAST_MULTIPLICATION
 
+# Debug flag for slow motion in the whole engine! Including drawing stuff. Set
+# the speed divisor you want to use (5 is default if activated, 1 does nothing
+# obviously. Even spSleep is slow moooooo'ed.
+# CFLAGS += -DDEBUG_SLOWMOTION=5
+
 ifdef TARGET
 include ./target-files/$(TARGET).mk
 BUILD = ./build/$(TARGET)/sparrow3d
