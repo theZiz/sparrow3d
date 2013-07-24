@@ -207,6 +207,40 @@ PREFIX SDL_Thread* spNetReceiveTextUnblocked(spNetTCPConnection connection,char*
 	return spNetReceiveTCPUnblocked(connection,data,length);
 }
 
+PREFIX int spNetReceiveStillWaiting(SDL_Thread* thread)
+{
+	receivingPointer before = NULL;
+	receivingPointer mom = firstReceiving;
+	while (mom)
+	{
+		if (mom->thread == thread)
+		{
+			SDL_mutexP(mom->mutex);
+			if (mom->done)
+			{
+				SDL_mutexV(mom->mutex); //The Thread lost the interest on this struct
+				//Removing mom
+				if (before)
+				{
+					SDL_mutexP(before->mutex);
+					before->next = mom->next;
+					SDL_mutexV(before->mutex);
+				}
+				else
+					firstReceiving = mom->next;
+				SDL_DestroyMutex(mom->mutex);
+				free(mom);
+				return 0;
+			}
+			SDL_mutexV(mom->mutex);
+			return 1;
+		}
+		before = mom;
+		mom = mom->next;
+	}	
+	return 0;
+}
+
 PREFIX void spNetCloseTCP(spNetTCPConnection connection)
 {
 	SDLNet_TCP_Close(connection);

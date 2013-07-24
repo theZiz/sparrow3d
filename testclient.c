@@ -19,6 +19,7 @@ void draw_function( void )
 {
 	spClearTarget( 0 );
 	spFontDrawMiddle( spGetWindowSurface()->w/2, (spGetWindowSurface()->h-font->maxheight-spGetVirtualKeyboard()->h)/2, -1, input, font );
+	spFontDraw( 1, 1, -1, "[E] Exit\n[S] Send", font );
 	char buffer[256];
 	sprintf(buffer,"FPS: %i",spGetFPS());
 	spFontDrawRight( spGetWindowSurface()->w-1, spGetWindowSurface()->h-font->maxheight-spGetVirtualKeyboard()->h, -1, buffer, font );
@@ -56,7 +57,7 @@ void resize(Uint16 w,Uint16 h)
 	//Font Loading
 	if ( font )
 		spFontDelete( font );
-	font = spFontLoad( "./font/StayPuft.ttf", 12 * spGetSizeFactor() >> SP_ACCURACY );
+	font = spFontLoad( "./font/Play-Bold.ttf", 12 * spGetSizeFactor() >> SP_ACCURACY );
 	spFontAdd( font, SP_FONT_GROUP_ASCII, 0 ); //whole ASCII
 	spFontAddBorder( font, 65535 );
 	spFontAddButton( font, 'A', SP_BUTTON_A_NAME, 65535, spGetRGB( 64, 64, 64 ) );

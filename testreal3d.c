@@ -50,7 +50,7 @@ void resize( Uint16 w, Uint16 h )
 	//Font Loading
 	if ( font )
 		spFontDelete( font );
-	font = spFontLoad( "./font/StayPuft.ttf", spFixedToInt(17 * spGetSizeFactor())+scale );
+	font = spFontLoad( "./font/Play-Bold.ttf", spFixedToInt(12 * spGetSizeFactor())+scale );
 	spFontAdd( font, SP_FONT_GROUP_ASCII,              rightColor | leftColor); //whole ASCII
 	spFontAddButton( font, 'R', SP_BUTTON_START_NAME,  rightColor | leftColor, SP_ALPHA_COLOR ); //Return == START
 	spFontAddButton( font, 'B', SP_BUTTON_SELECT_NAME, rightColor | leftColor, SP_ALPHA_COLOR ); //Backspace == SELECT

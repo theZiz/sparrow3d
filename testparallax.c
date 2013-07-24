@@ -108,7 +108,7 @@ void resize(Uint16 w,Uint16 h)
 	spFontShadeButtons(1);
 	if ( font )
 		spFontDelete( font );
-	font = spFontLoad( "./font/StayPuft.ttf", 17 * spGetSizeFactor() >> SP_ACCURACY );
+	font = spFontLoad( "./font/Play-Bold.ttf", 12 * spGetSizeFactor() >> SP_ACCURACY );
 	spFontSetShadeColor(0);
 	spFontAdd( font, SP_FONT_GROUP_ASCII, 65535 ); //whole ASCII
 	spFontAdd( font, "äüöÄÜÖßẞ", 65535 ); //German stuff (same like spFontAdd( font, SP_FONT_GROUP_GERMAN, 0 ); )
