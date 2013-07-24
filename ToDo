@@ -1,4 +1,9 @@
-Roadmap til next version (1.3.1):
+Roadmap til 1.4:
+- all 12 tutorials (4/12 done)
+- GUI
+- Skeleton project
+
+general Roadmap:
 - drawing primitives as parallel process
 	- gp2x:
 		- zBuffer needs to be in upper mem!
@@ -9,14 +14,6 @@ Roadmap til next version (1.3.1):
 		- mutex for the state of the process
 		- spBindTexture
 			- setting getting physical address for gp2x for stack
-
-Roadmap til 1.4:
-- all 12 tutorials (4/12 done)
-- Network (with threads)
-- GUI
-- Skeleton
-
-general Roadmap:
 - rotozoom on second processor
 - all blits on second processor
 	- with hardware blitter
