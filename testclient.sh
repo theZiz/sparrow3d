@@ -1,2 +1,2 @@
 #!/bin/sh
-LD_LIBRARY_PATH=. ./testclient
+LD_LIBRARY_PATH=. ./testclient $*

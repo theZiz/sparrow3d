@@ -85,7 +85,14 @@ int main( int argc, char **argv )
 	spSetZSet(0);
 	spSetZTest(0);
 	
-	spNetIP ip = spNetResolve("localhost",12345);
+	spNetIP ip;
+	if (argc < 2)
+		ip = spNetResolve("localhost",12345);
+	else
+	{
+		printf("Connecting to %s\n",argv[1]);
+		ip = spNetResolve(argv[1],12345);
+	}
 	connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
 		sprintf(input,"No connection! I will crash!");
