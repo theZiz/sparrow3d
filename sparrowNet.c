@@ -128,7 +128,7 @@ typedef struct receivingStruct {
 int tcpReceiveThread(void* data)
 {
 	receivingPointer tcpData = (receivingPointer)data;
-	int res=SDLNet_TCP_Recv(tcpData->connection,tcpData->data,tcpData->length);
+	int res=spNetReceiveTCP(tcpData->connection,tcpData->data,tcpData->length);
 	SDL_mutexP(tcpData->mutex);
 	tcpData->done = 1;
 	tcpData->result = res;
@@ -179,7 +179,16 @@ SDL_Thread* allreadyReceiving(spNetTCPConnection connection)
 
 PREFIX int spNetReceiveTCP(spNetTCPConnection connection,void* data,int length)
 {
-	return SDLNet_TCP_Recv(connection,data,length);
+	char* data_pointer = (char*)data;
+	int received = 0;
+	while (received < length)
+	{
+		int new_received = SDLNet_TCP_Recv(connection,&(data_pointer[received]),length);
+		if (new_received == 0)
+			return received;
+		received += new_received;
+	}
+	return received;
 }
 
 PREFIX SDL_Thread* spNetReceiveTCPUnblocked(spNetTCPConnection connection,void* data,int length)
@@ -259,10 +268,52 @@ int spNetC4AStatus = 0;
 typedef struct getscoreStruct *getscorePointer;
 typedef struct getscoreStruct {
 	spNetC4AScorePointer* score;
-	spNetC4AProfile profile;
+	spNetC4AProfilePointer profile;
 	char game[256];
 } getscoreType;
 
+
+char* my_strchr(char* buffer, char c, char ignore)
+{
+	int i;
+	int in_ignore = 0;
+	for (i = 0; buffer[i]!=0; i++)
+	{
+		if (buffer[i] == ignore)
+			in_ignore = 1-in_ignore;
+		if (!in_ignore && buffer[i] == c)
+			return &(buffer[i]);
+	}
+	return NULL;
+}
+
+void fill_between_paraphrases(char* buffer, char* dest, int max_size)
+{
+	int i,j = 0;
+	int in_paraphrases = 0;
+	for (i = 0; buffer[i]!=0; i++)
+	{
+		if (buffer[i] == '\"')
+		{
+			switch (in_paraphrases)
+			{
+				case 0: in_paraphrases = 1; break;
+				case 1: dest[j]=0;return;
+			}
+			continue;
+		}
+		if (in_paraphrases)
+		{
+			dest[j] = buffer[i];
+			j++;
+			if (j == max_size)
+			{
+				dest[j-1] = 0;
+				return;
+			}
+		}
+	}
+}
 
 int c4a_getscore_thread(void* data)
 {
@@ -306,8 +357,79 @@ int c4a_getscore_thread(void* data)
 		return 1;
 	}
 	buffer[length] = 0;
-	printf("%s\n",buffer);
 	spNetCloseTCP(connection);
+	//Searching the first [
+	char* found = strchr( buffer, '[' );
+	if (found == NULL)
+	{
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
+	//Reading score by score
+	//Searching the starting {
+	spNetC4AScorePointer lastScore = NULL;
+	while (found)
+	{
+		char* start = strchr( found, '{' );
+		if (start == NULL)
+		{
+			free(data);
+			SDL_mutexP(spNetC4AStatusMutex);
+			spNetC4AStatus = SP_C4A_ERROR;
+			SDL_mutexV(spNetC4AStatusMutex);
+			return 1;
+		}
+		char* end = my_strchr( start, '}', '\"'); //ignore "text}"-parts
+		if (start == NULL)
+		{
+			free(data);
+			SDL_mutexP(spNetC4AStatusMutex);
+			spNetC4AStatus = SP_C4A_ERROR;
+			SDL_mutexV(spNetC4AStatusMutex);
+			return 1;
+		}
+		//Creating substring:
+		end[0] = 0;
+		//Now we search in the substring
+		//Search for the long name:
+		char* pos = strstr( start, "\"longname\":");
+		pos+=11;
+		char longname[128];
+		fill_between_paraphrases( pos, longname, 128);
+		
+		pos = strstr( start, "\"shortname\":");
+		pos+=12;
+		char shortname[128];
+		fill_between_paraphrases( pos, shortname, 128);
+		
+		pos = strstr( start, "\"score\":");
+		pos+=8;
+		int score = atoi(pos);
+		
+		//Re"inserting" substring:
+		end[0] = '}';
+		found = strchr( end, '{' );
+		
+		//Adding the found stuff to the array:
+		if (longname[0] == 0 || shortname[0] == 0)
+			continue;
+		if (scoreData->profile && (strcmp(scoreData->profile->longname,longname) != 0 || strcmp(scoreData->profile->shortname,shortname) != 0))
+			continue;
+		spNetC4AScorePointer new_score = (spNetC4AScorePointer)malloc(sizeof(spNetC4AScore));
+		sprintf(new_score->longname,"%s",longname);
+		sprintf(new_score->shortname,"%s",shortname);
+		new_score->score = score;
+		new_score->next = NULL;
+		if (lastScore == NULL)
+			(*(scoreData->score)) = new_score;
+		else
+			lastScore->next = new_score;
+		lastScore = new_score;
+	}	
+	
 	free(data);
 	SDL_mutexP(spNetC4AStatusMutex);
 	spNetC4AStatus = SP_C4A_OK;
@@ -315,7 +437,7 @@ int c4a_getscore_thread(void* data)
 	return 0;
 }
 
-PREFIX void spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfile profile,char* game)
+PREFIX void spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game)
 {
 	(*score) = NULL;
 	SDL_mutexP(spNetC4AStatusMutex);

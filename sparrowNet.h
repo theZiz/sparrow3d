@@ -258,21 +258,22 @@ PREFIX void spNetCloseTCP(spNetTCPConnection connection);
 /* Just definitions! Not working! */
 typedef struct spNetC4AScoreStruct *spNetC4AScorePointer;
 typedef struct spNetC4AScoreStruct {
-	char name[4];
-	int points;
+	char longname[256];
+	char shortname[256];
+	int score;
 	spNetC4AScorePointer next;
 } spNetC4AScore;
 
 typedef struct spNetC4AProfileStruct *spNetC4AProfilePointer;
 typedef struct spNetC4AProfileStruct {
-	char* prid;
-	char* longname;
-	char* shortname;
+	char prid[256];
+	char longname[256];
+	char shortname[256];
 } spNetC4AProfile;
 
 PREFIX spNetC4AProfile spNetC4AGetProfile();
 
-PREFIX void spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfile profile,char* game);
+PREFIX void spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game);
 
 PREFIX void spNetC4ACommitScore(spNetC4AProfile profile,char* game,int score,spNetC4AScorePointer firstScore);
 

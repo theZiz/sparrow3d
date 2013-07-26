@@ -104,20 +104,21 @@ int main( int argc, char **argv )
 	printf("Init spNet\n");
 
 	//Testing stuff ;)
-	spNetIP ip = spNetResolve("www.google.de",80);
-	printf("IP of google: %i.%i.%i.%i\n",ip.address.ipv4_bytes[0],ip.address.ipv4_bytes[1],ip.address.ipv4_bytes[2],ip.address.ipv4_bytes[3]);
+	spNetIP ip = spNetResolve("ziz.gp2x.de",80);
+	printf("IP of ziz.gp2x.de: %i.%i.%i.%i\n",ip.address.ipv4_bytes[0],ip.address.ipv4_bytes[1],ip.address.ipv4_bytes[2],ip.address.ipv4_bytes[3]);
 	char buffer[256];
-	printf("Host of the IP of google:\"%s\"\n",spNetResolveHost(ip,buffer,256));
-	printf("Open Connection to google\n");
+	printf("Host of the IP of ziz.gp2x.de:\"%s\"\n",spNetResolveHost(ip,buffer,256));
+	printf("Open Connection to ziz.gp2x.de\n");
 	connection = spNetOpenClientTCP(ip);
-	spNetSendText(connection,"GET /index.html\n");
+	spNetSendText(connection,"GET /index.htm http/1.0\nHost: ziz.gp2x.de\n\n");
 	int res = 1;
-	while (res==1)
+	while (res)
 	{
-		res = spNetReceiveText(connection,buffer,256);
-		printf("%s\n",buffer);
+		res = spNetReceiveText(connection,buffer,255);
+		buffer[res] = 0;
+		printf("%s",buffer);
 	}
-	printf("Close Connection to google\n");
+	printf("Close Connection to ziz.gp2x.de\n");
 	spNetCloseTCP(connection);
 	connection = NULL;
 	//Real stuff
@@ -134,11 +135,26 @@ int main( int argc, char **argv )
 	spSetZSet(0);
 	spSetZTest(0);
 
-	/*spNetC4AScorePointer score;
+	spNetC4AScorePointer score;
 	spNetC4AProfile profile;
-	spNetC4AGetScore(&score,profile,"puzzletube_points");*/
+	sprintf(profile.longname,"Ziz");
+	sprintf(profile.shortname,"ZIZ");
+	spNetC4AGetScore(&score,NULL,"puzzletube_points");
 	
 	spLoop( draw_function, calc_function, 10, resize, NULL );
+	
+	//After the loop because spNetC4AGetScore works in the background. ;)
+	if (spNetC4AGetStatus() == SP_C4A_OK)
+	{
+		spNetC4AScorePointer mom = score;
+		while (mom)
+		{
+			printf("%s (%s): %i\n",mom->longname,mom->shortname,mom->score);
+			mom = mom->next;
+		}
+	}
+	else
+		printf("Fetshing Highscore is still running or failed with status code: %i\n",spNetC4AGetStatus());
 	
 	if (connection)
 		spNetCloseTCP(connection);
