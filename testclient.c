@@ -8,6 +8,7 @@
 */
 #include <sparrow3d.h>
 #include <SDL_image.h>
+#include <string.h>
 
 SDL_Surface *screen;
 Sint32 rotation = 0;

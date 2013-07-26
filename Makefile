@@ -108,7 +108,7 @@ TARGET = "Default (change with make TARGET=otherTarget. See All targets with mak
 BUILD = .
 endif
 
-
+CPP += $(PARAMETER)
 
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
