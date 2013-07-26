@@ -271,14 +271,23 @@ typedef struct spNetC4AProfileStruct {
 	char shortname[256];
 } spNetC4AProfile;
 
-PREFIX spNetC4AProfile spNetC4AGetProfile();
 
-PREFIX void spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game);
+//done
+PREFIX spNetC4AProfilePointer spNetC4AGetProfile();
 
-PREFIX void spNetC4ACommitScore(spNetC4AProfile profile,char* game,int score,spNetC4AScorePointer firstScore);
+//done
+PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile);
 
-PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer firstScore);
+//done
+PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game);
 
+//done
+PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer firstScore);
+
+//done
+PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* firstScore);
+
+//done
 #define SP_C4A_ESTABLISHING 2
 #define SP_C4A_PROGRESS 1
 #define SP_C4A_OK 0

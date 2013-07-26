@@ -136,10 +136,16 @@ int main( int argc, char **argv )
 	spSetZTest(0);
 
 	spNetC4AScorePointer score;
-	spNetC4AProfile profile;
-	sprintf(profile.longname,"Ziz");
-	sprintf(profile.shortname,"ZIZ");
-	spNetC4AGetScore(&score,NULL,"puzzletube_points");
+	spNetC4AProfilePointer profile = spNetC4AGetProfile();
+	if (profile)
+	{
+		printf("Your profile:\n");
+		printf("Long Name: %s\n",profile->longname);
+		printf("Short Name: %s\n",profile->shortname);
+	}
+	else
+		printf("No profile found. Put it to this folder or create it with compo4all!\n");
+	spNetC4AGetScore(&score,profile,"puzzletube_points");
 	
 	spLoop( draw_function, calc_function, 10, resize, NULL );
 	
@@ -152,10 +158,14 @@ int main( int argc, char **argv )
 			printf("%s (%s): %i\n",mom->longname,mom->shortname,mom->score);
 			mom = mom->next;
 		}
+		//If you just uncomment this code, you cheat! Copy it to your game and try
+		//with YOUR game. Thank you. ;)
+		//SDL_WaitThread(spNetC4ACommitScore(profile,"puzzletube_points",10003,score),NULL);
+		//printf("Commit end status code: %i\n",spNetC4AGetStatus());
+		spNetC4ADeleteScores(&score);
 	}
 	else
 		printf("Fetshing Highscore is still running or failed with status code: %i\n",spNetC4AGetStatus());
-	
 	if (connection)
 		spNetCloseTCP(connection);
 	spNetCloseTCP(server);

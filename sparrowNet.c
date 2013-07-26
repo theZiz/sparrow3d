@@ -264,6 +264,11 @@ PREFIX void spQuitNet()
 	SDLNet_Quit();
 }
 
+
+#ifdef PANDORA
+	#include "pnd_locate.h"
+#endif
+
 int spNetC4AStatus = 0;
 typedef struct getscoreStruct *getscorePointer;
 typedef struct getscoreStruct {
@@ -272,6 +277,13 @@ typedef struct getscoreStruct {
 	char game[256];
 } getscoreType;
 
+typedef struct commitStruct *commitPointer;
+typedef struct commitStruct {
+	spNetC4AProfilePointer profile;
+	char game[256];
+	int score;
+	char system[256];
+} commitType;
 
 char* my_strchr(char* buffer, char c, char ignore)
 {
@@ -313,6 +325,43 @@ void fill_between_paraphrases(char* buffer, char* dest, int max_size)
 			}
 		}
 	}
+}
+
+PREFIX spNetC4AProfilePointer spNetC4AGetProfile()
+{
+	spNetC4AProfilePointer profile = NULL;
+	#ifdef PANDORA
+		char *filename = pnd_locate_filename ( "/media/*/pandora/appdata/c4a-mame/:.", "c4a-prof" );
+	#else
+		char filename[256] = "./c4a-prof";
+	#endif
+	//Parsing the file
+	SDL_RWops *file=SDL_RWFromFile(filename,"rb");
+	if (file == NULL)
+		return NULL;
+	profile = (spNetC4AProfilePointer)malloc(sizeof(spNetC4AProfile));
+	char buffer[2048];
+	spReadOneLine(file,buffer,2048);
+	spReadOneLine(file,buffer,2048);
+	char* pos = strstr( buffer, "\"longname\":");
+	pos+=11;
+	fill_between_paraphrases( pos, profile->longname, 256);
+	
+	pos = strstr( buffer, "\"shortname\":");
+	pos+=12;
+	fill_between_paraphrases( pos, profile->shortname, 256);
+	
+	pos = strstr( buffer, "\"prid\":");
+	pos+=7;
+	fill_between_paraphrases( pos, profile->prid, 256);
+	SDL_RWclose(file);
+	return profile;
+}
+
+PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile)
+{
+	if (profile)
+		free(profile);
 }
 
 int c4a_getscore_thread(void* data)
@@ -437,7 +486,7 @@ int c4a_getscore_thread(void* data)
 	return 0;
 }
 
-PREFIX void spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game)
+PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game)
 {
 	(*score) = NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
@@ -450,10 +499,85 @@ PREFIX void spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfilePointer 
 		data->score = score;
 		data->profile = profile;
 		sprintf(data->game,"%s",game);
-		SDL_CreateThread(c4a_getscore_thread,data);
+		return SDL_CreateThread(c4a_getscore_thread,data);
 	}
+	return NULL;
 }
 
+int c4a_commit_thread(void* data)
+{
+	SDL_mutexP(spNetC4AStatusMutex);
+	spNetC4AStatus = SP_C4A_ESTABLISHING;
+	SDL_mutexV(spNetC4AStatusMutex);
+	commitPointer commitData = (commitPointer)data;
+	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
+	spNetTCPConnection connection = spNetOpenClientTCP(ip);
+	if (connection == NULL)
+	{
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
+	SDL_mutexP(spNetC4AStatusMutex);
+	spNetC4AStatus = SP_C4A_PROGRESS;
+	SDL_mutexV(spNetC4AStatusMutex);
+	char commit_string[2048];
+	sprintf(commit_string,"score=%i",commitData->score);
+	int dataSize = strlen(commit_string);
+	sprintf(commit_string,"PUT /plugtally_1/scoreonly/%s/%s/%s?score=%i HTTP/1.1\r\nHost: skeezix.wallednetworks.com:13001\r\nAccept: */*\r\nContent-Length: 0\r\nExpect: 100-continue\r\n",commitData->game,commitData->system,commitData->profile->prid,commitData->score);
+	if (spNetSendText(connection,commit_string) == 0)
+	{
+		spNetCloseTCP(connection);
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
+	//printf("Did:\n%s",commit_string);
+	spNetCloseTCP(connection);
+	free(data);
+	SDL_mutexP(spNetC4AStatusMutex);
+	spNetC4AStatus = SP_C4A_OK;
+	SDL_mutexV(spNetC4AStatusMutex);
+	return 0;
+}
+
+PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer firstScore)
+{
+	if (profile == NULL)
+		return NULL;
+	SDL_mutexP(spNetC4AStatusMutex);
+	int status = spNetC4AStatus;
+	SDL_mutexV(spNetC4AStatusMutex);
+	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	{
+		//Starting a background thread, which does the fancy stuff
+		commitPointer data = (commitPointer)malloc(sizeof(commitType));
+		data->score = score;
+		data->profile = profile;
+		sprintf(data->game,"%s",game);
+		#ifdef GP2X
+			sprintf(data->system,"gp2x");
+		#elif defined(CAANOO)
+			sprintf(data->system,"caanoo");
+		#elif defined(WIZ)
+			sprintf(data->system,"wiz");
+		#elif defined(DINGUX)
+				sprintf(data->system,"dingux");
+		#elif defined(GCW)	
+			sprintf(data->system,"gcw");
+		#elif defined(WIN32)
+			sprintf(data->system,"win32");
+		#else
+			sprintf(data->system,"linux");
+		#endif
+		return SDL_CreateThread(c4a_commit_thread,data);
+	}
+	return NULL;
+}
 
 PREFIX int spNetC4AGetStatus()
 {
@@ -461,4 +585,16 @@ PREFIX int spNetC4AGetStatus()
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
 	return status;
+}
+
+PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* firstScore)
+{
+	if (firstScore == NULL)
+		return;
+	while (*firstScore)
+	{
+		spNetC4AScorePointer next = (*firstScore)->next;
+		free(*firstScore);
+		(*firstScore) = next;
+	}
 }
