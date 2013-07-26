@@ -545,9 +545,26 @@ int c4a_commit_thread(void* data)
 	return 0;
 }
 
+int already_in_highscore(spNetC4AScorePointer firstScore,spNetC4AProfilePointer profile,int score)
+{
+	if (firstScore == NULL)
+		return 0;
+	while (firstScore)
+	{
+		if (strcmp(firstScore->longname,profile->longname) == 0 &&
+		    strcmp(firstScore->shortname,profile->shortname) == 0 &&
+		    firstScore->score == score)
+			return 1;
+		firstScore = firstScore->next;
+	}
+	return 0;
+}
+
 PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer firstScore)
 {
 	if (profile == NULL)
+		return NULL;
+	if (already_in_highscore(firstScore,profile,score))
 		return NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
