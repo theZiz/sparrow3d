@@ -29,13 +29,6 @@
  * implemented! However, you can use the ip structs from here for the UDP
  * part of SDL_net on your own. ;)*/
 
-typedef struct spNetC4AScoreStruct *spNetC4AScorePointer;
-typedef struct spNetC4AScoreStruct {
-	char name[4];
-	int points;
-	spNetC4AScorePointer next;
-} spNetC4AScore;
-
 enum spAddress {IPV4, IPV6};
 
 /* Type: spNetIP
@@ -263,15 +256,32 @@ PREFIX int spNetReceiveStillWaiting(SDL_Thread* thread);
 PREFIX void spNetCloseTCP(spNetTCPConnection connection);
 
 /* Just definitions! Not working! */
-PREFIX char* spNetC4AGetPrid(char* prid,int max_len);
+typedef struct spNetC4AScoreStruct *spNetC4AScorePointer;
+typedef struct spNetC4AScoreStruct {
+	char name[4];
+	int points;
+	spNetC4AScorePointer next;
+} spNetC4AScore;
 
-PREFIX spNetC4AScorePointer spNetC4AGetScore(char* prid,char* game);
+typedef struct spNetC4AProfileStruct *spNetC4AProfilePointer;
+typedef struct spNetC4AProfileStruct {
+	char* prid;
+	char* longname;
+	char* shortname;
+} spNetC4AProfile;
+
+PREFIX spNetC4AProfile spNetC4AGetProfile();
+
+PREFIX void spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfile profile,char* game);
+
+PREFIX void spNetC4ACommitScore(spNetC4AProfile profile,char* game,int score,spNetC4AScorePointer firstScore);
 
 PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer firstScore);
 
-PREFIX void spNetC4ACommitScore(char* prid,char* game,int score,spNetC4AScorePointer firstScore);
-
-//0 nothing happens, 1 getting IP, 2 establishing connection, 3 sending, 4 closing connection
-PREFIX int spNetC4AGetCommitStatus();
+#define SP_C4A_ESTABLISHING 2
+#define SP_C4A_PROGRESS 1
+#define SP_C4A_OK 0
+#define SP_C4A_ERROR -1
+PREFIX int spNetC4AGetStatus();
 
 #endif

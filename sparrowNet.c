@@ -20,10 +20,13 @@
 #include "sparrowNet.h"
 #include <stdio.h>
 
+SDL_mutex* spNetC4AStatusMutex;
+
 PREFIX void spInitNet()
 {
 	if(SDLNet_Init()==-1)
 		printf("SDLNet_Init: %s\n", SDLNet_GetError());
+	spNetC4AStatusMutex = SDL_CreateMutex();
 }
 
 void fill_ip_struct(spNetIPPointer ip)
@@ -248,6 +251,92 @@ PREFIX void spNetCloseTCP(spNetTCPConnection connection)
 
 PREFIX void spQuitNet()
 {
+	SDL_DestroyMutex(spNetC4AStatusMutex);
 	SDLNet_Quit();
 }
 
+int spNetC4AStatus = 0;
+typedef struct getscoreStruct *getscorePointer;
+typedef struct getscoreStruct {
+	spNetC4AScorePointer* score;
+	spNetC4AProfile profile;
+	char game[256];
+} getscoreType;
+
+
+int c4a_getscore_thread(void* data)
+{
+	SDL_mutexP(spNetC4AStatusMutex);
+	spNetC4AStatus = SP_C4A_ESTABLISHING;
+	SDL_mutexV(spNetC4AStatusMutex);
+	getscorePointer scoreData = (getscorePointer)data;
+	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
+	spNetTCPConnection connection = spNetOpenClientTCP(ip);
+	if (connection == NULL)
+	{
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
+	SDL_mutexP(spNetC4AStatusMutex);
+	spNetC4AStatus = SP_C4A_PROGRESS;
+	SDL_mutexV(spNetC4AStatusMutex);
+	char get_string[512];
+	sprintf(get_string,"GET /json_1/%s\n\n",scoreData->game);
+	if (spNetSendText(connection,get_string) == 0)
+	{
+		spNetCloseTCP(connection);
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
+	char buffer[50001]; //skeezix saves the top500. So 100 byte should be enough...
+	int length;
+	if ((length = spNetReceiveText(connection,buffer,50000)) == 0)
+	{
+		spNetCloseTCP(connection);
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
+	buffer[length] = 0;
+	printf("%s\n",buffer);
+	spNetCloseTCP(connection);
+	free(data);
+	SDL_mutexP(spNetC4AStatusMutex);
+	spNetC4AStatus = SP_C4A_OK;
+	SDL_mutexV(spNetC4AStatusMutex);
+	return 0;
+}
+
+PREFIX void spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfile profile,char* game)
+{
+	(*score) = NULL;
+	SDL_mutexP(spNetC4AStatusMutex);
+	int status = spNetC4AStatus;
+	SDL_mutexV(spNetC4AStatusMutex);
+	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	{
+		//Starting a background thread, which does the fancy stuff
+		getscorePointer data = (getscorePointer)malloc(sizeof(getscoreType));
+		data->score = score;
+		data->profile = profile;
+		sprintf(data->game,"%s",game);
+		SDL_CreateThread(c4a_getscore_thread,data);
+	}
+}
+
+
+PREFIX int spNetC4AGetStatus()
+{
+	SDL_mutexP(spNetC4AStatusMutex);
+	int status = spNetC4AStatus;
+	SDL_mutexV(spNetC4AStatusMutex);
+	return status;
+}

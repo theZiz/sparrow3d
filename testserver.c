@@ -133,6 +133,10 @@ int main( int argc, char **argv )
 	resize(screen->w,screen->h);
 	spSetZSet(0);
 	spSetZTest(0);
+
+	/*spNetC4AScorePointer score;
+	spNetC4AProfile profile;
+	spNetC4AGetScore(&score,profile,"puzzletube_points");*/
 	
 	spLoop( draw_function, calc_function, 10, resize, NULL );
 	
