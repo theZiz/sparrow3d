@@ -39,6 +39,122 @@ int blending = 0;
 
 void draw_test( void )
 {
+	/* This is in fact the "end" of the last (!) drawing function. Why am I doing
+	 * this? If drawing in an extra thread is activated the drawing thread has the
+	 * time of the last calc function to finish drawing, too. ;) */
+	spSetZSet( 0 );
+	spSetZTest( 0 );
+	spSetAlphaTest( 1 );
+	//testing touchscreen
+	if (spGetInput()->touchscreen.pressed)
+	{
+		spBlitSurface(spGetInput()->touchscreen.x,spGetInput()->touchscreen.y,0,pepper);
+	}
+
+	spFontDraw( 0, 2, 0, "Previous [L]", font );
+	spFontDrawRight( screen->w - 2, 2, 0, "[R] next", font );
+	switch (threading)
+	{
+		case 0: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] No draw thread", font ); break;
+		case 1: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] Extra draw thread", font ); break;
+	}
+	if (blending)
+		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] blending", font );
+	else
+		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] no blending", font );
+	switch ( test )
+	{
+	case 0:
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 1:\nRotating Cube", font );
+		break;
+	case 1:
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 2:\n3D Tube", font );
+		break;
+	case 2:
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 3:\nFulfilling", font );
+		break;
+	case 3:
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 4:\nMesh Loading", font );
+		break;
+	case 4:
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 5:\nPrimitives", font );
+		break;
+	case 5:
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 6:\nSprites & Rotozoom", font );
+		break;
+	case 6:
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 7:\nMAKE IT STOP!", font );
+		break;
+	case 7:
+		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 8:\nCosmos and stuff", font );
+		break;
+	}
+	if ( quality )
+		spFontDraw( 0, screen->h - font->maxheight, 0, "Light On [A]", font );
+	else
+		spFontDraw( 0, screen->h - font->maxheight, 0, "Light Off [A]", font );
+	char buffer[256];
+	if ( zStuff )
+		spFontDraw( 0, screen->h - font->maxheight * 2, 0, "Z Test/Set On [Y]", font );
+	else
+		spFontDraw( 0, screen->h - font->maxheight * 2, 0, "Z Test/Set Off [Y]", font );
+
+	sprintf( buffer, "%02i:%02i", divisor / 60000, ( divisor / 1000 ) % 60 );
+	//spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, 0, buffer, font );
+	sprintf( buffer, "fps: %i", spGetFPS() );
+	spFontDrawMiddle( screen->w/2, 1, 0, buffer, font );
+	if (spIsKeyboardPolled())
+		spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, 0, "[S] Finish Text", font );
+	else
+		spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, 0, "[S] Enter Text", font );
+	spFontDrawRight( screen->w - 2, screen->h - font->maxheight, 0, "[E] Exit", font );
+	char utf8buffer[5];
+	sprintf(buffer,"Pressing \"%s\"",spFontGetUTF8FromUnicode(lastKey,utf8buffer,5));
+	if (lastKey)
+		spFontDrawMiddle( screen->w / 2, screen->h /2 - font->maxheight/2, 0, buffer, font );
+	if (input[0])
+		spFontDrawMiddle( screen->w / 2, screen->h /2 + font->maxheight/2, 0, input, font );
+
+	if (spGetInput()->analog_axis[0] < 0)
+	{
+		sprintf(buffer,"<");
+		int i;
+		for (i = 0; i < -spGetInput()->analog_axis[0]; i+=-SP_ANALOG_AXIS_MIN/5)
+			sprintf(buffer,"%s-",buffer);
+	}	
+	else
+		sprintf(buffer," ");
+	sprintf(buffer,"%s\"%i\" ",buffer,spGetInput()->analog_axis[0]);
+	if (spGetInput()->analog_axis[0] > 0)
+	{
+		int i;
+		for (i = 0; i < spGetInput()->analog_axis[0]; i+=SP_ANALOG_AXIS_MAX/5)
+			sprintf(buffer,"%s-",buffer);
+		sprintf(buffer,"%s>",buffer);
+	}	
+	spFontDraw( 2, font->maxheight, 0, buffer, font );
+
+	if (spGetInput()->analog_axis[1] < 0)
+	{
+		sprintf(buffer,"^\n");
+		int i;
+		for (i = 0; i < -spGetInput()->analog_axis[1]; i+=-SP_ANALOG_AXIS_MIN/5)
+			sprintf(buffer,"%s|\n",buffer);
+	}	
+	else
+		sprintf(buffer," ");
+	sprintf(buffer,"%s\"%i\"\n",buffer,spGetInput()->analog_axis[1]);
+	if (spGetInput()->analog_axis[1] > 0)
+	{
+		int i;
+		for (i = 0; i < spGetInput()->analog_axis[1]; i+=SP_ANALOG_AXIS_MAX/5)
+			sprintf(buffer,"%s|\n",buffer);
+		sprintf(buffer,"%sv",buffer);
+	}	
+	spFontDraw( 2, font->maxheight*2, 0, buffer, font );
+	if (spIsKeyboardPolled() && spGetVirtualKeyboardState() == SP_VIRTUAL_KEYBOARD_ALWAYS)
+		spBlitSurface(screen->w/2,screen->h-spGetVirtualKeyboard()->h/2,0,spGetVirtualKeyboard());
+	spFlip();
 	spResetZBuffer();
 	if (blending)
 		spSetBlending( spMul(spSin(rotation * 4),spSin(rotation * 3)) + SP_ONE >> 1 );
@@ -382,119 +498,6 @@ void draw_test( void )
 		spSetPerspectiveTextureMapping(0);
 		break;
 	}
-	spSetZSet( 0 );
-	spSetZTest( 0 );
-	spSetAlphaTest( 1 );
-	//testing touchscreen
-	if (spGetInput()->touchscreen.pressed)
-	{
-		spBlitSurface(spGetInput()->touchscreen.x,spGetInput()->touchscreen.y,0,pepper);
-	}
-
-	spFontDraw( 0, 2, 0, "Previous [L]", font );
-	spFontDrawRight( screen->w - 2, 2, 0, "[R] next", font );
-	switch (threading)
-	{
-		case 0: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] No draw thread", font ); break;
-		case 1: spFontDrawRight( screen->w - 2, screen->h - 3*font-> maxheight, 0, "[X] Extra draw thread", font ); break;
-	}
-	if (blending)
-		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] blending", font );
-	else
-		spFontDraw( 2, screen->h - 3*font-> maxheight, 0, "[B] no blending", font );
-	switch ( test )
-	{
-	case 0:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 1:\nRotating Cube", font );
-		break;
-	case 1:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 2:\n3D Tube", font );
-		break;
-	case 2:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 3:\nFulfilling", font );
-		break;
-	case 3:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 4:\nMesh Loading", font );
-		break;
-	case 4:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 5:\nPrimitives", font );
-		break;
-	case 5:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 6:\nSprites & Rotozoom", font );
-		break;
-	case 6:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 7:\nMAKE IT STOP!", font );
-		break;
-	case 7:
-		spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, "Test 8:\nCosmos and stuff", font );
-		break;
-	}
-	if ( quality )
-		spFontDraw( 0, screen->h - font->maxheight, 0, "Light On [A]", font );
-	else
-		spFontDraw( 0, screen->h - font->maxheight, 0, "Light Off [A]", font );
-	char buffer[256];
-	if ( zStuff )
-		spFontDraw( 0, screen->h - font->maxheight * 2, 0, "Z Test/Set On [Y]", font );
-	else
-		spFontDraw( 0, screen->h - font->maxheight * 2, 0, "Z Test/Set Off [Y]", font );
-
-	sprintf( buffer, "%02i:%02i", divisor / 60000, ( divisor / 1000 ) % 60 );
-	//spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, 0, buffer, font );
-	sprintf( buffer, "fps: %i", spGetFPS() );
-	spFontDrawMiddle( screen->w/2, 1, 0, buffer, font );
-	if (spIsKeyboardPolled())
-		spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, 0, "[S] Finish Text", font );
-	else
-		spFontDrawRight( screen->w - 2, screen->h - font->maxheight * 2, 0, "[S] Enter Text", font );
-	spFontDrawRight( screen->w - 2, screen->h - font->maxheight, 0, "[E] Exit", font );
-	char utf8buffer[5];
-	sprintf(buffer,"Pressing \"%s\"",spFontGetUTF8FromUnicode(lastKey,utf8buffer,5));
-	if (lastKey)
-		spFontDrawMiddle( screen->w / 2, screen->h /2 - font->maxheight/2, 0, buffer, font );
-	if (input[0])
-		spFontDrawMiddle( screen->w / 2, screen->h /2 + font->maxheight/2, 0, input, font );
-
-	if (spGetInput()->analog_axis[0] < 0)
-	{
-		sprintf(buffer,"<");
-		int i;
-		for (i = 0; i < -spGetInput()->analog_axis[0]; i+=-SP_ANALOG_AXIS_MIN/5)
-			sprintf(buffer,"%s-",buffer);
-	}	
-	else
-		sprintf(buffer," ");
-	sprintf(buffer,"%s\"%i\" ",buffer,spGetInput()->analog_axis[0]);
-	if (spGetInput()->analog_axis[0] > 0)
-	{
-		int i;
-		for (i = 0; i < spGetInput()->analog_axis[0]; i+=SP_ANALOG_AXIS_MAX/5)
-			sprintf(buffer,"%s-",buffer);
-		sprintf(buffer,"%s>",buffer);
-	}	
-	spFontDraw( 2, font->maxheight, 0, buffer, font );
-
-	if (spGetInput()->analog_axis[1] < 0)
-	{
-		sprintf(buffer,"^\n");
-		int i;
-		for (i = 0; i < -spGetInput()->analog_axis[1]; i+=-SP_ANALOG_AXIS_MIN/5)
-			sprintf(buffer,"%s|\n",buffer);
-	}	
-	else
-		sprintf(buffer," ");
-	sprintf(buffer,"%s\"%i\"\n",buffer,spGetInput()->analog_axis[1]);
-	if (spGetInput()->analog_axis[1] > 0)
-	{
-		int i;
-		for (i = 0; i < spGetInput()->analog_axis[1]; i+=SP_ANALOG_AXIS_MAX/5)
-			sprintf(buffer,"%s|\n",buffer);
-		sprintf(buffer,"%sv",buffer);
-	}	
-	spFontDraw( 2, font->maxheight*2, 0, buffer, font );
-	if (spIsKeyboardPolled() && spGetVirtualKeyboardState() == SP_VIRTUAL_KEYBOARD_ALWAYS)
-		spBlitSurface(screen->w/2,screen->h-spGetVirtualKeyboard()->h/2,0,spGetVirtualKeyboard());
-	spFlip();
 }
 
 
