@@ -569,6 +569,8 @@ PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game
 				sprintf(data->system,"dingux");
 		#elif defined(GCW)	
 			sprintf(data->system,"gcw");
+		#elif defined(PANDORA)	
+			sprintf(data->system,"pandora");
 		#elif defined(WIN32)
 			sprintf(data->system,"win32");
 		#else
