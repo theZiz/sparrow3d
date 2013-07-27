@@ -36,7 +36,7 @@ int calc_function( Uint32 steps )
 	if ( spGetInput()->button[SP_BUTTON_START] )
 	{
 		spGetInput()->button[SP_BUTTON_START] = 0;
-		spNetSendTCP(connection,input,strlen(input)+1);
+		spNetSendHTTP(connection,input);
 		input[0] = 0;
 	}
 	if ( spGetInput()->button[SP_BUTTON_SELECT] )
