@@ -160,7 +160,7 @@ int main( int argc, char **argv )
 		}
 		//If you just uncomment this code, you cheat! Copy it to your game and try
 		//with YOUR game. Thank you. ;)
-		//SDL_WaitThread(spNetC4ACommitScore(profile,"puzzletube_points",10003,score),NULL);
+		//SDL_WaitThread(spNetC4ACommitScore(profile,"puzzletube_points",10003,&score),NULL);
 		//printf("Commit end status code: %i\n",spNetC4AGetStatus());
 		spNetC4ADeleteScores(&score);
 	}

@@ -370,7 +370,7 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* firstScore);
  * SDL_Thread* - handle to the created thread. If you don't want to run the
  * task in background you can e.g. call SDL_WaitThread with this return value or
  * maybe kill it after a timeout.*/
-PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer firstScore);
+PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* firstScore);
 
 
 /* Defines: Compo4all statuses

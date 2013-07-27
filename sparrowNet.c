@@ -596,7 +596,7 @@ int already_in_highscore(spNetC4AScorePointer firstScore,spNetC4AProfilePointer 
 	return 0;
 }
 
-PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer firstScore)
+PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* firstScore)
 {
 	if (profile == NULL)
 		return NULL;
