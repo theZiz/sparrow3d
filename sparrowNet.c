@@ -308,6 +308,7 @@ typedef struct commitStruct {
 	char game[256];
 	int score;
 	char system[256];
+	spNetC4AScorePointer* firstScore;
 } commitType;
 
 char* my_strchr(char* buffer, char c, char ignore)
@@ -563,6 +564,16 @@ int c4a_commit_thread(void* data)
 	}
 	//printf("Did:\n%s",commit_string);
 	spNetCloseTCP(connection);
+	//Adding to firstScore ;)
+	if (commitData->firstScore)
+	{
+		spNetC4AScorePointer new_score = (spNetC4AScorePointer)malloc(sizeof(spNetC4AScore));
+		sprintf(new_score->longname,"%s",commitData->profile->longname);
+		sprintf(new_score->shortname,"%s",commitData->profile->shortname);
+		new_score->score = commitData->score;
+		new_score->next = (*(commitData->firstScore));
+		(*(commitData->firstScore)) = new_score;
+	}
 	free(data);
 	SDL_mutexP(spNetC4AStatusMutex);
 	spNetC4AStatus = SP_C4A_OK;
@@ -600,6 +611,7 @@ PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game
 		commitPointer data = (commitPointer)malloc(sizeof(commitType));
 		data->score = score;
 		data->profile = profile;
+		data->firstScore = firstScore;
 		sprintf(data->game,"%s",game);
 		#ifdef GP2X
 			sprintf(data->system,"gp2x");
