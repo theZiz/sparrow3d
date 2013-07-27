@@ -600,7 +600,7 @@ PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game
 {
 	if (profile == NULL)
 		return NULL;
-	if (already_in_highscore(firstScore,profile,score))
+	if (already_in_highscore(*firstScore,profile,score))
 		return NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
