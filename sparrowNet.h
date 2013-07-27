@@ -163,7 +163,7 @@ PREFIX spNetIP spNetGetConnectionIP(spNetTCPConnection connection);
  * closed */
 PREFIX int spNetSendTCP(spNetTCPConnection connection,void* data,int length);
 
-/* Function: spNetSendText
+/* Function: spNetSendHTTP
  * 
  * Sends text over TCP with spNetSendTCP.
  * 
@@ -174,7 +174,7 @@ PREFIX int spNetSendTCP(spNetTCPConnection connection,void* data,int length);
  * Returns:
  * int - the number of sent bytes. If unequal length the connection seem to be
  * closed */
-PREFIX int spNetSendText(spNetTCPConnection connection,char* data);
+PREFIX int spNetSendHTTP(spNetTCPConnection connection,char* data);
 
 /* Function: spNetReceiveTCP
  * 
@@ -192,10 +192,11 @@ PREFIX int spNetSendText(spNetTCPConnection connection,char* data);
  * is invalid now! Better close, too. */
 PREFIX int spNetReceiveTCP(spNetTCPConnection connection,void* data,int length);
 
-/* Function: spNetReceiveText
+/* Function: spNetReceiveHTTP
  * 
- * Receives text from the other side. This function blocks your application
- * until the client actually sends something!
+ * Receives data from the other side until the other side disconnects. This
+ * function blocks your application until the client actually sends something!
+ * You can of course use other protocols than http. ;)
  * 
  * Parameters:
  * connection - the connection you want to receive tcp packages from
@@ -206,7 +207,7 @@ PREFIX int spNetReceiveTCP(spNetTCPConnection connection,void* data,int length);
  * int - the number of received characters. If 0 something strange happend. E.g.
  * your counterside explodes or just closed the connection. However your
  * connection is invalid now! Better close, too. */
-PREFIX int spNetReceiveText(spNetTCPConnection connection,char* data,int length);
+PREFIX int spNetReceiveHTTP(spNetTCPConnection connection,char* data,int length);
 
 /* Function: spNetReceiveTCPUnblocked
  * 
@@ -225,11 +226,12 @@ PREFIX int spNetReceiveText(spNetTCPConnection connection,char* data,int length)
  * returned the connection is closed (or your counterside exploded).*/
 PREFIX SDL_Thread* spNetReceiveTCPUnblocked(spNetTCPConnection connection,void* data,int length);
 
-/* Function: spNetReceiveTextUnblocked
+/* Function: spNetReceiveHTTPUnblocked
  * 
- * Receives text from the other side. This function does not block your
- * application! However, it may need a while until your counterpart sends
- * something and your data string stays invalid.
+ * Receives data from the other side until the other side disconnects. This
+ * function does not block your application! However, it may need a while until
+ * your counterpart sends something and your data string stays invalid. You
+ * can of course use other protocols than http. ;)
  * 
  * Parameters:
  * 
@@ -241,7 +243,7 @@ PREFIX SDL_Thread* spNetReceiveTCPUnblocked(spNetTCPConnection connection,void* 
  * SDL_Thread* - a handle to the created background thread. E.g. you can kill
  * it with SDL_KillThread if you don't want to wait anymore. If (void*)(-1) is
  * returned the connection is closed (or your counterside exploded).*/
-PREFIX SDL_Thread* spNetReceiveTextUnblocked(spNetTCPConnection connection,char* data,int length);
+PREFIX SDL_Thread* spNetReceiveHTTPUnblocked(spNetTCPConnection connection,char* data,int length);
 
 /* Function: spNetReceiveStillWaiting
  * 

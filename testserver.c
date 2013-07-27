@@ -52,7 +52,7 @@ int calc_function( Uint32 steps )
 	if (connection != NULL)
 	{
 		SDL_Thread* thread;
-		if ((thread = spNetReceiveTextUnblocked(connection,received_lines[(mom_line+1) & 15],256)) != oldThread)
+		if ((thread = spNetReceiveTCPUnblocked(connection,received_lines[(mom_line+1) & 15],256)) != oldThread)
 		{
 			oldThread = thread;
 			/*int i;
@@ -110,11 +110,11 @@ int main( int argc, char **argv )
 	printf("Host of the IP of ziz.gp2x.de:\"%s\"\n",spNetResolveHost(ip,buffer,256));
 	printf("Open Connection to ziz.gp2x.de\n");
 	connection = spNetOpenClientTCP(ip);
-	spNetSendText(connection,"GET /index.htm http/1.0\nHost: ziz.gp2x.de\n\n");
+	spNetSendHTTP(connection,"GET /index.htm http/1.0\nHost: ziz.gp2x.de\n\n");
 	int res = 1;
 	while (res)
 	{
-		res = spNetReceiveText(connection,buffer,255);
+		res = spNetReceiveHTTP(connection,buffer,255);
 		buffer[res] = 0;
 		printf("%s",buffer);
 	}

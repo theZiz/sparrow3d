@@ -29,7 +29,3 @@ general Roadmap:
 - sparrowFont additional or own part, which allows to draw blocked text
   (e.g. text from sparrowText ;-) )
 - sparrowText faster Lookup: O(log(n)) instead of O(n)
-
-Nice to have:
-- cool intro with sparrows
-- ponies => rainbow dash would make my engine 20% cooler...

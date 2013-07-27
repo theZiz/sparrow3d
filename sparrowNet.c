@@ -108,7 +108,7 @@ PREFIX int spNetSendTCP(spNetTCPConnection connection,void* data,int length)
 	return SDLNet_TCP_Send(connection,data,length);
 }
 
-PREFIX int spNetSendText(spNetTCPConnection connection,char* data)
+PREFIX int spNetSendHTTP(spNetTCPConnection connection,char* data)
 {
 	return spNetSendTCP(connection,data,strlen(data)+1);
 }
@@ -129,6 +129,17 @@ int tcpReceiveThread(void* data)
 {
 	receivingPointer tcpData = (receivingPointer)data;
 	int res=spNetReceiveTCP(tcpData->connection,tcpData->data,tcpData->length);
+	SDL_mutexP(tcpData->mutex);
+	tcpData->done = 1;
+	tcpData->result = res;
+	SDL_mutexV(tcpData->mutex);
+	return res;
+}
+
+int tcpReceiveThread_http(void* data)
+{
+	receivingPointer tcpData = (receivingPointer)data;
+	int res=spNetReceiveHTTP(tcpData->connection,tcpData->data,tcpData->length);
 	SDL_mutexP(tcpData->mutex);
 	tcpData->done = 1;
 	tcpData->result = res;
@@ -180,15 +191,7 @@ SDL_Thread* allreadyReceiving(spNetTCPConnection connection)
 PREFIX int spNetReceiveTCP(spNetTCPConnection connection,void* data,int length)
 {
 	char* data_pointer = (char*)data;
-	int received = 0;
-	while (received < length)
-	{
-		int new_received = SDLNet_TCP_Recv(connection,&(data_pointer[received]),length);
-		if (new_received == 0)
-			return received;
-		received += new_received;
-	}
-	return received;
+	return SDLNet_TCP_Recv(connection,&(data_pointer[0]),length);
 }
 
 PREFIX SDL_Thread* spNetReceiveTCPUnblocked(spNetTCPConnection connection,void* data,int length)
@@ -209,14 +212,36 @@ PREFIX SDL_Thread* spNetReceiveTCPUnblocked(spNetTCPConnection connection,void* 
 	return tcpData->thread;
 }
 
-PREFIX int spNetReceiveText(spNetTCPConnection connection,char* data,int length)
+PREFIX int spNetReceiveHTTP(spNetTCPConnection connection,char* data,int length)
 {
-	return spNetReceiveTCP(connection,data,length);
+	int received = 0;
+	while (length > 0)
+	{
+		int new_received = spNetReceiveTCP(connection,&(data[received]),length);
+		received+=new_received;
+		length-=new_received;
+		if (new_received == 0)
+			return received;
+	}
+	return received;
 }
 
-PREFIX SDL_Thread* spNetReceiveTextUnblocked(spNetTCPConnection connection,char* data,int length)
+PREFIX SDL_Thread* spNetReceiveHTTPUnblocked(spNetTCPConnection connection,char* data,int length)
 {
-	return spNetReceiveTCPUnblocked(connection,data,length);
+	SDL_Thread* thread;
+	if (thread = allreadyReceiving(connection))
+		return thread;
+	receivingPointer tcpData = (receivingPointer)malloc(sizeof(receivingType));
+	tcpData->connection = connection;
+	tcpData->data = data;
+	tcpData->length = length;
+	tcpData->connection = connection;
+	tcpData->done = 0;
+	tcpData->mutex = SDL_CreateMutex();
+	tcpData->next = firstReceiving;
+	firstReceiving = tcpData;
+	tcpData->thread = SDL_CreateThread(tcpReceiveThread_http,tcpData);
+	return tcpData->thread;
 }
 
 PREFIX int spNetReceiveStillWaiting(SDL_Thread* thread)
@@ -385,7 +410,7 @@ int c4a_getscore_thread(void* data)
 	SDL_mutexV(spNetC4AStatusMutex);
 	char get_string[512];
 	sprintf(get_string,"GET /json_1/%s\n\n",scoreData->game);
-	if (spNetSendText(connection,get_string) == 0)
+	if (spNetSendHTTP(connection,get_string) == 0)
 	{
 		spNetCloseTCP(connection);
 		free(data);
@@ -396,7 +421,7 @@ int c4a_getscore_thread(void* data)
 	}
 	char buffer[50001]; //skeezix saves the top500. So 100 byte should be enough...
 	int length;
-	if ((length = spNetReceiveText(connection,buffer,50000)) == 0)
+	if ((length = spNetReceiveHTTP(connection,buffer,50000)) == 0)
 	{
 		spNetCloseTCP(connection);
 		free(data);
@@ -527,7 +552,7 @@ int c4a_commit_thread(void* data)
 	sprintf(commit_string,"score=%i",commitData->score);
 	int dataSize = strlen(commit_string);
 	sprintf(commit_string,"PUT /plugtally_1/scoreonly/%s/%s/%s?score=%i HTTP/1.1\r\nHost: skeezix.wallednetworks.com:13001\r\nAccept: */*\r\nContent-Length: 0\r\nExpect: 100-continue\r\n",commitData->game,commitData->system,commitData->profile->prid,commitData->score);
-	if (spNetSendText(connection,commit_string) == 0)
+	if (spNetSendHTTP(connection,commit_string) == 0)
 	{
 		spNetCloseTCP(connection);
 		free(data);
