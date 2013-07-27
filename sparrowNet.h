@@ -28,9 +28,16 @@
  * 
  * SparrowNet is a basic network API based on SDL_net. Until now UDP is not
  * implemented! However, you can use the ip structs from here for the UDP
- * part of SDL_net on your own. ;)*/
+ * part of SDL_net on your own. ;)
+ * 
+ * Furthermore sparrowNet has some fancy functions for getting and submitting
+ * scores for the compo4all online highscore system.*/
 
 enum spAddress {IPV4, IPV6};
+
+/* Section: General & TCP Stuff
+ * 
+ * Types and Functions for initializing sparrowNet and sending data over tcp.*/
 
 /* Type: spNetIP
  * 
@@ -256,7 +263,20 @@ PREFIX int spNetReceiveStillWaiting(SDL_Thread* thread);
  * connection - connection to close*/
 PREFIX void spNetCloseTCP(spNetTCPConnection connection);
 
-/* Just definitions! Not working! */
+/* Section: Compo4all stuff
+ * 
+ * Types and Functions for sending and receiving data to and from the compo4all
+ * server.*/
+
+/* Type: spNetC4AScore
+ * 
+ * Type for a linked list of scores gotten from the compo4all highscore servers
+ * 
+ * Variables:
+ * longname - full name of the player
+ * shortname - three digit short name of the player
+ * score - the reached points
+ * next - pointer to the next element in the list*/
 typedef struct spNetC4AScoreStruct *spNetC4AScorePointer;
 typedef struct spNetC4AScoreStruct {
 	char longname[256];
@@ -265,6 +285,14 @@ typedef struct spNetC4AScoreStruct {
 	spNetC4AScorePointer next;
 } spNetC4AScore;
 
+/* Type: spNetC4AProfile
+ * 
+ * A struct for your unique (!) C4A Profile.
+ * 
+ * Variables:
+ * prid - unique id of your account. Keep it for you. ;)
+ * longname - your full name
+ * shortname - your 3 digit short name */
 typedef struct spNetC4AProfileStruct *spNetC4AProfilePointer;
 typedef struct spNetC4AProfileStruct {
 	char prid[256];
@@ -273,26 +301,95 @@ typedef struct spNetC4AProfileStruct {
 } spNetC4AProfile;
 
 
-//done
+/* Function: spNetC4AGetProfile
+ * 
+ * Reads your profile out of your c4a-prof file. On the pandora the file is
+ * created by compo4all and stored on a pandora specific place. On other systems
+ * for now your c4a-prof should be in the folder of your application.
+ * Unfortunately it is quite hard for a not pandora owner to get such a
+ * compo4all account. But a webserver for this purpose is in the making. :)
+ * 
+ * Returns:
+ * spNetC4AProfilePointer - a pointer to an <spNetC4AProfile> struct*/
 PREFIX spNetC4AProfilePointer spNetC4AGetProfile();
 
-//done
+/* Function: spNetC4AFreeProfile
+ * 
+ * Frees the profile you got from <spNetC4AGetProfile>.
+ * 
+ * Parameters:
+ * profile - profile to free. However of course your profile is not deleted. ;)*/
 PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile);
 
-//done
+/* Function: spNetC4AGetScore
+ * 
+ * Loads a top 500 for a given game from the compo4all server. The task runs
+ * in background! Use <spNetC4AGetStatus> to get the status of the task. Only
+ * one background task (fetching highscore OR commiting a score) can run at one
+ * time!
+ * 
+ * Parameters:
+ * score - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
+ * <spNetC4AScore>
+ * profile - an optional pointer to your profile. If given only your scores are
+ * added to the scores-list above
+ * game - name of the game on the server
+ * 
+ * Returns:
+ * SDL_Thread* - handle to the created thread. If you don't want to run the
+ * task in background you can e.g. call SDL_WaitThread with this return value or
+ * maybe kill it after a timeout.*/
 PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game);
 
-//done
-PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer firstScore);
-
-//done
+/* Function: spNetC4ADeleteScores
+ * 
+ * Frees the linked list returned by <spNetC4AGetScore>.
+ * 
+ * Parameters:
+ * firstScore - pointer to <spNetC4AScore> to free*/
 PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* firstScore);
 
-//done
+/* Function: spNetC4ACommitScore
+ * 
+ * Commits a score to a specific game to compo4all server. The task runs
+ * in background! Use <spNetC4AGetStatus> to get the status of the task. Only
+ * one background task (fetching highscore OR commiting a score) can run at one
+ * time!
+ * 
+ * Parameters:
+ * profile - the profile you want to commit tthe score with
+ * game - name of the game on the server
+ * score - reached score
+ * firstScore - pointer to a <spNetC4AScore> struct. If given it is first
+ * checked, whether you already have this score. ;) So you can commit always
+ * ALL scores of your game - and wont have any doubles. "Caching" for free!
+ * 
+ * Returns:
+ * SDL_Thread* - handle to the created thread. If you don't want to run the
+ * task in background you can e.g. call SDL_WaitThread with this return value or
+ * maybe kill it after a timeout.*/
+PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer firstScore);
+
+
+/* Defines: Compo4all statuses
+ * 
+ * Statuses for the committing and score-loading functions.
+ * 
+ * SP_C4A_ESTABLISHING - Connection is being established
+ * SP_C4A_PROGRESS - transfer of data is in progress
+ * SP_C4A_OK - process is done and everything was fine
+ * SP_C4A_ERROR - process is done, but something went wrong */
 #define SP_C4A_ESTABLISHING 2
 #define SP_C4A_PROGRESS 1
 #define SP_C4A_OK 0
 #define SP_C4A_ERROR -1
+
+/* Function: spNetC4AGetStatus
+ * 
+ * Gets the status of <spNetC4AGetScore> and <spNetC4ACommitScore>.
+ * 
+ * Returns:
+ * int - <Compo4all statuses>*/
 PREFIX int spNetC4AGetStatus();
 
 #endif
