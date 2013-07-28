@@ -46,8 +46,8 @@ enum spAddress {IPV4, IPV6};
  * Variables:
  * ipv4 (Uint32) - 32 bit ipv4 address
  * ipv4_bytes (Uint8[4]) - 4 x 8bit ipv4 address
- * ipv6 (Uint32[4]) - 128 bit ipv4 address
- * ipv6_bytes (Uint8[16]) - 16 x 8bit ipv4 address
+ * ipv6 (Uint32[4]) - 128 bit ipv6 address
+ * ipv6_bytes (Uint8[16]) - 16 x 8bit ipv6 address
  * port (Uint16) - port of the address
  * sdl_address (IPaddress) - ip address struct of SDL*/
 typedef struct spNetIPStruct *spNetIPPointer;
