@@ -364,7 +364,7 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* firstScore);
  * score - reached score
  * firstScore - pointer to a <spNetC4AScore> struct. If given it is first
  * checked, whether you already have this score. ;) So you can commit always
- * ALL scores of your game - and wont have any doubles. "Caching" for free!
+ * ALL scores of your game and wont have any doubles. "Caching" for free!
  * 
  * Returns:
  * SDL_Thread* - handle to the created thread. If you don't want to run the
