@@ -289,7 +289,7 @@ typedef struct spNetC4AScoreStruct {
 
 /* Type: spNetC4AProfile
  * 
- * A struct for your unique (!) C4A Profile.
+ * A struct for your *unique* C4A Profile.
  * 
  * Variables:
  * prid - unique id of your account. Keep it for you. ;)
