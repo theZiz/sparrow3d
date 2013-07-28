@@ -489,6 +489,10 @@ int c4a_getscore_thread(void* data)
 		pos+=8;
 		int score = atoi(pos);
 		
+		pos = strstr( start, "\"time\":");
+		pos+=7;
+		Uint64 commitTime = (Uint64)(atof(pos)); //float becase of bigger numbers
+		
 		//Re"inserting" substring:
 		end[0] = '}';
 		found = strchr( end, '{' );
@@ -502,6 +506,7 @@ int c4a_getscore_thread(void* data)
 		sprintf(new_score->longname,"%s",longname);
 		sprintf(new_score->shortname,"%s",shortname);
 		new_score->score = score;
+		new_score->commitTime = commitTime;
 		new_score->next = NULL;
 		if (lastScore == NULL)
 			(*(scoreData->score)) = new_score;

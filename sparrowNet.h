@@ -23,6 +23,7 @@
 #include "sparrowDefines.h"
 #include <SDL_net.h>
 #include <SDL_thread.h>
+#include <time.h>
 
 /* File: sparrowNet
  * 
@@ -278,12 +279,16 @@ PREFIX void spNetCloseTCP(spNetTCPConnection connection);
  * longname - full name of the player
  * shortname - three digit short name of the player
  * score - the reached points
+ * commitTime - time of type time_t (seconds since 1.1.1970 00:00:00),
+ * when the score was committed. Use localtime of time.h to "decrypt"
+ * this type. ;)
  * next - pointer to the next element in the list*/
 typedef struct spNetC4AScoreStruct *spNetC4AScorePointer;
 typedef struct spNetC4AScoreStruct {
 	char longname[256];
 	char shortname[256];
 	int score;
+	time_t commitTime;
 	spNetC4AScorePointer next;
 } spNetC4AScore;
 

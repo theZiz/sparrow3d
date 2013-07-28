@@ -156,7 +156,8 @@ int main( int argc, char **argv )
 		spNetC4AScorePointer mom = score;
 		while (mom)
 		{
-			printf("%s (%s): %i\n",mom->longname,mom->shortname,mom->score);
+			struct tm * local = localtime (&(mom->commitTime));
+			printf("%2i.%2i.%i - %2i:%02i: %s (%s) - %i\n",local->tm_mday,local->tm_mon+1,local->tm_year+1900,local->tm_hour,local->tm_min,mom->longname,mom->shortname,mom->score);
 			mom = mom->next;
 		}
 		//If you just uncomment this code, you cheat! Copy it to your game and try
