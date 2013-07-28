@@ -393,8 +393,10 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList);
  * profile - the profile you want to commit tthe score with
  * game - name of the game on the server
  * score - reached score
- * scoreList - pass the struct returned by >spNetC4AGetScore> to compare
- * your score to that list and avoid committing the same score twice.
+ * scoreList - pass the struct returned by <spNetC4AGetScore> to compare
+ * your score to that list and avoid committing the same score twice. If
+ * it is not in the list, it will added afterwards for later
+ * comparements.
  * 
  * Returns:
  * SDL_Thread* - handle to the created thread. If you don't want to run the

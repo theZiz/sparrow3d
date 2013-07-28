@@ -606,6 +606,7 @@ int c4a_commit_thread(void* data)
 		sprintf(new_score->longname,"%s",commitData->profile->longname);
 		sprintf(new_score->shortname,"%s",commitData->profile->shortname);
 		new_score->score = commitData->score;
+		new_score->commitTime = time(NULL);
 		new_score->next = (*(commitData->scoreList));
 		(*(commitData->scoreList)) = new_score;
 	}
