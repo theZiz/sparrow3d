@@ -340,8 +340,34 @@ PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile);
  * Returns:
  * SDL_Thread* - handle to the created thread. If you don't want to run the
  * task in background you can e.g. call SDL_WaitThread with this return value or
- * maybe kill it after a timeout.*/
+ * maybe kill it after a timeout.
+ * 
+ * See also: <spNetC4AGetScoreOfMonth>*/
 PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game);
+
+/* Function: spNetC4AGetScoreOfMonth
+ * 
+ * Loads a top 500 of a month for a given game from the compo4all
+ * server. The task runs in background! Use <spNetC4AGetStatus> to get
+ * the status of the task. Only one background task (fetching highscore
+ * OR commiting a score) can run at one time!
+ * 
+ * Parameters:
+ * score - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
+ * <spNetC4AScore>
+ * profile - an optional pointer to your profile. If given only your scores are
+ * added to the scores-list above
+ * game - name of the game on the server
+ * year - year to load (e.g. 2013)
+ * month - month to load (e.g. 3 for march)
+ * 
+ * Returns:
+ * SDL_Thread* - handle to the created thread. If you don't want to run the
+ * task in background you can e.g. call SDL_WaitThread with this return value or
+ * maybe kill it after a timeout.
+ * 
+ * See also: <spNetC4AGetScore>*/
+PREFIX SDL_Thread* spNetC4AGetScoreOfMonth(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game,int year,int month);
 
 /* Function: spNetC4ADeleteScores
  * 

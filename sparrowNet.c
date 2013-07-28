@@ -299,6 +299,8 @@ typedef struct getscoreStruct *getscorePointer;
 typedef struct getscoreStruct {
 	spNetC4AScorePointer* score;
 	spNetC4AProfilePointer profile;
+	int year;
+	int month;
 	char game[256];
 } getscoreType;
 
@@ -410,7 +412,10 @@ int c4a_getscore_thread(void* data)
 	spNetC4AStatus = SP_C4A_PROGRESS;
 	SDL_mutexV(spNetC4AStatusMutex);
 	char get_string[512];
-	sprintf(get_string,"GET /json_1/%s\n\n",scoreData->game);
+	if (scoreData->year && scoreData->month)
+		sprintf(get_string,"GET /json_1/%s/%i%02i/\n\n",scoreData->game,scoreData->year,scoreData->month);
+	else
+		sprintf(get_string,"GET /json_1/%s\n\n",scoreData->game);
 	if (spNetSendHTTP(connection,get_string) == 0)
 	{
 		spNetCloseTCP(connection);
@@ -524,11 +529,36 @@ PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfileP
 		getscorePointer data = (getscorePointer)malloc(sizeof(getscoreType));
 		data->score = score;
 		data->profile = profile;
+		data->year = 0;
+		data->month = 0;
 		sprintf(data->game,"%s",game);
 		return SDL_CreateThread(c4a_getscore_thread,data);
 	}
 	return NULL;
 }
+
+PREFIX SDL_Thread* spNetC4AGetScoreOfMonth(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game,int year,int month)
+{
+	(*score) = NULL;
+	if (month < 1 || month > 12)
+		return NULL;
+	SDL_mutexP(spNetC4AStatusMutex);
+	int status = spNetC4AStatus;
+	SDL_mutexV(spNetC4AStatusMutex);
+	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	{
+		//Starting a background thread, which does the fancy stuff
+		getscorePointer data = (getscorePointer)malloc(sizeof(getscoreType));
+		data->score = score;
+		data->profile = profile;
+		data->year = year;
+		data->month = month;
+		sprintf(data->game,"%s",game);
+		return SDL_CreateThread(c4a_getscore_thread,data);
+	}
+	return NULL;
+}
+
 
 int c4a_commit_thread(void* data)
 {
