@@ -331,8 +331,8 @@ PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile);
  * time!
  * 
  * Parameters:
- * score - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
- * <spNetC4AScore>
+ * scoreList - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
+ * <spNetC4AScore>. The scores are saved here.
  * profile - an optional pointer to your profile. If given only your scores are
  * added to the scores-list above
  * game - name of the game on the server
@@ -343,7 +343,7 @@ PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile);
  * maybe kill it after a timeout.
  * 
  * See also: <spNetC4AGetScoreOfMonth>*/
-PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game);
+PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game);
 
 /* Function: spNetC4AGetScoreOfMonth
  * 
@@ -353,8 +353,8 @@ PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfileP
  * OR commiting a score) can run at one time!
  * 
  * Parameters:
- * score - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
- * <spNetC4AScore>
+ * scoreList - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
+ * <spNetC4AScore>. The scores are saved here.
  * profile - an optional pointer to your profile. If given only your scores are
  * added to the scores-list above
  * game - name of the game on the server
@@ -367,7 +367,7 @@ PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfileP
  * maybe kill it after a timeout.
  * 
  * See also: <spNetC4AGetScore>*/
-PREFIX SDL_Thread* spNetC4AGetScoreOfMonth(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game,int year,int month);
+PREFIX SDL_Thread* spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int year,int month);
 
 /* Function: spNetC4ADeleteScores
  * 
@@ -375,7 +375,7 @@ PREFIX SDL_Thread* spNetC4AGetScoreOfMonth(spNetC4AScorePointer* score,spNetC4AP
  * 
  * Parameters:
  * firstScore - pointer to <spNetC4AScore> to free*/
-PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* firstScore);
+PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList);
 
 /* Function: spNetC4ACommitScore
  * 
@@ -388,15 +388,14 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* firstScore);
  * profile - the profile you want to commit tthe score with
  * game - name of the game on the server
  * score - reached score
- * firstScore - pointer to a <spNetC4AScore> struct. If given it is first
- * checked, whether you already have this score. ;) So you can commit always
- * ALL scores of your game and wont have any doubles. "Caching" for free!
+ * scoreList - pass the struct returned by >spNetC4AGetScore> to compare
+ * your score to that list and avoid committing the same score twice.
  * 
  * Returns:
  * SDL_Thread* - handle to the created thread. If you don't want to run the
  * task in background you can e.g. call SDL_WaitThread with this return value or
  * maybe kill it after a timeout.*/
-PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* firstScore);
+PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* scoreList);
 
 
 /* Defines: Compo4all statuses

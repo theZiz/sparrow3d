@@ -310,7 +310,7 @@ typedef struct commitStruct {
 	char game[256];
 	int score;
 	char system[256];
-	spNetC4AScorePointer* firstScore;
+	spNetC4AScorePointer* scoreList;
 } commitType;
 
 char* my_strchr(char* buffer, char c, char ignore)
@@ -517,9 +517,9 @@ int c4a_getscore_thread(void* data)
 	return 0;
 }
 
-PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game)
+PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game)
 {
-	(*score) = NULL;
+	(*scoreList) = NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
@@ -527,7 +527,7 @@ PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfileP
 	{
 		//Starting a background thread, which does the fancy stuff
 		getscorePointer data = (getscorePointer)malloc(sizeof(getscoreType));
-		data->score = score;
+		data->score = scoreList;
 		data->profile = profile;
 		data->year = 0;
 		data->month = 0;
@@ -537,9 +537,9 @@ PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* score,spNetC4AProfileP
 	return NULL;
 }
 
-PREFIX SDL_Thread* spNetC4AGetScoreOfMonth(spNetC4AScorePointer* score,spNetC4AProfilePointer profile,char* game,int year,int month)
+PREFIX SDL_Thread* spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int year,int month)
 {
-	(*score) = NULL;
+	(*scoreList) = NULL;
 	if (month < 1 || month > 12)
 		return NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
@@ -549,7 +549,7 @@ PREFIX SDL_Thread* spNetC4AGetScoreOfMonth(spNetC4AScorePointer* score,spNetC4AP
 	{
 		//Starting a background thread, which does the fancy stuff
 		getscorePointer data = (getscorePointer)malloc(sizeof(getscoreType));
-		data->score = score;
+		data->score = scoreList;
 		data->profile = profile;
 		data->year = year;
 		data->month = month;
@@ -594,15 +594,15 @@ int c4a_commit_thread(void* data)
 	}
 	//printf("Did:\n%s",commit_string);
 	spNetCloseTCP(connection);
-	//Adding to firstScore ;)
-	if (commitData->firstScore)
+	//Adding to scoreList ;)
+	if (commitData->scoreList)
 	{
 		spNetC4AScorePointer new_score = (spNetC4AScorePointer)malloc(sizeof(spNetC4AScore));
 		sprintf(new_score->longname,"%s",commitData->profile->longname);
 		sprintf(new_score->shortname,"%s",commitData->profile->shortname);
 		new_score->score = commitData->score;
-		new_score->next = (*(commitData->firstScore));
-		(*(commitData->firstScore)) = new_score;
+		new_score->next = (*(commitData->scoreList));
+		(*(commitData->scoreList)) = new_score;
 	}
 	free(data);
 	SDL_mutexP(spNetC4AStatusMutex);
@@ -611,26 +611,26 @@ int c4a_commit_thread(void* data)
 	return 0;
 }
 
-int already_in_highscore(spNetC4AScorePointer firstScore,spNetC4AProfilePointer profile,int score)
+int already_in_highscore(spNetC4AScorePointer scoreList,spNetC4AProfilePointer profile,int score)
 {
-	if (firstScore == NULL)
+	if (scoreList == NULL)
 		return 0;
-	while (firstScore)
+	while (scoreList)
 	{
-		if (strcmp(firstScore->longname,profile->longname) == 0 &&
-		    strcmp(firstScore->shortname,profile->shortname) == 0 &&
-		    firstScore->score == score)
+		if (strcmp(scoreList->longname,profile->longname) == 0 &&
+		    strcmp(scoreList->shortname,profile->shortname) == 0 &&
+		    scoreList->score == score)
 			return 1;
-		firstScore = firstScore->next;
+		scoreList = scoreList->next;
 	}
 	return 0;
 }
 
-PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* firstScore)
+PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* scoreList)
 {
 	if (profile == NULL)
 		return NULL;
-	if (already_in_highscore(*firstScore,profile,score))
+	if (already_in_highscore(*scoreList,profile,score))
 		return NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
@@ -641,7 +641,7 @@ PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game
 		commitPointer data = (commitPointer)malloc(sizeof(commitType));
 		data->score = score;
 		data->profile = profile;
-		data->firstScore = firstScore;
+		data->scoreList = scoreList;
 		sprintf(data->game,"%s",game);
 		#ifdef GP2X
 			sprintf(data->system,"gp2x");
@@ -673,14 +673,14 @@ PREFIX int spNetC4AGetStatus()
 	return status;
 }
 
-PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* firstScore)
+PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList)
 {
-	if (firstScore == NULL)
+	if (scoreList == NULL)
 		return;
-	while (*firstScore)
+	while (*scoreList)
 	{
-		spNetC4AScorePointer next = (*firstScore)->next;
-		free(*firstScore);
-		(*firstScore) = next;
+		spNetC4AScorePointer next = (*scoreList)->next;
+		free(*scoreList);
+		(*scoreList) = next;
 	}
 }
