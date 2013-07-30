@@ -74,8 +74,11 @@ int sp_intern_drawing_thread(void* reserved)
 			{
 				case 0: //Triangle
 				{
+					#ifndef NO_BLENDING
 					if ( spScanLineCache[spScanLineBegin].blending == SP_ONE )
 					{
+					#endif
+						#ifndef NO_PATTERN
 						if ( spScanLineCache[spScanLineBegin].usePattern )
 						{
 							if ( spScanLineCache[spScanLineBegin].zSet )
@@ -139,6 +142,7 @@ int sp_intern_drawing_thread(void* reserved)
 							}
 						}
 						else
+						#endif
 						{
 							if ( spScanLineCache[spScanLineBegin].zSet )
 							{
@@ -200,9 +204,11 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].blending);
 							}
 						}
+					#ifndef NO_BLENDING
 					}
 					else
 					{
+						#ifndef NO_PATTERN
 						if ( spScanLineCache[spScanLineBegin].usePattern )
 						{
 							if ( spScanLineCache[spScanLineBegin].zSet )
@@ -266,6 +272,7 @@ int sp_intern_drawing_thread(void* reserved)
 							}
 						}
 						else
+						#endif
 						{
 							if ( spScanLineCache[spScanLineBegin].zSet )
 							{
@@ -328,12 +335,16 @@ int sp_intern_drawing_thread(void* reserved)
 							}
 						}
 					}
+					#endif
 					break;
 				}
 				case 1: //texTriangle
 				{
+					#ifndef NO_BLENDING
 					if ( spScanLineCache[spScanLineBegin].blending == SP_ONE )
 					{
+					#endif
+						#ifndef NO_PATTERN
 						if ( spScanLineCache[spScanLineBegin].usePattern )
 						{
 							if ( spScanLineCache[spScanLineBegin].alphaTest )
@@ -542,6 +553,7 @@ int sp_intern_drawing_thread(void* reserved)
 							}
 						}
 						else
+						#endif
 						{
 							if ( spScanLineCache[spScanLineBegin].alphaTest )
 							{
@@ -748,9 +760,11 @@ int sp_intern_drawing_thread(void* reserved)
 								}
 							}
 						}
+					#ifndef NO_BLENDING
 					}
 					else
 					{
+						#ifndef NO_PATTERN
 						if ( spScanLineCache[spScanLineBegin].usePattern )
 						{
 							if ( spScanLineCache[spScanLineBegin].alphaTest )
@@ -959,6 +973,7 @@ int sp_intern_drawing_thread(void* reserved)
 							}
 						}
 						else
+						#endif
 						{
 							if ( spScanLineCache[spScanLineBegin].alphaTest )
 							{
@@ -1166,13 +1181,17 @@ int sp_intern_drawing_thread(void* reserved)
 							}
 						}
 					}
+					#endif
 					break;
 				}
 				#ifndef NO_PERSPECTIVE
 				case 2: //perspectiveTexTriangle
 				{
+					#ifndef NO_BLENDING
 					if ( spScanLineCache[spScanLineBegin].blending == SP_ONE )
 					{
+					#endif
+						#ifndef NO_PATTERN
 						if ( spScanLineCache[spScanLineBegin].usePattern )
 						{
 							if ( spScanLineCache[spScanLineBegin].alphaTest )
@@ -1405,6 +1424,7 @@ int sp_intern_drawing_thread(void* reserved)
 							}
 						}
 						else
+						#endif
 						{
 							if ( spScanLineCache[spScanLineBegin].alphaTest )
 							{
@@ -1635,9 +1655,11 @@ int sp_intern_drawing_thread(void* reserved)
 								}
 							}
 						}
+					#ifndef NO_BLENDING
 					}
 					else
 					{
+						#ifndef NO_PATTERN
 						if ( spScanLineCache[spScanLineBegin].usePattern )
 						{
 							if ( spScanLineCache[spScanLineBegin].alphaTest )
@@ -1870,6 +1892,7 @@ int sp_intern_drawing_thread(void* reserved)
 							}
 						}
 						else
+						#endif
 						{
 							if ( spScanLineCache[spScanLineBegin].alphaTest )
 							{
@@ -2101,18 +2124,22 @@ int sp_intern_drawing_thread(void* reserved)
 							}
 						}
 					}
+					#endif
 					break;
 				}
 				#endif
 				case 3: //rectangle
 				{
+					#ifndef NO_PATTERN
 					if ( spScanLineCache[spScanLineBegin].usePattern )
 					{
 						if ( spScanLineCache[spScanLineBegin].zSet )
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Rectangle_ztest_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
@@ -2122,6 +2149,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Rectangle_blending_ztest_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
@@ -2132,10 +2160,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Rectangle_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
@@ -2145,6 +2176,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Rectangle_blending_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
@@ -2155,13 +2187,16 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 						else
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Rectangle_ztest_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
@@ -2171,6 +2206,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Rectangle_blending_ztest_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
@@ -2181,10 +2217,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Rectangle_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
@@ -2194,6 +2233,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Rectangle_blending_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
@@ -2204,16 +2244,20 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 					}
 					else
+					#endif
 					{
 						if ( spScanLineCache[spScanLineBegin].zSet )
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Rectangle_ztest_zset(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
@@ -2223,6 +2267,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Rectangle_blending_ztest_zset(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
@@ -2233,10 +2278,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Rectangle_zset(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
@@ -2246,6 +2294,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Rectangle_blending_zset(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
@@ -2256,13 +2305,16 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 						else
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Rectangle_ztest(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
@@ -2272,6 +2324,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Rectangle_blending_ztest(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
@@ -2282,10 +2335,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Rectangle(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangle.y1,
@@ -2295,6 +2351,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Rectangle_blending(
 										spScanLineCache[spScanLineBegin].primitive.rectangle.x1,
@@ -2305,6 +2362,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangle.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 					}
@@ -2312,13 +2370,16 @@ int sp_intern_drawing_thread(void* reserved)
 				}
 				case 4: //rectangleBorder
 				{
+					#ifndef NO_PATTERN
 					if ( spScanLineCache[spScanLineBegin].usePattern )
 					{
 						if ( spScanLineCache[spScanLineBegin].zSet )
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_RectangleBorder_ztest_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
@@ -2330,6 +2391,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_RectangleBorder_blending_ztest_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
@@ -2342,10 +2404,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_RectangleBorder_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
@@ -2357,6 +2422,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_RectangleBorder_blending_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
@@ -2369,13 +2435,16 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 						else
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_RectangleBorder_ztest_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
@@ -2387,6 +2456,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_RectangleBorder_blending_ztest_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
@@ -2399,10 +2469,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_RectangleBorder_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
@@ -2414,6 +2487,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_RectangleBorder_blending_pattern(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
@@ -2426,16 +2500,20 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 					}
 					else
+					#endif
 					{
 						if ( spScanLineCache[spScanLineBegin].zSet )
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_RectangleBorder_ztest_zset(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
@@ -2447,6 +2525,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_RectangleBorder_blending_ztest_zset(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
@@ -2459,10 +2538,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_RectangleBorder_zset(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
@@ -2474,6 +2556,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_RectangleBorder_blending_zset(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
@@ -2486,13 +2569,16 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 						else
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_RectangleBorder_ztest(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
@@ -2504,6 +2590,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_RectangleBorder_blending_ztest(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
@@ -2516,10 +2603,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_RectangleBorder(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.y1,
@@ -2531,6 +2621,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_RectangleBorder_blending(
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.x1,
@@ -2543,6 +2634,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.rectangleBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 					}
@@ -2550,13 +2642,16 @@ int sp_intern_drawing_thread(void* reserved)
 				}
 				case 5: //ellipse
 				{
+					#ifndef NO_PATTERN
 					if ( spScanLineCache[spScanLineBegin].usePattern )
 					{
 						if ( spScanLineCache[spScanLineBegin].zSet )
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Ellipse_ztest_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
@@ -2570,6 +2665,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Ellipse_blending_ztest_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
@@ -2584,10 +2680,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Ellipse_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
@@ -2601,6 +2700,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Ellipse_blending_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
@@ -2615,13 +2715,16 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 						else
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Ellipse_ztest_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
@@ -2635,6 +2738,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Ellipse_blending_ztest_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
@@ -2649,10 +2753,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Ellipse_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
@@ -2666,6 +2773,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Ellipse_blending_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
@@ -2680,16 +2788,20 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 					}
 					else
+					#endif
 					{
 						if ( spScanLineCache[spScanLineBegin].zSet )
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Ellipse_ztest_zset(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
@@ -2703,6 +2815,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Ellipse_blending_ztest_zset(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
@@ -2717,10 +2830,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Ellipse_zset(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
@@ -2734,6 +2850,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Ellipse_blending_zset(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
@@ -2748,13 +2865,16 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 						else
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Ellipse_ztest(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
@@ -2768,6 +2888,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Ellipse_blending_ztest(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
@@ -2782,10 +2903,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_Ellipse(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipse.y1,
@@ -2799,6 +2923,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_Ellipse_blending(
 										spScanLineCache[spScanLineBegin].primitive.ellipse.x1,
@@ -2813,6 +2938,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipse.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 					}
@@ -2820,13 +2946,16 @@ int sp_intern_drawing_thread(void* reserved)
 				}
 				case 6: //ellipseBorder
 				{
+					#ifndef NO_PATTERN
 					if ( spScanLineCache[spScanLineBegin].usePattern )
 					{
 						if ( spScanLineCache[spScanLineBegin].zSet )
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_EllipseBorder_ztest_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
@@ -2842,6 +2971,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_EllipseBorder_blending_ztest_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
@@ -2858,10 +2988,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_EllipseBorder_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
@@ -2877,6 +3010,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_EllipseBorder_blending_zset_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
@@ -2893,13 +3027,16 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 						else
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_EllipseBorder_ztest_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
@@ -2915,6 +3052,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_EllipseBorder_blending_ztest_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
@@ -2931,10 +3069,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_EllipseBorder_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
@@ -2950,6 +3091,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_EllipseBorder_blending_pattern(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
@@ -2966,16 +3108,20 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 					}
 					else
+					#endif
 					{
 						if ( spScanLineCache[spScanLineBegin].zSet )
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_EllipseBorder_ztest_zset(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
@@ -2991,6 +3137,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_EllipseBorder_blending_ztest_zset(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
@@ -3007,10 +3154,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_EllipseBorder_zset(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
@@ -3026,6 +3176,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_EllipseBorder_blending_zset(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
@@ -3042,13 +3193,16 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 						else
 						{
 							if ( spScanLineCache[spScanLineBegin].zTest )
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_EllipseBorder_ztest(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
@@ -3064,6 +3218,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_EllipseBorder_blending_ztest(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
@@ -3080,10 +3235,13 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 							else
 							{
+								#ifndef NO_BLENDING
 								if ( spScanLineCache[spScanLineBegin].blending == SP_ONE)
+								#endif
 									sp_intern_EllipseBorder(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.y1,
@@ -3099,6 +3257,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#ifndef NO_BLENDING
 								else
 									sp_intern_EllipseBorder_blending(
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.x1,
@@ -3115,6 +3274,7 @@ int sp_intern_drawing_thread(void* reserved)
 										spScanLineCache[spScanLineBegin].primitive.ellipseBorder.color,
 										spScanLineCache[spScanLineBegin].pattern,
 										spScanLineCache[spScanLineBegin].blending);
+								#endif
 							}
 						}
 					}

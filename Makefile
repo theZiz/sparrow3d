@@ -85,9 +85,13 @@ SDL_PATH = -I/usr/include/SDL
 # LIB determines, where all the other libraries are
 # LIB = -L/usr/lib
 
-# This deactivates the perspective mapping and makes the lib smaller,
-# but as I tested not faster.
+# This deactivates some features and makes the lib smaller, but as I
+# tested not faster (of course you have differences between drawing with
+# or without blending. That is just meant of speed increasement because
+# of library size ;) )
 # CFLAGS += -DNO_PERSPECTIVE
+# CFLAGS += -DNO_BLENDING
+# CFLAGS += -DNO_PATTERN
 
 # Normaly theese flags are activated only for small and/or slow devices.
 # But sometimes it is important to activate them for testing purpose
