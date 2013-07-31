@@ -8,9 +8,60 @@
 */
 #include <sparrow3d.h>
 
+spFontPointer font = NULL;
+
+void draw_function( void )
+{
+	spClearTarget( 0 );
+	spSetZTest(0);
+	spSetZSet(0);
+	
+	char buffer[32];
+	sprintf(buffer,"FPS: %i",spGetFPS());
+	spFontDrawMiddle( spGetWindowSurface()->w/2, spGetWindowSurface()->h/2-font->maxheight/2, 0, "Everything interesting happens", font );
+	spFontDrawMiddle( spGetWindowSurface()->w/2, spGetWindowSurface()->h/2+font->maxheight/2, 0, "in stdout. Please have a look there", font );
+	spFontDrawRight( spGetWindowSurface()->w-1, spGetWindowSurface()->h-font->maxheight, 0, buffer, font );
+	
+	spFlip();
+}
+
+
+int calc_function( Uint32 steps )
+{
+	if ( spGetInput()->button[SP_BUTTON_START] )
+		return 1;
+	return 0;
+}
+
+void resize(Uint16 w,Uint16 h)
+{
+	spFontShadeButtons(1);
+	if ( font )
+		spFontDelete( font );
+	font = spFontLoad( "./font/Play-Bold.ttf", 12 * spGetSizeFactor() >> SP_ACCURACY );
+	spFontSetShadeColor(0);
+	spFontAdd( font, SP_FONT_GROUP_ASCII, 65535 ); //whole ASCII
+	spFontAdd( font, "äüöÄÜÖßẞ", 65535 ); //German stuff (same like spFontAdd( font, SP_FONT_GROUP_GERMAN, 0 ); )
+	spFontAddBorder( font, 0 );
+	spFontAddButton( font, 'A', SP_BUTTON_A_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'B', SP_BUTTON_B_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'X', SP_BUTTON_X_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'Y', SP_BUTTON_Y_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'L', SP_BUTTON_L_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'R', SP_BUTTON_R_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'S', SP_BUTTON_START_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontAddButton( font, 'E', SP_BUTTON_SELECT_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+}
+
 int main( int argc, char **argv )
 {
-	//In this program we don't use sparrowCore functionalities, so no init functions.
+	//sparrow3D Init
+	//spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
+	spInitCore();
+
+	//Setup;
+	spSelectRenderTarget(spCreateDefaultWindow());
+	resize(spGetWindowSurface()->w,spGetWindowSurface()->h);
 	
 	printf("This example application reads different texts from data/texts.txt\n");
 	printf("or a given file and prints them on the standard output.\n");
@@ -98,6 +149,22 @@ int main( int argc, char **argv )
 		printf("  \"%s\": \"%s\"\n",t->caption,spGetTranslation(t));
 		t = t->next;
 	}
+	
+	//Creating blocks:
+	spTextBlockPointer block = spCreateTextBlock( spGetTranslationFromCaption(bundle,"example text"),400,font);
+	printf("=============== %i\n",block->line_count);
+	for (i = 0; i < block->line_count; i++)
+	{
+		printf("%i: %s\n",i,block->line[i].text);
+	}
+
+	spLoop( draw_function, calc_function, 10, resize, NULL );
+	
+	spDeleteTextBlock(block);
+
+	//Winter Wrap up, Winter Wrap up
+	spFontDelete( font );
+	spQuitCore();
 	
 	spDeleteBundle(bundle,0);
 	return 0;

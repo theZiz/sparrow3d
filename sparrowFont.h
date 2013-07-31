@@ -139,6 +139,22 @@ typedef struct spFontStruct
 	spLetterPointer buttonRoot;
 } spFont;
 
+
+typedef struct spTextLineStruct *spTextLinePointer;
+typedef struct spTextLineStruct
+{
+	int count;
+	int width;
+	char* text;
+} spTextLine;
+
+typedef struct spTextBlockStruct *spTextBlockPointer;
+typedef struct spTextBlockStruct
+{
+	int line_count;
+	spTextLinePointer line;
+} spTextBlock;
+
 /* Function: spFontLoad
  *
  * Loads a ttf font
@@ -448,4 +464,9 @@ PREFIX void spFontShadeButtons(int value);
  * bundle - the bundle, to be scaned for every used character
  * color - the color of the added characters*/
 PREFIX void spFontAddEveryLetterOfTextBundle( spFontPointer font, spBundlePointer bundle,Uint16 color);
+
+PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, spFontPointer font);
+
+PREFIX void spDeleteTextBlock(spTextBlockPointer block);
+
 #endif

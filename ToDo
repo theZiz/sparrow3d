@@ -1,7 +1,12 @@
 Roadmap til 1.4:
-- all 13 tutorials (4/13 done)
+- all 12 tutorials (4/12 done)
+- Skeleton project
+
+Roadmap til 1.5:
 - GUI
 	- relative GUI in a 1.0f x 1.0f screen
+	- If keyboard have to be shown => smaller
+	- own font managaing, however possible to get font pointer
 	- GUI-interface-mode
 		- arrows control GUI
 		- some buttons are used to select an itm (like for touchscreen input)
@@ -38,7 +43,6 @@ Roadmap til 1.4:
 	- every gui is encapsulated in a bundle
 	- gui file format
 	- new testsparrow.c with gui
-- Skeleton project
 
 general Roadmap:
 - drawing primitives as parallel process
@@ -63,6 +67,6 @@ general Roadmap:
     - int spNewButton(char* name) => returns id (faster)
     - spGetButtonByName, spGetButtonByID
     - Returns *int => changeable
+- sparrowText understands \n
 - sparrowFont additional or own part, which allows to draw blocked text
   (e.g. text from sparrowText ;-) )
-- sparrowText faster Lookup: O(log(n)) instead of O(n)

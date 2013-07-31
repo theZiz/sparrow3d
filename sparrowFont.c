@@ -812,3 +812,124 @@ PREFIX void spFontAddEveryLetterOfTextBundle( spFontPointer font, spBundlePointe
 		momText = momText->next;
 	}
 }
+
+typedef struct spInternalTextLineStruct *spInternalTextLinePointer;
+typedef struct spInternalTextLineStruct
+{
+	int count;
+	int width;
+	char* text;
+	spInternalTextLinePointer next;
+} spInternalTextLine;
+
+
+PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, spFontPointer font)
+{
+	//Cutting at spaces. If line break, do!
+	if (text == NULL)
+		return;
+	spInternalTextLinePointer firstLine = NULL;
+	int l = strlen(text)+1;
+	char buffer[l];
+	memcpy(buffer,text,l);
+	int pos = 0;
+	int last_space = 0;
+	int space_count = 0;
+	int start = 0;
+	int count = 0;
+	while (1)
+	{
+		char c;
+		int width;
+		if (buffer[pos] == ' ' || buffer[pos] == '\n' || buffer[pos] == 0)
+		{
+			c = buffer[pos];
+			buffer[pos] = 0;
+			width = spFontWidth(&buffer[start],font);
+			buffer[pos] = c;
+			if (width > max_width || buffer[pos]!=' ')
+			{
+				spInternalTextLinePointer newLine = (spInternalTextLinePointer)malloc(sizeof(spInternalTextLine));
+				newLine->next = firstLine;
+				firstLine = newLine;
+				count++;
+				if ( width <= max_width )
+					last_space = pos;
+				if (space_count > 0)
+				{
+					c = buffer[last_space];
+					buffer[last_space] = 0;
+					newLine->width = spFontWidth(&buffer[start],font);
+					newLine->count = (last_space-start);
+					newLine->text = (char*)malloc(newLine->count+1);
+					memcpy(newLine->text,&buffer[start],newLine->count+1);
+					buffer[last_space] = c;
+					if (buffer[pos] == 0)
+						break;
+					pos = last_space+1;
+				}
+				else
+				{
+					//Searching, when to do the "line break"
+					char buffer_with_minus[65535] = "-";
+					int b_pos = -1;
+					pos = start-1;
+					width = spFontWidth(buffer_with_minus,font);
+					while (width <= max_width)
+					{
+						b_pos++;
+						pos++;
+						buffer_with_minus[b_pos] = buffer[pos];
+						buffer_with_minus[b_pos+1] = '-';
+						buffer_with_minus[b_pos+2] = 0;
+						width = spFontWidth(buffer_with_minus,font);
+					}
+					buffer_with_minus[b_pos] = '-';
+					buffer_with_minus[b_pos+1] = 0;
+					newLine->width = spFontWidth(buffer_with_minus,font);
+					newLine->count = (pos-start);
+					newLine->text = (char*)malloc(newLine->count+1);
+					memcpy(newLine->text,buffer_with_minus,newLine->count+1);
+					if (buffer[pos] == 0)
+						break;
+					last_space = pos;
+				}
+				start=pos;
+				space_count = 0;
+			}
+			else
+			{
+				last_space = pos;
+				space_count++;
+			}
+		}
+		pos++;
+	}
+	spTextBlockPointer block = (spTextBlockPointer)malloc(sizeof(spTextBlock));
+	block->line_count = count;
+	block->line = (spTextLinePointer)malloc(count*sizeof(spTextLine));
+	int i = count-1;
+	while (firstLine)
+	{
+		spInternalTextLinePointer next = firstLine->next;
+		block->line[i].count = firstLine->count;
+		block->line[i].width = firstLine->width;
+		block->line[i].text = firstLine->text;
+		free(firstLine);		
+		i--;
+		firstLine = next;
+	}
+	return block;
+}
+
+PREFIX void spDeleteTextBlock(spTextBlockPointer block)
+{
+	if (block)
+	{
+		int i;
+		for (i = 0; i < block->line_count; i++)
+			free(block->line[i].text);
+		free(block->line);
+		free(block);
+	}
+}
