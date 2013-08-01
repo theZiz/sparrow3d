@@ -83,6 +83,7 @@ typedef struct spText
 	spTranslationPointer firstTranslation; //the translations
 	spBundlePointer bundle; //the bundle of the text
 	spTextPointer prev,next;
+	int hash;
 } spText;
 
 /* Type: spBundle

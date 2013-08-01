@@ -29,6 +29,23 @@ int spLanguageCount = 0;
 Uint16* spLanguageCaption = NULL;
 char** spLanguageName = NULL;
 
+int cycled_left_shift(int x,int s)
+{
+	int shift = x << s;
+	return ((shift) & 255) | ((shift >> 8) & 255);
+}
+
+int hash_function(const char* text)
+{
+	int i;
+	int hash = 0;
+	for (i = 0; text[i]; i++)
+	{
+		hash = hash ^ cycled_left_shift(text[i], i & 7 );
+	}
+	return hash;
+}
+
 PREFIX spTextPointer spCreateText(const char* caption,spBundlePointer bundle)
 {
 	spTextPointer text = (spTextPointer) malloc(sizeof(spText));
@@ -36,6 +53,7 @@ PREFIX spTextPointer spCreateText(const char* caption,spBundlePointer bundle)
 	sprintf(text->caption,"%s",caption);
 	text->firstTranslation = NULL;
 	text->bundle = NULL;
+	text->hash = hash_function(caption);
 	spChangeBundle(text,bundle); 
 	return text;
 }
