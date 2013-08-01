@@ -942,7 +942,7 @@ PREFIX void spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 
 	int showable_lines = height/font->maxheight;
 	int unseen_lines = block->line_count- showable_lines;
 	int start_line = spFixedRoundInt(position*unseen_lines);
-	int end_line = start_line+showable_lines;
+	int end_line = spMin(start_line+showable_lines,block->line_count);
 	int i;
 	for (i = start_line; i < end_line; i++)
 	{
