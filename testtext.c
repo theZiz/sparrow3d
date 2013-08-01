@@ -9,6 +9,8 @@
 #include <sparrow3d.h>
 
 spFontPointer font = NULL;
+spTextBlockPointer block;
+Sint32 position = 0;
 
 void draw_function( void )
 {
@@ -16,18 +18,25 @@ void draw_function( void )
 	spSetZTest(0);
 	spSetZSet(0);
 	
+	spFontDrawTextBlock(left,10,10,0,block,spGetWindowSurface()->h-20,position,font);
+	
 	char buffer[32];
 	sprintf(buffer,"FPS: %i",spGetFPS());
-	spFontDrawMiddle( spGetWindowSurface()->w/2, spGetWindowSurface()->h/2-font->maxheight/2, 0, "Everything interesting happens", font );
-	spFontDrawMiddle( spGetWindowSurface()->w/2, spGetWindowSurface()->h/2+font->maxheight/2, 0, "in stdout. Please have a look there", font );
+	//spFontDrawMiddle( spGetWindowSurface()->w/2, spGetWindowSurface()->h/2-font->maxheight/2, 0, "Everything interesting happens", font );
+	//spFontDrawMiddle( spGetWindowSurface()->w/2, spGetWindowSurface()->h/2+font->maxheight/2, 0, "in stdout. Please have a look there", font );
 	spFontDrawRight( spGetWindowSurface()->w-1, spGetWindowSurface()->h-font->maxheight, 0, buffer, font );
-	
+	spFontDraw( 1,spGetWindowSurface()->h-font->maxheight,0,"Sroll with the D-Pad",font);
 	spFlip();
 }
 
 
 int calc_function( Uint32 steps )
 {
+	position += spGetInput()->analog_axis[1]*(Sint32)steps >> 9;
+	if (position > SP_ONE)
+		position = SP_ONE;
+	if (position < 0)
+		position = 0;
 	if ( spGetInput()->button[SP_BUTTON_START] )
 		return 1;
 	return 0;
@@ -151,7 +160,7 @@ int main( int argc, char **argv )
 	}
 	
 	//Creating blocks:
-	spTextBlockPointer block = spCreateTextBlock( spGetTranslationFromCaption(bundle,"example text"),400,font);
+	block = spCreateTextBlock( spGetTranslationFromCaption(bundle,"example text"),spGetWindowSurface()->w-20,font);
 	printf("=============== %i\n",block->line_count);
 	for (i = 0; i < block->line_count; i++)
 	{

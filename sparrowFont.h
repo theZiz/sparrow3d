@@ -152,8 +152,17 @@ typedef struct spTextBlockStruct *spTextBlockPointer;
 typedef struct spTextBlockStruct
 {
 	int line_count;
+	int max_width;
 	spTextLinePointer line;
 } spTextBlock;
+
+
+typedef enum
+{
+	left = 0,
+	middle = 1,
+	right = 2
+} spTextBlockAlignment;
 
 /* Function: spFontLoad
  *
@@ -469,4 +478,5 @@ PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, sp
 
 PREFIX void spDeleteTextBlock(spTextBlockPointer block);
 
+PREFIX void spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y, Sint32 z, spTextBlockPointer block, Sint32 height, Sint32 position, spFontPointer font );
 #endif

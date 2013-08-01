@@ -907,6 +907,7 @@ PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, sp
 	}
 	spTextBlockPointer block = (spTextBlockPointer)malloc(sizeof(spTextBlock));
 	block->line_count = count;
+	block->max_width = max_width;
 	block->line = (spTextLinePointer)malloc(count*sizeof(spTextLine));
 	int i = count-1;
 	while (firstLine)
@@ -931,5 +932,32 @@ PREFIX void spDeleteTextBlock(spTextBlockPointer block)
 			free(block->line[i].text);
 		free(block->line);
 		free(block);
+	}
+}
+
+PREFIX void spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y, Sint32 z, spTextBlockPointer block, Sint32 height, Sint32 position, spFontPointer font )
+{
+	if (block == NULL)
+		return;
+	int showable_lines = height/font->maxheight;
+	int unseen_lines = block->line_count- showable_lines;
+	int start_line = spFixedRoundInt(position*unseen_lines);
+	int end_line = start_line+showable_lines;
+	int i;
+	for (i = start_line; i < end_line; i++)
+	{
+		switch (alignment)
+		{
+			case left:
+				spFontDraw(x,y,z,block->line[i].text,font);
+				break;
+			case middle:
+				spFontDraw(x+(block->max_width-block->line[i].width)/2,y,z,block->line[i].text,font);
+				break;
+			case right:
+				spFontDraw(x+block->max_width-block->line[i].width,y,z,block->line[i].text,font);
+				break;
+		}
+		y+=font->maxheight;
 	}
 }
