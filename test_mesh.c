@@ -1,0 +1,84 @@
+/*
+ The contents of this file are subject to the "do whatever you like"-license.
+ That means: Do, whatver you want, this file is under public domain. It is an
+ example for sparrow3d. Copy it and learn from it for your project and release
+ it under every license you want. ;-)
+ For feedback and questions about my Files and Projects please mail me,
+ Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
+*/
+
+#include "test_tube.h"
+#include <sparrow3d.h>
+#include <strings.h>
+SDL_Surface *mesh_texture;
+spModelPointer mesh;
+int mesh_z = 1;
+int mesh_light = 1;
+
+void init_mesh()
+{
+	mesh_texture = spLoadSurface( "./data/garfield.png" );
+	mesh = spMeshLoadObj( "./data/testmeshuv_tri.obj", mesh_texture, 65535 );
+}
+
+char* caption_mesh(char* caption)
+{
+	sprintf(caption,"Mesh Loading");
+	return caption;
+}
+
+char* settings_mesh(char* caption,int button)
+{
+	switch (button)
+	{
+		case SP_BUTTON_A:
+			if (mesh_z)
+				sprintf(caption,"[A] Z Set & Test");
+			else
+				sprintf(caption,"[A] No Z Set & Test");
+			break;
+		case SP_BUTTON_B:
+			if (mesh_light)
+				sprintf(caption,"[B] Light on");
+			else
+				sprintf(caption,"[B] Light off");
+			break;
+	}
+	return caption;
+}
+
+void draw_mesh(int rotation)
+{
+	spSetZSet( mesh_z );
+	spSetZTest( mesh_z );
+	spSetLight( mesh_light );
+	spSetAlphaTest( 0 );
+	spTranslate( 0, 0, spFloatToFixed( -6.0f )+spSin(rotation)*6 );
+	spRotateX( rotation );
+	spRotateY( rotation );
+	spRotateZ( rotation );
+	spMesh3D( mesh, 1 );
+	spSetZSet( 1 );
+	spSetZTest( 1 );
+	spSetLight( 1 );
+}
+
+void calc_mesh()
+{
+	if ( spGetInput()->button[SP_BUTTON_A] )
+	{
+		spGetInput()->button[SP_BUTTON_A] = 0;
+		mesh_z = 1-mesh_z;
+	}
+	if ( spGetInput()->button[SP_BUTTON_B] )
+	{
+		spGetInput()->button[SP_BUTTON_B] = 0;
+		mesh_light = 1-mesh_light;
+	}
+}
+
+void quit_mesh()
+{
+	spDeleteSurface(mesh_texture);
+	spMeshDelete(mesh);
+}

@@ -117,7 +117,7 @@ CPP += $(PARAMETER)
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
 
-all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testsprite testtarget testtext testfile testparallax testserver testclient testreal3d testfill
+all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testfile testserver testclient testreal3d
 	@echo "=== Built for Target "$(TARGET)" ==="
 
 targets:
@@ -125,29 +125,44 @@ targets:
 	@ls ./target-files/*.mk | cut -d/ -f3 | cut -d. -f1
 #	@echo "Default targets are: gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora, gcw"
 
-testsparrow: testsparrow.c libsparrow3d.so
-	$(CPP_LINK) $(CFLAGS) testsparrow.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testsparrow
+testsparrow: testsparrow.c libsparrow3d.so test_cube.o test_fill.o test_gears.o test_mesh.o test_primitives.o test_sprites.o test_tube.o test_yinyang.o test_text.o test_target.o
+	$(CPP_LINK) $(CFLAGS) testsparrow.c test_cube.o test_fill.o test_gears.o test_mesh.o test_primitives.o test_sprites.o test_tube.o test_yinyang.o test_text.o test_target.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testsparrow
+
+test_cube.o: test_cube.c test_cube.h
+	$(CPP) $(CFLAGS) -fPIC -c test_cube.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+
+test_gears.o: test_gears.c test_gears.h
+	$(CPP) $(CFLAGS) -fPIC -c test_gears.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+
+test_primitives.o: test_primitives.c test_primitives.h
+	$(CPP) $(CFLAGS) -fPIC -c test_primitives.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+
+test_tube.o: test_tube.c test_tube.h
+	$(CPP) $(CFLAGS) -fPIC -c test_tube.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+
+test_fill.o: test_fill.c test_fill.h
+	$(CPP) $(CFLAGS) -fPIC -c test_fill.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+
+test_mesh.o: test_mesh.c test_mesh.h
+	$(CPP) $(CFLAGS) -fPIC -c test_mesh.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+
+test_sprites.o: test_sprites.c test_sprites.h
+	$(CPP) $(CFLAGS) -fPIC -c test_sprites.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+
+test_yinyang.o: test_yinyang.c test_yinyang.h
+	$(CPP) $(CFLAGS) -fPIC -c test_yinyang.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+
+test_text.o: test_text.c test_text.h
+	$(CPP) $(CFLAGS) -fPIC -c test_text.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+
+test_target.o: test_target.c test_target.h
+	$(CPP) $(CFLAGS) -fPIC -c test_target.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
 
 testreal3d: testreal3d.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testreal3d.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testreal3d
 
-testsprite: testsprite.c libsparrow3d.so
-	$(CPP_LINK) $(CFLAGS) testsprite.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testsprite
-
-testtarget: testtarget.c libsparrow3d.so
-	$(CPP_LINK) $(CFLAGS) testtarget.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testtarget
-
-testtext: testtext.c libsparrow3d.so
-	$(CPP_LINK) $(CFLAGS) testtext.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testtext
-
 testfile: testfile.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testfile.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testfile
-
-testfill: testfill.c libsparrow3d.so
-	$(CPP_LINK) $(CFLAGS) testfill.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testfill
-
-testparallax: testparallax.c libsparrow3d.so
-	$(CPP_LINK) $(CFLAGS) testparallax.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testparallax
 
 testclient: testclient.c libsparrow3d.so libsparrowNet.so
 	$(CPP_LINK) $(CFLAGS) testclient.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o $(BUILD)/testclient
@@ -155,18 +170,20 @@ testclient: testclient.c libsparrow3d.so libsparrowNet.so
 testserver: testserver.c libsparrow3d.so libsparrowNet.so
 	$(CPP_LINK) $(CFLAGS) testserver.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o $(BUILD)/testserver
 
-libsparrow3d.so: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowGUI.o makeBuildDir
+libsparrow3d.so: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowGUI.o
+	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
+	@if [ ! -d $(BUILD) ]; then mkdir $(BUILD);fi
 	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -rdynamic -o $(BUILD)/libsparrow3d.so sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowGUI.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
-libsparrowSound.so: sparrowSound.o makeBuildDir
+libsparrowSound.so: sparrowSound.o
+	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
+	@if [ ! -d $(BUILD) ]; then mkdir $(BUILD);fi
 	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrowSound.so -rdynamic -o $(BUILD)/libsparrowSound.so sparrowSound.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
-libsparrowNet.so: sparrowNet.o makeBuildDir
+libsparrowNet.so: sparrowNet.o
+	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
+	@if [ ! -d $(BUILD) ]; then mkdir $(BUILD);fi
 	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrowNet.so -rdynamic -o $(BUILD)/libsparrowNet.so sparrowNet.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
-
-makeBuildDir:
-	 @if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
-	 @if [ ! -d $(BUILD) ]; then mkdir $(BUILD);fi
 
 sparrowCore.o: sparrowCore.c sparrowCore.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
@@ -214,12 +231,9 @@ clean:
 	rm -f *.o
 	rm -f libsparrow3d.so
 	rm -f testsparrow
-	rm -f testsprite
-	rm -f testtext
-	rm -f testtarget
-	rm -f testparallax
 	rm -f testclient
 	rm -f testserver
+	rm -f testfile
 
 documentation: *.h
 	mkdir -p /tmp/sparrowDocumentationTemp

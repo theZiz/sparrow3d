@@ -68,5 +68,3 @@ general Roadmap:
     - spGetButtonByName, spGetButtonByID
     - Returns *int => changeable
 - sparrowText understands \n
-- sparrowFont additional or own part, which allows to draw blocked text
-  (e.g. text from sparrowText ;-) )

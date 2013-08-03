@@ -6,72 +6,17 @@
  For feedback and questions about my Files and Projects please mail me,
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
-#include <sparrow3d.h>
 
-spFontPointer font = NULL;
+#include "test_tube.h"
+#include <sparrow3d.h>
+#include <strings.h>
+
 spTextBlockPointer block;
 Sint32 position = 0;
+spBundlePointer bundle;
 
-void draw_function( void )
+void init_text(int argc, char** argv, spFontPointer font)
 {
-	spClearTarget( 0 );
-	spSetZTest(0);
-	spSetZSet(0);
-	
-	spFontDrawTextBlock(left,10,10,0,block,spGetWindowSurface()->h-20,position,font);
-	
-	char buffer[32];
-	sprintf(buffer,"FPS: %i",spGetFPS());
-	//spFontDrawMiddle( spGetWindowSurface()->w/2, spGetWindowSurface()->h/2-font->maxheight/2, 0, "Everything interesting happens", font );
-	//spFontDrawMiddle( spGetWindowSurface()->w/2, spGetWindowSurface()->h/2+font->maxheight/2, 0, "in stdout. Please have a look there", font );
-	spFontDrawRight( spGetWindowSurface()->w-1, spGetWindowSurface()->h-font->maxheight, 0, buffer, font );
-	spFontDraw( 1,spGetWindowSurface()->h-font->maxheight,0,"Sroll with the D-Pad",font);
-	spFlip();
-}
-
-
-int calc_function( Uint32 steps )
-{
-	position += spGetInput()->analog_axis[1]*(Sint32)steps >> 9;
-	if (position > SP_ONE)
-		position = SP_ONE;
-	if (position < 0)
-		position = 0;
-	if ( spGetInput()->button[SP_BUTTON_START] )
-		return 1;
-	return 0;
-}
-
-void resize(Uint16 w,Uint16 h)
-{
-	spFontShadeButtons(1);
-	if ( font )
-		spFontDelete( font );
-	font = spFontLoad( "./font/Play-Bold.ttf", 12 * spGetSizeFactor() >> SP_ACCURACY );
-	spFontSetShadeColor(0);
-	spFontAdd( font, SP_FONT_GROUP_ASCII, 65535 ); //whole ASCII
-	spFontAdd( font, "äüöÄÜÖßẞ", 65535 ); //German stuff (same like spFontAdd( font, SP_FONT_GROUP_GERMAN, 0 ); )
-	spFontAddBorder( font, 0 );
-	spFontAddButton( font, 'A', SP_BUTTON_A_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontAddButton( font, 'B', SP_BUTTON_B_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontAddButton( font, 'X', SP_BUTTON_X_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontAddButton( font, 'Y', SP_BUTTON_Y_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontAddButton( font, 'L', SP_BUTTON_L_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontAddButton( font, 'R', SP_BUTTON_R_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontAddButton( font, 'S', SP_BUTTON_START_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-	spFontAddButton( font, 'E', SP_BUTTON_SELECT_NAME, 65535, spGetRGB( 64, 64, 64 ) );
-}
-
-int main( int argc, char **argv )
-{
-	//sparrow3D Init
-	//spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
-	spInitCore();
-
-	//Setup;
-	spSelectRenderTarget(spCreateDefaultWindow());
-	resize(spGetWindowSurface()->w,spGetWindowSurface()->h);
-	
 	printf("This example application reads different texts from data/texts.txt\n");
 	printf("or a given file and prints them on the standard output.\n");
 	printf("How to use this example:\n");
@@ -91,7 +36,7 @@ int main( int argc, char **argv )
 			if (i >= argc)
 			{
 				printf("No language given after \"-l\"!\n");
-				return 1;
+				break;
 			}
 			if (strcmp(argv[i],"en") == 0)
 				language = SP_LANGUAGE_EN;
@@ -104,7 +49,7 @@ int main( int argc, char **argv )
 			else
 			{
 				printf("Don't know the language \"%s\"\n",argv[i]);
-				return 1;
+				break;
 			}
 		}
 	}
@@ -135,7 +80,7 @@ int main( int argc, char **argv )
 	}
 	
 	printf("Loading \"%s\"... ",filename);	
-	spBundlePointer bundle = spLoadBundle(filename,1);
+	bundle = spLoadBundle(filename,1);
 	if (bundle)
 		printf(" Success\n");
 	else
@@ -160,21 +105,54 @@ int main( int argc, char **argv )
 	}
 	
 	//Creating blocks:
-	block = spCreateTextBlock( spGetTranslationFromCaption(bundle,"example text"),spGetWindowSurface()->w-20,font);
+	block = spCreateTextBlock( spGetTranslationFromCaption(bundle,"example text"),spGetWindowSurface()->w-font->maxheight*4,font);
 	printf("=============== %i\n",block->line_count);
 	for (i = 0; i < block->line_count; i++)
 	{
 		printf("%i: %s\n",i,block->line[i].text);
 	}
+}
 
-	spLoop( draw_function, calc_function, 10, resize, NULL );
-	
+char* caption_text(char* caption)
+{
+	sprintf(caption,"Scrolling");
+	return caption;
+}
+
+char* settings_text(char* caption,int button)
+{
+	switch (button)
+	{
+		case SP_BUTTON_B:
+			sprintf(caption,"Use the D-Pad");
+			break;
+		case SP_BUTTON_A:
+			sprintf(caption,"for scrolling");
+			break;
+	}
+	return caption;
+}
+
+void draw_text(int rotation, spFontPointer font)
+{
+	spSetZTest( 0 );
+	spSetZSet( 0 );
+	spFontDrawTextBlock(left,font->maxheight*2,font->maxheight*3,0,block,spGetWindowSurface()->h-font->maxheight*6,position,font);
+	spSetZTest( 1 );
+	spSetZSet( 1 );
+}
+
+void calc_text(int steps)
+{
+	position += spGetInput()->analog_axis[1]*(Sint32)steps >> 9;
+	if (position > SP_ONE)
+		position = SP_ONE;
+	if (position < 0)
+		position = 0;
+}
+
+void quit_text()
+{
 	spDeleteTextBlock(block);
-
-	//Winter Wrap up, Winter Wrap up
-	spFontDelete( font );
-	spQuitCore();
-	
 	spDeleteBundle(bundle,0);
-	return 0;
 }
