@@ -117,7 +117,7 @@ CPP += $(PARAMETER)
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
 
-all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testfile testserver testclient testreal3d
+all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testfile testnet testreal3d
 	@echo "=== Built for Target "$(TARGET)" ==="
 
 targets:
@@ -164,11 +164,8 @@ testreal3d: testreal3d.c libsparrow3d.so
 testfile: testfile.c libsparrow3d.so
 	$(CPP_LINK) $(CFLAGS) testfile.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testfile
 
-testclient: testclient.c libsparrow3d.so libsparrowNet.so
-	$(CPP_LINK) $(CFLAGS) testclient.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o $(BUILD)/testclient
-
-testserver: testserver.c libsparrow3d.so libsparrowNet.so
-	$(CPP_LINK) $(CFLAGS) testserver.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o $(BUILD)/testserver
+testnet: testnet.c libsparrow3d.so libsparrowNet.so
+	$(CPP_LINK) $(CFLAGS) testnet.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o $(BUILD)/testnet
 
 libsparrow3d.so: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowGUI.o
 	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
@@ -231,8 +228,7 @@ clean:
 	rm -f *.o
 	rm -f libsparrow3d.so
 	rm -f testsparrow
-	rm -f testclient
-	rm -f testserver
+	rm -f testnet
 	rm -f testfile
 
 documentation: *.h

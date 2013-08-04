@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PXML xmlns="http://openpandora.org/namespaces/PXML" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="PXML_schema.xsd">
   <package id="testsparrow-666">
-    <version major="1" minor="0" release="0" build="1"/>
+    <version major="1" minor="4" release="0" build="1"/>
     <author name="Ziz" website="http://ziz.delphigl.com"/>
     <titles>
       <title lang="en_US">
@@ -25,7 +25,7 @@
     <exec command="./testsparrow.sh"/>
     <title lang="en_US">testsparrow</title>
     <author name="Ziz" website="http://ziz.delphigl.com"/>
-    <version major="1" minor="0" release="0" build="1"/>
+    <version major="1" minor="4" release="0" build="1"/>
     <osversion major="1" minor="0" release="0" build="0"/>
     <description lang="en_US">A demonstration of the sparrow3D engine</description>
     <info name="About" type="text/plain" src="about"/>

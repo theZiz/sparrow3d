@@ -163,6 +163,8 @@ void draw_test( void )
 
 int calc_test( Uint32 steps )
 {
+	if ( spGetInput()->button[SP_BUTTON_START] )
+		return 1;
 	int i;
 	if (no_movement)
 		rotation = 20000;//SP_PI;
@@ -202,8 +204,6 @@ int calc_test( Uint32 steps )
 		spGetInput()->button[SP_BUTTON_L] = 0;
 		test = ( test + TEST_COUNT -1 ) % TEST_COUNT;
 	}
-	if ( spGetInput()->button[SP_BUTTON_START] )
-		return 1;
 	switch (test)
 	{
 		case 0:
@@ -294,7 +294,7 @@ int main( int argc, char **argv )
 	if (argc > 1)
 		no_movement = 1;
 	//sparrow3D Init
-	//spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
+	spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
 	spInitCore();
 
 	//Setup

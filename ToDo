@@ -1,4 +1,7 @@
 Roadmap til 1.4:
+- sparrowNet new example
+	- server and client in one
+	- new server registers with broadcast!
 - all 12 tutorials (4/12 done)
 - Skeleton project
 
