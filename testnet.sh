@@ -1,2 +1,2 @@
 #!/bin/sh
-LD_LIBRARY_PATH=. ./testserver $*
+LD_LIBRARY_PATH=. ./testnet $*
