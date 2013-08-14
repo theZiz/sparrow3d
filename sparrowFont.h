@@ -70,7 +70,7 @@
 
 // Define: SP_FONT_EXTRASPACE
 // Defines some extra space for the border ;-)
-#define SP_FONT_EXTRASPACE 1
+#define SP_FONT_EXTRASPACE 2
 
 // Define: SP_FONT_NO_BORDER
 // Use this in spFontSetShadeColor, if you don't want / need aliasing

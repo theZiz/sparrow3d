@@ -461,7 +461,7 @@ static void spLetterAddBorder( spLetterPointer letter, Uint16 bordercolor )
 			}
 	free( inputpixel );
 	SDL_UnlockSurface( letter->surface );
-	letter->width++;
+	letter->width+=2;
 }
 
 PREFIX void spFontAddBorder( spFontPointer font, Uint16 bordercolor )

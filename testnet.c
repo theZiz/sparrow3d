@@ -149,6 +149,8 @@ int main( int argc, char **argv )
 		printf("Your profile:\n");
 		printf("Long Name: %s\n",profile->longname);
 		printf("Short Name: %s\n",profile->shortname);
+		printf("E-Mail: %s\n",profile->email);
+		printf("Password: %s\n",profile->password);
 	}
 	else
 		printf("No profile found. Put it to this folder or create it with compo4all!\n");

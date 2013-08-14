@@ -382,6 +382,14 @@ PREFIX spNetC4AProfilePointer spNetC4AGetProfile()
 	pos = strstr( buffer, "\"prid\":");
 	pos+=7;
 	fill_between_paraphrases( pos, profile->prid, 256);
+
+	pos = strstr( buffer, "\"email\":");
+	pos+=8;
+	fill_between_paraphrases( pos, profile->email, 256);
+
+	pos = strstr( buffer, "\"password\":");
+	pos+=11;
+	fill_between_paraphrases( pos, profile->password, 256);
 	SDL_RWclose(file);
 	return profile;
 }

@@ -305,6 +305,8 @@ typedef struct spNetC4AProfileStruct {
 	char prid[256];
 	char longname[256];
 	char shortname[256];
+	char password[256];
+	char email[256];
 } spNetC4AProfile;
 
 
