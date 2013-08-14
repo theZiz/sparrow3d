@@ -9,6 +9,8 @@
 #ifndef __TEST_TEXT__
 #define __TEST_TEXT__
 
+#include <sparrow3d.h>
+
 void init_text(int argc, char** argv, spFontPointer font);
 char* caption_text(char* caption);
 char* settings_text(char* caption,int button);

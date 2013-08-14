@@ -7,7 +7,7 @@
  Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
 */
 
-#include "test_tube.h"
+#include "test_yinyang.h"
 #include <sparrow3d.h>
 #include <strings.h>
 SDL_Surface *yin;
