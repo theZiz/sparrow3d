@@ -737,7 +737,7 @@ PREFIX spNetC4AProfilePointer spNetC4ACreateProfile(char* longname,char* shortna
 	fill_with_random_hex(&(prid[24]),12);
 	prid[36]=0;
 	sprintf(create_string,"{\"email\": \"%s\", \"shortname\": \"%s\", \"password\": \"%s\", \"prid\": \"%s\", \"longname\": \"%s\"}",email,shortname,password,prid,longname);
-	sprintf(buffer,"PUT /setprofile_1 HTTP/1.1\r\nHost: skeezix.wallednetworks.com:13001\r\nAccept: */*\r\nContent-Length: %i\r\nExpect: 100-continue\r\n\r\n",strlen(create_string));
+	sprintf(buffer,"PUT /setprofile_1 HTTP/1.1\r\nUser-Agent: sparrowNet/1.0\r\nHost: %i.%i.%i.%i:13001\r\nAccept: */*\r\nContent-Length: %i\r\nExpect: 100-continue\r\n\r\n",ip.address.ipv4_bytes[0],ip.address.ipv4_bytes[1],ip.address.ipv4_bytes[2],ip.address.ipv4_bytes[3],strlen(create_string));
 	if (spNetSendTCP(connection,buffer,strlen(buffer)) == 0)
 	{
 		spNetCloseTCP(connection);
@@ -774,7 +774,7 @@ PREFIX void spNetC4ADeleteAccount(spNetC4AProfilePointer profile)
 	char create_string[2048];
 	char buffer[2048];
 	sprintf(create_string,"{\"email\": \"%s\", \"shortname\": \"%s\", \"password\": \"%s\", \"prid\": \"%s\", \"longname\": \"%s\"}",profile->email,profile->shortname,profile->password,profile->prid,profile->longname);
-	sprintf(buffer,"PUT /delprofile_1 HTTP/1.1\r\nHost: skeezix.wallednetworks.com:13001\r\nAccept: */*\r\nContent-Length: %i\r\nExpect: 100-continue\r\n\r\n",strlen(create_string));
+	sprintf(buffer,"PUT /delprofile_1 HTTP/1.1\r\nUser-Agent: sparrowNet/1.0\r\nHost: %i.%i.%i.%i:13001\r\nAccept: */*\r\nContent-Length: %i\r\nExpect: 100-continue\r\n\r\n",ip.address.ipv4_bytes[0],ip.address.ipv4_bytes[1],ip.address.ipv4_bytes[2],ip.address.ipv4_bytes[3],strlen(create_string));
 	if (spNetSendTCP(connection,buffer,strlen(buffer)) == 0)
 	{
 		spNetCloseTCP(connection);
@@ -803,7 +803,7 @@ PREFIX void spNetC4AEditProfile(spNetC4AProfilePointer profile,char* longname,ch
 	char create_string[2048];
 	char buffer[2048];
 	sprintf(create_string,"{\"email\": \"%s\", \"shortname\": \"%s\", \"password\": \"%s\", \"prid\": \"%s\", \"longname\": \"%s\"}",email,shortname,password,profile->prid,longname);
-	sprintf(buffer,"PUT /setprofile_1 HTTP/1.1\r\nHost: skeezix.wallednetworks.com:13001\r\nAccept: */*\r\nContent-Length: %i\r\nExpect: 100-continue\r\n\r\n",strlen(create_string));
+	sprintf(buffer,"PUT /setprofile_1 HTTP/1.1\r\nUser-Agent: sparrowNet/1.0\r\nHost: %i.%i.%i.%i:13001\r\nAccept: */*\r\nContent-Length: %i\r\nExpect: 100-continue\r\n\r\n",ip.address.ipv4_bytes[0],ip.address.ipv4_bytes[1],ip.address.ipv4_bytes[2],ip.address.ipv4_bytes[3],strlen(create_string));
 	if (spNetSendTCP(connection,buffer,strlen(buffer)) == 0)
 	{
 		spNetCloseTCP(connection);
