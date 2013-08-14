@@ -676,7 +676,7 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
  * <spInterpolateTargetToColor>*/
 PREFIX void spAddColorToTarget(Uint16 destColor,Sint32 interpolation);
 
-/* Function: spAddBlackLayer
+/* Function: spInterpolateTargetToColor
  * 
  * Interpolates the target to a color. Slow, but usefull for menu fade
  * in and out. No z test, z set, alpha test and pattern test!

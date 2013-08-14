@@ -355,14 +355,16 @@ void fill_between_paraphrases(char* buffer, char* dest, int max_size)
 	}
 }
 
+#ifdef PANDORA
+	#define PROFILE_FILENAME_MAKRO char *filename = pnd_locate_filename ( "/media/*/pandora/appdata/c4a-mame/:.", "c4a-prof" );
+#else
+	#define PROFILE_FILENAME_MAKRO char filename[256] = "./c4a-prof";
+#endif
+
 PREFIX spNetC4AProfilePointer spNetC4AGetProfile()
 {
 	spNetC4AProfilePointer profile = NULL;
-	#ifdef PANDORA
-		char *filename = pnd_locate_filename ( "/media/*/pandora/appdata/c4a-mame/:.", "c4a-prof" );
-	#else
-		char filename[256] = "./c4a-prof";
-	#endif
+	PROFILE_FILENAME_MAKRO
 	//Parsing the file
 	SDL_RWops *file=SDL_RWFromFile(filename,"rb");
 	if (file == NULL)
@@ -697,4 +699,131 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList)
 		free(*scoreList);
 		(*scoreList) = next;
 	}
+}
+
+void fill_with_random_hex(char* buffer,int count)
+{
+	int i;
+	for (i = 0; i < count; i++)
+	{
+		int c = rand()%16;
+		char cha;
+		if (c < 10)
+			cha = c+'0';
+		else
+			cha = c-10+'a';
+		buffer[i] = cha;
+	}
+}
+
+PREFIX spNetC4AProfilePointer spNetC4ACreateProfile(char* longname,char* shortname,char* password,char* email)
+{
+	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
+	spNetTCPConnection connection = spNetOpenClientTCP(ip);
+	if (connection == NULL)
+		return NULL;
+	char create_string[2048];
+	char buffer[2048];
+	char prid[37] = "";
+	//generating a new, random prid:
+	fill_with_random_hex(prid,8);
+	prid[ 8]='-';
+	fill_with_random_hex(&(prid[ 9]),4);
+	prid[13]='-';
+	fill_with_random_hex(&(prid[14]),4);
+	prid[18]='-';
+	fill_with_random_hex(&(prid[19]),4);
+	prid[23]='-';
+	fill_with_random_hex(&(prid[24]),12);
+	prid[36]=0;
+	sprintf(create_string,"{\"email\": \"%s\", \"shortname\": \"%s\", \"password\": \"%s\", \"prid\": \"%s\", \"longname\": \"%s\"}",email,shortname,password,prid,longname);
+	sprintf(buffer,"PUT /setprofile_1 HTTP/1.1\r\nHost: skeezix.wallednetworks.com:13001\r\nAccept: */*\r\nContent-Length: %i\r\nExpect: 100-continue\r\n\r\n",strlen(create_string));
+	if (spNetSendTCP(connection,buffer,strlen(buffer)) == 0)
+	{
+		spNetCloseTCP(connection);
+		return NULL;
+	}
+	if (spNetSendTCP(connection,create_string,strlen(create_string)) == 0)
+	{
+		spNetCloseTCP(connection);
+		return NULL;
+	}
+	spNetCloseTCP(connection);
+	PROFILE_FILENAME_MAKRO
+	SDL_RWops *file=SDL_RWFromFile(filename,"wb");
+	SDL_RWwrite(file,prid,36,1);
+	char c = '\n';
+	SDL_RWwrite(file,&c,1,1);
+	SDL_RWwrite(file,create_string,strlen(create_string),1);
+	SDL_RWclose(file);
+	spNetC4AProfilePointer profile = (spNetC4AProfilePointer)malloc(sizeof(spNetC4AProfile));
+	sprintf(profile->longname,longname);
+	sprintf(profile->shortname,shortname);
+	sprintf(profile->password,password);
+	sprintf(profile->email,email);
+	sprintf(profile->prid,prid);
+	return profile;
+}
+
+PREFIX void spNetC4ADeleteAccount(spNetC4AProfilePointer profile)
+{
+	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
+	spNetTCPConnection connection = spNetOpenClientTCP(ip);
+	if (connection == NULL)
+		return;
+	char create_string[2048];
+	char buffer[2048];
+	sprintf(create_string,"{\"email\": \"%s\", \"shortname\": \"%s\", \"password\": \"%s\", \"prid\": \"%s\", \"longname\": \"%s\"}",profile->email,profile->shortname,profile->password,profile->prid,profile->longname);
+	sprintf(buffer,"PUT /delprofile_1 HTTP/1.1\r\nHost: skeezix.wallednetworks.com:13001\r\nAccept: */*\r\nContent-Length: %i\r\nExpect: 100-continue\r\n\r\n",strlen(create_string));
+	if (spNetSendTCP(connection,buffer,strlen(buffer)) == 0)
+	{
+		spNetCloseTCP(connection);
+		return;
+	}
+	if (spNetSendTCP(connection,create_string,strlen(create_string)) == 0)
+	{
+		spNetCloseTCP(connection);
+		return;
+	}
+	spNetCloseTCP(connection);
+}
+
+PREFIX void spNetC4ADeleteProfileFile()
+{
+	PROFILE_FILENAME_MAKRO
+	spRemoveFile( filename );
+}
+
+PREFIX void spNetC4AEditProfile(spNetC4AProfilePointer profile,char* longname,char* shortname,char* password,char* email)
+{
+	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
+	spNetTCPConnection connection = spNetOpenClientTCP(ip);
+	if (connection == NULL)
+		return;
+	char create_string[2048];
+	char buffer[2048];
+	sprintf(create_string,"{\"email\": \"%s\", \"shortname\": \"%s\", \"password\": \"%s\", \"prid\": \"%s\", \"longname\": \"%s\"}",email,shortname,password,profile->prid,longname);
+	sprintf(buffer,"PUT /setprofile_1 HTTP/1.1\r\nHost: skeezix.wallednetworks.com:13001\r\nAccept: */*\r\nContent-Length: %i\r\nExpect: 100-continue\r\n\r\n",strlen(create_string));
+	if (spNetSendTCP(connection,buffer,strlen(buffer)) == 0)
+	{
+		spNetCloseTCP(connection);
+		return;
+	}
+	if (spNetSendTCP(connection,create_string,strlen(create_string)) == 0)
+	{
+		spNetCloseTCP(connection);
+		return;
+	}
+	spNetCloseTCP(connection);
+	PROFILE_FILENAME_MAKRO
+	SDL_RWops *file=SDL_RWFromFile(filename,"wb");
+	SDL_RWwrite(file,profile->prid,strlen(profile->prid),1);
+	char c = '\n';
+	SDL_RWwrite(file,&c,1,1);
+	SDL_RWwrite(file,create_string,strlen(create_string),1);
+	SDL_RWclose(file);
+	sprintf(profile->longname,longname);
+	sprintf(profile->shortname,shortname);
+	sprintf(profile->password,password);
+	sprintf(profile->email,email);
 }

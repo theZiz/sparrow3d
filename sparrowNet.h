@@ -428,4 +428,12 @@ PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game
  * int - <Compo4all statuses>*/
 PREFIX int spNetC4AGetStatus();
 
+//TODO! Not implemented yet
+PREFIX spNetC4AProfilePointer spNetC4ACreateProfile(char* longname,char* shortname,char* password,char* email);
+
+PREFIX void spNetC4ADeleteAccount(spNetC4AProfilePointer profile);
+
+PREFIX void spNetC4ADeleteProfileFile();
+
+PREFIX void spNetC4AEditProfile(spNetC4AProfilePointer profile,char* longname,char* shortname,char* password,char* email);
 #endif
