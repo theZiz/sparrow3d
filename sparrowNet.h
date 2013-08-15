@@ -271,6 +271,19 @@ PREFIX void spNetCloseTCP(spNetTCPConnection connection);
  * Types and Functions for sending and receiving data to and from the compo4all
  * server.*/
 
+/* Defines: Compo4all statuses
+ * 
+ * Statuses for the committing and score-loading functions.
+ * 
+ * SP_C4A_ESTABLISHING - Connection is being established
+ * SP_C4A_PROGRESS - transfer of data is in progress
+ * SP_C4A_OK - process is done and everything was fine
+ * SP_C4A_ERROR - process is done, but something went wrong */
+#define SP_C4A_ESTABLISHING 2
+#define SP_C4A_PROGRESS 1
+#define SP_C4A_OK 0
+#define SP_C4A_ERROR -1
+
 /* Type: spNetC4AScore
  * 
  * Type for a linked list of scores gotten from the compo4all highscore servers
@@ -406,20 +419,6 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList);
  * maybe kill it after a timeout.*/
 PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* scoreList);
 
-
-/* Defines: Compo4all statuses
- * 
- * Statuses for the committing and score-loading functions.
- * 
- * SP_C4A_ESTABLISHING - Connection is being established
- * SP_C4A_PROGRESS - transfer of data is in progress
- * SP_C4A_OK - process is done and everything was fine
- * SP_C4A_ERROR - process is done, but something went wrong */
-#define SP_C4A_ESTABLISHING 2
-#define SP_C4A_PROGRESS 1
-#define SP_C4A_OK 0
-#define SP_C4A_ERROR -1
-
 /* Function: spNetC4AGetStatus
  * 
  * Gets the status of <spNetC4AGetScore> and <spNetC4ACommitScore>.
@@ -428,12 +427,64 @@ PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game
  * int - <Compo4all statuses>*/
 PREFIX int spNetC4AGetStatus();
 
-//TODO! Not implemented yet
+/* Function: spNetC4ACreateProfile
+ * 
+ * Creates a new profile on skeezix' server. Blocks your application! However,
+ * if network is avaible, should be quite fast. Furthermore it creates the
+ * c4a-prof file needed by all supported applications. The path of the file is
+ * platform depended. Overwrites an already existing file!
+ * 
+ * Parameters:
+ * 
+ * longname - the long name of the player. Should only be alphanumeric.
+ * shortname - the short name of the player. Should exactly 3 alphanumeric,
+ * capital letters.
+ * password - alphanumeric password
+ * email - the mail address of the new account. Can be "".
+ * 
+ * Returns:
+ * spNetC4AProfilePointer - a pointer to the new created <spNetC4AProfile>
+ * struct.
+ * 
+ * See Also:
+ * <spNetC4AEditProfile>*/
 PREFIX spNetC4AProfilePointer spNetC4ACreateProfile(char* longname,char* shortname,char* password,char* email);
 
+/* Function: spNetC4ADeleteAccount
+ * 
+ * Deletes the given profile on skeezix server, NOT on your ystem! Use
+ * <spNetC4ADeleteProfileFile> for this.
+ * 
+ * Parameters:
+ * profile - profile to delete from the server.*/
 PREFIX void spNetC4ADeleteAccount(spNetC4AProfilePointer profile);
 
+/* Function: spNetC4ADeleteProfileFile
+ * 
+ * Deletes the profile file on your system, NOT the online account at skeezix
+ * server. See also <spNetC4ADeleteAccount>.*/
 PREFIX void spNetC4ADeleteProfileFile();
 
+/* Function: spNetC4AEditProfile
+ * 
+ * Edits an already existing profile on skeezix' server. Blocks your
+ * application! However, if network is avaible, should be quite fast.
+ * Furthermore it rewrites the c4a-prof file needed by all supported
+ * applications. The path of the file is platform depended. If the account
+ * doesn't exist now, it will created. The big difference to
+ * <spNetC4ACreateProfile> is, that the prid is read from the profile struct
+ * instead of being new created.
+ * 
+ * Parameters:
+ * 
+ * profile - the profile to change.
+ * longname - the long name of the player. Should only be alphanumeric.
+ * shortname - the short name of the player. Should exactly 3 alphanumeric,
+ * capital letters.
+ * password - alphanumeric password
+ * email - the mail address of the new account. Can be "".
+ * 
+ * See Also:
+ * <spNetC4ACreateProfile>*/
 PREFIX void spNetC4AEditProfile(spNetC4AProfilePointer profile,char* longname,char* shortname,char* password,char* email);
 #endif

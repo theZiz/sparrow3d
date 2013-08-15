@@ -357,6 +357,11 @@ void fill_between_paraphrases(char* buffer, char* dest, int max_size)
 
 #ifdef PANDORA
 	#define PROFILE_FILENAME_MAKRO char *filename = pnd_locate_filename ( "/media/*/pandora/appdata/c4a-mame/:.", "c4a-prof" );
+#elif defined GCW || (defined X86CPU && !defined WIN32)
+	#define PROFILE_FILENAME_MAKRO char filename[256]; \
+		sprintf(filename,"%s/.config/compo4all",getenv("HOME"));\
+		spCreateDirectoryChain(filename);\
+		sprintf(filename,"%s/.config/compo4all/c4a-prof",getenv("HOME"));
 #else
 	#define PROFILE_FILENAME_MAKRO char filename[256] = "./c4a-prof";
 #endif
