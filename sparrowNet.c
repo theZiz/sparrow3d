@@ -757,11 +757,11 @@ PREFIX spNetC4AProfilePointer spNetC4ACreateProfile(char* longname,char* shortna
 	SDL_RWwrite(file,create_string,strlen(create_string),1);
 	SDL_RWclose(file);
 	spNetC4AProfilePointer profile = (spNetC4AProfilePointer)malloc(sizeof(spNetC4AProfile));
-	sprintf(profile->longname,longname);
-	sprintf(profile->shortname,shortname);
-	sprintf(profile->password,password);
-	sprintf(profile->email,email);
-	sprintf(profile->prid,prid);
+	sprintf(profile->longname,"%s",longname);
+	sprintf(profile->shortname,"%s",shortname);
+	sprintf(profile->password,"%s",password);
+	sprintf(profile->email,"%s",email);
+	sprintf(profile->prid,"%s",prid);
 	return profile;
 }
 
@@ -822,8 +822,8 @@ PREFIX void spNetC4AEditProfile(spNetC4AProfilePointer profile,char* longname,ch
 	SDL_RWwrite(file,&c,1,1);
 	SDL_RWwrite(file,create_string,strlen(create_string),1);
 	SDL_RWclose(file);
-	sprintf(profile->longname,longname);
-	sprintf(profile->shortname,shortname);
-	sprintf(profile->password,password);
-	sprintf(profile->email,email);
+	sprintf(profile->longname,"%s",longname);
+	sprintf(profile->shortname,"%s",shortname);
+	sprintf(profile->password,"%s",password);
+	sprintf(profile->email,"%s",email);
 }
