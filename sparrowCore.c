@@ -609,29 +609,27 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_RETURN:
 					spGenericInput.button[SP_BUTTON_START] = 1;
 					break;
-				#ifdef DO_USE_NOT_WASD_BUTTONS
 					case SDLK_MODE:
-						spGenericInput.button[SP_BUTTON_A] = 1;
+						spGenericInput.button[SP_BUTTON_A_NOWASD] = 1;
 						break;
 					case SDLK_LCTRL:
-						spGenericInput.button[SP_BUTTON_B] = 1;
+						spGenericInput.button[SP_BUTTON_B_NOWASD] = 1;
 						break;
 					case SDLK_LALT:case SDLK_RALT:
-						spGenericInput.button[SP_BUTTON_Y] = 1;
+						spGenericInput.button[SP_BUTTON_Y_NOWASD] = 1;
 						break;
 					case SDLK_LSUPER:case SDLK_RSUPER:
-						spGenericInput.button[SP_BUTTON_X] = 1;
+						spGenericInput.button[SP_BUTTON_X_NOWASD] = 1;
 						break;
 					case SDLK_ESCAPE:
-						spGenericInput.button[SP_BUTTON_SELECT] = 1;
+						spGenericInput.button[SP_BUTTON_SELECT_NOWASD] = 1;
 						break;
 					case SDLK_PAGEUP:
-						spGenericInput.button[SP_BUTTON_L] = 1;
+						spGenericInput.button[SP_BUTTON_L_NOWASD] = 1;
 						break;
 					case SDLK_PAGEDOWN:
-						spGenericInput.button[SP_BUTTON_R] = 1;
+						spGenericInput.button[SP_BUTTON_R_NOWASD] = 1;
 						break;
-				#else
 					case SDLK_a:
 						spGenericInput.button[SP_BUTTON_A] = 1;
 						break;
@@ -653,7 +651,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					case SDLK_e:
 						spGenericInput.button[SP_BUTTON_R] = 1;
 						break;
-				#endif
 			#endif
 				}
 				break;
@@ -777,29 +774,27 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_RETURN:
 					spGenericInput.button[SP_BUTTON_START] = 0;
 					break;
-				#ifdef DO_USE_NOT_WASD_BUTTONS
 					case SDLK_MODE:
-						spGenericInput.button[SP_BUTTON_A] = 0;
+						spGenericInput.button[SP_BUTTON_A_NOWASD] = 0;
 						break;
 					case SDLK_LCTRL:
-						spGenericInput.button[SP_BUTTON_B] = 0;
+						spGenericInput.button[SP_BUTTON_B_NOWASD] = 0;
 						break;
 					case SDLK_LALT:case SDLK_RALT:
-						spGenericInput.button[SP_BUTTON_Y] = 0;
+						spGenericInput.button[SP_BUTTON_Y_NOWASD] = 0;
 						break;
 					case SDLK_LSUPER:case SDLK_RSUPER:
-						spGenericInput.button[SP_BUTTON_X] = 0;
+						spGenericInput.button[SP_BUTTON_X_NOWASD] = 0;
 						break;
 					case SDLK_ESCAPE:
-						spGenericInput.button[SP_BUTTON_SELECT] = 0;
+						spGenericInput.button[SP_BUTTON_SELECT_NOWASD] = 0;
 						break;
 					case SDLK_PAGEUP:
-						spGenericInput.button[SP_BUTTON_L] = 0;
+						spGenericInput.button[SP_BUTTON_L_NOWASD] = 0;
 						break;
 					case SDLK_PAGEDOWN:
-						spGenericInput.button[SP_BUTTON_R] = 0;
+						spGenericInput.button[SP_BUTTON_R_NOWASD] = 0;
 						break;
-				#else
 					case SDLK_a:
 						spGenericInput.button[SP_BUTTON_A] = 0;
 						break;
@@ -821,7 +816,6 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					case SDLK_e:
 						spGenericInput.button[SP_BUTTON_R] = 0;
 						break;
-				#endif
 			#endif
 				}
 				break;

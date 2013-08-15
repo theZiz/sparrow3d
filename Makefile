@@ -10,13 +10,6 @@
 # === files. ;) However always have a look at the changelog, maybe I add new
 # === fancy optimization, you have to add in your target file yourself!
 
-# -DDO_USE_NOT_WASD_BUTTONS enables other buttons instead of WASD for the
-# action buttons and QE for the shoulder buttons. For debugging and some
-# direction based games QWEASD is fine, but for release, ctrl, alt and
-# so one are better I think. More details in sparrowDefines.h. Of course
-# this defines makes only sense for PC. ;) However, it is a good idea
-# to use make OUTSIDE_FLAG=-DDO_USE_NOT_WASD_BUTTONS.
-
 # -DFAST_MULTIPLICATION enables a faster multiplication for fixed point
 # arithmetics, it may look ugly on bigger resolution or may be too inaccurate.
 
