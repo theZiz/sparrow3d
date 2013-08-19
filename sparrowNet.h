@@ -45,10 +45,10 @@ enum spAddress {IPV4, IPV6};
  * An IP address resolved by sparrowNet.
  * 
  * Variables:
- * ipv4 (Uint32) - 32 bit ipv4 address
- * ipv4_bytes (Uint8[4]) - 4 x 8bit ipv4 address
- * ipv6 (Uint32[4]) - 128 bit ipv6 address
- * ipv6_bytes (Uint8[16]) - 16 x 8bit ipv6 address
+ * address.ipv4 (Uint32) - 32 bit ipv4 address
+ * address.ipv4_bytes (Uint8[4]) - 4 x 8bit ipv4 address
+ * address.ipv6 (Uint32[4]) - 128 bit ipv6 address
+ * address.ipv6_bytes (Uint8[16]) - 16 x 8bit ipv6 address
  * port (Uint16) - port of the address
  * sdl_address (IPaddress) - ip address struct of SDL*/
 typedef struct spNetIPStruct *spNetIPPointer;
@@ -63,6 +63,12 @@ typedef struct spNetIPStruct {
 	Uint16 port;
 	IPaddress sdl_address;
 } spNetIP;
+
+/* Define: SP_INVALID_IP
+ * 
+ * Same as INADDR_NONE of SDL_Net. Means, that the ip returned by <spNetResolve>
+ * was not found and is invalid. */
+#define SP_INVALID_IP INADDR_NONE
 
 /* Type: spNetTCPConnection 
  * 
@@ -92,7 +98,8 @@ PREFIX void spQuitNet();
  * port - the port you want to access (later)
  * 
  * Returns:
- * spNetIP - the ip in the type <spNetIP>*/
+ * spNetIP - the ip in the type <spNetIP>. If address.ipv4 is SP_INVALID_IP, the
+ * function calls failed!*/
 PREFIX spNetIP spNetResolve(char* host,Uint16 port);
 
 /* Function: spNetResolveHost
@@ -347,8 +354,7 @@ PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile);
  * 
  * Loads a top 500 for a given game from the compo4all server. The task runs
  * in background! Use <spNetC4AGetStatus> to get the status of the task. Only
- * one background task (fetching highscore OR commiting a score) can run at one
- * time!
+ * one compo4all background task can run at one time!
  * 
  * Parameters:
  * scoreList - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
@@ -368,9 +374,9 @@ PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProf
 /* Function: spNetC4AGetScoreOfMonth
  * 
  * Loads a top 500 of a month for a given game from the compo4all
- * server. The task runs in background! Use <spNetC4AGetStatus> to get
- * the status of the task. Only one background task (fetching highscore
- * OR commiting a score) can run at one time!
+ * server. The task runs
+ * in background! Use <spNetC4AGetStatus> to get the status of the task. Only
+ * one compo4all background task can run at one time!
  * 
  * Parameters:
  * scoreList - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
@@ -401,8 +407,7 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList);
  * 
  * Commits a score to a specific game to compo4all server. The task runs
  * in background! Use <spNetC4AGetStatus> to get the status of the task. Only
- * one background task (fetching highscore OR commiting a score) can run at one
- * time!
+ * one compo4all background task can run at one time!
  * 
  * Parameters:
  * profile - the profile you want to commit tthe score with
@@ -419,23 +424,19 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList);
  * maybe kill it after a timeout.*/
 PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* scoreList);
 
-/* Function: spNetC4AGetStatus
- * 
- * Gets the status of <spNetC4AGetScore> and <spNetC4ACommitScore>.
- * 
- * Returns:
- * int - <Compo4all statuses>*/
-PREFIX int spNetC4AGetStatus();
-
 /* Function: spNetC4ACreateProfile
  * 
  * Creates a new profile on skeezix' server. Blocks your application! However,
  * if network is avaible, should be quite fast. Furthermore it creates the
  * c4a-prof file needed by all supported applications. The path of the file is
- * platform depended. Overwrites an already existing file!
+ * platform depended. Overwrites an already existing file! The task runs
+ * in background! Use <spNetC4AGetStatus> to get the status of the task. Only
+ * one compo4all background task can run at one time!
  * 
  * Parameters:
  * 
+ * profile - a pointer to a pointer to <spNetC4AProfile>, where the profile
+ * shall be saved to.
  * longname - the long name of the player. Should only be alphanumeric.
  * shortname - the short name of the player. Should exactly 3 alphanumeric,
  * capital letters.
@@ -443,27 +444,36 @@ PREFIX int spNetC4AGetStatus();
  * email - the mail address of the new account. Can be "".
  * 
  * Returns:
- * spNetC4AProfilePointer - a pointer to the new created <spNetC4AProfile>
- * struct.
+ * SDL_Thread* - handle to the created thread. If you don't want to run the
+ * task in background you can e.g. call SDL_WaitThread with this return value or
+ * maybe kill it after a timeout.
+ * 
+ * Returns:
+ * SDL_Thread* - handle to the created thread. If you don't want to run the
+ * task in background you can e.g. call SDL_WaitThread with this return value or
+ * maybe kill it after a timeout.
  * 
  * See Also:
  * <spNetC4AEditProfile>*/
-PREFIX spNetC4AProfilePointer spNetC4ACreateProfile(char* longname,char* shortname,char* password,char* email);
+PREFIX SDL_Thread* spNetC4ACreateProfile(spNetC4AProfilePointer* profile, char* longname,char* shortname,char* password,char* email);
 
 /* Function: spNetC4ADeleteAccount
  * 
- * Deletes the given profile on skeezix server, NOT on your ystem! Use
- * <spNetC4ADeleteProfileFile> for this.
+ * Deletes the given profile on skeezix server and maybe the file on your
+ * system. The task runs
+ * in background! Use <spNetC4AGetStatus> to get the status of the task. Only
+ * one compo4all background task can run at one time!
  * 
  * Parameters:
- * profile - profile to delete from the server.*/
-PREFIX void spNetC4ADeleteAccount(spNetC4AProfilePointer profile);
-
-/* Function: spNetC4ADeleteProfileFile
+ * profile - profile to delete from the server.
+ * deleteFile - 1 if you want to delete the c4a-prof file at the end
+ * (at success), too. 0 leaves to file.
  * 
- * Deletes the profile file on your system, NOT the online account at skeezix
- * server. See also <spNetC4ADeleteAccount>.*/
-PREFIX void spNetC4ADeleteProfileFile();
+ * Returns:
+ * SDL_Thread* - handle to the created thread. If you don't want to run the
+ * task in background you can e.g. call SDL_WaitThread with this return value or
+ * maybe kill it after a timeout.*/
+PREFIX SDL_Thread* spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile);
 
 /* Function: spNetC4AEditProfile
  * 
@@ -473,7 +483,9 @@ PREFIX void spNetC4ADeleteProfileFile();
  * applications. The path of the file is platform depended. If the account
  * doesn't exist now, it will created. The big difference to
  * <spNetC4ACreateProfile> is, that the prid is read from the profile struct
- * instead of being new created.
+ * instead of being new created. The task runs
+ * in background! Use <spNetC4AGetStatus> to get the status of the task. Only
+ * one compo4all background task can run at one time!
  * 
  * Parameters:
  * 
@@ -484,7 +496,27 @@ PREFIX void spNetC4ADeleteProfileFile();
  * password - alphanumeric password
  * email - the mail address of the new account. Can be "".
  * 
+ * Returns:
+ * SDL_Thread* - handle to the created thread. If you don't want to run the
+ * task in background you can e.g. call SDL_WaitThread with this return value or
+ * maybe kill it after a timeout.
+ * 
  * See Also:
  * <spNetC4ACreateProfile>*/
-PREFIX void spNetC4AEditProfile(spNetC4AProfilePointer profile,char* longname,char* shortname,char* password,char* email);
+PREFIX SDL_Thread* spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,char* shortname,char* password,char* email);
 #endif
+
+/* Function: spNetC4AGetStatus
+ * 
+ * Gets the status of <spNetC4AGetScore>, <spNetC4ACommitScore>,
+ * <spNetC4ACreateProfile>, <spNetC4AEditProfile> & <spNetC4ADeleteAccount>.
+ * 
+ * Returns:
+ * int - <Compo4all statuses>*/
+PREFIX int spNetC4AGetStatus();
+
+/* Function: spNetC4ADeleteProfileFile
+ * 
+ * Deletes the profile file on your system, NOT the online account at skeezix
+ * server. See also <spNetC4ADeleteAccount>.*/
+PREFIX void spNetC4ADeleteProfileFile();

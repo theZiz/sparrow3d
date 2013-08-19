@@ -409,11 +409,16 @@ PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile)
 
 int c4a_getscore_thread(void* data)
 {
-	SDL_mutexP(spNetC4AStatusMutex);
-	spNetC4AStatus = SP_C4A_ESTABLISHING;
-	SDL_mutexV(spNetC4AStatusMutex);
 	getscorePointer scoreData = (getscorePointer)data;
 	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
+	if (ip.address.ipv4 == SP_INVALID_IP)
+	{
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}	
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
 	{
@@ -545,6 +550,7 @@ PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProf
 	SDL_mutexV(spNetC4AStatusMutex);
 	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
 	{
+		spNetC4AStatus = SP_C4A_ESTABLISHING;
 		//Starting a background thread, which does the fancy stuff
 		getscorePointer data = (getscorePointer)malloc(sizeof(getscoreType));
 		data->score = scoreList;
@@ -582,11 +588,16 @@ PREFIX SDL_Thread* spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNet
 
 int c4a_commit_thread(void* data)
 {
-	SDL_mutexP(spNetC4AStatusMutex);
-	spNetC4AStatus = SP_C4A_ESTABLISHING;
-	SDL_mutexV(spNetC4AStatusMutex);
 	commitPointer commitData = (commitPointer)data;
 	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
+	if (ip.address.ipv4 == SP_INVALID_IP)
+	{
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}	
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
 	{
@@ -658,6 +669,7 @@ PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game
 	SDL_mutexV(spNetC4AStatusMutex);
 	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
 	{
+		spNetC4AStatus = SP_C4A_ESTABLISHING;
 		//Starting a background thread, which does the fancy stuff
 		commitPointer data = (commitPointer)malloc(sizeof(commitType));
 		data->score = score;
@@ -684,14 +696,6 @@ PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game
 		return SDL_CreateThread(c4a_commit_thread,data);
 	}
 	return NULL;
-}
-
-PREFIX int spNetC4AGetStatus()
-{
-	SDL_mutexP(spNetC4AStatusMutex);
-	int status = spNetC4AStatus;
-	SDL_mutexV(spNetC4AStatusMutex);
-	return status;
 }
 
 PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList)
@@ -721,12 +725,37 @@ void fill_with_random_hex(char* buffer,int count)
 	}
 }
 
-PREFIX spNetC4AProfilePointer spNetC4ACreateProfile(char* longname,char* shortname,char* password,char* email)
+typedef struct createStruct *createPointer;
+typedef struct createStruct {
+	spNetC4AProfilePointer* profile;
+	char longname[256];
+	char shortname[256];
+	char password[256];
+	char email[256];
+	int deleteFile;
+} createType;
+
+int c4a_create_thread(void* data)
 {
+	createPointer createData = (createPointer)data;
 	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
+	if (ip.address.ipv4 == SP_INVALID_IP)
+	{
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}	
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
-		return NULL;
+	{
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
 	char create_string[2048];
 	char buffer[2048];
 	char prid[37] = "";
@@ -741,17 +770,25 @@ PREFIX spNetC4AProfilePointer spNetC4ACreateProfile(char* longname,char* shortna
 	prid[23]='-';
 	fill_with_random_hex(&(prid[24]),12);
 	prid[36]=0;
-	sprintf(create_string,"{\"email\": \"%s\", \"shortname\": \"%s\", \"password\": \"%s\", \"prid\": \"%s\", \"longname\": \"%s\"}",email,shortname,password,prid,longname);
+	sprintf(create_string,"{\"email\": \"%s\", \"shortname\": \"%s\", \"password\": \"%s\", \"prid\": \"%s\", \"longname\": \"%s\"}",createData->email,createData->shortname,createData->password,prid,createData->longname);
 	sprintf(buffer,"PUT /setprofile_1 HTTP/1.1\r\nUser-Agent: sparrowNet/1.0\r\nHost: %i.%i.%i.%i:13001\r\nAccept: */*\r\nContent-Length: %i\r\nExpect: 100-continue\r\n\r\n",ip.address.ipv4_bytes[0],ip.address.ipv4_bytes[1],ip.address.ipv4_bytes[2],ip.address.ipv4_bytes[3],strlen(create_string));
 	if (spNetSendTCP(connection,buffer,strlen(buffer)) == 0)
 	{
 		spNetCloseTCP(connection);
-		return NULL;
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
 	}
 	if (spNetSendTCP(connection,create_string,strlen(create_string)) == 0)
 	{
 		spNetCloseTCP(connection);
-		return NULL;
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
 	}
 	spNetCloseTCP(connection);
 	PROFILE_FILENAME_MAKRO
@@ -761,36 +798,112 @@ PREFIX spNetC4AProfilePointer spNetC4ACreateProfile(char* longname,char* shortna
 	SDL_RWwrite(file,&c,1,1);
 	SDL_RWwrite(file,create_string,strlen(create_string),1);
 	SDL_RWclose(file);
-	spNetC4AProfilePointer profile = (spNetC4AProfilePointer)malloc(sizeof(spNetC4AProfile));
-	sprintf(profile->longname,"%s",longname);
-	sprintf(profile->shortname,"%s",shortname);
-	sprintf(profile->password,"%s",password);
-	sprintf(profile->email,"%s",email);
-	sprintf(profile->prid,"%s",prid);
-	return profile;
+	(*(createData->profile)) = (spNetC4AProfilePointer)malloc(sizeof(spNetC4AProfile));
+	sprintf((*(createData->profile))->longname,"%s",createData->longname);
+	sprintf((*(createData->profile))->shortname,"%s",createData->shortname);
+	sprintf((*(createData->profile))->password,"%s",createData->password);
+	sprintf((*(createData->profile))->email,"%s",createData->email);
+	sprintf((*(createData->profile))->prid,"%s",prid);
+	free(data);
+	SDL_mutexP(spNetC4AStatusMutex);
+	spNetC4AStatus = SP_C4A_OK;
+	SDL_mutexV(spNetC4AStatusMutex);
+	return 0;	
 }
 
-PREFIX void spNetC4ADeleteAccount(spNetC4AProfilePointer profile)
+PREFIX SDL_Thread* spNetC4ACreateProfile(spNetC4AProfilePointer* profile, char* longname,char* shortname,char* password,char* email)
 {
+	if (profile == NULL)
+		return NULL;
+	SDL_mutexP(spNetC4AStatusMutex);
+	int status = spNetC4AStatus;
+	SDL_mutexV(spNetC4AStatusMutex);
+	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	{
+		spNetC4AStatus = SP_C4A_ESTABLISHING;
+		//Starting a background thread, which does the fancy stuff
+		createPointer data = (createPointer)malloc(sizeof(createType));
+		data->profile = profile;
+		sprintf(data->longname,"%s",longname);
+		sprintf(data->shortname,"%s",shortname);
+		sprintf(data->password,"%s",password);
+		sprintf(data->email,"%s",email);
+		return SDL_CreateThread(c4a_create_thread,data);
+	}
+	return NULL;
+}
+
+int c4a_delete_thread(void* data)
+{
+	createPointer createData = (createPointer)data;
 	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
+	if (ip.address.ipv4 == SP_INVALID_IP)
+	{
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}	
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
-		return;
+	{
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
 	char create_string[2048];
 	char buffer[2048];
-	sprintf(create_string,"{\"email\": \"%s\", \"shortname\": \"%s\", \"password\": \"%s\", \"prid\": \"%s\", \"longname\": \"%s\"}",profile->email,profile->shortname,profile->password,profile->prid,profile->longname);
+	sprintf(create_string,"{\"email\": \"%s\", \"shortname\": \"%s\", \"password\": \"%s\", \"prid\": \"%s\", \"longname\": \"%s\"}",(*(createData->profile))->email,(*(createData->profile))->shortname,(*(createData->profile))->password,(*(createData->profile))->prid,(*(createData->profile))->longname);
 	sprintf(buffer,"PUT /delprofile_1 HTTP/1.1\r\nUser-Agent: sparrowNet/1.0\r\nHost: %i.%i.%i.%i:13001\r\nAccept: */*\r\nContent-Length: %i\r\nExpect: 100-continue\r\n\r\n",ip.address.ipv4_bytes[0],ip.address.ipv4_bytes[1],ip.address.ipv4_bytes[2],ip.address.ipv4_bytes[3],strlen(create_string));
 	if (spNetSendTCP(connection,buffer,strlen(buffer)) == 0)
 	{
 		spNetCloseTCP(connection);
-		return;
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
 	}
 	if (spNetSendTCP(connection,create_string,strlen(create_string)) == 0)
 	{
 		spNetCloseTCP(connection);
-		return;
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
 	}
 	spNetCloseTCP(connection);
+	(*(createData->profile)) = NULL;	
+	if (createData->deleteFile)
+		spNetC4ADeleteProfileFile();
+	free(data);
+	SDL_mutexP(spNetC4AStatusMutex);
+	spNetC4AStatus = SP_C4A_OK;
+	SDL_mutexV(spNetC4AStatusMutex);
+	return 0;
+}
+
+PREFIX SDL_Thread* spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile)
+{
+	if (profile == NULL)
+		return NULL;
+	SDL_mutexP(spNetC4AStatusMutex);
+	int status = spNetC4AStatus;
+	SDL_mutexV(spNetC4AStatusMutex);
+	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	{
+		spNetC4AStatus = SP_C4A_ESTABLISHING;
+		//Starting a background thread, which does the fancy stuff
+		createPointer data = (createPointer)malloc(sizeof(createType));
+		data->profile = profile;
+		data->deleteFile = deleteFile;
+		return SDL_CreateThread(c4a_delete_thread,data);
+	}
+	return NULL;
 }
 
 PREFIX void spNetC4ADeleteProfileFile()
@@ -799,36 +912,94 @@ PREFIX void spNetC4ADeleteProfileFile()
 	spRemoveFile( filename );
 }
 
-PREFIX void spNetC4AEditProfile(spNetC4AProfilePointer profile,char* longname,char* shortname,char* password,char* email)
+int c4a_edit_thread(void* data)
 {
+	createPointer createData = (createPointer)data;
 	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
+	if (ip.address.ipv4 == SP_INVALID_IP)
+	{
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}	
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
-		return;
+	{
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
 	char create_string[2048];
 	char buffer[2048];
-	sprintf(create_string,"{\"email\": \"%s\", \"shortname\": \"%s\", \"password\": \"%s\", \"prid\": \"%s\", \"longname\": \"%s\"}",email,shortname,password,profile->prid,longname);
+	sprintf(create_string,"{\"email\": \"%s\", \"shortname\": \"%s\", \"password\": \"%s\", \"prid\": \"%s\", \"longname\": \"%s\"}",createData->email,createData->shortname,createData->password,(*(createData->profile))->prid,createData->longname);
 	sprintf(buffer,"PUT /setprofile_1 HTTP/1.1\r\nUser-Agent: sparrowNet/1.0\r\nHost: %i.%i.%i.%i:13001\r\nAccept: */*\r\nContent-Length: %i\r\nExpect: 100-continue\r\n\r\n",ip.address.ipv4_bytes[0],ip.address.ipv4_bytes[1],ip.address.ipv4_bytes[2],ip.address.ipv4_bytes[3],strlen(create_string));
 	if (spNetSendTCP(connection,buffer,strlen(buffer)) == 0)
 	{
 		spNetCloseTCP(connection);
-		return;
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
 	}
 	if (spNetSendTCP(connection,create_string,strlen(create_string)) == 0)
 	{
 		spNetCloseTCP(connection);
-		return;
+		free(data);
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
 	}
 	spNetCloseTCP(connection);
 	PROFILE_FILENAME_MAKRO
 	SDL_RWops *file=SDL_RWFromFile(filename,"wb");
-	SDL_RWwrite(file,profile->prid,strlen(profile->prid),1);
+	SDL_RWwrite(file,(*(createData->profile))->prid,strlen((*(createData->profile))->prid),1);
 	char c = '\n';
 	SDL_RWwrite(file,&c,1,1);
 	SDL_RWwrite(file,create_string,strlen(create_string),1);
 	SDL_RWclose(file);
-	sprintf(profile->longname,"%s",longname);
-	sprintf(profile->shortname,"%s",shortname);
-	sprintf(profile->password,"%s",password);
-	sprintf(profile->email,"%s",email);
+	sprintf((*(createData->profile))->longname,"%s",createData->longname);
+	sprintf((*(createData->profile))->shortname,"%s",createData->shortname);
+	sprintf((*(createData->profile))->password,"%s",createData->password);
+	sprintf((*(createData->profile))->email,"%s",createData->email);
+	free(data);
+	SDL_mutexP(spNetC4AStatusMutex);
+	spNetC4AStatus = SP_C4A_OK;
+	SDL_mutexV(spNetC4AStatusMutex);
+	return 0;	
+}
+
+PREFIX SDL_Thread* spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,char* shortname,char* password,char* email)
+{
+	if (profile == NULL)
+		return NULL;
+	SDL_mutexP(spNetC4AStatusMutex);
+	int status = spNetC4AStatus;
+	SDL_mutexV(spNetC4AStatusMutex);
+	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	{
+		spNetC4AStatus = SP_C4A_ESTABLISHING;
+		//Starting a background thread, which does the fancy stuff
+		createPointer data = (createPointer)malloc(sizeof(createType));
+		data->profile = profile;
+		sprintf(data->longname,"%s",longname);
+		sprintf(data->shortname,"%s",shortname);
+		sprintf(data->password,"%s",password);
+		sprintf(data->email,"%s",email);
+		return SDL_CreateThread(c4a_edit_thread,data);
+	}
+	return NULL;
+}
+
+PREFIX int spNetC4AGetStatus()
+{
+	SDL_mutexP(spNetC4AStatusMutex);
+	int status = spNetC4AStatus;
+	SDL_mutexV(spNetC4AStatusMutex);
+	return status;
 }
