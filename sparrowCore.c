@@ -498,12 +498,15 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				spGenericInput.button[event.jbutton.button] = 0;
 				break;
 			case SDL_KEYDOWN:
-				if ( spGenericInput.keyboard.buffer )
-				{
-					spHandleKeyboardInput(event.key.keysym);
-					spLastKey = event.key.keysym;
-					spLastKeyCountDown = SP_KEYBOARD_FIRST_WAIT;
-				}
+				//GCW and DINGUX use the "keyboard" for buttons
+				#if !defined GCW && !defined DINGUX
+					if ( spGenericInput.keyboard.buffer )
+					{
+						spHandleKeyboardInput(event.key.keysym);
+						spLastKey = event.key.keysym;
+						spLastKeyCountDown = SP_KEYBOARD_FIRST_WAIT;
+					}
+				#endif
 				switch ( event.key.keysym.sym )
 				{
 				case SDLK_LEFT:
@@ -655,11 +658,14 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				}
 				break;
 			case SDL_KEYUP:
-				if ( spGenericInput.keyboard.buffer )
-				{
-					spLastKey.unicode = 0;
-					spLastKeyCountDown = 0;
-				}
+				//GCW and DINGUX use the "keyboard" for buttons
+				#if !defined GCW && !defined DINGUX
+					if ( spGenericInput.keyboard.buffer )
+					{
+						spLastKey.unicode = 0;
+						spLastKeyCountDown = 0;
+					}
+				#endif
 				switch ( event.key.keysym.sym )
 				{
 				case SDLK_LEFT:
