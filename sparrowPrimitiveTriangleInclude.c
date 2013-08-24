@@ -120,6 +120,8 @@
 		return;
 	if ( x2 < 0 )
 		return;
+	if (x1 == x2)
+		x2++;
 	#ifndef __SPARROW_INTERNAL_ZNOTHING__
 		Sint32 z = z1;
 	#endif
@@ -134,7 +136,7 @@
 		x2 = spTargetX - 1;
 	#ifdef __SPARROW_INTERNAL_PATTERN__
 		int x;
-		for ( x = x1; x <= x2; x++ )
+		for ( x = x1; x < x2; x++ )
 		{
 			#ifdef __SPARROW_INTERNAL_BLENDING__
 				#ifdef __SPARROW_INTERNAL_ZBOTH__
@@ -164,7 +166,7 @@
 	#else
 		#ifdef __SPARROW_INTERNAL_BLENDING__
 			int x;
-			for ( x = x1; x <= x2; x++ )
+			for ( x = x1; x < x2; x++ )
 			{
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
 				draw_pixel_blending_ztest_zset( x, y, z, color, spBlending)
@@ -184,7 +186,7 @@
 				spHorizentalLine( spTargetPixel, x1, y, x2 - x1, color, 1, spTargetScanLine, spTargetY );
 			#else
 				int x;
-				for ( x = x1; x <= x2; x++ )
+				for ( x = x1; x < x2; x++ )
 				{
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
 						draw_pixel_ztest_zset( x, y, z, color )
@@ -269,34 +271,44 @@
 		#endif
 	}
 	Sint32 xl = x1 << SP_ACCURACY;
+	Sint32 sX_l = 0;
 	#ifndef __SPARROW_INTERNAL_ZNOTHING__
 		Sint32 zl = z1;
+		Sint32 sZ_l = 0;
 	#endif
-	Sint32 sX_l = 0;
-	Sint32 sZ_l = 0;
-	if ( ( y1 - y2 ) != 0 )
-	{
-		Sint32 mul = one_over_x( y1 - y2 );
-		sX_l = ( x1 - x2 ) * mul;
-		//sZ_l = (z1-z2)*mul;
-		#ifndef __SPARROW_INTERNAL_ZNOTHING__
-			sZ_l = z_div( z1 - z2, y1 - y2 );
-		#endif
-	}
-
 	Sint32 xr = xl;
 	Sint32 sX_r = 0;
 	#ifndef __SPARROW_INTERNAL_ZNOTHING__
 		Sint32 zr = zl;
 		Sint32 sZ_r = 0;
 	#endif
+	if ( ( y1 - y2 ) != 0 )
+	{
+		Sint32 mul = one_over_x( y1 - y2 );
+		if ( x4 < x3 )
+			sX_l = ( x1 - x2 ) * mul;
+		else
+			sX_r = ( x1 - x2 ) * mul;
+		#ifndef __SPARROW_INTERNAL_ZNOTHING__
+			if ( x4 < x3 )
+				sZ_l = z_div( z1 - z2, y1 - y2 );
+			else
+				sZ_r = z_div( z1 - z2, y1 - y2 );
+		#endif
+	}	
 	if ( ( y1 - y3 ) != 0 )
 	{
 		Sint32 mul = one_over_x( y1 - y3 );
-		sX_r = ( x1 - x3 ) * mul;
+		if ( x4 < x3 )
+			sX_r = ( x1 - x3 ) * mul;
+		else
+			sX_l = ( x1 - x3 ) * mul;
 		//sZ_r = (z1-z3)*mul;
 		#ifndef __SPARROW_INTERNAL_ZNOTHING__
-			sZ_r = z_div( z1 - z3, y1 - y3 );
+			if ( x4 < x3 )
+				sZ_r = z_div( z1 - z3, y1 - y3 );
+			else
+				sZ_l = z_div( z1 - z3, y1 - y3 );
 		#endif
 	}
 
@@ -331,197 +343,12 @@
 			if ( ( x4 - x3 ) != 0 )
 				sZ = z_div( z4 - z3, x4 - x3 );
 		#endif
-		if ( x4 < x3 )
+		for ( y = y1; y < y3; y++ )
 		{
-			for ( y = y1; y < y3; y++ )
-			{
-				#ifdef __SPARROW_INTERNAL_BLENDING__
-					#ifdef __SPARROW_INTERNAL_PATTERN__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_blending_line_ztest_zset_pattern( xl >> SP_ACCURACY, zl,
-													xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_blending_line_ztest_pattern( xl >> SP_ACCURACY, zl,
-											 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZSET__	
-							draw_blending_line_zset_pattern( xl >> SP_ACCURACY, zl,
-											xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
-						#else
-							draw_blending_line_pattern( xl >> SP_ACCURACY, 
-										 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_blending_line_ztest_zset( xl >> SP_ACCURACY, zl,
-													xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_blending_line_ztest( xl >> SP_ACCURACY, zl,
-											 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZSET__	
-							draw_blending_line_zset( xl >> SP_ACCURACY, zl,
-											xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
-						#else
-							draw_blending_line( xl >> SP_ACCURACY, 
-										 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
-						#endif
-					#endif
-				#else
-					#ifdef __SPARROW_INTERNAL_PATTERN__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_ztest_zset_pattern( xl >> SP_ACCURACY, zl,
-													xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_ztest_pattern( xl >> SP_ACCURACY, zl,
-											 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZSET__	
-							draw_line_zset_pattern( xl >> SP_ACCURACY, zl,
-											xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
-						#else
-							draw_line_pattern( xl >> SP_ACCURACY, 
-										 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_ztest_zset( xl >> SP_ACCURACY, zl,
-													xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_ztest( xl >> SP_ACCURACY, zl,
-											 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZSET__	
-							draw_line_zset( xl >> SP_ACCURACY, zl,
-											xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
-						#else
-							draw_line( xl >> SP_ACCURACY, 
-										 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
-						#endif
-					#endif
-				#endif
+			if (sX_r < 0)
 				xl += sX_l;
+			else
 				xr += sX_r;
-				#ifndef __SPARROW_INTERNAL_ZNOTHING__
-					zl += sZ_l;
-					zr += sZ_r;
-				#endif
-			}
-		}
-		else
-		{
-			#ifndef __SPARROW_INTERNAL_ZNOTHING__
-				Sint32 sZ = 0;
-				if ( ( x4 - x3 ) != 0 )
-					sZ = z_div( z4 - z3, x4 - x3 );
-			#endif
-			for ( y = y1; y < y3; y++ )
-			{
-				#ifdef __SPARROW_INTERNAL_BLENDING__
-					#ifdef __SPARROW_INTERNAL_PATTERN__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_blending_line_ztest_zset_pattern( xr >> SP_ACCURACY, zr,
-													xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_blending_line_ztest_pattern( xr >> SP_ACCURACY, zr,
-											 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZSET__	
-							draw_blending_line_zset_pattern( xr >> SP_ACCURACY, zr,
-											xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-						#else
-							draw_blending_line_pattern( xr >> SP_ACCURACY, 
-										 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_blending_line_ztest_zset( xr >> SP_ACCURACY, zr,
-													xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_blending_line_ztest( xr >> SP_ACCURACY, zr,
-											 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZSET__	
-							draw_blending_line_zset( xr >> SP_ACCURACY, zr,
-											xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-						#else
-							draw_blending_line( xr >> SP_ACCURACY, 
-										 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
-						#endif
-					#endif
-				#else
-					#ifdef __SPARROW_INTERNAL_PATTERN__
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_ztest_zset_pattern( xr >> SP_ACCURACY, zr,
-													xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_ztest_pattern( xr >> SP_ACCURACY, zr,
-											 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZSET__	
-							draw_line_zset_pattern( xr >> SP_ACCURACY, zr,
-											xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-						#else
-							draw_line_pattern( xr >> SP_ACCURACY, 
-										 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
-						#endif
-					#else
-						#ifdef __SPARROW_INTERNAL_ZBOTH__
-							draw_line_ztest_zset( xr >> SP_ACCURACY, zr,
-													xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZTEST__
-							draw_line_ztest( xr >> SP_ACCURACY, zr,
-											 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-						#elif defined __SPARROW_INTERNAL_ZSET__	
-							draw_line_zset( xr >> SP_ACCURACY, zr,
-											xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-						#else
-							draw_line( xr >> SP_ACCURACY, 
-										 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
-						#endif
-					#endif
-				#endif
-				xl += sX_l;
-				xr += sX_r;
-				#ifndef __SPARROW_INTERNAL_ZNOTHING__
-					zl += sZ_l;
-					zr += sZ_r;
-				#endif
-			}
-		}
-	}
-	
-	xr = x3 << SP_ACCURACY;
-	sX_r = 0;
-	#ifndef __SPARROW_INTERNAL_ZNOTHING__
-		zr = z3;
-		sZ_r = 0;
-	#endif
-	if ( ( y2 - y3 ) != 0 )
-	{
-		Sint32 mul = one_over_x( y2 - y3 );
-		sX_r = ( x2 - x3 ) * mul;
-		#ifndef __SPARROW_INTERNAL_ZNOTHING__
-			sZ_r = z_div( z2 - z3, y2 - y3 );
-		#endif
-	}
-
-	if ( y3 < 0 )
-	{
-		int diff = -y3;
-		y3 = 0;
-		xl += sX_l * diff;
-		xr += sX_r * diff;
-		#ifndef __SPARROW_INTERNAL_ZNOTHING__
-			zl += sZ_l * diff;
-			zr += sZ_r * diff;
-		#endif
-	}
-	if ( y2 >= spTargetY )
-		y2 = spTargetY - 1;
-
-	#ifndef __SPARROW_INTERNAL_ZNOTHING__
-		Sint32 sZ = 0;
-		if ( ( x4 - x3 ) != 0 )
-			sZ = z_div( z4 - z3, x4 - x3 );
-	#endif
-	if ( x4 < x3 )
-	{
-		for ( y = y3; y <= y2; y++ )
-		{
 			#ifdef __SPARROW_INTERNAL_BLENDING__
 				#ifdef __SPARROW_INTERNAL_PATTERN__
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
@@ -583,91 +410,148 @@
 					#endif
 				#endif
 			#endif
-			xl += sX_l;
-			xr += sX_r;
+			if (sX_r < 0)
+				xr += sX_r;
+			else
+				xl += sX_l;
 			#ifndef __SPARROW_INTERNAL_ZNOTHING__
 				zl += sZ_l;
 				zr += sZ_r;
 			#endif
 		}
 	}
+	
+	if ( x4 < x3 )
+	{
+		xr = x3 << SP_ACCURACY;
+		sX_r = 0;
+	}
 	else
 	{
-		#ifndef __SPARROW_INTERNAL_ZNOTHING__
-			Sint32 sZ = 0;
-			if ( ( x4 - x3 ) != 0 )
-				sZ = z_div( z4 - z3, x4 - x3 );
-		#endif
-		for ( y = y3; y <= y2; y++ )
+		xl = x3 << SP_ACCURACY;
+		sX_l = 0;
+	}
+	#ifndef __SPARROW_INTERNAL_ZNOTHING__
+		if ( x4 < x3 )
 		{
-			#ifdef __SPARROW_INTERNAL_BLENDING__
-				#ifdef __SPARROW_INTERNAL_PATTERN__
-					#ifdef __SPARROW_INTERNAL_ZBOTH__
-						draw_blending_line_ztest_zset_pattern( xr >> SP_ACCURACY, zr,
-												xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-					#elif defined __SPARROW_INTERNAL_ZTEST__
-						draw_blending_line_ztest_pattern( xr >> SP_ACCURACY, zr,
-										 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-					#elif defined __SPARROW_INTERNAL_ZSET__	
-						draw_blending_line_zset_pattern( xr >> SP_ACCURACY, zr,
-										xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-					#else
-						draw_blending_line_pattern( xr >> SP_ACCURACY, 
-									 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
-					#endif
+			zr = z3;
+			sZ_r = 0;
+		}
+		else
+		{
+			zl = z3;
+			sZ_l = 0;
+		}
+	#endif
+	if ( ( y2 - y3 ) != 0 )
+	{
+		Sint32 mul = one_over_x( y2 - y3 );
+		if ( x4 < x3 )
+			sX_r = ( x2 - x3 ) * mul;
+		else
+			sX_l = ( x2 - x3 ) * mul;
+		#ifndef __SPARROW_INTERNAL_ZNOTHING__
+			if ( x4 < x3 )
+				sZ_r = z_div( z2 - z3, y2 - y3 );
+			else
+				sZ_l = z_div( z2 - z3, y2 - y3 );
+		#endif
+	}
+
+	if ( y3 < 0 )
+	{
+		int diff = -y3;
+		y3 = 0;
+		xl += sX_l * diff;
+		xr += sX_r * diff;
+		#ifndef __SPARROW_INTERNAL_ZNOTHING__
+			zl += sZ_l * diff;
+			zr += sZ_r * diff;
+		#endif
+	}
+	if ( y2 >= spTargetY )
+		y2 = spTargetY - 1;
+
+	#ifndef __SPARROW_INTERNAL_ZNOTHING__
+		Sint32 sZ = 0;
+		if ( ( x4 - x3 ) != 0 )
+			sZ = z_div( z4 - z3, x4 - x3 );
+	#endif
+	for ( y = y3; y <= y2; y++ )
+	{
+		if (sX_r < 0)
+			xl += sX_l;
+		else
+			xr += sX_r;
+		#ifdef __SPARROW_INTERNAL_BLENDING__
+			#ifdef __SPARROW_INTERNAL_PATTERN__
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					draw_blending_line_ztest_zset_pattern( xl >> SP_ACCURACY, zl,
+											xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					draw_blending_line_ztest_pattern( xl >> SP_ACCURACY, zl,
+									 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
+				#elif defined __SPARROW_INTERNAL_ZSET__	
+					draw_blending_line_zset_pattern( xl >> SP_ACCURACY, zl,
+									xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 				#else
-					#ifdef __SPARROW_INTERNAL_ZBOTH__
-						draw_blending_line_ztest_zset( xr >> SP_ACCURACY, zr,
-												xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-					#elif defined __SPARROW_INTERNAL_ZTEST__
-						draw_blending_line_ztest( xr >> SP_ACCURACY, zr,
-										 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-					#elif defined __SPARROW_INTERNAL_ZSET__	
-						draw_blending_line_zset( xr >> SP_ACCURACY, zr,
-										xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-					#else
-						draw_blending_line( xr >> SP_ACCURACY, 
-									 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
-					#endif
+					draw_blending_line_pattern( xl >> SP_ACCURACY, 
+								 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
 				#endif
 			#else
-				#ifdef __SPARROW_INTERNAL_PATTERN__
-					#ifdef __SPARROW_INTERNAL_ZBOTH__
-						draw_line_ztest_zset_pattern( xr >> SP_ACCURACY, zr,
-												xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-					#elif defined __SPARROW_INTERNAL_ZTEST__
-						draw_line_ztest_pattern( xr >> SP_ACCURACY, zr,
-										 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-					#elif defined __SPARROW_INTERNAL_ZSET__	
-						draw_line_zset_pattern( xr >> SP_ACCURACY, zr,
-										xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-					#else
-						draw_line_pattern( xr >> SP_ACCURACY, 
-									 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
-					#endif
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					draw_blending_line_ztest_zset( xl >> SP_ACCURACY, zl,
+											xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					draw_blending_line_ztest( xl >> SP_ACCURACY, zl,
+									 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
+				#elif defined __SPARROW_INTERNAL_ZSET__	
+					draw_blending_line_zset( xl >> SP_ACCURACY, zl,
+									xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
 				#else
-					#ifdef __SPARROW_INTERNAL_ZBOTH__
-						draw_line_ztest_zset( xr >> SP_ACCURACY, zr,
-												xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-					#elif defined __SPARROW_INTERNAL_ZTEST__
-						draw_line_ztest( xr >> SP_ACCURACY, zr,
-										 xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-					#elif defined __SPARROW_INTERNAL_ZSET__	
-						draw_line_zset( xr >> SP_ACCURACY, zr,
-										xl >> SP_ACCURACY, zl, y, color, spPattern, spBlending, sZ );
-					#else
-						draw_line( xr >> SP_ACCURACY, 
-									 xl >> SP_ACCURACY, y, color, spPattern, spBlending);
-					#endif
+					draw_blending_line( xl >> SP_ACCURACY, 
+								 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
 				#endif
 			#endif
-			xl += sX_l;
-			xr += sX_r;
-			#ifndef __SPARROW_INTERNAL_ZNOTHING__
-				zl += sZ_l;
-				zr += sZ_r;
+		#else
+			#ifdef __SPARROW_INTERNAL_PATTERN__
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					draw_line_ztest_zset_pattern( xl >> SP_ACCURACY, zl,
+											xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					draw_line_ztest_pattern( xl >> SP_ACCURACY, zl,
+									 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
+				#elif defined __SPARROW_INTERNAL_ZSET__	
+					draw_line_zset_pattern( xl >> SP_ACCURACY, zl,
+									xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
+				#else
+					draw_line_pattern( xl >> SP_ACCURACY, 
+								 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
+				#endif
+			#else
+				#ifdef __SPARROW_INTERNAL_ZBOTH__
+					draw_line_ztest_zset( xl >> SP_ACCURACY, zl,
+											xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
+				#elif defined __SPARROW_INTERNAL_ZTEST__
+					draw_line_ztest( xl >> SP_ACCURACY, zl,
+									 xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
+				#elif defined __SPARROW_INTERNAL_ZSET__	
+					draw_line_zset( xl >> SP_ACCURACY, zl,
+									xr >> SP_ACCURACY, zr, y, color, spPattern, spBlending, sZ );
+				#else
+					draw_line( xl >> SP_ACCURACY, 
+								 xr >> SP_ACCURACY, y, color, spPattern, spBlending);
+				#endif
 			#endif
-		}
+		#endif
+		if (sX_r < 0)
+			xr += sX_r;
+		else
+			xl += sX_l;
+		#ifndef __SPARROW_INTERNAL_ZNOTHING__
+			zl += sZ_l;
+			zr += sZ_r;
+		#endif
 	}
 }
 

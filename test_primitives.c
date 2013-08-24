@@ -51,7 +51,7 @@ void draw_primitives(int rotation)
 	srand( 0 );
 	SDL_Surface* screen = spGetWindowSurface();
 	int i;
-	for ( i = 0; i < 5; i++ )
+	/*for ( i = 0; i < 5; i++ )
 		spEllipseBorder( rand() % screen->w, rand() % screen->h, 0, rand() % screen->w / 4, rand() % screen->h / 4, 10, 20, rand() % 65536 );
 	for ( i = 0; i < 5; i++ )
 		spEllipse( rand() % screen->w, rand() % screen->h, 0, rand() % screen->w / 4, rand() % screen->h / 4, rand() % 65536 );
@@ -60,8 +60,8 @@ void draw_primitives(int rotation)
 							 rand() % screen->w / 2, rand() % screen->h / 2, 12, 6, rand() % 65536 );
 	for ( i = 0; i < 5; i++ )
 		spRectangle( rand() % screen->w, rand() % screen->h, 0,
-					 rand() % screen->w / 2, rand() % screen->h / 2, rand() % 65536 );
-	for ( i = 0; i < 100; i++ )
+					 rand() % screen->w / 2, rand() % screen->h / 2, rand() % 65536 );*/
+	for ( i = 0; i < 256; i++ )
 		spLine( rand() % screen->w, rand() % screen->h, 0,
 				rand() % screen->w, rand() % screen->h, 0, rand() % 65536 );
 	spSetZTest( 1 );
