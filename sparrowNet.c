@@ -289,12 +289,17 @@ PREFIX void spQuitNet()
 	SDLNet_Quit();
 }
 
-
 #ifdef PANDORA
 	#include "pnd_locate.h"
 #endif
 
 int spNetC4AStatus = 0;
+void *spNetC4ADataPointer = NULL;
+int spNetC4ATimeOut = 0;
+SDL_Thread* spNetC4AThread = NULL;
+int spNetC4AResult = 0;
+int spNetC4AThreadStatus = 0;
+
 typedef struct getscoreStruct *getscorePointer;
 typedef struct getscoreStruct {
 	spNetC4AScorePointer* score;
@@ -312,6 +317,44 @@ typedef struct commitStruct {
 	char system[256];
 	spNetC4AScorePointer* scoreList;
 } commitType;
+
+int spNetC4AUberThread(int ( *function )( void* data ))
+{
+	int startTime = SDL_GetTicks();
+	SDL_Thread* thread = SDL_CreateThread(function,spNetC4ADataPointer);
+	while (1)
+	{
+		spSleep(100);
+		int newTime = SDL_GetTicks();
+		int diff = newTime - startTime;
+		startTime = newTime;
+		spNetC4ATimeOut -= diff;
+		SDL_mutexP(spNetC4AStatusMutex);
+		int status = spNetC4AStatus;
+		SDL_mutexV(spNetC4AStatusMutex);
+		if (status == SP_C4A_CANCELED || spNetC4ATimeOut <= 0)
+		{
+			SDL_KillThread(thread);
+			free(spNetC4ADataPointer);
+			spNetC4ADataPointer = NULL;
+			spNetC4AResult = 1;
+			SDL_mutexP(spNetC4AStatusMutex);
+			if (spNetC4ATimeOut <= 0)
+				spNetC4AStatus = SP_C4A_TIMEOUT;
+			spNetC4AThreadStatus = 0;
+			SDL_mutexV(spNetC4AStatusMutex);
+			return spNetC4AResult;
+		}
+		if (status <= 0) //finished somehow
+		{
+			SDL_WaitThread(thread,&spNetC4AResult);
+			SDL_mutexP(spNetC4AStatusMutex);
+			spNetC4AThreadStatus = 0;
+			SDL_mutexV(spNetC4AStatusMutex);
+			return spNetC4AResult;
+		}
+	}
+}
 
 char* my_strchr(char* buffer, char c, char ignore)
 {
@@ -414,6 +457,7 @@ int c4a_getscore_thread(void* data)
 	if (ip.address.ipv4 == SP_INVALID_IP)
 	{
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -423,14 +467,12 @@ int c4a_getscore_thread(void* data)
 	if (connection == NULL)
 	{
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
 		return 1;
 	}
-	SDL_mutexP(spNetC4AStatusMutex);
-	spNetC4AStatus = SP_C4A_PROGRESS;
-	SDL_mutexV(spNetC4AStatusMutex);
 	char get_string[512];
 	if (scoreData->year && scoreData->month)
 		sprintf(get_string,"GET /json_1/%s/%i%02i/\n\n",scoreData->game,scoreData->year,scoreData->month);
@@ -440,6 +482,7 @@ int c4a_getscore_thread(void* data)
 	{
 		spNetCloseTCP(connection);
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -451,6 +494,7 @@ int c4a_getscore_thread(void* data)
 	{
 		spNetCloseTCP(connection);
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -463,6 +507,7 @@ int c4a_getscore_thread(void* data)
 	if (found == NULL)
 	{
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -477,6 +522,7 @@ int c4a_getscore_thread(void* data)
 		if (start == NULL)
 		{
 			free(data);
+			spNetC4ADataPointer = NULL;
 			SDL_mutexP(spNetC4AStatusMutex);
 			spNetC4AStatus = SP_C4A_ERROR;
 			SDL_mutexV(spNetC4AStatusMutex);
@@ -486,6 +532,7 @@ int c4a_getscore_thread(void* data)
 		if (start == NULL)
 		{
 			free(data);
+			spNetC4ADataPointer = NULL;
 			SDL_mutexP(spNetC4AStatusMutex);
 			spNetC4AStatus = SP_C4A_ERROR;
 			SDL_mutexV(spNetC4AStatusMutex);
@@ -536,13 +583,14 @@ int c4a_getscore_thread(void* data)
 	}	
 	
 	free(data);
+	spNetC4ADataPointer = NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
 	spNetC4AStatus = SP_C4A_OK;
 	SDL_mutexV(spNetC4AStatusMutex);
 	return 0;
 }
 
-PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game)
+PREFIX int spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int timeOut)
 {
 	(*scoreList) = NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
@@ -550,7 +598,7 @@ PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProf
 	SDL_mutexV(spNetC4AStatusMutex);
 	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
 	{
-		spNetC4AStatus = SP_C4A_ESTABLISHING;
+		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
 		getscorePointer data = (getscorePointer)malloc(sizeof(getscoreType));
 		data->score = scoreList;
@@ -558,16 +606,20 @@ PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProf
 		data->year = 0;
 		data->month = 0;
 		sprintf(data->game,"%s",game);
-		return SDL_CreateThread(c4a_getscore_thread,data);
+		spNetC4ADataPointer = data;
+		spNetC4ATimeOut = timeOut;
+		spNetC4AThreadStatus = 1;
+		spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_getscore_thread);
+		return 0;
 	}
-	return NULL;
+	return 1;
 }
 
-PREFIX SDL_Thread* spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int year,int month)
+PREFIX int spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int year,int month,int timeOut)
 {
 	(*scoreList) = NULL;
 	if (month < 1 || month > 12)
-		return NULL;
+		return 1;
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
@@ -580,9 +632,13 @@ PREFIX SDL_Thread* spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNet
 		data->year = year;
 		data->month = month;
 		sprintf(data->game,"%s",game);
-		return SDL_CreateThread(c4a_getscore_thread,data);
+		spNetC4ADataPointer = data;
+		spNetC4ATimeOut = timeOut;
+		spNetC4AThreadStatus = 1;
+		spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_getscore_thread);
+		return 0;
 	}
-	return NULL;
+	return 1;
 }
 
 
@@ -593,6 +649,7 @@ int c4a_commit_thread(void* data)
 	if (ip.address.ipv4 == SP_INVALID_IP)
 	{
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -602,14 +659,12 @@ int c4a_commit_thread(void* data)
 	if (connection == NULL)
 	{
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
 		return 1;
 	}
-	SDL_mutexP(spNetC4AStatusMutex);
-	spNetC4AStatus = SP_C4A_PROGRESS;
-	SDL_mutexV(spNetC4AStatusMutex);
 	char commit_string[2048];
 	sprintf(commit_string,"score=%i",commitData->score);
 	int dataSize = strlen(commit_string);
@@ -618,6 +673,7 @@ int c4a_commit_thread(void* data)
 	{
 		spNetCloseTCP(connection);
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -637,6 +693,7 @@ int c4a_commit_thread(void* data)
 		(*(commitData->scoreList)) = new_score;
 	}
 	free(data);
+	spNetC4ADataPointer = NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
 	spNetC4AStatus = SP_C4A_OK;
 	SDL_mutexV(spNetC4AStatusMutex);
@@ -658,18 +715,18 @@ int already_in_highscore(spNetC4AScorePointer scoreList,spNetC4AProfilePointer p
 	return 0;
 }
 
-PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* scoreList)
+PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* scoreList,int timeOut)
 {
 	if (profile == NULL)
-		return NULL;
+		return 1;
 	if (already_in_highscore(*scoreList,profile,score))
-		return NULL;
+		return 1;
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
 	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
 	{
-		spNetC4AStatus = SP_C4A_ESTABLISHING;
+		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
 		commitPointer data = (commitPointer)malloc(sizeof(commitType));
 		data->score = score;
@@ -693,9 +750,13 @@ PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game
 		#else
 			sprintf(data->system,"linux");
 		#endif
-		return SDL_CreateThread(c4a_commit_thread,data);
+		spNetC4ADataPointer = data;
+		spNetC4ATimeOut = timeOut;
+		spNetC4AThreadStatus = 1;
+		spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_commit_thread);
+		return 0;
 	}
-	return NULL;
+	return 1;
 }
 
 PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList)
@@ -742,6 +803,7 @@ int c4a_create_thread(void* data)
 	if (ip.address.ipv4 == SP_INVALID_IP)
 	{
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -751,6 +813,7 @@ int c4a_create_thread(void* data)
 	if (connection == NULL)
 	{
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -776,6 +839,7 @@ int c4a_create_thread(void* data)
 	{
 		spNetCloseTCP(connection);
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -785,6 +849,7 @@ int c4a_create_thread(void* data)
 	{
 		spNetCloseTCP(connection);
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -805,22 +870,23 @@ int c4a_create_thread(void* data)
 	sprintf((*(createData->profile))->email,"%s",createData->email);
 	sprintf((*(createData->profile))->prid,"%s",prid);
 	free(data);
+	spNetC4ADataPointer = NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
 	spNetC4AStatus = SP_C4A_OK;
 	SDL_mutexV(spNetC4AStatusMutex);
 	return 0;	
 }
 
-PREFIX SDL_Thread* spNetC4ACreateProfile(spNetC4AProfilePointer* profile, char* longname,char* shortname,char* password,char* email)
+PREFIX int spNetC4ACreateProfile(spNetC4AProfilePointer* profile, char* longname,char* shortname,char* password,char* email,int timeOut)
 {
 	if (profile == NULL)
-		return NULL;
+		return 1;
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
 	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
 	{
-		spNetC4AStatus = SP_C4A_ESTABLISHING;
+		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
 		createPointer data = (createPointer)malloc(sizeof(createType));
 		data->profile = profile;
@@ -828,9 +894,13 @@ PREFIX SDL_Thread* spNetC4ACreateProfile(spNetC4AProfilePointer* profile, char* 
 		sprintf(data->shortname,"%s",shortname);
 		sprintf(data->password,"%s",password);
 		sprintf(data->email,"%s",email);
-		return SDL_CreateThread(c4a_create_thread,data);
+		spNetC4ADataPointer = data;
+		spNetC4ATimeOut = timeOut;
+		spNetC4AThreadStatus = 1;
+		spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_create_thread);
+		return 0;
 	}
-	return NULL;
+	return 1;
 }
 
 int c4a_delete_thread(void* data)
@@ -840,6 +910,7 @@ int c4a_delete_thread(void* data)
 	if (ip.address.ipv4 == SP_INVALID_IP)
 	{
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -849,6 +920,7 @@ int c4a_delete_thread(void* data)
 	if (connection == NULL)
 	{
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -862,6 +934,7 @@ int c4a_delete_thread(void* data)
 	{
 		spNetCloseTCP(connection);
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -871,6 +944,7 @@ int c4a_delete_thread(void* data)
 	{
 		spNetCloseTCP(connection);
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -881,29 +955,34 @@ int c4a_delete_thread(void* data)
 	if (createData->deleteFile)
 		spNetC4ADeleteProfileFile();
 	free(data);
+	spNetC4ADataPointer = NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
 	spNetC4AStatus = SP_C4A_OK;
 	SDL_mutexV(spNetC4AStatusMutex);
 	return 0;
 }
 
-PREFIX SDL_Thread* spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile)
+PREFIX int spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile,int timeOut)
 {
 	if (profile == NULL)
-		return NULL;
+		return 1;
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
 	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
 	{
-		spNetC4AStatus = SP_C4A_ESTABLISHING;
+		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
 		createPointer data = (createPointer)malloc(sizeof(createType));
 		data->profile = profile;
 		data->deleteFile = deleteFile;
-		return SDL_CreateThread(c4a_delete_thread,data);
+		spNetC4ADataPointer = data;
+		spNetC4ATimeOut = timeOut;
+		spNetC4AThreadStatus = 1;
+		spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_delete_thread);
+		return 0;
 	}
-	return NULL;
+	return 1;
 }
 
 PREFIX void spNetC4ADeleteProfileFile()
@@ -919,6 +998,7 @@ int c4a_edit_thread(void* data)
 	if (ip.address.ipv4 == SP_INVALID_IP)
 	{
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -928,6 +1008,7 @@ int c4a_edit_thread(void* data)
 	if (connection == NULL)
 	{
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -941,6 +1022,7 @@ int c4a_edit_thread(void* data)
 	{
 		spNetCloseTCP(connection);
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -950,6 +1032,7 @@ int c4a_edit_thread(void* data)
 	{
 		spNetCloseTCP(connection);
 		free(data);
+		spNetC4ADataPointer = NULL;
 		SDL_mutexP(spNetC4AStatusMutex);
 		spNetC4AStatus = SP_C4A_ERROR;
 		SDL_mutexV(spNetC4AStatusMutex);
@@ -968,22 +1051,23 @@ int c4a_edit_thread(void* data)
 	sprintf((*(createData->profile))->password,"%s",createData->password);
 	sprintf((*(createData->profile))->email,"%s",createData->email);
 	free(data);
+	spNetC4ADataPointer = NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
 	spNetC4AStatus = SP_C4A_OK;
 	SDL_mutexV(spNetC4AStatusMutex);
 	return 0;	
 }
 
-PREFIX SDL_Thread* spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,char* shortname,char* password,char* email)
+PREFIX int spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,char* shortname,char* password,char* email,int timeOut)
 {
 	if (profile == NULL)
-		return NULL;
+		return 1;
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
 	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
 	{
-		spNetC4AStatus = SP_C4A_ESTABLISHING;
+		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
 		createPointer data = (createPointer)malloc(sizeof(createType));
 		data->profile = profile;
@@ -991,15 +1075,47 @@ PREFIX SDL_Thread* spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* lon
 		sprintf(data->shortname,"%s",shortname);
 		sprintf(data->password,"%s",password);
 		sprintf(data->email,"%s",email);
-		return SDL_CreateThread(c4a_edit_thread,data);
+		spNetC4ADataPointer = data;
+		spNetC4ATimeOut = timeOut;
+		spNetC4AThreadStatus = 1;
+		spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_edit_thread);
+		return 0;
 	}
-	return NULL;
+	return 1;
 }
 
 PREFIX int spNetC4AGetStatus()
 {
 	SDL_mutexP(spNetC4AStatusMutex);
+	if (spNetC4AThreadStatus)
+	{
+		SDL_mutexV(spNetC4AStatusMutex);
+		return SP_C4A_PROGRESS;
+	}
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
 	return status;
+}
+
+PREFIX void spNetC4ACancelTask()
+{
+	SDL_mutexP(spNetC4AStatusMutex);
+	if (spNetC4AStatus > 0)
+	{
+		spNetC4AStatus = SP_C4A_CANCELED;
+		SDL_mutexV(spNetC4AStatusMutex);
+		SDL_WaitThread(spNetC4AThread,NULL);
+	}
+	else
+		SDL_mutexV(spNetC4AStatusMutex);
+}
+
+PREFIX int spNetC4AGetTaskResult()
+{
+	return spNetC4AResult;
+}
+
+PREFIX int spNetC4AGetTimeOut()
+{
+	return spNetC4ATimeOut;
 }

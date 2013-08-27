@@ -286,10 +286,11 @@ PREFIX void spNetCloseTCP(spNetTCPConnection connection);
  * SP_C4A_PROGRESS - transfer of data is in progress
  * SP_C4A_OK - process is done and everything was fine
  * SP_C4A_ERROR - process is done, but something went wrong */
-#define SP_C4A_ESTABLISHING 2
 #define SP_C4A_PROGRESS 1
 #define SP_C4A_OK 0
 #define SP_C4A_ERROR -1
+#define SP_C4A_TIMEOUT -2
+#define SP_C4A_CANCELED -3
 
 /* Type: spNetC4AScore
  * 
@@ -362,14 +363,15 @@ PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile);
  * profile - an optional pointer to your profile. If given only your scores are
  * added to the scores-list above
  * game - name of the game on the server
+ * timeOut - after this time in ms the thread is killed. Get it with
+ * <spNetC4AGetTimeOut>
  * 
  * Returns:
- * SDL_Thread* - handle to the created thread. If you don't want to run the
- * task in background you can e.g. call SDL_WaitThread with this return value or
- * maybe kill it after a timeout.
+ * int - 1 if the function failed for some reason, 0 at success starting
+ * the task.
  * 
  * See also: <spNetC4AGetScoreOfMonth>*/
-PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game);
+PREFIX int spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int timeOut);
 
 /* Function: spNetC4AGetScoreOfMonth
  * 
@@ -386,14 +388,15 @@ PREFIX SDL_Thread* spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProf
  * game - name of the game on the server
  * year - year to load (e.g. 2013)
  * month - month to load (e.g. 3 for march)
+ * timeOut - after this time in ms the thread is killed. Get it with
+ * <spNetC4AGetTimeOut>
  * 
  * Returns:
- * SDL_Thread* - handle to the created thread. If you don't want to run the
- * task in background you can e.g. call SDL_WaitThread with this return value or
- * maybe kill it after a timeout.
+ * int - 1 if the function failed for some reason, 0 at success starting
+ * the task.
  * 
  * See also: <spNetC4AGetScore>*/
-PREFIX SDL_Thread* spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int year,int month);
+PREFIX int spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int year,int month,int timeOut);
 
 /* Function: spNetC4ADeleteScores
  * 
@@ -417,12 +420,13 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList);
  * your score to that list and avoid committing the same score twice. If
  * it is not in the list, it will added afterwards for later
  * comparements.
+ * timeOut - after this time in ms the thread is killed. Get it with
+ * <spNetC4AGetTimeOut>
  * 
  * Returns:
- * SDL_Thread* - handle to the created thread. If you don't want to run the
- * task in background you can e.g. call SDL_WaitThread with this return value or
- * maybe kill it after a timeout.*/
-PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* scoreList);
+ * int - 1 if the function failed for some reason (e.g. the score is
+ * already in the scoreList), 0 at success starting the task.*/
+PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* scoreList,int timeOut);
 
 /* Function: spNetC4ACreateProfile
  * 
@@ -442,20 +446,16 @@ PREFIX SDL_Thread* spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game
  * capital letters.
  * password - alphanumeric password
  * email - the mail address of the new account. Can be "".
+ * timeOut - after this time in ms the thread is killed. Get it with
+ * <spNetC4AGetTimeOut>
  * 
  * Returns:
- * SDL_Thread* - handle to the created thread. If you don't want to run the
- * task in background you can e.g. call SDL_WaitThread with this return value or
- * maybe kill it after a timeout.
- * 
- * Returns:
- * SDL_Thread* - handle to the created thread. If you don't want to run the
- * task in background you can e.g. call SDL_WaitThread with this return value or
- * maybe kill it after a timeout.
+ * int - 1 if the function failed for some reason, 0 at success starting
+ * the task.
  * 
  * See Also:
  * <spNetC4AEditProfile>*/
-PREFIX SDL_Thread* spNetC4ACreateProfile(spNetC4AProfilePointer* profile, char* longname,char* shortname,char* password,char* email);
+PREFIX int spNetC4ACreateProfile(spNetC4AProfilePointer* profile, char* longname,char* shortname,char* password,char* email,int timeOut);
 
 /* Function: spNetC4ADeleteAccount
  * 
@@ -468,12 +468,13 @@ PREFIX SDL_Thread* spNetC4ACreateProfile(spNetC4AProfilePointer* profile, char* 
  * profile - profile to delete from the server.
  * deleteFile - 1 if you want to delete the c4a-prof file at the end
  * (at success), too. 0 leaves to file.
+ * timeOut - after this time in ms the thread is killed. Get it with
+ * <spNetC4AGetTimeOut>
  * 
  * Returns:
- * SDL_Thread* - handle to the created thread. If you don't want to run the
- * task in background you can e.g. call SDL_WaitThread with this return value or
- * maybe kill it after a timeout.*/
-PREFIX SDL_Thread* spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile);
+ * int - 1 if the function failed for some reason, 0 at success starting
+ * the task.*/
+PREFIX int spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile,int timeOut);
 
 /* Function: spNetC4AEditProfile
  * 
@@ -495,16 +496,39 @@ PREFIX SDL_Thread* spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int del
  * capital letters.
  * password - alphanumeric password
  * email - the mail address of the new account. Can be "".
+ * timeOut - after this time in ms the thread is killed. Get it with
+ * <spNetC4AGetTimeOut>
  * 
  * Returns:
- * SDL_Thread* - handle to the created thread. If you don't want to run the
- * task in background you can e.g. call SDL_WaitThread with this return value or
- * maybe kill it after a timeout.
+ * int - 1 if the function failed for some reason, 0 at success starting
+ * the task.
+
  * 
  * See Also:
  * <spNetC4ACreateProfile>*/
-PREFIX SDL_Thread* spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,char* shortname,char* password,char* email);
-#endif
+PREFIX int spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,char* shortname,char* password,char* email,int timeOut);
+
+/* Function: spNetC4ACancelTask
+ * 
+ * Cancels the C4A task running right now (if one is started).*/
+PREFIX void spNetC4ACancelTask();
+
+/* Function: spNetC4AGetTaskResult
+ * 
+ * Gets the result of the task when finished (check with
+ * <spNetC4AGetStatus>.
+ * 
+ * Returns:
+ * int - 0 if everything went fine, 1 at error*/
+PREFIX int spNetC4AGetTaskResult();
+
+/* Function: spNetC4AGetTimeOut
+ * 
+ * Gives you the time out of the C4A tasks.
+ * 
+ * Returns:
+ * int - the timeOut in ms.*/
+PREFIX int spNetC4AGetTimeOut();
 
 /* Function: spNetC4AGetStatus
  * 
@@ -520,3 +544,5 @@ PREFIX int spNetC4AGetStatus();
  * Deletes the profile file on your system, NOT the online account at skeezix
  * server. See also <spNetC4ADeleteAccount>.*/
 PREFIX void spNetC4ADeleteProfileFile();
+
+#endif

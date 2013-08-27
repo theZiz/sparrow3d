@@ -156,7 +156,7 @@ int main( int argc, char **argv )
 		printf("No profile found. Put it to this folder or create it with compo4all!\n");
 	
 	//spNetC4AGetScoreOfMonth(&score,profile,"puzzletube_points",2013,6);
-	spNetC4AGetScore(&score,profile,"puzzletube_points");
+	spNetC4AGetScore(&score,profile,"puzzletube_points",10000);
 	//Real stuff
 	int i;
 	for (i = 0; i < LINES; i++)
