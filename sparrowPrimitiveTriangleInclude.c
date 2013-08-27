@@ -253,7 +253,6 @@
 		return;
 	if ( y1 >= spTargetY )
 		return;
-		
 	Sint32 x4 = x1;
 	Sint32 y4 = y1;
 	#ifndef __SPARROW_INTERNAL_ZNOTHING__
@@ -480,9 +479,19 @@
 	for ( y = y3; y <= y2; y++ )
 	{
 		if (sX_r < 0)
-			xl += sX_l;
+		{
+			if (y == y2)
+				xl == x2 << SP_ACCURACY;
+			else
+				xl += sX_l;
+		}
 		else
-			xr += sX_r;
+		{
+			if (y == y2)
+				xr == x2 << SP_ACCURACY;
+			else
+				xr += sX_r;
+		}
 		#ifdef __SPARROW_INTERNAL_BLENDING__
 			#ifdef __SPARROW_INTERNAL_PATTERN__
 				#ifdef __SPARROW_INTERNAL_ZBOTH__
@@ -545,9 +554,19 @@
 			#endif
 		#endif
 		if (sX_r < 0)
-			xr += sX_r;
+		{
+			if (y == y2)
+				xr == x2 << SP_ACCURACY;
+			else
+				xr += sX_r;
+		}
 		else
-			xl += sX_l;
+		{
+			if (y == y2)
+				xl == x2 << SP_ACCURACY;
+			else
+				xl += sX_l;
+		}
 		#ifndef __SPARROW_INTERNAL_ZNOTHING__
 			zl += sZ_l;
 			zr += sZ_r;

@@ -2407,13 +2407,28 @@ PREFIX void spSetCulling( char value )
 	spCulling = value;
 }
 
+PREFIX void spSetLineWidth(Sint32 width)
+{
+	if (width > 0)
+		spLineWidth = width;
+}
+
 PREFIX void spLine( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 x2, Sint32 y2, Sint32 z2, Uint32 color )
 {
 	if (spLineWidth == 1)
 		spTriangle(x1,y1,z1,x1,y1,z1,x2,y2,z2,color);
 	else
 	{
-		spQuad(x1,y1,z1,x1,y1,z1,x2,y2,z2,x2,y2,z2,color);
+		Sint32 l = abs(x2-x1)+abs(y2-y1);
+		if (l > 0)
+		{
+			Sint32 x = (x2-x1)*spLineWidth / l;
+			Sint32 y = (y2-y1)*spLineWidth / l;
+			spQuad(x1+y,y1-x,z1,
+			       x1-y,y1+x,z1,
+			       x2-y,y2+x,z2,
+			       x2+y,y2-x,z2,color);
+		}
 	}
 }
 

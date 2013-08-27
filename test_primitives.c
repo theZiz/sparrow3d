@@ -48,22 +48,28 @@ void draw_primitives(int rotation)
 	spSetZTest( primitives_z );
 	spSetZSet( primitives_z );
 	spSetBlending( primitives_blending?spFloatToFixed(0.5):SP_ONE );
-	srand( 0 );
 	SDL_Surface* screen = spGetWindowSurface();
+	srand( 0 );
 	int i;
-	/*for ( i = 0; i < 5; i++ )
+	for ( i = 0; i < 8; i++ )
 		spEllipseBorder( rand() % screen->w, rand() % screen->h, 0, rand() % screen->w / 4, rand() % screen->h / 4, 10, 20, rand() % 65536 );
-	for ( i = 0; i < 5; i++ )
+	for ( i = 0; i < 8; i++ )
 		spEllipse( rand() % screen->w, rand() % screen->h, 0, rand() % screen->w / 4, rand() % screen->h / 4, rand() % 65536 );
-	for ( i = 0; i < 5; i++ )
+	for ( i = 0; i < 8; i++ )
 		spRectangleBorder( rand() % screen->w, rand() % screen->h, 0,
 							 rand() % screen->w / 2, rand() % screen->h / 2, 12, 6, rand() % 65536 );
-	for ( i = 0; i < 5; i++ )
+	for ( i = 0; i < 8; i++ )
 		spRectangle( rand() % screen->w, rand() % screen->h, 0,
-					 rand() % screen->w / 2, rand() % screen->h / 2, rand() % 65536 );*/
-	for ( i = 0; i < 256; i++ )
+					 rand() % screen->w / 2, rand() % screen->h / 2, rand() % 65536 );
+	for ( i = 0; i < 64; i++ )
+	{
+		spSetLineWidth(rand()%8+1);
 		spLine( rand() % screen->w, rand() % screen->h, 0,
-				rand() % screen->w, rand() % screen->h, 0, rand() % 65536 );
+		        rand() % screen->w, rand() % screen->h, 0, rand() % 65536 );
+	}
+	/*spSetLineWidth(5);
+	spLine(292,113,0,29,192,0,12345);*/
+	spSetLineWidth(1);
 	spSetZTest( 1 );
 	spSetZSet( 1 );
 	spSetBlending( SP_ONE );

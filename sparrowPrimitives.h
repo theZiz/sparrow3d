@@ -245,6 +245,14 @@ PREFIX void spSetAffineTextureHack( Uint32 test );
  * value - 1 means on, 0 means off*/
 PREFIX void spSetCulling( char value );
 
+/* Function: spSetLineWidth
+ * 
+ * Sets the width of <spLine> calls.
+ * 
+ * Parameter:
+ * width - the width of the line in pixel*/
+PREFIX void spSetLineWidth(Sint32 width);
+
 /* Function: spClearTarget
  * 
  * Clears the Rendertarget. The Z Buffer is not cleand!

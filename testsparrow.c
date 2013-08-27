@@ -293,6 +293,7 @@ int main( int argc, char **argv )
 {
 	if (argc > 1)
 		no_movement = 1;
+		//test = atoi(argv[1]);
 	//sparrow3D Init
 	spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
 	spInitCore();
