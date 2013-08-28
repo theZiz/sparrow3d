@@ -1432,7 +1432,7 @@ PREFIX int spLastCachedSurfaceWasLoadedFirstTime()
 
 PREFIX SDL_Surface* spLoadSurface( char* name )
 {
-	spLoadSurfaceZoom( name, SP_ONE );
+	return spLoadSurfaceZoom( name, SP_ONE );
 }
 
 PREFIX void spEnableCaching()

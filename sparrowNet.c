@@ -139,7 +139,7 @@ int tcpReceiveThread(void* data)
 int tcpReceiveThread_http(void* data)
 {
 	receivingPointer tcpData = (receivingPointer)data;
-	int res=spNetReceiveHTTP(tcpData->connection,tcpData->data,tcpData->length);
+	int res=spNetReceiveHTTP(tcpData->connection,(char*)tcpData->data,tcpData->length);
 	SDL_mutexP(tcpData->mutex);
 	tcpData->done = 1;
 	tcpData->result = res;
@@ -174,7 +174,7 @@ SDL_Thread* allreadyReceiving(spNetTCPConnection connection)
 				if (mom->result<=0) //connection destroyed!
 				{
 					free(mom);
-					return (void*)(-1);
+					return (SDL_Thread*)(-1);
 				}
 				free(mom);
 				return NULL;
@@ -318,10 +318,18 @@ typedef struct commitStruct {
 	spNetC4AScorePointer* scoreList;
 } commitType;
 
+#ifdef _MSC_VER
+int spNetC4AUberThread( void* data )
+#else
 int spNetC4AUberThread(int ( *function )( void* data ))
+#endif
 {
 	int startTime = SDL_GetTicks();
+#ifdef _MSC_VER
+	SDL_Thread* thread = SDL_CreateThread(spNetC4AUberThread,spNetC4ADataPointer);
+#else
 	SDL_Thread* thread = SDL_CreateThread(function,spNetC4ADataPointer);
+#endif
 	while (1)
 	{
 		spSleep(100);

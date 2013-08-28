@@ -827,10 +827,15 @@ PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, sp
 {
 	//Cutting at spaces. If line break, do!
 	if (text == NULL)
-		return;
+		return 0;
 	spInternalTextLinePointer firstLine = NULL;
 	int l = strlen(text)+1;
+#ifdef _MSC_VER
+	char* buffer = (char*)malloc( l * sizeof(char) );
+#else
+	int l = strlen(text)+1;
 	char buffer[l];
+#endif
 	memcpy(buffer,text,l);
 	int pos = 0;
 	int last_space = 0;
