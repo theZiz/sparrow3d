@@ -833,7 +833,6 @@ PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, sp
 #ifdef _MSC_VER
 	char* buffer = (char*)malloc( l * sizeof(char) );
 #else
-	int l = strlen(text)+1;
 	char buffer[l];
 #endif
 	memcpy(buffer,text,l);
