@@ -501,6 +501,7 @@ PREFIX spModelPointer spMeshLoadObj( char* name, SDL_Surface* texture, Uint16 co
 	{
 		edges[tempPointer->nr].point[0] = tempPointer->point;
 		edges[tempPointer->nr].point[1] = tempPointer->uv;
+		edges[tempPointer->nr].status = 0;
 		spMeshTempPointer next = tempPointer->next;
 		free( tempPointer );
 		tempPointer = next;
@@ -518,6 +519,7 @@ PREFIX spModelPointer spMeshLoadObj( char* name, SDL_Surface* texture, Uint16 co
 	{
 		texEdges[texTempPointer->nr].point[0] = texTempPointer->point;
 		texEdges[texTempPointer->nr].point[1] = texTempPointer->uv;
+		texEdges[texTempPointer->nr].status = 0;
 		spMeshTempPointer next = texTempPointer->next;
 		free( texTempPointer );
 		texTempPointer = next;

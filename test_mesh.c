@@ -57,7 +57,22 @@ void draw_mesh(int rotation)
 	spRotateX( rotation );
 	spRotateY( rotation );
 	spRotateZ( rotation );
+	int i;
+	spSetLineWidth(3);
 	spMesh3D( mesh, 1 );
+	//spSetZSet( 0 );
+	//spSetZTest( 0 );
+	for (i = 0; i < mesh->edgeCount; i++)
+	{
+		if (mesh->edge[i].status == 0)
+			spLine3D(mesh->point[mesh->edge[i].point[0]].x,
+			         mesh->point[mesh->edge[i].point[0]].y,
+			         mesh->point[mesh->edge[i].point[0]].z,
+			         mesh->point[mesh->edge[i].point[1]].x,
+			         mesh->point[mesh->edge[i].point[1]].y,
+			         mesh->point[mesh->edge[i].point[1]].z,spGetFastRGB(255,255,0));
+	}
+	spSetLineWidth(1);
 	spSetZSet( 1 );
 	spSetZTest( 1 );
 	spSetLight( 1 );

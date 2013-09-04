@@ -1199,15 +1199,15 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 			mesh->texEdge[i].status = -1;
 		for ( i = 0; i < mesh->triangleCount; i++ )
 		{
-			mesh->edge[mesh->triangle[i].edge[0]].status += mesh->triangle[i].was_drawn;
-			mesh->edge[mesh->triangle[i].edge[1]].status += mesh->triangle[i].was_drawn;
-			mesh->edge[mesh->triangle[i].edge[2]].status += mesh->triangle[i].was_drawn;
+			mesh->edge[mesh->triangle[i].edge[0]].status += mesh->triangle[i].was_drawn != 0;
+			mesh->edge[mesh->triangle[i].edge[1]].status += mesh->triangle[i].was_drawn != 0;
+			mesh->edge[mesh->triangle[i].edge[2]].status += mesh->triangle[i].was_drawn != 0;
 		}
 		for ( i = 0; i < mesh->texTriangleCount; i++ )
 		{
-			mesh->texEdge[mesh->texTriangle[i].edge[0]].status += mesh->texTriangle[i].was_drawn;
-			mesh->texEdge[mesh->texTriangle[i].edge[1]].status += mesh->texTriangle[i].was_drawn;
-			mesh->texEdge[mesh->texTriangle[i].edge[2]].status += mesh->texTriangle[i].was_drawn;
+			mesh->texEdge[mesh->texTriangle[i].edge[0]].status += mesh->texTriangle[i].was_drawn != 0;
+			mesh->texEdge[mesh->texTriangle[i].edge[1]].status += mesh->texTriangle[i].was_drawn != 0;
+			mesh->texEdge[mesh->texTriangle[i].edge[2]].status += mesh->texTriangle[i].was_drawn != 0;
 		}
 		for ( i = 0; i < mesh->quadCount; i++ )
 		{
