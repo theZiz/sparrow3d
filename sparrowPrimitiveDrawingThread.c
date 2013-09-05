@@ -3291,4 +3291,5 @@ int sp_intern_drawing_thread(void* reserved)
 			spSleep(SP_MAX_SCANLINES_WAIT_TIME);
 		}
 	}
+	return 0;
 }

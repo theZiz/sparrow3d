@@ -6,6 +6,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SparrowSound", "SparrowSound.vcproj", "{1EECF7CA-C867-45F4-A42A-AEA7DE2488E0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SparrowNet", "SparrowNet.vcproj", "{606059EB-FFFE-48D6-9C9B-14F7A42CDF56}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E86CAE86-5691-4F48-8728-A8B82A32EC43} = {E86CAE86-5691-4F48-8728-A8B82A32EC43}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
