@@ -1211,17 +1211,17 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 		}
 		for ( i = 0; i < mesh->quadCount; i++ )
 		{
-			mesh->edge[mesh->quad[i].edge[0]].status += mesh->quad[i].was_drawn;
-			mesh->edge[mesh->quad[i].edge[1]].status += mesh->quad[i].was_drawn;
-			mesh->edge[mesh->quad[i].edge[2]].status += mesh->quad[i].was_drawn;
-			mesh->edge[mesh->quad[i].edge[3]].status += mesh->quad[i].was_drawn;
+			mesh->edge[mesh->quad[i].edge[0]].status += mesh->quad[i].was_drawn != 0;
+			mesh->edge[mesh->quad[i].edge[1]].status += mesh->quad[i].was_drawn != 0;
+			mesh->edge[mesh->quad[i].edge[2]].status += mesh->quad[i].was_drawn != 0;
+			mesh->edge[mesh->quad[i].edge[3]].status += mesh->quad[i].was_drawn != 0;
 		}
 		for ( i = 0; i < mesh->texQuadCount; i++ )
 		{
-			mesh->texEdge[mesh->texQuad[i].edge[0]].status += mesh->texQuad[i].was_drawn;
-			mesh->texEdge[mesh->texQuad[i].edge[1]].status += mesh->texQuad[i].was_drawn;
-			mesh->texEdge[mesh->texQuad[i].edge[2]].status += mesh->texQuad[i].was_drawn;
-			mesh->texEdge[mesh->texQuad[i].edge[3]].status += mesh->texQuad[i].was_drawn;
+			mesh->texEdge[mesh->texQuad[i].edge[0]].status += mesh->texQuad[i].was_drawn != 0;
+			mesh->texEdge[mesh->texQuad[i].edge[1]].status += mesh->texQuad[i].was_drawn != 0;
+			mesh->texEdge[mesh->texQuad[i].edge[2]].status += mesh->texQuad[i].was_drawn != 0;
+			mesh->texEdge[mesh->texQuad[i].edge[3]].status += mesh->texQuad[i].was_drawn != 0;
 		}
 	}
 	return count;
