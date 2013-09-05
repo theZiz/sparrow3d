@@ -611,7 +611,11 @@ PREFIX int spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProfilePoint
 		spNetC4ADataPointer = data;
 		spNetC4ATimeOut = timeOut;
 		spNetC4AThreadStatus = 1;
-		spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_getscore_thread);
+		#ifdef _MSC_VER
+			spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_getscore_thread);
+		#else
+			spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_getscore_thread);
+		#endif
 		return 0;
 	}
 	return 1;
@@ -637,7 +641,11 @@ PREFIX int spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfi
 		spNetC4ADataPointer = data;
 		spNetC4ATimeOut = timeOut;
 		spNetC4AThreadStatus = 1;
-		spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_getscore_thread);
+		#ifdef _MSC_VER
+			spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_getscore_thread);
+		#else
+			spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_getscore_thread);
+		#endif
 		return 0;
 	}
 	return 1;
@@ -755,7 +763,11 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
 		spNetC4ADataPointer = data;
 		spNetC4ATimeOut = timeOut;
 		spNetC4AThreadStatus = 1;
-		spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_commit_thread);
+		#ifdef _MSC_VER
+			spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_commit_thread);
+		#else
+			spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_commit_thread);
+		#endif
 		return 0;
 	}
 	return 1;
@@ -899,7 +911,11 @@ PREFIX int spNetC4ACreateProfile(spNetC4AProfilePointer* profile, char* longname
 		spNetC4ADataPointer = data;
 		spNetC4ATimeOut = timeOut;
 		spNetC4AThreadStatus = 1;
-		spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_create_thread);
+		#ifdef _MSC_VER
+			spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_create_thread);
+		#else
+			spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_create_thread);
+		#endif
 		return 0;
 	}
 	return 1;
@@ -981,7 +997,11 @@ PREFIX int spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile,
 		spNetC4ADataPointer = data;
 		spNetC4ATimeOut = timeOut;
 		spNetC4AThreadStatus = 1;
-		spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_delete_thread);
+		#ifdef _MSC_VER
+			spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_delete_thread);
+		#else
+			spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_delete_thread);
+		#endif
 		return 0;
 	}
 	return 1;
@@ -1080,7 +1100,11 @@ PREFIX int spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,ch
 		spNetC4ADataPointer = data;
 		spNetC4ATimeOut = timeOut;
 		spNetC4AThreadStatus = 1;
-		spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_edit_thread);
+		#ifdef _MSC_VER
+			spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_edit_thread);
+		#else
+			spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_edit_thread);
+		#endif
 		return 0;
 	}
 	return 1;
