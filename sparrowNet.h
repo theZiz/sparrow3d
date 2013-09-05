@@ -24,6 +24,7 @@
 #include <SDL_net.h>
 #include <SDL_thread.h>
 #include <time.h>
+#include "sparrowFile.h"
 
 /* File: sparrowNet
  * 
