@@ -1,24 +1,42 @@
-/*
- The contents of this file are subject to the Mozilla Public License
- Version 1.1 (the "License"); you may not use this file except in
- compliance with the License. You may obtain a copy of the License at
- http://www.mozilla.org/MPL/
-
- Software distributed under the License is distributed on an "AS IS"
- basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- License for the specific language governing rights and limitations
- under the License.
-
- Alternatively, the contents of this file may be used under the terms of the
- GNU Lesser General Public license (the  "LGPL License") version 2 or higher, in
- which case the provisions of LGPL License are applicable instead of those above
- 
- For feedback and questions about my Files and Projects please mail me,
- Alexander Matthes (Ziz) , zizsdl_at_googlemail.com
-*/
+ /* This file is part of sparrow3d.
+  * Sparrow3d is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 2 of the License, or
+  * (at your option) any later version.
+  * 
+  * Sparrow3d is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  * 
+  * You should have received a copy of the GNU General Public License
+  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>
+  * 
+  * For feedback and questions about my Files and Projects please mail me,
+  * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
 
 #include "sparrowNet.h"
 #include <stdio.h>
+
+//This is a copy of spReadOneLine sparrowFile. However, I don't want the
+//extra dependency of libSparrow3d or linking sparrowFile twice.
+int internal_spNet_spReadOneLine( SDL_RWops* file , char* buffer, int buffer_len)
+{
+	return spReadUntil(file,buffer,buffer_len,'\n',1);
+	int pos = 0;
+	buffer[pos] = 0;
+	while (pos < buffer_len)
+	{
+		if (SDL_RWread( file, &(buffer[pos]), 1, 1 ) <= 0)
+			return 1; //EOF
+		if ( buffer[pos] == '\n' )
+			break;
+		if (buffer[pos] != '\r') //fucking windows line break
+			pos++;
+	}
+	buffer[pos] = 0;
+	return 0; //not EOF
+}
 
 SDL_mutex* spNetC4AStatusMutex;
 
@@ -421,8 +439,8 @@ PREFIX spNetC4AProfilePointer spNetC4AGetProfile()
 		return NULL;
 	profile = (spNetC4AProfilePointer)malloc(sizeof(spNetC4AProfile));
 	char buffer[2048];
-	spReadOneLine(file,buffer,2048);
-	spReadOneLine(file,buffer,2048);
+	internal_spNet_spReadOneLine(file,buffer,2048);
+	internal_spNet_spReadOneLine(file,buffer,2048);
 	char* pos = strstr( buffer, "\"longname\":");
 	pos+=11;
 	fill_between_paraphrases( pos, profile->longname, 256);
