@@ -58,8 +58,8 @@ void draw_mesh(int rotation)
 	spRotateY( rotation );
 	spRotateZ( rotation );
 	int i;
-	spSetLineWidth(5);
-	spMesh3D( mesh, 1 );
+	spSetLineWidth( 3 );
+	spMesh3D( mesh, 2 );
 	//spSetZSet( 0 );
 	//spSetZTest( 0 );
 	for (i = 0; i < mesh->edgeCount; i++)
@@ -80,7 +80,7 @@ void draw_mesh(int rotation)
 			         mesh->texPoint[mesh->texEdge[i].point[0]].z,
 			         mesh->texPoint[mesh->texEdge[i].point[1]].x,
 			         mesh->texPoint[mesh->texEdge[i].point[1]].y,
-			         mesh->texPoint[mesh->texEdge[i].point[1]].z,spGetFastRGB(0,255,255));
+			         mesh->texPoint[mesh->texEdge[i].point[1]].z,spGetFastRGB(255,255,0));
 	}
 	spSetLineWidth(1);
 	spSetZSet( 1 );

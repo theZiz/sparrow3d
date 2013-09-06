@@ -1191,38 +1191,72 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 											 mesh->texPoint[mesh->texQuad[i].point[3]].v,
 											 lightColor ) ) );		
 	}
-	if ( updateEdgeList )
+	switch ( updateEdgeList )
 	{
-		for ( i = 0; i < mesh->edgeCount; i++ )
-			mesh->edge[i].status = -1;
-		for ( i = 0; i < mesh->texEdgeCount; i++ )
-			mesh->texEdge[i].status = -1;
-		for ( i = 0; i < mesh->triangleCount; i++ )
-		{
-			mesh->edge[mesh->triangle[i].edge[0]].status += mesh->triangle[i].was_drawn != 0;
-			mesh->edge[mesh->triangle[i].edge[1]].status += mesh->triangle[i].was_drawn != 0;
-			mesh->edge[mesh->triangle[i].edge[2]].status += mesh->triangle[i].was_drawn != 0;
-		}
-		for ( i = 0; i < mesh->texTriangleCount; i++ )
-		{
-			mesh->texEdge[mesh->texTriangle[i].edge[0]].status += mesh->texTriangle[i].was_drawn != 0;
-			mesh->texEdge[mesh->texTriangle[i].edge[1]].status += mesh->texTriangle[i].was_drawn != 0;
-			mesh->texEdge[mesh->texTriangle[i].edge[2]].status += mesh->texTriangle[i].was_drawn != 0;
-		}
-		for ( i = 0; i < mesh->quadCount; i++ )
-		{
-			mesh->edge[mesh->quad[i].edge[0]].status += mesh->quad[i].was_drawn != 0;
-			mesh->edge[mesh->quad[i].edge[1]].status += mesh->quad[i].was_drawn != 0;
-			mesh->edge[mesh->quad[i].edge[2]].status += mesh->quad[i].was_drawn != 0;
-			mesh->edge[mesh->quad[i].edge[3]].status += mesh->quad[i].was_drawn != 0;
-		}
-		for ( i = 0; i < mesh->texQuadCount; i++ )
-		{
-			mesh->texEdge[mesh->texQuad[i].edge[0]].status += mesh->texQuad[i].was_drawn != 0;
-			mesh->texEdge[mesh->texQuad[i].edge[1]].status += mesh->texQuad[i].was_drawn != 0;
-			mesh->texEdge[mesh->texQuad[i].edge[2]].status += mesh->texQuad[i].was_drawn != 0;
-			mesh->texEdge[mesh->texQuad[i].edge[3]].status += mesh->texQuad[i].was_drawn != 0;
-		}
+		case 1:
+			for ( i = 0; i < mesh->edgeCount; i++ )
+				mesh->edge[i].status = -1;
+			for ( i = 0; i < mesh->texEdgeCount; i++ )
+				mesh->texEdge[i].status = -1;
+			for ( i = 0; i < mesh->triangleCount; i++ )
+			{
+				mesh->edge[mesh->triangle[i].edge[0]].status += mesh->triangle[i].was_drawn != 0;
+				mesh->edge[mesh->triangle[i].edge[1]].status += mesh->triangle[i].was_drawn != 0;
+				mesh->edge[mesh->triangle[i].edge[2]].status += mesh->triangle[i].was_drawn != 0;
+			}
+			for ( i = 0; i < mesh->texTriangleCount; i++ )
+			{
+				mesh->texEdge[mesh->texTriangle[i].edge[0]].status += mesh->texTriangle[i].was_drawn != 0;
+				mesh->texEdge[mesh->texTriangle[i].edge[1]].status += mesh->texTriangle[i].was_drawn != 0;
+				mesh->texEdge[mesh->texTriangle[i].edge[2]].status += mesh->texTriangle[i].was_drawn != 0;
+			}
+			for ( i = 0; i < mesh->quadCount; i++ )
+			{
+				mesh->edge[mesh->quad[i].edge[0]].status += mesh->quad[i].was_drawn != 0;
+				mesh->edge[mesh->quad[i].edge[1]].status += mesh->quad[i].was_drawn != 0;
+				mesh->edge[mesh->quad[i].edge[2]].status += mesh->quad[i].was_drawn != 0;
+				mesh->edge[mesh->quad[i].edge[3]].status += mesh->quad[i].was_drawn != 0;
+			}
+			for ( i = 0; i < mesh->texQuadCount; i++ )
+			{
+				mesh->texEdge[mesh->texQuad[i].edge[0]].status += mesh->texQuad[i].was_drawn != 0;
+				mesh->texEdge[mesh->texQuad[i].edge[1]].status += mesh->texQuad[i].was_drawn != 0;
+				mesh->texEdge[mesh->texQuad[i].edge[2]].status += mesh->texQuad[i].was_drawn != 0;
+				mesh->texEdge[mesh->texQuad[i].edge[3]].status += mesh->texQuad[i].was_drawn != 0;
+			}
+		break;
+		case 2:
+			for ( i = 0; i < mesh->edgeCount; i++ )
+				mesh->edge[i].status = -1;
+			for ( i = 0; i < mesh->texEdgeCount; i++ )
+				mesh->texEdge[i].status = -1;
+			for ( i = 0; i < mesh->triangleCount; i++ )
+			{
+				mesh->edge[mesh->triangle[i].edge[0]].status += (mesh->triangle[i].was_drawn != 0) * (mesh->edge[mesh->triangle[i].edge[0]].face_count == 1 ? 2 : 1);
+				mesh->edge[mesh->triangle[i].edge[1]].status += (mesh->triangle[i].was_drawn != 0) * (mesh->edge[mesh->triangle[i].edge[1]].face_count == 1 ? 2 : 1);
+				mesh->edge[mesh->triangle[i].edge[2]].status += (mesh->triangle[i].was_drawn != 0) * (mesh->edge[mesh->triangle[i].edge[2]].face_count == 1 ? 2 : 1);
+			}
+			for ( i = 0; i < mesh->texTriangleCount; i++ )
+			{
+				mesh->texEdge[mesh->texTriangle[i].edge[0]].status += (mesh->texTriangle[i].was_drawn != 0) * (mesh->texEdge[mesh->texTriangle[i].edge[0]].face_count == 1 ? 2 : 1);
+				mesh->texEdge[mesh->texTriangle[i].edge[1]].status += (mesh->texTriangle[i].was_drawn != 0) * (mesh->texEdge[mesh->texTriangle[i].edge[1]].face_count == 1 ? 2 : 1);
+				mesh->texEdge[mesh->texTriangle[i].edge[2]].status += (mesh->texTriangle[i].was_drawn != 0) * (mesh->texEdge[mesh->texTriangle[i].edge[2]].face_count == 1 ? 2 : 1);
+			}
+			for ( i = 0; i < mesh->quadCount; i++ )
+			{
+				mesh->edge[mesh->quad[i].edge[0]].status += (mesh->quad[i].was_drawn != 0) * (mesh->edge[mesh->quad[i].edge[0]].face_count == 1 ? 2 : 1);
+				mesh->edge[mesh->quad[i].edge[1]].status += (mesh->quad[i].was_drawn != 0) * (mesh->edge[mesh->quad[i].edge[1]].face_count == 1 ? 2 : 1);
+				mesh->edge[mesh->quad[i].edge[2]].status += (mesh->quad[i].was_drawn != 0) * (mesh->edge[mesh->quad[i].edge[2]].face_count == 1 ? 2 : 1);
+				mesh->edge[mesh->quad[i].edge[3]].status += (mesh->quad[i].was_drawn != 0) * (mesh->edge[mesh->quad[i].edge[3]].face_count == 1 ? 2 : 1);
+			}
+			for ( i = 0; i < mesh->texQuadCount; i++ )
+			{
+				mesh->texEdge[mesh->texQuad[i].edge[0]].status += (mesh->texQuad[i].was_drawn != 0) * (mesh->texEdge[mesh->texQuad[i].edge[0]].face_count == 1 ? 2 : 1);
+				mesh->texEdge[mesh->texQuad[i].edge[1]].status += (mesh->texQuad[i].was_drawn != 0) * (mesh->texEdge[mesh->texQuad[i].edge[1]].face_count == 1 ? 2 : 1);
+				mesh->texEdge[mesh->texQuad[i].edge[2]].status += (mesh->texQuad[i].was_drawn != 0) * (mesh->texEdge[mesh->texQuad[i].edge[2]].face_count == 1 ? 2 : 1);
+				mesh->texEdge[mesh->texQuad[i].edge[3]].status += (mesh->texQuad[i].was_drawn != 0) * (mesh->texEdge[mesh->texQuad[i].edge[3]].face_count == 1 ? 2 : 1);
+			}
+		break;
 	}
 	return count;
 }

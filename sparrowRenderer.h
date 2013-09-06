@@ -97,6 +97,8 @@ typedef struct spEdgeStruct
 {
 	int point[2];
 	int status;
+	int face[2];
+	int face_count;
 } spEdge;
 
 /* Type: spTriangleS
@@ -586,8 +588,10 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
  * 
  * Parameters:
  * mesh - pointer to a spModel struct to be drawn
- * updateEdgeList - determines, whether the edgeList shall be updated (1) or
- * not (0)
+ * updateEdgeList - determines, whether the edgeList shall be updated.
+ * If 0, no update is made. When 1 every edge is marked. When 2 a solid
+ * body is assumed and "holes" (e.g. because of textured and untextured
+ * subbodys) are ignored.
  * 
  * Returns:
  * int - the count of drawn faces
@@ -603,9 +607,11 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList );
  * Parameters:
  * x,y,z - position to draw to mesh
  * mesh - pointer to a spModel struct to be drawn
- * updateEdgeList - determines, whether the edgeList shall be updated (1) or
- * not (0)
- * 
+ * updateEdgeList - determines, whether the edgeList shall be updated.
+ * If 0, no update is made. When 1 every edge is marked. When 2 a solid
+ * body is assumed and "holes" (e.g. because of textured and untextured
+ * subbodys) are ignored.
+ *  
  * Returns:
  * int - the count of drawn faces
  * 
