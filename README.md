@@ -35,7 +35,7 @@ To see, what is possible with this engine take a look at
 2. Licence
 ==========
 
-Not much to say: Just (L)GPL and MPL. If you want another Licence (e.g. some
+Not much to say: Just (L)GPL. If you want another Licence (e.g. some
 kind of BSD licence) feel free to contact me. ;-)
 
 -------------------------------------------------------------------------------
