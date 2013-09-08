@@ -290,6 +290,31 @@ PREFIX void spNetCloseTCP(spNetTCPConnection connection);
 #define SP_C4A_TIMEOUT -2
 #define SP_C4A_CANCELED -3
 
+/* Type: spNetC4AGame
+ * 
+ * Type for a linked list of games from the compo4all highscore servers
+ * 
+ * Variables:
+ * longname - full name of the game
+ * shortname - short name of the game
+ * status - the status of the highscore: 1 means available, 2 even more
+ * available (called "active" by skeezix, don't really know, what this means),
+ * 0 inactive, which means, you shouldn't show that game except for testing
+ * purpose.
+ * genre - the genre of the game.
+ * field - which kind of game is it? 0 means just an indie game, 1 is a mame
+ * game, -1 means "don't know" or "to be decided".
+ * next - pointer to the next element in the list*/
+typedef struct spNetC4AGameStruct *spNetC4AGamePointer;
+typedef struct spNetC4AGameStruct {
+	char longname[256];
+	char shortname[256];
+	int status;
+	char genre[256];
+	int field;
+	spNetC4AGamePointer next;
+} spNetC4AGame;
+
 /* Type: spNetC4AScore
  * 
  * Type for a linked list of scores gotten from the compo4all highscore servers
@@ -349,6 +374,30 @@ PREFIX spNetC4AProfilePointer spNetC4AGetProfile();
  * profile - profile to free. However of course your profile is not deleted. ;)*/
 PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile);
 
+/* Function: spNetC4AGetGameList
+ * 
+ * Loads all games listed on the C4A server. Use <spNetC4AGetStatus> to get the
+ * status of the task. Only one compo4all background task can run at one time!
+ * 
+ * Parameters:
+ * gameList - a pointer to spNetC4AGamePointer, which is in fact a pointer to
+ * <spNetC4AGame>. The available games are saved here.
+ * timeOut - after this time in ms the thread is killed. Get it with
+ * <spNetC4AGetTimeOut>
+ * 
+ * Returns:
+ * int - 1 if the function failed for some reason, 0 at success starting
+ * the task.*/
+PREFIX int spNetC4AGetGame(spNetC4AGamePointer* gameList,int timeOut);
+
+/* Function: spNetC4ADeleteGames
+ * 
+ * Frees the linked list returned by <spNetC4AGetGame>.
+ * 
+ * Parameters:
+ * firstGame - pointer to <spNetC4AGame> to free*/
+PREFIX void spNetC4ADeleteGames(spNetC4AGamePointer* gameList);
+
 /* Function: spNetC4AGetScore
  * 
  * Loads a top 500 for a given game from the compo4all server. The task runs
@@ -356,7 +405,7 @@ PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile);
  * one compo4all background task can run at one time!
  * 
  * Parameters:
- * scoreList - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
+ * scoreList - a pointer to spNetC4AScorePointer, which is in fact a pointer to
  * <spNetC4AScore>. The scores are saved here.
  * profile - an optional pointer to your profile. If given only your scores are
  * added to the scores-list above

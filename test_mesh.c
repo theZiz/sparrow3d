@@ -15,10 +15,16 @@ spModelPointer mesh;
 int mesh_z = 1;
 int mesh_light = 1;
 
-void init_mesh()
+void init_mesh(char* parameter1,char* parameter2)
 {
-	mesh_texture = spLoadSurface( "./data/garfield.png" );
-	mesh = spMeshLoadObj( "./data/testmeshuv_tri.obj", mesh_texture, 65535 );
+	if (parameter2)
+		mesh_texture = spLoadSurface( parameter2 );
+	else
+		mesh_texture = spLoadSurface( "./data/garfield.png" );
+	if (parameter1)
+		mesh = spMeshLoadObj( parameter1, mesh_texture, 65535 );
+	else
+		mesh = spMeshLoadObj( "./data/testmeshuv_tri.obj", mesh_texture, 65535 );
 }
 
 char* caption_mesh(char* caption)
@@ -49,6 +55,7 @@ char* settings_mesh(char* caption,int button)
 
 void draw_mesh(int rotation)
 {
+	spClearTarget(0);
 	spSetZSet( mesh_z );
 	spSetZTest( mesh_z );
 	spSetLight( mesh_light );
@@ -57,6 +64,7 @@ void draw_mesh(int rotation)
 	spRotateX( rotation );
 	spRotateY( rotation );
 	spRotateZ( rotation );
+	
 	int i;
 	spSetLineWidth( 3 );
 	spMesh3D( mesh, 2 );

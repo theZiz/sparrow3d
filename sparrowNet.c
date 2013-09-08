@@ -320,6 +320,11 @@ SDL_Thread* spNetC4AThread = NULL;
 int spNetC4AResult = 0;
 int spNetC4AThreadStatus = 0;
 
+typedef struct getgameStruct *getgamePointer;
+typedef struct getgameStruct {
+	spNetC4AGamePointer* game;
+} getgameType;
+
 typedef struct getscoreStruct *getscorePointer;
 typedef struct getscoreStruct {
 	spNetC4AScorePointer* score;
@@ -470,6 +475,198 @@ PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile)
 		free(profile);
 }
 
+int c4a_getgame_thread(void* data)
+{
+	spNetC4AGamePointer* gameList = ((getgamePointer)data)->game;
+	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
+	if (ip.address.ipv4 == SP_INVALID_IP)
+	{
+		free(data);
+		spNetC4ADataPointer = NULL;
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}	
+	spNetTCPConnection connection = spNetOpenClientTCP(ip);
+	if (connection == NULL)
+	{
+		free(data);
+		spNetC4ADataPointer = NULL;
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
+	char get_string[512] = "GET /curgamelist_1\n\n";
+	if (spNetSendHTTP(connection,get_string) == 0)
+	{
+		spNetCloseTCP(connection);
+		free(data);
+		spNetC4ADataPointer = NULL;
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
+	char buffer[50001]; //skeezix saves the top500. So 100 byte should be enough...
+	int length;
+	if ((length = spNetReceiveHTTP(connection,buffer,50000)) == 0)
+	{
+		spNetCloseTCP(connection);
+		free(data);
+		spNetC4ADataPointer = NULL;
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
+	buffer[length] = 0;
+	spNetCloseTCP(connection);
+	//Searching the first [
+	char* found = strchr( buffer, '[' );
+	if (found == NULL)
+	{
+		free(data);
+		spNetC4ADataPointer = NULL;
+		SDL_mutexP(spNetC4AStatusMutex);
+		spNetC4AStatus = SP_C4A_ERROR;
+		SDL_mutexV(spNetC4AStatusMutex);
+		return 1;
+	}
+	//Reading game by game
+	//Searching the starting {
+	while (found)
+	{
+		char* start = strchr( found, '{' );
+		if (start == NULL)
+		{
+			free(data);
+			spNetC4ADataPointer = NULL;
+			SDL_mutexP(spNetC4AStatusMutex);
+			spNetC4AStatus = SP_C4A_ERROR;
+			SDL_mutexV(spNetC4AStatusMutex);
+			return 1;
+		}
+		char* end = my_strchr( start, '}', '\"'); //ignore "text}"-parts
+		if (start == NULL)
+		{
+			free(data);
+			spNetC4ADataPointer = NULL;
+			SDL_mutexP(spNetC4AStatusMutex);
+			spNetC4AStatus = SP_C4A_ERROR;
+			SDL_mutexV(spNetC4AStatusMutex);
+			return 1;
+		}
+		//Creating substring:
+		end[0] = 0;
+		//Now we search in the substring
+		//Search for the long name:
+		char* pos = strstr( start, "\"longname\":");
+		pos+=11;
+		char longname[256];
+		fill_between_paraphrases( pos, longname, 128);
+		
+		pos = strstr( start, "\"gamename\":");
+		pos+=11;
+		char shortname[256];
+		fill_between_paraphrases( pos, shortname, 128);
+		
+		pos = strstr( start, "\"genre\":");
+		pos+=8;
+		char genre[256];
+		fill_between_paraphrases( pos, genre, 128);
+		
+		pos = strstr( start, "\"field\":");
+		pos+=8;
+		char field[256];
+		fill_between_paraphrases( pos, field, 128);
+		
+		pos = strstr( start, "\"status\":");
+		pos+=9;
+		char status[256];
+		fill_between_paraphrases( pos, status, 128);
+		
+		//Re"inserting" substring:
+		end[0] = '}';
+		found = strchr( end, '{' );
+		
+		//Adding the found stuff to the array:
+		spNetC4AGamePointer new_game = (spNetC4AGamePointer)malloc(sizeof(spNetC4AGame));
+		sprintf(new_game->longname,"%s",longname);
+		sprintf(new_game->shortname,"%s",shortname);
+		sprintf(new_game->genre,"%s",genre);
+		if (strcmp(status,"available") == 0)
+			new_game->status = 1;
+		else
+		if (strcmp(status,"active") == 0)
+			new_game->status = 2;
+		else
+			new_game->status = 0;
+		if (strcmp(field,"arcade") == 0)
+			new_game->field = 1;
+		else
+		if (strcmp(field,"indie") == 0)
+			new_game->field = 0;
+		else
+			new_game->field = -1;
+		
+		//sorted insert
+		//Searching the next and before element:
+		spNetC4AGamePointer before = NULL;
+		spNetC4AGamePointer next = *gameList;
+		while (next)
+		{
+			if (strcmp(new_game->longname,next->longname) < 0)
+				break;
+			before = next;
+			next = next->next;
+		}
+		if (before == NULL) //new first element!
+		{
+			new_game->next = next;
+			(*gameList) = new_game;
+		}
+		else
+		{
+			before->next = new_game;
+			new_game->next = next;
+		}
+	}	
+	
+	free(data);
+	spNetC4ADataPointer = NULL;
+	SDL_mutexP(spNetC4AStatusMutex);
+	spNetC4AStatus = SP_C4A_OK;
+	SDL_mutexV(spNetC4AStatusMutex);
+	return 0;
+}
+
+PREFIX int spNetC4AGetGame(spNetC4AGamePointer* gameList,int timeOut)
+{
+	(*gameList) = NULL;
+	SDL_mutexP(spNetC4AStatusMutex);
+	int status = spNetC4AStatus;
+	SDL_mutexV(spNetC4AStatusMutex);
+	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	{
+		spNetC4AStatus = SP_C4A_PROGRESS;
+		//Starting a background thread, which does the fancy stuff
+		getgamePointer data = (getgamePointer)malloc(sizeof(getgameType));
+		data->game = gameList;
+		spNetC4ADataPointer = data;
+		spNetC4ATimeOut = timeOut;
+		spNetC4AThreadStatus = 1;
+		#ifdef _MSC_VER
+			spNetC4AThread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_getgame_thread);
+		#else
+			spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_getgame_thread);
+		#endif
+		return 0;
+	}
+	return 1;	
+}
+
 int c4a_getscore_thread(void* data)
 {
 	getscorePointer scoreData = (getscorePointer)data;
@@ -497,7 +694,7 @@ int c4a_getscore_thread(void* data)
 	if (scoreData->year && scoreData->month)
 		sprintf(get_string,"GET /json_1/%s/%i%02i/\n\n",scoreData->game,scoreData->year,scoreData->month);
 	else
-		sprintf(get_string,"GET /json_1/%s\n\n",scoreData->game);
+		sprintf(get_string,"GET /json_1/%s/all\n\n",scoreData->game);
 	if (spNetSendHTTP(connection,get_string) == 0)
 	{
 		spNetCloseTCP(connection);
@@ -608,6 +805,18 @@ int c4a_getscore_thread(void* data)
 	spNetC4AStatus = SP_C4A_OK;
 	SDL_mutexV(spNetC4AStatusMutex);
 	return 0;
+}
+
+PREFIX void spNetC4ADeleteGames(spNetC4AGamePointer* gameList)
+{
+	if (gameList == NULL)
+		return;
+	while (*gameList)
+	{
+		spNetC4AGamePointer next = (*gameList)->next;
+		free(*gameList);
+		(*gameList) = next;
+	}
 }
 
 PREFIX int spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int timeOut)

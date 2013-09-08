@@ -9,7 +9,7 @@
 #ifndef __TEST_MESH__
 #define __TEST_MESH__
 
-void init_mesh();
+void init_mesh(char* parameter1,char* parameter2);
 char* caption_mesh(char* caption);
 char* settings_mesh(char* caption,int button);
 void draw_mesh(int rotation);

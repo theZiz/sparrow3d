@@ -294,18 +294,28 @@ int main( int argc, char **argv )
 	if (argc > 1)
 		test = atoi(argv[1]);
 	//sparrow3D Init
-	//spSetDefaultWindowSize( 640, 480 ); //Creates a 640x480 window at PC instead of 320x240
+	spSetDefaultWindowSize( 800, 480 ); //Creates a 800x480 window at PC instead of 320x240
 	spInitCore();
 
 	//Setup
 	screen = spCreateDefaultWindow();
 	spUsePrecalculatedNormals(1);
 	resize( screen->w, screen->h );
-	//Textures loading
+	
+	char* parameter1 = NULL;
+	char* parameter2 = NULL;
+	if (argc > 2)
+		parameter1 = argv[2];
+	if (argc > 3)
+		parameter2 = argv[3];
+	
 	init_cube();
 	init_tube();
 	init_fill();
-	init_mesh();
+	if (test == 3)
+		init_mesh(parameter1,parameter2);
+	else
+		init_mesh(NULL,NULL);
 	init_primitives();
 	init_sprites();
 	init_gears();
