@@ -26,7 +26,8 @@
  * Because it depends, which texts you want to draw, you have to
  * determine first, which sign you want.
  * Furthermore sparrowFont is able to parse button-description, which
- * will be drawn in another way (like buttons or keys)*/
+ * will be drawn in another way (like buttons or keys), and you can
+ * create text blocks for an easy implementation of scrolling text. */
 #ifndef _SPARROW_FONT_H
 #define _SPARROW_FONT_H
 
@@ -137,7 +138,14 @@ typedef struct spFontStruct
 	spLetterPointer buttonRoot;
 } spFont;
 
-
+/* type: spTextLine
+ *
+ * A line of a <spTextBlock> struct.
+ *
+ * Variables:
+ * count (int) - the number of letters in this line
+ * width (int) - the width in pixel of this line
+ * text (char*) - the content of the line*/
 typedef struct spTextLineStruct *spTextLinePointer;
 typedef struct spTextLineStruct
 {
@@ -146,6 +154,15 @@ typedef struct spTextLineStruct
 	char* text;
 } spTextLine;
 
+/* type: spTextBlock
+ *
+ * A text block is used to store a block of text with a maximum width and a
+ * resultung count of lines. Made to use for scrollable text.
+ *
+ * Variables:
+ * line_count (int) - the total number of lines in this text block
+ * max_width (int) - the maximum width of the text block
+ * line (spTextLine*) - array of the lines in the block. See <spTextLine> */
 typedef struct spTextBlockStruct *spTextBlockPointer;
 typedef struct spTextBlockStruct
 {
@@ -154,7 +171,15 @@ typedef struct spTextBlockStruct
 	spTextLinePointer line;
 } spTextBlock;
 
-
+/* enum: spTextBlockAlignment
+ * 
+ * Defines the orientation of a text block, when drawn. Used by
+ * <spFontDrawTextBlock>.
+ * 
+ * Values:
+ * left - left orientation
+ * middle - centered orientation
+ * right - right orientation*/
 typedef enum
 {
 	left = 0,
@@ -472,9 +497,48 @@ PREFIX void spFontShadeButtons(int value);
  * color - the color of the added characters*/
 PREFIX void spFontAddEveryLetterOfTextBundle( spFontPointer font, spBundlePointer bundle,Uint16 color);
 
+/* Function: spCreateTextBlock
+ * 
+ * Creates an <spTextBlock> out of an text. Use it in <spFontDrawTextBlock> to
+ * draw scrollable text.
+ * 
+ * Parameters:
+ * text - the text to convert to a text block
+ * max_width - the maximal width one line should have at all. If a line consists
+ * of one word, which is longer than max_width the word is splitted and - is
+ * added. Otherwise a line break always happens between words
+ * font - the font (pointer to <spFont>) to use to determine the width of the
+ * rendered text lines
+ * 
+ * Returns:
+ * spTextBlockPointer - pointer to the created <spTextBlock> struct.*/
 PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, spFontPointer font);
 
+/* Function: spDeleteTextBlock
+ * 
+ * Deletes a text block created by <spCreateTextBlock>.
+ * 
+ * Parameters:
+ * block - pointer to <spTextBlock> to free*/
 PREFIX void spDeleteTextBlock(spTextBlockPointer block);
 
+/* Function: spFontDrawTextBlock
+ * 
+ * Draws a previously created text block with a maximum height. Also supports
+ * scrolling.
+ * 
+ * Parameters:
+ * aligment - determines, whether the text should be aligned left, centered or
+ * right. Possible values (<spTextBlockAlignment>) are left, middle and right
+ * x,y - possion of the text on the screen
+ * z - z value to set and test (if enabled) while drawing
+ * block - the text block created by <spCreateTextBlock> to draw
+ * height - the maximum height of the text to be drawn.
+ * position - fixed point value between 0 and SP_ONE, which determines which
+ * part of the block shall be drawn. Use it for scrolling. If the whole block
+ * fits in the block->max_width X height block, of course this parameters doesn't
+ * make any sense and is ignored
+ * font - the font to draw the text. Should be the same as used in
+ * <spCreateTextBlock>, but however don't have to*/
 PREFIX void spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y, Sint32 z, spTextBlockPointer block, Sint32 height, Sint32 position, spFontPointer font );
 #endif

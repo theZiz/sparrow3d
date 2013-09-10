@@ -51,6 +51,7 @@ int spPrimitivesIsInitialized = 0;
 Sint32 spBlending = SP_ONE;
 Sint32 spUseParallelProcess = 0;
 Sint32 spLineWidth = 1;
+Sint32 spBlendingPatternEmulation = 1;
 //Sint32* spOne_over_x_look_up_fixed; GP2X
 
 #include "sparrowPrimitiveDrawingThread.c"
@@ -1140,6 +1141,24 @@ PREFIX void spSetAlphaTest( Uint32 test )
 PREFIX void spSetBlending( Sint32 value )
 {
 	#ifndef NO_BLENDING
+	#ifndef NO_PERSPECTIVE
+#ifdef GP2X
+	if (spBlendingPatternEmulation == 2 || spBlendingPatternEmulation == 1)
+#else
+	if (spBlendingPatternEmulation == 2)
+#endif
+	{
+		spBlending = SP_ONE;
+		if (value <= 0)
+			spSetAlphaPattern4x4(0,0);
+		else
+		if (value >= SP_ONE)
+			spDeactivatePattern();
+		else
+			spSetAlphaPattern4x4(spFixedToInt(value*255),0);
+		return;
+	}
+	#endif
 	if (value <= 0)
 		spBlending = 0;
 	else
@@ -2588,141 +2607,30 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 		return;
 	if (spZTest && z < 0)
 		return;
-	int addu = w >> 1;
-	if ( spHorizontalOrigin == SP_LEFT )
-		addu = 0;
-	if ( spHorizontalOrigin == SP_RIGHT )
-		addu = w - 1;
-	int addv = h >> 1;
+	
+	int addv = h-by >> 1;
 	if ( spVerticalOrigin == SP_TOP )
 		addv = 0;
 	if ( spVerticalOrigin == SP_BOTTOM )
-		addv = h - 1;
-	Sint32 x1 = x - addu;
-	Sint32 x2 = x1 + w;
-	Sint32 y1 = y - addv;
-	Sint32 y2 = y1 + h;
-	Sint32 cy; //counter variable for Y
-	Sint32 cx; //counter variable for X
-	if ( x1 >= spTargetX ) return;
-	if ( y1 >= spTargetY ) return;
-	if ( x2 < 0 )          return;
-	if ( y2 < 0 )          return;
-	if ( x2 >= spTargetX ) x2 = spTargetX - 1;
-	if ( y2 >= spTargetY ) y2 = spTargetY - 1;
-	if ( x1 < 0 )          x1 = 0;
-	if ( y1 < 0 )          y1 = 0;
-	if ( spUseParallelProcess )
-		sp_intern_RectangleBorder_overlord(x1,y1,x2,y2,z,bx,by,color);
-	else
-	#ifndef NO_PATTERN
-	if ( spUsePattern )
-	{
-		if ( spZSet )
-		{
-			if ( spZTest )
-			{
-				#ifndef NO_BLENDING
-				if ( spBlending == SP_ONE)
-				#endif
-					sp_intern_RectangleBorder_ztest_zset_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#ifndef NO_BLENDING
-				else
-					sp_intern_RectangleBorder_blending_ztest_zset_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#endif
-			}
-			else
-			{
-				#ifndef NO_BLENDING
-				if ( spBlending == SP_ONE)
-				#endif
-					sp_intern_RectangleBorder_zset_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#ifndef NO_BLENDING
-				else
-					sp_intern_RectangleBorder_blending_zset_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#endif
-			}
-		}
-		else
-		{
-			if ( spZTest )
-			{
-				#ifndef NO_BLENDING
-				if ( spBlending == SP_ONE)
-				#endif
-					sp_intern_RectangleBorder_ztest_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#ifndef NO_BLENDING
-				else
-					sp_intern_RectangleBorder_blending_ztest_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#endif
-			}
-			else
-			{
-				#ifndef NO_BLENDING
-				if ( spBlending == SP_ONE)
-				#endif
-					sp_intern_RectangleBorder_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#ifndef NO_BLENDING
-				else
-					sp_intern_RectangleBorder_blending_pattern( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#endif
-			}
-		}
-	}
-	else
-	#endif
-	{
-		if ( spZSet )
-		{
-			if ( spZTest )
-			{
-				#ifndef NO_BLENDING
-				if ( spBlending == SP_ONE)
-				#endif
-					sp_intern_RectangleBorder_ztest_zset( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#ifndef NO_BLENDING
-				else
-					sp_intern_RectangleBorder_blending_ztest_zset( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#endif
-			}
-			else
-			{
-				#ifndef NO_BLENDING
-				if ( spBlending == SP_ONE)
-				#endif
-					sp_intern_RectangleBorder_zset( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#ifndef NO_BLENDING
-				else
-					sp_intern_RectangleBorder_blending_zset( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#endif
-			}
-		}
-		else
-		{
-			if ( spZTest )
-			{
-				#ifndef NO_BLENDING
-				if ( spBlending == SP_ONE)
-				#endif
-					sp_intern_RectangleBorder_ztest( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#ifndef NO_BLENDING
-				else
-					sp_intern_RectangleBorder_blending_ztest( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#endif
-			}
-			else
-			{
-				#ifndef NO_BLENDING
-				if ( spBlending == SP_ONE)
-				#endif
-					sp_intern_RectangleBorder( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#ifndef NO_BLENDING
-				else
-					sp_intern_RectangleBorder_blending( x1, y1, x2, y2, z, bx, by, color, spPattern, spBlending);
-				#endif
-			}
-		}
-	}
+		addv = h-by - 1;
+	
+	spRectangle(x,y-addv     ,0,w,by,color);
+	spRectangle(x,y-addv+h-by,0,w,by,color);
+
+	addv = 0;
+	if ( spVerticalOrigin == SP_TOP )
+		addv = -by;
+	if ( spVerticalOrigin == SP_BOTTOM )
+		addv = by;
+	
+	int addu = w-bx >> 1;
+	if ( spHorizontalOrigin == SP_LEFT )
+		addu = 0;
+	if ( spHorizontalOrigin == SP_RIGHT )
+		addu = w-bx - 1;
+	
+	spRectangle(x-addu     ,y-addv,0,bx,h-2*by,color);
+	spRectangle(x-addu+w-bx,y-addv,0,bx,h-2*by,color);	
 }
 
 PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint32 color )
@@ -3943,4 +3851,9 @@ PREFIX void spFloodFill(int x,int y,Uint16 color)
 	if (FLOOD_PIXEL(x,y) == color)
 		return;
 	floodFill(x,y,color,FLOOD_PIXEL(x,y));
+}
+
+PREFIX void spEmulateBlendingWithPattern( Sint32 value)
+{
+	spBlendingPatternEmulation = value;
 }

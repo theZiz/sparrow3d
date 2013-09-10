@@ -213,11 +213,24 @@ PREFIX void spSetAlphaTest( Uint32 test );
  * (De)Activates real blending. Every primitive, rectangle, ellipse, blitted
  * or rotozoomed surface is blended. But keep in mind, that this is sloooow.
  * Especially with rotozoom! Use it rarely or think about <spSetAlphaPattern>.
+ * On slower targets (e.g. the gp2x) at default blending is done via pattern
+ * emulation, see <spEmulateBlendingWithPattern>.
  * 
  * Paramaters:
  * value - 0 is total transparent, SP_ONE is total opaque. Everything in between
  * will be blended. If value is SP_ONE internal no blending is done */
 PREFIX void spSetBlending( Sint32 value );
+
+/* Function: spEmulateBlendingWithPattern
+ * 
+ * Decides, whether real blending (maybe slow) is used or an emulation of
+ * blending using pattern in a dithering like way.
+ * 
+ * Paramaters:
+ * value - 0 means no emulation is done, 1 (default) means, that emulation is
+ * done on slow systems like the gp2x and 2 means, that emulation is done all
+ * the time even on quite fast targets like the gcw zero.*/
+PREFIX void spEmulateBlendingWithPattern( Sint32 value);
 
 /* Function: spSetAffineTextureHack
  * 
