@@ -549,7 +549,6 @@ PREFIX int spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile,
  * Returns:
  * int - 1 if the function failed for some reason, 0 at success starting
  * the task.
-
  * 
  * See Also:
  * <spNetC4ACreateProfile>*/
@@ -563,7 +562,7 @@ PREFIX void spNetC4ACancelTask();
 /* Function: spNetC4AGetTaskResult
  * 
  * Gets the result of the task when finished (check with
- * <spNetC4AGetStatus>.
+ * <spNetC4AGetStatus>).
  * 
  * Returns:
  * int - 0 if everything went fine, 1 at error*/
