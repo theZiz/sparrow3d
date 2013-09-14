@@ -2614,8 +2614,8 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 	if ( spVerticalOrigin == SP_BOTTOM )
 		addv = h-by - 1;
 	
-	spRectangle(x,y-addv     ,0,w,by,color);
-	spRectangle(x,y-addv+h-by,0,w,by,color);
+	spRectangle(x,y-addv     ,z,w,by,color);
+	spRectangle(x,y-addv+h-by,z,w,by,color);
 
 	addv = 0;
 	if ( spVerticalOrigin == SP_TOP )
@@ -2629,8 +2629,8 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 	if ( spHorizontalOrigin == SP_RIGHT )
 		addu = w-bx - 1;
 	
-	spRectangle(x-addu     ,y-addv,0,bx,h-2*by,color);
-	spRectangle(x-addu+w-bx,y-addv,0,bx,h-2*by,color);	
+	spRectangle(x-addu     ,y-addv,z,bx,h-2*by,color);
+	spRectangle(x-addu+w-bx,y-addv,z,bx,h-2*by,color);	
 }
 
 PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint32 color )
