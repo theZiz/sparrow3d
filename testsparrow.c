@@ -299,7 +299,7 @@ int main( int argc, char **argv )
 
 	//Setup
 	screen = spCreateDefaultWindow();
-	spUsePrecalculatedNormals(1);
+	spUsePrecalculatedNormals(0);
 	resize( screen->w, screen->h );
 	
 	char* parameter1 = NULL;

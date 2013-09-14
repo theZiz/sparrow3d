@@ -447,6 +447,19 @@ PREFIX int spTriangle3D( Sint32 x1, Sint32 y1, Sint32 z1,
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
 
+	Sint32 normal[3];
+	spCalcNormal( x1, y1, z1, x2, y2, z2, x3, y3, z3, normal );
+	Sint32 l = spSqrt( spMul( normal[0], normal[0] ) +
+					   spMul( normal[1], normal[1] ) +
+					   spMul( normal[2], normal[2] ) );
+	if (l == 0)
+		l = 1;
+	normal[0] = spDiv(normal[0],l);
+	normal[1] = spDiv(normal[1],l);
+	normal[2] = spDiv(normal[2],l);
+	Sint32 pNormal[3];
+	spMulModellView3x3( normal, pNormal );
+	
 	Sint32 tx1, ty1, tz1, tw1;
 	Sint32 tx2, ty2, tz2, tw2;
 	Sint32 tx3, ty3, tz3, tw3;
@@ -481,25 +494,14 @@ PREFIX int spTriangle3D( Sint32 x1, Sint32 y1, Sint32 z1,
 		w3 = 1;
 	Sint32 nx3 = spDiv( x3, w3 ) >> SP_HALF_ACCURACY;
 	Sint32 ny3 = spDiv( y3, w3 ) >> SP_HALF_ACCURACY;
-
-	Sint32 normal[3];
-	spCalcNormal( x1, y1, z1, x2, y2, z2, x3, y3, z3, normal );
-	Sint32 l = spSqrt( spMul( normal[0], normal[0] ) +
-					   spMul( normal[1], normal[1] ) +
-					   spMul( normal[2], normal[2] ) );
-	if (l == 0)
-		l = 1;
-	normal[0] = spDiv(normal[0],l);
-	normal[1] = spDiv(normal[1],l);
-	normal[2] = spDiv(normal[2],l);
-			
+		
 	return
 		spTriangle( viewPortX + ( ( nx1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
 					viewPortY - ( ( ny1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z1,
 					viewPortX + ( ( nx2 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
 					viewPortY - ( ( ny2 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z2,
 					viewPortX + ( ( nx3 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
-					viewPortY - ( ( ny3 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z3, rendererLightCalculationKnowNormal( color, tx1, ty1, tz1, tx2, ty2, tz2, tx3, ty3, tz3, normal) );
+					viewPortY - ( ( ny3 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z3, rendererLightCalculationKnowNormal( color, tx1, ty1, tz1, tx2, ty2, tz2, tx3, ty3, tz3, pNormal) );
 }
 
 PREFIX int spQuad3D( Sint32 x1, Sint32 y1, Sint32 z1,
@@ -511,6 +513,19 @@ PREFIX int spQuad3D( Sint32 x1, Sint32 y1, Sint32 z1,
 	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
+
+	Sint32 normal[3];
+	spCalcNormal( x1, y1, z1, x2, y2, z2, x3, y3, z3, normal );
+	Sint32 l = spSqrt( spMul( normal[0], normal[0] ) +
+					   spMul( normal[1], normal[1] ) +
+					   spMul( normal[2], normal[2] ) );
+	if (l == 0)
+		l = 1;
+	normal[0] = spDiv(normal[0],l);
+	normal[1] = spDiv(normal[1],l);
+	normal[2] = spDiv(normal[2],l);
+	Sint32 pNormal[3];
+	spMulModellView3x3( normal, pNormal );
 
 	Sint32 tx1, ty1, tz1, tw1;
 	Sint32 tx2, ty2, tz2, tw2;
@@ -558,17 +573,6 @@ PREFIX int spQuad3D( Sint32 x1, Sint32 y1, Sint32 z1,
 	Sint32 nx4 = spDiv( x4, w4 ) >> SP_HALF_ACCURACY;
 	Sint32 ny4 = spDiv( y4, w4 ) >> SP_HALF_ACCURACY;
 
-	Sint32 normal[3];
-	spCalcNormal( x1, y1, z1, x2, y2, z2, x3, y3, z3, normal );
-	Sint32 l = spSqrt( spMul( normal[0], normal[0] ) +
-					   spMul( normal[1], normal[1] ) +
-					   spMul( normal[2], normal[2] ) );
-	if (l == 0)
-		l = 1;
-	normal[0] = spDiv(normal[0],l);
-	normal[1] = spDiv(normal[1],l);
-	normal[2] = spDiv(normal[2],l);
-
 	return
 		spQuad( viewPortX + ( ( nx1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
 				viewPortY - ( ( ny1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z1,
@@ -577,7 +581,7 @@ PREFIX int spQuad3D( Sint32 x1, Sint32 y1, Sint32 z1,
 				viewPortX + ( ( nx3 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
 				viewPortY - ( ( ny3 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z3,
 				viewPortX + ( ( nx4 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
-				viewPortY - ( ( ny4 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z4, rendererLightCalculationKnowNormal( color, tx1, ty1, tz1, tx2, ty2, tz2, tx3, ty3, tz3, normal ) );
+				viewPortY - ( ( ny4 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z4, rendererLightCalculationKnowNormal( color, tx1, ty1, tz1, tx2, ty2, tz2, tx3, ty3, tz3, pNormal ) );
 }
 
 PREFIX int spTriangleTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
@@ -588,6 +592,19 @@ PREFIX int spTriangleTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v
 	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
+
+	Sint32 normal[3];
+	spCalcNormal( x1, y1, z1, x2, y2, z2, x3, y3, z3, normal );
+	Sint32 l = spSqrt( spMul( normal[0], normal[0] ) +
+					   spMul( normal[1], normal[1] ) +
+					   spMul( normal[2], normal[2] ) );
+	if (l == 0)
+		l = 1;
+	normal[0] = spDiv(normal[0],l);
+	normal[1] = spDiv(normal[1],l);
+	normal[2] = spDiv(normal[2],l);
+	Sint32 pNormal[3];
+	spMulModellView3x3( normal, pNormal );
 
 	Sint32 tx1, ty1, tz1, tw1;
 	Sint32 tx2, ty2, tz2, tw2;
@@ -624,17 +641,6 @@ PREFIX int spTriangleTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v
 	Sint32 nx3 = spDiv( x3, w3 ) >> SP_HALF_ACCURACY;
 	Sint32 ny3 = spDiv( y3, w3 ) >> SP_HALF_ACCURACY;
 
-	Sint32 normal[3];
-	spCalcNormal( x1, y1, z1, x2, y2, z2, x3, y3, z3, normal );
-	Sint32 l = spSqrt( spMul( normal[0], normal[0] ) +
-					   spMul( normal[1], normal[1] ) +
-					   spMul( normal[2], normal[2] ) );
-	if (l == 0)
-		l = 1;
-	normal[0] = spDiv(normal[0],l);
-	normal[1] = spDiv(normal[1],l);
-	normal[2] = spDiv(normal[2],l);
-
 	if (spUsePerspective)
 		return
 			spPerspectiveTriangle_tex( viewPortX + ( ( nx1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
@@ -642,14 +648,14 @@ PREFIX int spTriangleTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v
 							viewPortX + ( ( nx2 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
 							viewPortY - ( ( ny2 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z2, u2, v2, w2,
 							viewPortX + ( ( nx3 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
-							viewPortY - ( ( ny3 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z3, u3, v3, w3, rendererLightCalculationKnowNormal( color, tx1, ty1, tz1, tx2, ty2, tz2, tx3, ty3, tz3, normal ) );
+							viewPortY - ( ( ny3 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z3, u3, v3, w3, rendererLightCalculationKnowNormal( color, tx1, ty1, tz1, tx2, ty2, tz2, tx3, ty3, tz3, pNormal ) );
 	return
 		spTriangle_tex( viewPortX + ( ( nx1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
 						viewPortY - ( ( ny1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z1, u1, v1,
 						viewPortX + ( ( nx2 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
 						viewPortY - ( ( ny2 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z2, u2, v2,
 						viewPortX + ( ( nx3 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
-						viewPortY - ( ( ny3 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z3, u3, v3, rendererLightCalculationKnowNormal( color, tx1, ty1, tz1, tx2, ty2, tz2, tx3, ty3, tz3, normal ) );
+						viewPortY - ( ( ny3 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z3, u3, v3, rendererLightCalculationKnowNormal( color, tx1, ty1, tz1, tx2, ty2, tz2, tx3, ty3, tz3, pNormal ) );
 }
 
 
@@ -662,6 +668,19 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 	int windowY = spGetRenderTarget()->h;
 	int viewPortX = ( windowX >> 1 );
 	int viewPortY = ( windowY >> 1 );
+
+	Sint32 normal[3];
+	spCalcNormal( x1, y1, z1, x2, y2, z2, x3, y3, z3, normal );
+	Sint32 l = spSqrt( spMul( normal[0], normal[0] ) +
+					   spMul( normal[1], normal[1] ) +
+					   spMul( normal[2], normal[2] ) );
+	if (l == 0)
+		l = 1;
+	normal[0] = spDiv(normal[0],l);
+	normal[1] = spDiv(normal[1],l);
+	normal[2] = spDiv(normal[2],l);
+	Sint32 pNormal[3];
+	spMulModellView3x3( normal, pNormal );
 
 	Sint32 tx1, ty1, tz1, tw1;
 	Sint32 tx2, ty2, tz2, tw2;
@@ -710,17 +729,6 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 		w4 = 1;
 	Sint32 nx4 = spDiv( x4, w4 ) >> SP_HALF_ACCURACY;
 	Sint32 ny4 = spDiv( y4, w4 ) >> SP_HALF_ACCURACY;
-
-	Sint32 normal[3];
-	spCalcNormal( x1, y1, z1, x2, y2, z2, x3, y3, z3, normal );
-	Sint32 l = spSqrt( spMul( normal[0], normal[0] ) +
-					   spMul( normal[1], normal[1] ) +
-					   spMul( normal[2], normal[2] ) );
-	if (l == 0)
-		l = 1;
-	normal[0] = spDiv(normal[0],l);
-	normal[1] = spDiv(normal[1],l);
-	normal[2] = spDiv(normal[2],l);
 	
 	if (spUsePerspective)
 		return
@@ -731,7 +739,7 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 														 viewPortX + ( ( nx3 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
 														 viewPortY - ( ( ny3 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z3, u3, v3, w3, 
 														 viewPortX + ( ( nx4 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
-														 viewPortY - ( ( ny4 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z4, u4, v4, w4, rendererLightCalculationKnowNormal( color, tx1, ty1, tz1, tx2, ty2, tz2, tx3, ty3, tz3, normal ) );
+														 viewPortY - ( ( ny4 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z4, u4, v4, w4, rendererLightCalculationKnowNormal( color, tx1, ty1, tz1, tx2, ty2, tz2, tx3, ty3, tz3, pNormal ) );
 	return
 		spQuad_tex( viewPortX + ( ( nx1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
 					viewPortY - ( ( ny1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z1, u1, v1,
@@ -740,7 +748,7 @@ PREFIX int spQuadTex3D( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Sint32 v1,
 					viewPortX + ( ( nx3 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
 					viewPortY - ( ( ny3 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z3, u3, v3,
 					viewPortX + ( ( nx4 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ),
-					viewPortY - ( ( ny4 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z4, u4, v4, rendererLightCalculationKnowNormal( color, tx1, ty1, tz1, tx2, ty2, tz2, tx3, ty3, tz3, normal ) );
+					viewPortY - ( ( ny4 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY ), z4, u4, v4, rendererLightCalculationKnowNormal( color, tx1, ty1, tz1, tx2, ty2, tz2, tx3, ty3, tz3, pNormal ) );
 }
 
 PREFIX void spBlit3D( Sint32 x1, Sint32 y1, Sint32 z1, SDL_Surface* surface )
@@ -859,15 +867,15 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 			              mesh->point[mesh->triangle[i].point[2]].x,
 			              mesh->point[mesh->triangle[i].point[2]].y,
 			              mesh->point[mesh->triangle[i].point[2]].z,
-			              mesh->triangle[i].pNormal );
-			Sint32 l = spSqrt( spMul( mesh->triangle[i].pNormal[0], mesh->triangle[i].pNormal[0] ) +
-			                   spMul( mesh->triangle[i].pNormal[1], mesh->triangle[i].pNormal[1] ) +
-			                   spMul( mesh->triangle[i].pNormal[2], mesh->triangle[i].pNormal[2] ) );
+			              mesh->triangle[i].normal );
+			Sint32 l = spSqrt( spMul( mesh->triangle[i].normal[0], mesh->triangle[i].normal[0] ) +
+			                   spMul( mesh->triangle[i].normal[1], mesh->triangle[i].normal[1] ) +
+			                   spMul( mesh->triangle[i].normal[2], mesh->triangle[i].normal[2] ) );
 			if (l == 0)
 				l = 1;
-			mesh->triangle[i].pNormal[0] = spDiv(mesh->triangle[i].pNormal[0],l);
-			mesh->triangle[i].pNormal[1] = spDiv(mesh->triangle[i].pNormal[1],l);
-			mesh->triangle[i].pNormal[2] = spDiv(mesh->triangle[i].pNormal[2],l);
+			mesh->triangle[i].normal[0] = spDiv(mesh->triangle[i].normal[0],l);
+			mesh->triangle[i].normal[1] = spDiv(mesh->triangle[i].normal[1],l);
+			mesh->triangle[i].normal[2] = spDiv(mesh->triangle[i].normal[2],l);
 			spMulModellView3x3( mesh->triangle[i].normal, mesh->triangle[i].pNormal );
 		}
 		for ( i = 0; i < mesh->quadCount; i++ )
@@ -881,15 +889,15 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 			              mesh->point[mesh->quad[i].point[2]].x,
 			              mesh->point[mesh->quad[i].point[2]].y,
 			              mesh->point[mesh->quad[i].point[2]].z,
-			              mesh->quad[i].pNormal );
-			Sint32 l = spSqrt( spMul( mesh->quad[i].pNormal[0], mesh->quad[i].pNormal[0] ) +
-			                   spMul( mesh->quad[i].pNormal[1], mesh->quad[i].pNormal[1] ) +
-			                   spMul( mesh->quad[i].pNormal[2], mesh->quad[i].pNormal[2] ) );
+			              mesh->quad[i].normal );
+			Sint32 l = spSqrt( spMul( mesh->quad[i].normal[0], mesh->quad[i].normal[0] ) +
+			                   spMul( mesh->quad[i].normal[1], mesh->quad[i].normal[1] ) +
+			                   spMul( mesh->quad[i].normal[2], mesh->quad[i].normal[2] ) );
 			if (l == 0)
 				l = 1;
-			mesh->quad[i].pNormal[0] = spDiv(mesh->quad[i].pNormal[0],l);
-			mesh->quad[i].pNormal[1] = spDiv(mesh->quad[i].pNormal[1],l);
-			mesh->quad[i].pNormal[2] = spDiv(mesh->quad[i].pNormal[2],l);
+			mesh->quad[i].normal[0] = spDiv(mesh->quad[i].normal[0],l);
+			mesh->quad[i].normal[1] = spDiv(mesh->quad[i].normal[1],l);
+			mesh->quad[i].normal[2] = spDiv(mesh->quad[i].normal[2],l);
 			spMulModellView3x3( mesh->quad[i].normal, mesh->quad[i].pNormal );
 		}
 		for ( i = 0; i < mesh->texTriangleCount; i++ )
@@ -903,15 +911,15 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 			              mesh->texPoint[mesh->texTriangle[i].point[2]].x,
 			              mesh->texPoint[mesh->texTriangle[i].point[2]].y,
 			              mesh->texPoint[mesh->texTriangle[i].point[2]].z,
-			              mesh->texTriangle[i].pNormal );
-			Sint32 l = spSqrt( spMul( mesh->texTriangle[i].pNormal[0], mesh->texTriangle[i].pNormal[0] ) +
-			                   spMul( mesh->texTriangle[i].pNormal[1], mesh->texTriangle[i].pNormal[1] ) +
-			                   spMul( mesh->texTriangle[i].pNormal[2], mesh->texTriangle[i].pNormal[2] ) );
+			              mesh->texTriangle[i].normal );
+			Sint32 l = spSqrt( spMul( mesh->texTriangle[i].normal[0], mesh->texTriangle[i].normal[0] ) +
+			                   spMul( mesh->texTriangle[i].normal[1], mesh->texTriangle[i].normal[1] ) +
+			                   spMul( mesh->texTriangle[i].normal[2], mesh->texTriangle[i].normal[2] ) );
 			if (l == 0)
 				l = 1;
-			mesh->texTriangle[i].pNormal[0] = spDiv(mesh->texTriangle[i].pNormal[0],l);
-			mesh->texTriangle[i].pNormal[1] = spDiv(mesh->texTriangle[i].pNormal[1],l);
-			mesh->texTriangle[i].pNormal[2] = spDiv(mesh->texTriangle[i].pNormal[2],l);
+			mesh->texTriangle[i].normal[0] = spDiv(mesh->texTriangle[i].normal[0],l);
+			mesh->texTriangle[i].normal[1] = spDiv(mesh->texTriangle[i].normal[1],l);
+			mesh->texTriangle[i].normal[2] = spDiv(mesh->texTriangle[i].normal[2],l);
 			spMulModellView3x3( mesh->texTriangle[i].normal, mesh->texTriangle[i].pNormal );
 		}
 		for ( i = 0; i < mesh->texQuadCount; i++ )
@@ -925,15 +933,15 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 			              mesh->texPoint[mesh->texQuad[i].point[2]].x,
 			              mesh->texPoint[mesh->texQuad[i].point[2]].y,
 			              mesh->texPoint[mesh->texQuad[i].point[2]].z,
-			              mesh->texQuad[i].pNormal );
-			Sint32 l = spSqrt( spMul( mesh->texQuad[i].pNormal[0], mesh->texQuad[i].pNormal[0] ) +
-			                   spMul( mesh->texQuad[i].pNormal[1], mesh->texQuad[i].pNormal[1] ) +
-			                   spMul( mesh->texQuad[i].pNormal[2], mesh->texQuad[i].pNormal[2] ) );
+			              mesh->texQuad[i].normal );
+			Sint32 l = spSqrt( spMul( mesh->texQuad[i].normal[0], mesh->texQuad[i].normal[0] ) +
+			                   spMul( mesh->texQuad[i].normal[1], mesh->texQuad[i].normal[1] ) +
+			                   spMul( mesh->texQuad[i].normal[2], mesh->texQuad[i].normal[2] ) );
 			if (l == 0)
 				l = 1;
-			mesh->texQuad[i].pNormal[0] = spDiv(mesh->texQuad[i].pNormal[0],l);
-			mesh->texQuad[i].pNormal[1] = spDiv(mesh->texQuad[i].pNormal[1],l);
-			mesh->texQuad[i].pNormal[2] = spDiv(mesh->texQuad[i].pNormal[2],l);
+			mesh->texQuad[i].normal[0] = spDiv(mesh->texQuad[i].normal[0],l);
+			mesh->texQuad[i].normal[1] = spDiv(mesh->texQuad[i].normal[1],l);
+			mesh->texQuad[i].normal[2] = spDiv(mesh->texQuad[i].normal[2],l);
 			spMulModellView3x3( mesh->texQuad[i].normal, mesh->texQuad[i].pNormal );
 		}
 	}
