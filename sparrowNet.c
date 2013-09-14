@@ -858,6 +858,7 @@ PREFIX int spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfi
 	SDL_mutexV(spNetC4AStatusMutex);
 	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
 	{
+		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
 		getscorePointer data = (getscorePointer)malloc(sizeof(getscoreType));
 		data->score = scoreList;
