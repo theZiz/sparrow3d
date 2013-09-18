@@ -32,19 +32,9 @@
 /* Defines: Light
  * 
  * SP_MAX_LIGHTS - maximal count of lights. However more would look shitty
- * nevertheless.
- * SP_LIGHT_TYPE - type for light calculating. It is 64 bit, because we need
- * a lot better accuracy than for the rendering itself
- * SP_LIGHT_TYPE_SIZE - the bit count of the type (64)
- * SP_LIGHT_ACCURACY - the number of decimal places for light calculation
- * SP_LIGHT_HALF_ACCURACY - the half of <SP_LIGHT_ACCURACY>
- * SP_LIGHT_ACCURACY_FACTOR - for convertation fixed point light values to float*/
+ * nevertheless.*/
+ 
 #define SP_MAX_LIGHTS 8
-#define SP_LIGHT_TYPE Sint64
-#define SP_LIGHT_TYPE_SIZE 64
-#define SP_LIGHT_ACCURACY 24
-#define SP_LIGHT_HALF_ACCURACY 12
-#define SP_LIGHT_ACCURACY_FACTOR (65536.0f*256.0f)
 
 /* Type: spPoint
  * 

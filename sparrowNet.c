@@ -858,6 +858,7 @@ PREFIX int spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfi
 	SDL_mutexV(spNetC4AStatusMutex);
 	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
 	{
+		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
 		getscorePointer data = (getscorePointer)malloc(sizeof(getscoreType));
 		data->score = scoreList;
@@ -956,7 +957,7 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
 {
 	if (profile == NULL)
 		return 1;
-	if (already_in_highscore(*scoreList,profile,score))
+	if (scoreList && already_in_highscore(*scoreList,profile,score))
 		return 1;
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
