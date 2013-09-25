@@ -149,7 +149,14 @@ PREFIX void spInitCore( void )
 		for ( i = 0; i < SDL_NumJoysticks(); i++ )
 		{
 			spJoy[i] = SDL_JoystickOpen( i );
-			printf( "  Opened Joystick %i (%s)\n", i, SDL_JoystickName( i ) );
+			if ( strcmp(SDL_JoystickName( i ),"VirtualBox USB Tablet") == 0 || strcmp(SDL_JoystickName( i ),"VirtualBox mouse integration") == 0)
+			{
+				printf( "  Ignored Joystick %i (%s) because of Virtualbox\n", i, SDL_JoystickName( i ) );
+				SDL_JoystickClose( spJoy[i] );
+				spJoy[i] = NULL;
+			}
+			else
+				printf( "  Opened Joystick %i (%s)\n", i, SDL_JoystickName( i ) );
 		}
 	}
 	//#endif
@@ -1238,7 +1245,8 @@ PREFIX void spQuitCore( void )
 	{
 		int i;
 		for ( i = 0; i < SDL_NumJoysticks(); i++ )
-			SDL_JoystickClose( spJoy[i] );
+			if (spJoy[i])
+				SDL_JoystickClose( spJoy[i] );
 		free( spJoy );
 	}
 	//#endif
