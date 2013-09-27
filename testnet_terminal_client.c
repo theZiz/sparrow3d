@@ -45,30 +45,44 @@ int main( int argc, char **argv )
 		printf("No profile found. Put it to this folder or create it with compo4all!\n");
 	
 	//spNetC4AGetScoreOfMonth(&score,profile,"puzzletube_points",2013,6);
-	spNetC4AGetScore(&score,profile,"puzzletube_points",10000);
-	while (spNetC4AGetStatus() == SP_C4A_PROGRESS)
-	#ifdef WIN32
-		Sleep(1);
-	#else
-		usleep(200);
-	#endif
-	if (spNetC4AGetStatus() == SP_C4A_OK)
+	int i;
+	for (i = 0; i < 3; i++)
 	{
-		spNetC4AScorePointer mom = score;
-		while (mom)
+		switch (i)
 		{
-			struct tm * local = localtime (&(mom->commitTime));
-			printf("%2i.%2i.%i - %2i:%02i: %s (%s) - %i\n",local->tm_mday,local->tm_mon+1,local->tm_year+1900,local->tm_hour,local->tm_min,mom->longname,mom->shortname,mom->score);
-			mom = mom->next;
+			case 0:
+				spNetC4AGetScore(&score,profile,"puzzletube_points",10000);
+				printf("Highscore of Puzzletube Points:\n");
+				break;
+			case 1:
+				spNetC4AGetScore(&score,profile,"puzzletube_race",10000);
+				printf("Highscore of Puzzletube Race:\n");
+				break;
+			case 2:
+				spNetC4AGetScore(&score,profile,"puzzletube_survival",10000);
+				printf("Highscore of Puzzletube Survival:\n");
+				break;
 		}
-		//If you just uncomment this code, you cheat! Copy it to your game and try
-		//with YOUR game. Thank you. ;)
-		//SDL_WaitThread(spNetC4ACommitScore(profile,"puzzletube_points",10003,&score),NULL);
-		//printf("Commit end status code: %i\n",spNetC4AGetStatus());
-		spNetC4ADeleteScores(&score);
+		while (spNetC4AGetStatus() == SP_C4A_PROGRESS)
+		#ifdef WIN32
+			Sleep(1);
+		#else
+			usleep(200);
+		#endif
+		if (spNetC4AGetStatus() == SP_C4A_OK)
+		{
+			spNetC4AScorePointer mom = score;
+			while (mom)
+			{
+				struct tm * local = localtime (&(mom->commitTime));
+				printf("  %2i.%2i.%i - %2i:%02i: %s (%s) - %i\n",local->tm_mday,local->tm_mon+1,local->tm_year+1900,local->tm_hour,local->tm_min,mom->longname,mom->shortname,mom->score);
+				mom = mom->next;
+			}
+			spNetC4ADeleteScores(&score);
+		}
+		else
+			printf("Fetshing Highscore failed with status code: %i\n",spNetC4AGetStatus());
 	}
-	else
-		printf("Fetshing Highscore is still running or failed with status code: %i\n",spNetC4AGetStatus());
 
 	//Client setup
 	spNetIP ip;
@@ -84,7 +98,7 @@ int main( int argc, char **argv )
 	}
 	client_connection = spNetOpenClientTCP(ip);
 	if (client_connection == NULL)
-		printf("No client_connection! I will crash!");
+		printf("No client_connection! I will crash!\n");
 	
 	do_stuff();
 	
