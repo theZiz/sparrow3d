@@ -55,9 +55,6 @@ CPP = gcc -march=native -DX86CPU -g $(GENERAL_TWEAKS)
 # SDL sets some SDL options with the program "sdl-config".
 SDL = `sdl-config --cflags`
 
-# SPARROW_LIB determines, where the sparrow library is.
-SPARROW_LIB = -L.
-
 # SPARROW_INCLUDE determines, where the sparrow includes are
 SPARROW_INCLUDE = -I.
 
@@ -99,10 +96,13 @@ SDL_PATH = -I/usr/include/SDL
 ifdef TARGET
 include ./target-files/$(TARGET).mk
 BUILD = ./build/$(TARGET)/sparrow3d
-LIB += -L$(BUILD)
+# SPARROW_LIB determines, where the sparrow library is.
+SPARROW_LIB += -L$(BUILD)
 else
 TARGET = "Default (change with make TARGET=otherTarget. See All targets with make targets)"
 BUILD = .
+# SPARROW_LIB determines, where the sparrow library is.
+SPARROW_LIB += -L.
 endif
 
 CPP += $(PARAMETER)
