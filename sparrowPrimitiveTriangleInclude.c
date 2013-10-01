@@ -19,7 +19,7 @@
  * way to get the code fast and still understanable. The only
  * alternative I used before was massive copy and paste, which is
  * bollocks. */
-
+ 
 #ifdef __SPARROW_INTERNAL_BLENDING__
 	#ifdef __SPARROW_INTERNAL_PATTERN__
 		#ifdef __SPARROW_INTERNAL_ZBOTH__
