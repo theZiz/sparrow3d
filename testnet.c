@@ -58,7 +58,7 @@ int calc_function( Uint32 steps )
 		if (server_connection)
 		{
 			spNetIP ip = spNetGetConnectionIP(server_connection);
-			sprintf(received_lines[mom_line],"Connection from %i.%i.%i.%i",ip.address.ipv4_bytes[mom_line],ip.address.ipv4_bytes[1],ip.address.ipv4_bytes[2],ip.address.ipv4_bytes[3]);
+			sprintf(received_lines[mom_line],"Connection from %i.%i.%i.%i",ip.address.ipv4_bytes[0],ip.address.ipv4_bytes[1],ip.address.ipv4_bytes[2],ip.address.ipv4_bytes[3]);
 		}
 	}
 	if (server_connection != NULL)

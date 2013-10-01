@@ -17,12 +17,12 @@
 
 #include "sparrowNet.h"
 #include <stdio.h>
+#include <errno.h>
 
 //This is a copy of spReadOneLine sparrowFile. However, I don't want the
 //extra dependency of libSparrow3d or linking sparrowFile twice.
 int internal_spNet_spReadOneLine( SDL_RWops* file , char* buffer, int buffer_len)
 {
-	return spReadUntil(file,buffer,buffer_len,'\n',1);
 	int pos = 0;
 	buffer[pos] = 0;
 	while (pos < buffer_len)
@@ -349,7 +349,14 @@ int spNetC4AUberThread(int ( *function )( void* data ))
 	SDL_Thread* thread = SDL_CreateThread(function,spNetC4ADataPointer);
 	while (1)
 	{
-		spSleep(100);
+	#ifdef REALGP2X
+		//TODO: Implement!
+		SDL_Delay(1);
+	#elif defined WIN32
+		SDL_Delay(1);	
+	#else
+		usleep(100);
+	#endif
 		int newTime = SDL_GetTicks();
 		int diff = newTime - startTime;
 		startTime = newTime;
@@ -423,12 +430,58 @@ void fill_between_paraphrases(char* buffer, char* dest, int max_size)
 	}
 }
 
+void internal_CreateDirectoryChain( const char* directories)
+{
+	//Creating copy:
+	int len = strlen(directories)+1;
+	#ifdef __GNUC__
+		char directoriesCopy[len];
+	#else
+		char* directoriesCopy = (char*)malloc( len * sizeof(char) );
+	#endif
+	memcpy(directoriesCopy,directories,len);
+	//Splitting in subdirectories
+	char* subString = directoriesCopy;
+	char* endOfString = strchr(subString,'/');
+	if (endOfString == NULL)
+		endOfString = strchr(subString,0);
+	while (endOfString)
+	{
+		char oldChar = endOfString[0];
+		endOfString[0] = 0;
+		#ifdef WIN32
+
+			if (CreateDirectory(directoriesCopy,NULL))
+			{}
+			else
+			if (GetLastError() != ERROR_ALREADY_EXISTS)
+				break;
+		#else
+			int error = mkdir(directoriesCopy,0777);
+			if (errno == 0 || errno == EEXIST || errno == ENOENT) //thats okay :)
+			{}
+			else //not okay
+				break;
+		#endif
+		endOfString[0] = oldChar;
+		if (oldChar == 0)
+			break;
+		subString = &(endOfString[1]);
+		endOfString = strchr(subString,'/');
+		if (endOfString == NULL)
+			endOfString = strchr(subString,0);
+	}
+	#ifndef __GNUC__
+		free(directoriesCopy);
+	#endif
+}
+
 #ifdef PANDORA
 	#define PROFILE_FILENAME_MAKRO char *filename = pnd_locate_filename ( "/media/*/pandora/appdata/c4a-mame/:.", "c4a-prof" );
 #elif defined GCW || (defined X86CPU && !defined WIN32)
 	#define PROFILE_FILENAME_MAKRO char filename[256]; \
 		sprintf(filename,"%s/.config/compo4all",getenv("HOME"));\
-		spCreateDirectoryChain(filename);\
+		internal_CreateDirectoryChain(filename);\
 		sprintf(filename,"%s/.config/compo4all/c4a-prof",getenv("HOME"));
 #else
 	#define PROFILE_FILENAME_MAKRO char filename[256] = "./c4a-prof";
@@ -1238,7 +1291,12 @@ PREFIX int spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile,
 PREFIX void spNetC4ADeleteProfileFile()
 {
 	PROFILE_FILENAME_MAKRO
-	spRemoveFile( filename );
+//Copied from spRemoveFile to avoid dependencies
+#ifdef WIN32
+	DeleteFile(filename);
+#else
+	remove(filename);
+#endif	
 }
 
 int c4a_edit_thread(void* data)

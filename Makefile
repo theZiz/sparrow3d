@@ -55,9 +55,6 @@ CPP = gcc -march=native -DX86CPU -g $(GENERAL_TWEAKS)
 # SDL sets some SDL options with the program "sdl-config".
 SDL = `sdl-config --cflags`
 
-# SPARROW_LIB determines, where the sparrow library is.
-SPARROW_LIB = -L.
-
 # SPARROW_INCLUDE determines, where the sparrow includes are
 SPARROW_INCLUDE = -I.
 
@@ -99,10 +96,13 @@ SDL_PATH = -I/usr/include/SDL
 ifdef TARGET
 include ./target-files/$(TARGET).mk
 BUILD = ./build/$(TARGET)/sparrow3d
-LIB += -L$(BUILD)
+# SPARROW_LIB determines, where the sparrow library is.
+SPARROW_LIB += -L$(BUILD)
 else
 TARGET = "Default (change with make TARGET=otherTarget. See All targets with make targets)"
 BUILD = .
+# SPARROW_LIB determines, where the sparrow library is.
+SPARROW_LIB += -L.
 endif
 
 CPP += $(PARAMETER)
@@ -110,7 +110,7 @@ CPP += $(PARAMETER)
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
 
-all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testfile testnet testreal3d
+all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testfile testnet testreal3d testnet_terminal_server testnet_terminal_client
 	@echo "=== Built for Target "$(TARGET)" ==="
 
 targets:
@@ -159,6 +159,12 @@ testfile: testfile.c libsparrow3d.so
 
 testnet: testnet.c libsparrow3d.so libsparrowNet.so
 	$(CPP_LINK) $(CFLAGS) testnet.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o $(BUILD)/testnet
+
+testnet_terminal_server: testnet_terminal_server.c libsparrowNet.so
+	$(CPP_LINK) $(CFLAGS) testnet_terminal_server.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/testnet_terminal_server
+
+testnet_terminal_client: testnet_terminal_client.c libsparrowNet.so
+	$(CPP_LINK) $(CFLAGS) testnet_terminal_client.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/testnet_terminal_client
 
 libsparrow3d.so: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowGUI.o
 	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
