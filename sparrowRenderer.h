@@ -336,6 +336,23 @@ PREFIX Sint32* spGetMatrix();
  * without rotation and without scaling. */
 PREFIX void spIdentity();
 
+/* Function: spMulMatrix
+ * 
+ * Multiplies the modelview matrix with the given matrix.
+ * 
+ * Parameters:
+ * matrix - a pointer to 16 Sint32 values*/
+PREFIX void spMulMatrix(Sint32* matrix);
+
+/* Function: spMulMatrixLeft
+ * 
+ * Multiplies the modelview matrix with the given matrix, but from the
+ * left side.
+ * 
+ * Parameters:
+ * matrix - a pointer to 16 Sint32 values*/
+PREFIX void spMulMatrixLeft(Sint32* matrix);
+
 /* Function: spScale
  * 
  * spScale scales the modelview matrix. Use it with care, seems to be
@@ -670,6 +687,18 @@ PREFIX void spRotozoomSurfacePart3D( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* 
  * See Also:
  * <spRectangleBorder3D>*/
 PREFIX void spRectangle3D( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint16 color );
+
+/*Function: spCollapsePrimitives
+ * 
+ * Determines, whether ellipses, rectangles, ellipses borders and
+ * rectangle borders can collapse to an (unseeable) object smaller than
+ * one pixel.
+ * 
+ * Paramaters:
+ * value - 0 means, that the primitive do not collapse, if 1 for a
+ * specific distance it will not be drawn anymore (too small). Default
+ * is 1.*/
+PREFIX void spCollapsePrimitives( int value);
 
 /* Function: spEllipse3D
  * 

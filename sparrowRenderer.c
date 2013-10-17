@@ -137,6 +137,154 @@ PREFIX void spIdentity()
 	spModelView[15] = SP_ONE;
 }
 
+PREFIX void spMulMatrix(Sint32* matrix)
+{
+	Sint32 result[16];
+	result[ 0] = ( spModelView[ 0] >> SP_HALF_ACCURACY ) * ( matrix[ 0] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 4] >> SP_HALF_ACCURACY ) * ( matrix[ 1] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 8] >> SP_HALF_ACCURACY ) * ( matrix[ 2] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[12] >> SP_HALF_ACCURACY ) * ( matrix[ 3] >> SP_HALF_ACCURACY );
+	result[ 1] = ( spModelView[ 1] >> SP_HALF_ACCURACY ) * ( matrix[ 0] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 5] >> SP_HALF_ACCURACY ) * ( matrix[ 1] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 9] >> SP_HALF_ACCURACY ) * ( matrix[ 2] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[13] >> SP_HALF_ACCURACY ) * ( matrix[ 3] >> SP_HALF_ACCURACY );
+	result[ 2] = ( spModelView[ 2] >> SP_HALF_ACCURACY ) * ( matrix[ 0] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 6] >> SP_HALF_ACCURACY ) * ( matrix[ 1] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[10] >> SP_HALF_ACCURACY ) * ( matrix[ 2] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[14] >> SP_HALF_ACCURACY ) * ( matrix[ 3] >> SP_HALF_ACCURACY );
+	result[ 3] = ( spModelView[ 3] >> SP_HALF_ACCURACY ) * ( matrix[ 0] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 7] >> SP_HALF_ACCURACY ) * ( matrix[ 1] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[11] >> SP_HALF_ACCURACY ) * ( matrix[ 2] >> SP_HALF_ACCURACY );
+	             ( spModelView[15] >> SP_HALF_ACCURACY ) * ( matrix[ 3] >> SP_HALF_ACCURACY );
+
+	result[ 4] = ( spModelView[ 0] >> SP_HALF_ACCURACY ) * ( matrix[ 4] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 4] >> SP_HALF_ACCURACY ) * ( matrix[ 5] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 8] >> SP_HALF_ACCURACY ) * ( matrix[ 6] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[12] >> SP_HALF_ACCURACY ) * ( matrix[ 7] >> SP_HALF_ACCURACY );
+	result[ 5] = ( spModelView[ 1] >> SP_HALF_ACCURACY ) * ( matrix[ 4] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 5] >> SP_HALF_ACCURACY ) * ( matrix[ 5] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 9] >> SP_HALF_ACCURACY ) * ( matrix[ 6] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[13] >> SP_HALF_ACCURACY ) * ( matrix[ 7] >> SP_HALF_ACCURACY );
+	result[ 6] = ( spModelView[ 2] >> SP_HALF_ACCURACY ) * ( matrix[ 4] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 6] >> SP_HALF_ACCURACY ) * ( matrix[ 5] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[10] >> SP_HALF_ACCURACY ) * ( matrix[ 6] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[14] >> SP_HALF_ACCURACY ) * ( matrix[ 7] >> SP_HALF_ACCURACY );
+	result[ 7] = ( spModelView[ 3] >> SP_HALF_ACCURACY ) * ( matrix[ 4] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 7] >> SP_HALF_ACCURACY ) * ( matrix[ 5] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[11] >> SP_HALF_ACCURACY ) * ( matrix[ 6] >> SP_HALF_ACCURACY );
+	             ( spModelView[15] >> SP_HALF_ACCURACY ) * ( matrix[ 7] >> SP_HALF_ACCURACY );
+
+	result[ 8] = ( spModelView[ 0] >> SP_HALF_ACCURACY ) * ( matrix[ 8] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 4] >> SP_HALF_ACCURACY ) * ( matrix[ 9] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 8] >> SP_HALF_ACCURACY ) * ( matrix[10] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[12] >> SP_HALF_ACCURACY ) * ( matrix[11] >> SP_HALF_ACCURACY );
+	result[ 9] = ( spModelView[ 1] >> SP_HALF_ACCURACY ) * ( matrix[ 8] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 5] >> SP_HALF_ACCURACY ) * ( matrix[ 9] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 9] >> SP_HALF_ACCURACY ) * ( matrix[10] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[13] >> SP_HALF_ACCURACY ) * ( matrix[11] >> SP_HALF_ACCURACY );
+	result[10] = ( spModelView[ 2] >> SP_HALF_ACCURACY ) * ( matrix[ 8] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 6] >> SP_HALF_ACCURACY ) * ( matrix[ 9] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[10] >> SP_HALF_ACCURACY ) * ( matrix[10] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[14] >> SP_HALF_ACCURACY ) * ( matrix[11] >> SP_HALF_ACCURACY );
+	result[11] = ( spModelView[ 3] >> SP_HALF_ACCURACY ) * ( matrix[ 8] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 7] >> SP_HALF_ACCURACY ) * ( matrix[ 9] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[11] >> SP_HALF_ACCURACY ) * ( matrix[10] >> SP_HALF_ACCURACY );
+	             ( spModelView[15] >> SP_HALF_ACCURACY ) * ( matrix[11] >> SP_HALF_ACCURACY );
+
+	result[12] = ( spModelView[ 0] >> SP_HALF_ACCURACY ) * ( matrix[12] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 4] >> SP_HALF_ACCURACY ) * ( matrix[13] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 8] >> SP_HALF_ACCURACY ) * ( matrix[14] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[12] >> SP_HALF_ACCURACY ) * ( matrix[15] >> SP_HALF_ACCURACY );
+	result[13] = ( spModelView[ 1] >> SP_HALF_ACCURACY ) * ( matrix[12] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 5] >> SP_HALF_ACCURACY ) * ( matrix[13] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 9] >> SP_HALF_ACCURACY ) * ( matrix[14] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[13] >> SP_HALF_ACCURACY ) * ( matrix[15] >> SP_HALF_ACCURACY );
+	result[14] = ( spModelView[ 2] >> SP_HALF_ACCURACY ) * ( matrix[12] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 6] >> SP_HALF_ACCURACY ) * ( matrix[13] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[10] >> SP_HALF_ACCURACY ) * ( matrix[14] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[14] >> SP_HALF_ACCURACY ) * ( matrix[15] >> SP_HALF_ACCURACY );
+	result[15] = ( spModelView[ 3] >> SP_HALF_ACCURACY ) * ( matrix[12] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[ 7] >> SP_HALF_ACCURACY ) * ( matrix[13] >> SP_HALF_ACCURACY ) +
+	             ( spModelView[11] >> SP_HALF_ACCURACY ) * ( matrix[14] >> SP_HALF_ACCURACY );
+	             ( spModelView[15] >> SP_HALF_ACCURACY ) * ( matrix[15] >> SP_HALF_ACCURACY );
+
+
+	memcpy( spModelView, result, sizeof( Sint32 ) * 16 );
+}
+
+PREFIX void spMulMatrixLeft(Sint32* matrix)
+{
+	Sint32 result[16];
+	result[ 0] = ( matrix[ 0] >> SP_HALF_ACCURACY ) * ( spModelView[ 0] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 4] >> SP_HALF_ACCURACY ) * ( spModelView[ 1] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 8] >> SP_HALF_ACCURACY ) * ( spModelView[ 2] >> SP_HALF_ACCURACY ) +
+	             ( matrix[12] >> SP_HALF_ACCURACY ) * ( spModelView[ 3] >> SP_HALF_ACCURACY );
+	result[ 1] = ( matrix[ 1] >> SP_HALF_ACCURACY ) * ( spModelView[ 0] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 5] >> SP_HALF_ACCURACY ) * ( spModelView[ 1] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 9] >> SP_HALF_ACCURACY ) * ( spModelView[ 2] >> SP_HALF_ACCURACY ) +
+	             ( matrix[13] >> SP_HALF_ACCURACY ) * ( spModelView[ 3] >> SP_HALF_ACCURACY );
+	result[ 2] = ( matrix[ 2] >> SP_HALF_ACCURACY ) * ( spModelView[ 0] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 6] >> SP_HALF_ACCURACY ) * ( spModelView[ 1] >> SP_HALF_ACCURACY ) +
+	             ( matrix[10] >> SP_HALF_ACCURACY ) * ( spModelView[ 2] >> SP_HALF_ACCURACY ) +
+	             ( matrix[14] >> SP_HALF_ACCURACY ) * ( spModelView[ 3] >> SP_HALF_ACCURACY );
+	result[ 3] = ( matrix[ 3] >> SP_HALF_ACCURACY ) * ( spModelView[ 0] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 7] >> SP_HALF_ACCURACY ) * ( spModelView[ 1] >> SP_HALF_ACCURACY ) +
+	             ( matrix[11] >> SP_HALF_ACCURACY ) * ( spModelView[ 2] >> SP_HALF_ACCURACY );
+	             ( matrix[15] >> SP_HALF_ACCURACY ) * ( spModelView[ 3] >> SP_HALF_ACCURACY );
+
+	result[ 4] = ( matrix[ 0] >> SP_HALF_ACCURACY ) * ( spModelView[ 4] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 4] >> SP_HALF_ACCURACY ) * ( spModelView[ 5] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 8] >> SP_HALF_ACCURACY ) * ( spModelView[ 6] >> SP_HALF_ACCURACY ) +
+	             ( matrix[12] >> SP_HALF_ACCURACY ) * ( spModelView[ 7] >> SP_HALF_ACCURACY );
+	result[ 5] = ( matrix[ 1] >> SP_HALF_ACCURACY ) * ( spModelView[ 4] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 5] >> SP_HALF_ACCURACY ) * ( spModelView[ 5] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 9] >> SP_HALF_ACCURACY ) * ( spModelView[ 6] >> SP_HALF_ACCURACY ) +
+	             ( matrix[13] >> SP_HALF_ACCURACY ) * ( spModelView[ 7] >> SP_HALF_ACCURACY );
+	result[ 6] = ( matrix[ 2] >> SP_HALF_ACCURACY ) * ( spModelView[ 4] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 6] >> SP_HALF_ACCURACY ) * ( spModelView[ 5] >> SP_HALF_ACCURACY ) +
+	             ( matrix[10] >> SP_HALF_ACCURACY ) * ( spModelView[ 6] >> SP_HALF_ACCURACY ) +
+	             ( matrix[14] >> SP_HALF_ACCURACY ) * ( spModelView[ 7] >> SP_HALF_ACCURACY );
+	result[ 7] = ( matrix[ 3] >> SP_HALF_ACCURACY ) * ( spModelView[ 4] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 7] >> SP_HALF_ACCURACY ) * ( spModelView[ 5] >> SP_HALF_ACCURACY ) +
+	             ( matrix[11] >> SP_HALF_ACCURACY ) * ( spModelView[ 6] >> SP_HALF_ACCURACY );
+	             ( matrix[15] >> SP_HALF_ACCURACY ) * ( spModelView[ 7] >> SP_HALF_ACCURACY );
+
+	result[ 8] = ( matrix[ 0] >> SP_HALF_ACCURACY ) * ( spModelView[ 8] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 4] >> SP_HALF_ACCURACY ) * ( spModelView[ 9] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 8] >> SP_HALF_ACCURACY ) * ( spModelView[10] >> SP_HALF_ACCURACY ) +
+	             ( matrix[12] >> SP_HALF_ACCURACY ) * ( spModelView[11] >> SP_HALF_ACCURACY );
+	result[ 9] = ( matrix[ 1] >> SP_HALF_ACCURACY ) * ( spModelView[ 8] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 5] >> SP_HALF_ACCURACY ) * ( spModelView[ 9] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 9] >> SP_HALF_ACCURACY ) * ( spModelView[10] >> SP_HALF_ACCURACY ) +
+	             ( matrix[13] >> SP_HALF_ACCURACY ) * ( spModelView[11] >> SP_HALF_ACCURACY );
+	result[10] = ( matrix[ 2] >> SP_HALF_ACCURACY ) * ( spModelView[ 8] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 6] >> SP_HALF_ACCURACY ) * ( spModelView[ 9] >> SP_HALF_ACCURACY ) +
+	             ( matrix[10] >> SP_HALF_ACCURACY ) * ( spModelView[10] >> SP_HALF_ACCURACY ) +
+	             ( matrix[14] >> SP_HALF_ACCURACY ) * ( spModelView[11] >> SP_HALF_ACCURACY );
+	result[11] = ( matrix[ 3] >> SP_HALF_ACCURACY ) * ( spModelView[ 8] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 7] >> SP_HALF_ACCURACY ) * ( spModelView[ 9] >> SP_HALF_ACCURACY ) +
+	             ( matrix[11] >> SP_HALF_ACCURACY ) * ( spModelView[10] >> SP_HALF_ACCURACY );
+	             ( matrix[15] >> SP_HALF_ACCURACY ) * ( spModelView[11] >> SP_HALF_ACCURACY );
+
+	result[12] = ( matrix[ 0] >> SP_HALF_ACCURACY ) * ( spModelView[12] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 4] >> SP_HALF_ACCURACY ) * ( spModelView[13] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 8] >> SP_HALF_ACCURACY ) * ( spModelView[14] >> SP_HALF_ACCURACY ) +
+	             ( matrix[12] >> SP_HALF_ACCURACY ) * ( spModelView[15] >> SP_HALF_ACCURACY );
+	result[13] = ( matrix[ 1] >> SP_HALF_ACCURACY ) * ( spModelView[12] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 5] >> SP_HALF_ACCURACY ) * ( spModelView[13] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 9] >> SP_HALF_ACCURACY ) * ( spModelView[14] >> SP_HALF_ACCURACY ) +
+	             ( matrix[13] >> SP_HALF_ACCURACY ) * ( spModelView[15] >> SP_HALF_ACCURACY );
+	result[14] = ( matrix[ 2] >> SP_HALF_ACCURACY ) * ( spModelView[12] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 6] >> SP_HALF_ACCURACY ) * ( spModelView[13] >> SP_HALF_ACCURACY ) +
+	             ( matrix[10] >> SP_HALF_ACCURACY ) * ( spModelView[14] >> SP_HALF_ACCURACY ) +
+	             ( matrix[14] >> SP_HALF_ACCURACY ) * ( spModelView[15] >> SP_HALF_ACCURACY );
+	result[15] = ( matrix[ 3] >> SP_HALF_ACCURACY ) * ( spModelView[12] >> SP_HALF_ACCURACY ) +
+	             ( matrix[ 7] >> SP_HALF_ACCURACY ) * ( spModelView[13] >> SP_HALF_ACCURACY ) +
+	             ( matrix[11] >> SP_HALF_ACCURACY ) * ( spModelView[14] >> SP_HALF_ACCURACY );
+	             ( matrix[15] >> SP_HALF_ACCURACY ) * ( spModelView[15] >> SP_HALF_ACCURACY );
+
+	memcpy( spModelView, result, sizeof( Sint32 ) * 16 );
+}
 PREFIX void spScale( Sint32 x, Sint32 y, Sint32 z )
 {
 	spModelView[ 0] = spMul( spModelView[ 0], x );
@@ -1290,6 +1438,13 @@ PREFIX void spSetAmbientLightColor( Uint32 r, Uint32 g, Uint32 b )
 	spLightAmbient[2] = b;
 }
 
+
+int spCollapse = 1;
+PREFIX void spCollapsePrimitives( int value)
+{
+	spCollapse = value;
+}
+
 PREFIX void spRectangle3D( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint16 color )
 {
 	int windowX = spGetRenderTarget()->w;
@@ -1316,7 +1471,13 @@ PREFIX void spRectangle3D( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uin
 	y = viewPortY - ( ( ny1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY );
 	w = ( nw1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY;
 	h = ( nh1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY;
-
+	if (spCollapse == 0)
+	{
+		if (w == 0)
+			w = 1;
+		if (h == 0)
+			h = 1;
+	}
 	spRectangle( x, y, z, w, h, color );
 }
 
@@ -1346,7 +1507,13 @@ PREFIX void spEllipse3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uin
 	y = viewPortY - ( ( ny1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY );
 	rx = ( nrx1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY;
 	ry = ( nry1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY;
-
+	if (spCollapse == 0)
+	{
+		if (rx == 0)
+			rx = 1;
+		if (ry == 0)
+			ry = 1;
+	}
 	spEllipse( x, y, z, rx, ry, color );
 }
 
@@ -1383,6 +1550,17 @@ PREFIX void spRectangleBorder3D( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 
 	bx = ( nbx1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY;
 	by = ( nby1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY;
 
+	if (spCollapse == 0)
+	{
+		if (w == 0)
+			w = 1;
+		if (h == 0)
+			h = 1;
+		if (bx == 0)
+			bx = 1;
+		if (by == 0)
+			by = 1;
+	}
 	spRectangleBorder( x, y, z, w, h, bx, by, color );
 }
 
@@ -1418,7 +1596,17 @@ PREFIX void spEllipseBorder3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 r
 	ry = ( nry1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY;
 	bx = ( nbx1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY;
 	by = ( nby1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY;
-
+	if (spCollapse == 0)
+	{
+		if (rx == 0)
+			rx = 1;
+		if (ry == 0)
+			ry = 1;
+		if (bx == 0)
+			bx = 1;
+		if (by == 0)
+			by = 1;
+	}
 	spEllipseBorder( x, y, z, rx, ry, bx, by, color );
 }
 
