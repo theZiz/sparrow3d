@@ -143,10 +143,10 @@ PREFIX void spMulMatrix(Sint32* matrix)
 	int x,y;
 	for (x = 0; x < 4; x++)
 		for (y = 0; y < 4; y++)
-			result[y+x*4] = spMul(matrix[y+0*4],spModelView[0+x*4])
-			              + spMul(matrix[y+1*4],spModelView[1+x*4])
-			              + spMul(matrix[y+2*4],spModelView[2+x*4])
-			              + spMul(matrix[y+3*4],spModelView[3+x*4]);
+			result[y+x*4] = spMul(spModelView[y+0*4],matrix[0+x*4])
+			              + spMul(spModelView[y+1*4],matrix[1+x*4])
+			              + spMul(spModelView[y+2*4],matrix[2+x*4])
+			              + spMul(spModelView[y+3*4],matrix[3+x*4]);
 	memcpy( spModelView, result, sizeof( Sint32 ) * 16 );
 }
 
@@ -156,10 +156,10 @@ PREFIX void spMulMatrixLeft(Sint32* matrix)
 	int x,y;
 	for (x = 0; x < 4; x++)
 		for (y = 0; y < 4; y++)
-			result[y+x*4] = spMul(spModelView[y+0*4],matrix[0+x*4])
-			              + spMul(spModelView[y+1*4],matrix[1+x*4])
-			              + spMul(spModelView[y+2*4],matrix[2+x*4])
-			              + spMul(spModelView[y+3*4],matrix[3+x*4]);
+			result[y+x*4] = spMul(matrix[y+0*4],spModelView[0+x*4])
+			              + spMul(matrix[y+1*4],spModelView[1+x*4])
+			              + spMul(matrix[y+2*4],spModelView[2+x*4])
+			              + spMul(matrix[y+3*4],spModelView[3+x*4]);
 	memcpy( spModelView, result, sizeof( Sint32 ) * 16 );
 
 }
