@@ -2236,12 +2236,37 @@
 {
 	Sint32 du = spIntToFixed(w) / (x3-x1);
 	Sint32 dv = spIntToFixed(h) / (y3-y1);
-	Sint32 u = spIntToFixed(sx);
+	sx = spIntToFixed(sx);
+	sy = spIntToFixed(sy);
+	if (x1 >= spTargetX)
+		return;
+	if (x3 < 0)
+		return;
+	if (x1 < 0)
+	{
+		sx += du*(-x1);
+		x1 = 0;
+	}
+	if (x3 >= spTargetX)
+		x3 = spTargetX-1;
+	if (y1 >= spTargetY)
+		return;
+	if (y3 < 0)
+		return;
+	if (y1 < 0)
+	{
+		sy += dv*(-y1);
+		y1 = 0;
+	}
+	if (y3 >= spTargetY)
+		y3 = spTargetY-1;
+
 	int x,y;
+	Sint32 u = sx;
 	for (x = x1; x < x3; x++)
 	{
 		u += du;
-		Sint32 v = spIntToFixed(sy);
+		Sint32 v = sy;
 		for (y = y1; y < y3; y++)
 		{
 			pixel_macro(x,y,z,u,v,65535)
