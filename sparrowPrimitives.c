@@ -3452,6 +3452,10 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 		sp_intern_Triangle_tex_inter( nx4, ny4, z, sx + w, sy  ,
 									  nx1, ny1, z, sx  , sy  ,
 									  mx , my , z, mu  , mv  );
+		/*spQuad_tex( nx1, ny1, z, sx    , sy    ,
+		            nx2, ny2, z, sx + w, sy    ,
+		            nx3, ny3, z, sx + w, sy + h,
+		            nx4, ny4, z, sx    , sy + h,65535);*/
 	}
 	
 	spTexture = oldTexture;
