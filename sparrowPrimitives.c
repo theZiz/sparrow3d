@@ -325,8 +325,21 @@ PREFIX void spUnlockRenderTarget()
 		SDL_UnlockSurface( spTarget );
 }
 
+void update_lazy_zBuffer()
+{
+	spZBufferCacheLast = ( spZBufferCacheLast + 1 ) % spZBufferCacheCount;
+	if ( spZBufferCache[spZBufferCacheLast] )
+		free( spZBufferCache[spZBufferCacheLast] );
+	spZBuffer = ( Sint32* )malloc( spTargetScanLine * spTargetY * sizeof( Sint32 ) );
+	spZBufferCache[spZBufferCacheLast] = spZBuffer;
+	spTargetCache[spZBufferCacheLast] = spTarget;
+	spSizeCache[spZBufferCacheLast] = spTarget->w * spTarget->h;
+}
+
 PREFIX Sint32* spGetRenderTargetZBuffer()
 {
+	if (!spZBuffer)
+		update_lazy_zBuffer();
 	return spZBuffer;
 }
 
@@ -1099,13 +1112,10 @@ PREFIX void spReAllocateZBuffer()
 
 	if ( cacheline == spZBufferCacheCount ) //not found
 	{
-		spZBufferCacheLast = ( spZBufferCacheLast + 1 ) % spZBufferCacheCount;
-		if ( spZBufferCache[spZBufferCacheLast] )
-			free( spZBufferCache[spZBufferCacheLast] );
-		spZBuffer = ( Sint32* )malloc( spTargetScanLine * spTargetY * sizeof( Sint32 ) );
-		spZBufferCache[spZBufferCacheLast] = spZBuffer;
-		spTargetCache[spZBufferCacheLast] = spTarget;
-		spSizeCache[spZBufferCacheLast] = spTarget->w * spTarget->h;
+		if (spZSet || spZTest)
+			update_lazy_zBuffer();
+		else
+			spZBuffer = NULL;
 	}
 	else
 	{
@@ -1126,11 +1136,15 @@ PREFIX void spResetZBuffer()
 PREFIX void spSetZTest( Uint32 test )
 {
 	spZTest = test;
+	if (!spZBuffer && spZTest)
+		update_lazy_zBuffer();
 }
 
 PREFIX void spSetZSet( Uint32 test )
 {
 	spZSet = test;
+	if (!spZBuffer && spZSet)
+		update_lazy_zBuffer();
 }
 
 PREFIX void spSetAlphaTest( Uint32 test )

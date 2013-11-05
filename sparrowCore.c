@@ -216,7 +216,7 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	//if the renderTarget is the screen and the screen is recreated, the pointer
 	//will be invalid. We have to check for that:
 	int recallSelectRenderTarget = 0;
-	if (spWindow == spGetRenderTarget())
+	if (spWindow && spWindow == spGetRenderTarget())
 		recallSelectRenderTarget = 1;
 #if defined DOUBLEBUFFERING_BLIT || defined DOUBLEBUFFERING_BLIT_AND_FLIP
 	spScreen = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_FULLSCREEN );
