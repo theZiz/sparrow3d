@@ -1257,25 +1257,33 @@ PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )
 	spBlitSurfacePart(x,y,z,surface,0,0,surface->w,surface->h);
 }
 
+static Sint32 get_horizontal_add(Sint32 w)
+{
+	switch (spHorizontalOrigin)
+	{
+		case SP_LEFT: return 0;
+		case SP_RIGHT: return w - 1;
+	}	
+	return w >> 1;
+}
+
+static Sint32 get_vertical_add(Sint32 h)
+{
+	switch (spVerticalOrigin)
+	{
+		case SP_TOP: return 0;
+		case SP_BOTTOM: return h - 1;
+	}
+	return h >> 1;
+}
+
 PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface, Sint32 sx, Sint32 sy, Sint32 w, Sint32 h )
 {
 	if (spBlending == 0)
 		return;
 	spWaitForDrawingThread();
-	int addu;
-	switch (spHorizontalOrigin)
-	{
-		case SP_LEFT: addu = 0; break;
-		case SP_RIGHT: addu = w - 1; break;
-		default: addu = w >> 1;
-	}
-	int addv;
-	switch (spVerticalOrigin)
-	{
-		case SP_TOP: addv = 0; break;
-		case SP_BOTTOM: addv = h - 1; break;
-		default: addv = h >> 1;
-	}
+	int addu = get_horizontal_add(w);
+	int addv = get_vertical_add(h);
 	#ifndef NO_PATTERN
 	if ( spUsePattern )
 	{
@@ -2472,16 +2480,8 @@ PREFIX void spRectangle( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h, Uint3
 		return;
 	if (spZTest && z < 0)
 		return;
-	int addu = w >> 1;
-	if ( spHorizontalOrigin == SP_LEFT )
-		addu = 0;
-	if ( spHorizontalOrigin == SP_RIGHT )
-		addu = w - 1;
-	int addv = h >> 1;
-	if ( spVerticalOrigin == SP_TOP )
-		addv = 0;
-	if ( spVerticalOrigin == SP_BOTTOM )
-		addv = h - 1;
+	int addu = get_horizontal_add(w);
+	int addv = get_vertical_add(h);
 	Sint32 x1 = x - addu;
 	Sint32 x2 = x1 + w;
 	Sint32 y1 = y - addv;
