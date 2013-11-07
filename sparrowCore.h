@@ -143,6 +143,8 @@ typedef struct SspInput
 } spInput;
 
 
+PREFIX void spSetupWindowAttributes(char* title,char* iconName);
+
 /* Function: spSetDefaultWindowSize
  * 
  * Sets defaults values for the window. *Only* for PC (not handhelds!) and *only*

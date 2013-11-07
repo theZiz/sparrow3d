@@ -76,6 +76,8 @@ char spVirtualKeyboardMapShift[3][20] =
 	 //1 is "shift"...
 int spLastAxisType = 0; //digital
 int spLastFirstTime = 0;
+char spIconName[512] = "";
+char spWindowName[512] = "";
 
 typedef struct sp_cache_struct *sp_cache_pointer;
 typedef struct sp_cache_struct {
@@ -93,6 +95,14 @@ sp_cache_pointer sp_cache_surface[SP_CACHE_SIZE];
 sp_cache_pointer sp_first_cache_line = NULL;
 
 int spCoreIsInitialized = 0;
+
+PREFIX void spSetupWindowAttributes(char* title,char* iconName)
+{
+	if (title)
+		sprintf(spWindowName,"%s",title);
+	if (iconName)
+		sprintf(spIconName,"%s",iconName);
+}
 
 PREFIX void spSetDefaultWindowSize( int w, int h )
 {
@@ -140,6 +150,16 @@ PREFIX void spInitCore( void )
 #endif
 	spZoom = SP_ONE;
 	SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO );
+	if (spWindowName[0])
+		SDL_WM_SetCaption(spWindowName,NULL);
+	if (spIconName[0])
+	{
+		SDL_Surface* icon = IMG_Load(spIconName);
+		if (icon)
+			SDL_WM_SetIcon( icon, 0 );
+		else
+			printf("%s does not exist.\n",spIconName);
+	}
 	spJoy = NULL;
 	//#ifdef MOBILE_DEVICE
 	printf( "Found %i Joysticks\n", SDL_NumJoysticks() );
