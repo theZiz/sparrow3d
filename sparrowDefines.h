@@ -537,12 +537,14 @@
  * SP_LEFT - left
  * SP_TOP - top
  * SP_RIGHT - right
- * SP_BOTTOM - bottom*/
+ * SP_BOTTOM - bottom
+ * SP_FIXED - sets the base to a fixed position*/
 #define SP_CENTER 0
 #define SP_LEFT 1
 #define SP_TOP 2
 #define SP_RIGHT 3
 #define SP_BOTTOM 4
+#define SP_FIXED 5
 
 // Define: SP_NO_TOUCHSCREEN_EMULATION
 // Used by <spSetTouchscreenEmulationButtons>

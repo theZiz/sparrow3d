@@ -307,7 +307,8 @@ PREFIX void spResetZBuffer();
  * 
  * Parameters:
  * origin - <SP_LEFT> for left origin, <SP_RIGHT> for right origin and
- * <SP_CENTER> (default) for centered origin
+ * <SP_CENTER> (default) for centered origin. Use <SP_FIXED> and
+ * <spSetFixedOrign> for a fixed origin.
  * 
  * See Also:
  * <spSetVerticalOrigin>*/
@@ -319,11 +320,24 @@ PREFIX void spSetHorizontalOrigin( Sint32 origin );
  * 
  * Parameters:
  * origin - <SP_TOP> for top origin, <SP_BOTTOM> for bottom origin and
- * <SP_CENTER> (default) for centered origin
+ * <SP_CENTER> (default) for centered origin. Use <SP_FIXED> and
+ * <spSetFixedOrign> for a fixed origin.
  * 
  * See Also:
  * <spSetHorizontalOrigin>*/
 PREFIX void spSetVerticalOrigin( Sint32 origin );
+
+/* Function: spSetFixedOrign
+ * 
+ * Sets a fixed origin like (32,32). You have to pass <SP_FIXED> to
+ * <spSetVerticalOrigin> and <spSetHorizontalOrigin>.
+ * 
+ * Parameters:
+ * x,y - fixed pixel position of the origin. Default is (0,0).
+ * 
+ * See also:
+ * <spSetVerticalOrigin>, <spSetHorizontalOrigin>*/
+PREFIX void spSetFixedOrign(int x,int y);
 
 /* Function: spGetHorizontalOrigin
  * 

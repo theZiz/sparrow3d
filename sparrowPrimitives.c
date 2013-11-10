@@ -52,6 +52,7 @@ Sint32 spBlending = SP_ONE;
 Sint32 spUseParallelProcess = 0;
 Sint32 spLineWidth = 1;
 Sint32 spBlendingPatternEmulation = 1;
+int spFixedX = 0, spFixedY = 0;
 //Sint32* spOne_over_x_look_up_fixed; GP2X
 
 #include "sparrowPrimitiveDrawingThread.c"
@@ -1263,6 +1264,7 @@ static Sint32 get_horizontal_add(Sint32 w)
 	{
 		case SP_LEFT: return 0;
 		case SP_RIGHT: return w - 1;
+		case SP_FIXED: return spFixedX;
 	}	
 	return w >> 1;
 }
@@ -1273,6 +1275,7 @@ static Sint32 get_vertical_add(Sint32 h)
 	{
 		case SP_TOP: return 0;
 		case SP_BOTTOM: return h - 1;
+		case SP_FIXED: return spFixedY;
 	}
 	return h >> 1;
 }
@@ -3291,48 +3294,14 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 	Sint32 y3;
 	Sint32 y4;
 
-	switch ( spHorizontalOrigin )
-	{
-	case SP_CENTER:
-		x1 = -( w * zoomX >> SP_ACCURACY + 1 );
-		x2 = -( w * zoomX >> SP_ACCURACY + 1 );
-		x3 = +( w * zoomX >> SP_ACCURACY + 1 );
-		x4 = +( w * zoomX >> SP_ACCURACY + 1 );
-		break;
-	case SP_LEFT:
-		x1 = -0;
-		x2 = -0;
-		x3 = +( w * zoomX >> SP_ACCURACY );
-		x4 = +( w * zoomX >> SP_ACCURACY );
-		break;
-	case SP_RIGHT:
-		x1 = -( w * zoomX >> SP_ACCURACY );
-		x2 = -( w * zoomX >> SP_ACCURACY );
-		x3 = +0;
-		x4 = +0;
-		break;
-	}
-	switch ( spVerticalOrigin )
-	{
-	case SP_CENTER:
-		y1 = -( h * zoomY >> SP_ACCURACY + 1 );
-		y2 = +( h * zoomY >> SP_ACCURACY + 1 );
-		y3 = +( h * zoomY >> SP_ACCURACY + 1 );
-		y4 = -( h * zoomY >> SP_ACCURACY + 1 );
-		break;
-	case SP_TOP:
-		y1 = -0;
-		y2 = +( h * zoomY >> SP_ACCURACY );
-		y3 = +( h * zoomY >> SP_ACCURACY );
-		y4 = -0;
-		break;
-	case SP_BOTTOM:
-		y1 = -( h * zoomY >> SP_ACCURACY );
-		y2 = +0;
-		y3 = +0;
-		y4 = -( h * zoomY >> SP_ACCURACY );
-		break;
-	}
+	x1 = - get_horizontal_add(w)*zoomX >> SP_ACCURACY;
+	x2 = x1;
+	x3 = (w - get_horizontal_add(w))*zoomX >> SP_ACCURACY;
+	x4 = x3;
+	y1 = - get_vertical_add(h)*zoomY >> SP_ACCURACY;
+	y2 = (h - get_vertical_add(h))*zoomY >> SP_ACCURACY;
+	y3 = y2;
+	y4 = y1;
 
 	SDL_Surface* oldTexture = spTexture;
 	Sint32 oldTextureScanLine = spTextureScanLine;
@@ -3929,4 +3898,10 @@ PREFIX void spFloodFill(int x,int y,Uint16 color)
 PREFIX void spEmulateBlendingWithPattern( Sint32 value)
 {
 	spBlendingPatternEmulation = value;
+}
+
+PREFIX void spSetFixedOrign(int x,int y)
+{
+	spFixedX = x;
+	spFixedY = y;
 }
