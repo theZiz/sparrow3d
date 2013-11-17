@@ -241,8 +241,13 @@ PREFIX void spSelectSprite(spSpriteCollectionPointer collection,char* name)
 			break;
 		sprite = sprite->next;
 	}
-	if (sprite)
+	if (sprite && sprite!=collection->active)
+	{
 		collection->active = sprite;
+		sprite->wholeAge = 0;
+		sprite->momSub = sprite->firstSub;
+		sprite->momSub->age = 0;
+	}
 }
 
 PREFIX spSpritePointer spActiveSprite(spSpriteCollectionPointer collection)
