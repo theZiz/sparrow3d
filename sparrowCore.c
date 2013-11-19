@@ -1080,6 +1080,15 @@ Uint32 oldticks;
 Uint32 olderticks;
 Uint32 newticks;
 
+PREFIX void spResetLoop()
+{
+	#ifdef DEBUG_SLOWMOTION
+		oldticks = newticks = olderticks = SDL_GetTicks()/DEBUG_SLOWMOTION;
+	#else
+		oldticks = newticks = olderticks = SDL_GetTicks();
+	#endif
+}
+
 PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Uint32 minwait, void ( *spResize )( Uint16 w, Uint16 h ), void ( *spEvent )( SDL_Event *e ) )
 {
 	Uint32 bigsteps = 0;

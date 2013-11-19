@@ -710,3 +710,4 @@ PREFIX void spStereoMergeSurfaces(SDL_Surface* left,SDL_Surface* right,int cross
 
 #endif
 
+PREFIX void spResetLoop();
