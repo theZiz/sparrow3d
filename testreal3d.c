@@ -32,6 +32,7 @@ int crossedEyes = 0;
 
 void resize( Uint16 w, Uint16 h )
 {
+	spSelectRenderTarget(spGetWindowSurface());
 	#ifdef SCALE_UP
 		if (screen)
 			spDeleteSurface(screen);

@@ -248,6 +248,7 @@ int calc_test( Uint32 steps )
 
 void resize( Uint16 w, Uint16 h )
 {
+	spSelectRenderTarget(spGetWindowSurface());
 	//Settings up the onboard keyboard:
 	if (spGetSizeFactor() <= SP_ONE)
 		spSetVirtualKeyboard(SP_VIRTUAL_KEYBOARD_IF_NEEDED,0,h-w*48/320,w,w*48/320,spLoadSurface("./data/keyboard320.png"),spLoadSurface("./data/keyboardShift320.png"));

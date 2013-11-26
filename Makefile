@@ -43,6 +43,7 @@ CFLAGS = -O2 -fsingle-precision-constant -fPIC
 # faster, but some of them are just poinsoness snake oil - they may help a bit,
 # but could also kill you. ^^
 GENERAL_TWEAKS = -ffast-math $(OUTSIDE_FLAG)
+# -floop-strip-mine
 
 # every device using SMALL_RESOLUTION_DEVICES in the compilation will enable
 # the faster multiplication and division
