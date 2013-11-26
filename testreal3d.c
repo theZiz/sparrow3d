@@ -170,7 +170,7 @@ int main(int argc, char **argv)
 	else
 	{
 		leftColor  = spGetFastRGB(255,  0,  0);
-		rightColor = spGetFastRGB(  0,200,200);
+		rightColor = spGetFastRGB(  0,255,255);
 	}
 	spInitCore();
 	//Setup
@@ -182,6 +182,8 @@ int main(int argc, char **argv)
 	resize( screen->w, screen->h );
 	#endif
 	sparrow = spLoadSurface( "./data/sparrow.png" );
+	spSetLight(1);
+	spSetLightColor(0,SP_ONE*5,SP_ONE*5,SP_ONE*5);
 	spLoop(draw_test,calc_test,10,resize,NULL);
 	spDeleteSurface(sparrow);
 	#ifdef SCALE_UP
