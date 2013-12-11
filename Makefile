@@ -42,7 +42,7 @@ CFLAGS = -O2 -fsingle-precision-constant -fPIC
 # GENERAL_TWEAKS are some flags for gcc, which should make the compilation
 # faster, but some of them are just poinsoness snake oil - they may help a bit,
 # but could also kill you. ^^
-GENERAL_TWEAKS = -ffast-math $(OUTSIDE_FLAG) -g
+GENERAL_TWEAKS = -ffast-math $(OUTSIDE_FLAG)
 
 # every device using SMALL_RESOLUTION_DEVICES in the compilation will enable
 # the faster multiplication and division
