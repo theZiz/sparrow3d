@@ -345,7 +345,6 @@ typedef struct commitStruct {
 
 int spNetC4AUberThread(int ( *function )( void* data ))
 {
-printf("Debug 17\n");	
 	int startTime = SDL_GetTicks();
 	SDL_Thread* thread = SDL_CreateThread(function,spNetC4ADataPointer);
 	while (1)
@@ -367,28 +366,23 @@ printf("Debug 17\n");
 		SDL_mutexV(spNetC4AStatusMutex);
 		if (status == SP_C4A_CANCELED || spNetC4ATimeOut <= 0)
 		{
-printf("Debug 18\n");	
 			SDL_KillThread(thread);
 			free(spNetC4ADataPointer);
 			spNetC4ADataPointer = NULL;
 			spNetC4AResult = 1;
-printf("Debug 19\n");	
 			SDL_mutexP(spNetC4AStatusMutex);
 			if (spNetC4ATimeOut <= 0)
 				spNetC4AStatus = SP_C4A_TIMEOUT;
 			spNetC4AThreadStatus = 0;
 			SDL_mutexV(spNetC4AStatusMutex);
 			return spNetC4AResult;
-printf("Debug 20\n");	
 		}
 		if (status <= 0) //finished somehow
 		{
-printf("Debug 21\n");	
 			SDL_WaitThread(thread,&spNetC4AResult);
 			SDL_mutexP(spNetC4AStatusMutex);
 			spNetC4AThreadStatus = 0;
 			SDL_mutexV(spNetC4AStatusMutex);
-printf("Debug 22\n");	
 			return spNetC4AResult;
 		}
 	}
@@ -536,10 +530,8 @@ PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile)
 
 int c4a_getgame_thread(void* data)
 {
-printf("Debug 7\n");
 	spNetC4AGamePointer* gameList = ((getgamePointer)data)->game;
 	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
-printf("Debug 8\n");
 	if (ip.address.ipv4 == SP_INVALID_IP)
 	{
 		free(data);
@@ -549,7 +541,6 @@ printf("Debug 8\n");
 		SDL_mutexV(spNetC4AStatusMutex);
 		return 1;
 	}	
-printf("Debug 9\n");
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
 	{
@@ -560,7 +551,6 @@ printf("Debug 9\n");
 		SDL_mutexV(spNetC4AStatusMutex);
 		return 1;
 	}
-printf("Debug 10\n");
 	char get_string[512] = "GET /curgamelist_1\n\n";
 	if (spNetSendHTTP(connection,get_string) == 0)
 	{
@@ -572,7 +562,6 @@ printf("Debug 10\n");
 		SDL_mutexV(spNetC4AStatusMutex);
 		return 1;
 	}
-printf("Debug 11\n");
 	char buffer[50001]; //skeezix saves the top500. So 100 byte should be enough...
 	int length;
 	if ((length = spNetReceiveHTTP(connection,buffer,50000)) == 0)
@@ -585,7 +574,6 @@ printf("Debug 11\n");
 		SDL_mutexV(spNetC4AStatusMutex);
 		return 1;
 	}
-printf("Debug 12\n");
 	buffer[length] = 0;
 	spNetCloseTCP(connection);
 	//Searching the first [
@@ -601,7 +589,6 @@ printf("Debug 12\n");
 	}
 	//Reading game by game
 	//Searching the starting {
-printf("Debug 13\n");
 	while (found)
 	{
 		char* start = strchr( found, '{' );
@@ -699,25 +686,20 @@ printf("Debug 13\n");
 			new_game->next = next;
 		}
 	}	
-printf("Debug 14\n");	
 	free(data);
 	spNetC4ADataPointer = NULL;
-printf("Debug 15\n");	
 	SDL_mutexP(spNetC4AStatusMutex);
 	spNetC4AStatus = SP_C4A_OK;
 	SDL_mutexV(spNetC4AStatusMutex);
-printf("Debug 16\n");	
 	return 0;
 }
 
 PREFIX int spNetC4AGetGame(spNetC4AGamePointer* gameList,int timeOut)
 {
-printf("Debug 3\n");
 	(*gameList) = NULL;
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
-printf("Debug 4\n");
 	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
 	{
 		spNetC4AStatus = SP_C4A_PROGRESS;
@@ -732,10 +714,8 @@ printf("Debug 4\n");
 		#else
 			spNetC4AThread = SDL_CreateThread(spNetC4AUberThread,c4a_getgame_thread);
 		#endif
-printf("Debug 6\n");
 		return 0;
 	}
-printf("Debug 5\n");
 	return 1;	
 }
 
@@ -1417,14 +1397,17 @@ PREFIX int spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,ch
 
 PREFIX int spNetC4AGetStatus()
 {
+printf("Get Status...");
 	SDL_mutexP(spNetC4AStatusMutex);
 	if (spNetC4AThreadStatus)
 	{
 		SDL_mutexV(spNetC4AStatusMutex);
+printf(" %i\n",SP_C4A_PROGRESS);
 		return SP_C4A_PROGRESS;
 	}
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
+printf(" %i\n",status);
 	return status;
 }
 
