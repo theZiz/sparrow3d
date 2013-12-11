@@ -1397,17 +1397,14 @@ PREFIX int spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,ch
 
 PREFIX int spNetC4AGetStatus()
 {
-printf("Get Status...");
 	SDL_mutexP(spNetC4AStatusMutex);
 	if (spNetC4AThreadStatus)
 	{
 		SDL_mutexV(spNetC4AStatusMutex);
-printf(" %i\n",SP_C4A_PROGRESS);
 		return SP_C4A_PROGRESS;
 	}
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
-printf(" %i\n",status);
 	return status;
 }
 
