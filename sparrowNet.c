@@ -700,7 +700,7 @@ PREFIX int spNetC4AGetGame(spNetC4AGamePointer* gameList,int timeOut)
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
-	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	if (status != SP_C4A_PROGRESS)
 	{
 		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
@@ -877,7 +877,7 @@ PREFIX int spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProfilePoint
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
-	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	if (status != SP_C4A_PROGRESS)
 	{
 		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
@@ -908,7 +908,7 @@ PREFIX int spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfi
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
-	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	if (status != SP_C4A_PROGRESS)
 	{
 		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
@@ -1014,7 +1014,7 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
-	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	if (status != SP_C4A_PROGRESS)
 	{
 		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
@@ -1178,7 +1178,7 @@ PREFIX int spNetC4ACreateProfile(spNetC4AProfilePointer* profile, char* longname
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
-	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	if (status != SP_C4A_PROGRESS)
 	{
 		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
@@ -1267,7 +1267,7 @@ PREFIX int spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile,
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
-	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	if (status != SP_C4A_PROGRESS)
 	{
 		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
@@ -1372,7 +1372,7 @@ PREFIX int spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,ch
 	SDL_mutexP(spNetC4AStatusMutex);
 	int status = spNetC4AStatus;
 	SDL_mutexV(spNetC4AStatusMutex);
-	if (status == SP_C4A_OK || status == SP_C4A_ERROR)
+	if (status != SP_C4A_PROGRESS)
 	{
 		spNetC4AStatus = SP_C4A_PROGRESS;
 		//Starting a background thread, which does the fancy stuff
