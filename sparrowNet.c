@@ -343,6 +343,14 @@ typedef struct commitStruct {
 	spNetC4AScorePointer* scoreList;
 } commitType;
 
+//This is usefull for debugging without threading influences:
+/*#define SDL_CreateThread SDL_CreateThreadWithoutThreading
+SDL_Thread* SDL_CreateThreadWithoutThreading(int (*fn)(void *),void* data)
+{
+	fn(data);
+	return NULL;
+}*/
+
 int spNetC4AUberThread(int ( *function )( void* data ))
 {
 	int startTime = SDL_GetTicks();
