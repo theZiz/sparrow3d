@@ -555,4 +555,20 @@
 #define SP_ALPHA_COLOR 63519
 
 
+#ifdef F100
+	#define SP_DEVICE_STRING "GP2X F100"
+#elif defined WIZ
+	#define SP_DEVICE_STRING "GP2X Wiz"
+#elif defined CAANOO
+	#define SP_DEVICE_STRING "GP2X Caanoo"
+#elif defined DINGUX
+	#define SP_DEVICE_STRING "Dingoo"
+#elif defined GCW
+	#define SP_DEVICE_STRING "GCW Zero"
+#elif defined PANDORA
+	#define SP_DEVICE_STRING "Open Pandora"
+#else
+	#define SP_DEVICE_STRING "Personal Computer"
+#endif
+
 #endif
