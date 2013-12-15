@@ -524,7 +524,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				break;
 			case SDL_KEYDOWN:
 				//GCW and DINGUX use the "keyboard" for buttons
-				#if !defined GCW && !defined DINGUX
+				#if (!(defined GCW)) && (!(defined DINGUX))
 					if ( spGenericInput.keyboard.buffer )
 					{
 						spHandleKeyboardInput(event.key.keysym);
@@ -684,7 +684,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				break;
 			case SDL_KEYUP:
 				//GCW and DINGUX use the "keyboard" for buttons
-				#if !defined GCW && !defined DINGUX
+				#if (!(defined GCW)) && (!(defined DINGUX))
 					if ( spGenericInput.keyboard.buffer )
 					{
 						spLastKey.unicode = 0;
@@ -1498,13 +1498,9 @@ PREFIX void spClearCache()
 
 PREFIX SDL_Surface* spCreateSurface(int width,int height)
 {
-	#ifdef GCW_FOOBAR
-		SDL_Surface* result = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xF800, 0x07E0, 0x001F, 0 ); //16 Bit rrrrrggggggbbbbb	
-	#else
-		SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
-		SDL_Surface* result = SDL_DisplayFormat( surface );
-		SDL_FreeSurface( surface );
-	#endif
+	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
+	SDL_Surface* result = SDL_DisplayFormat( surface );
+	SDL_FreeSurface( surface );
 	if (sp_caching)
 	{
 		sp_cache_pointer c = (sp_cache_pointer)malloc(sizeof(sp_cache));
