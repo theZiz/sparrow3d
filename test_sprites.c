@@ -58,6 +58,7 @@ void draw_sprites(int rotation)
 	sprite->zoomX = spSin( rotation * 8 ) + ( spFloatToFixed( 1.5f ) );
 	sprite->zoomY = spCos( rotation * 6 ) + ( spFloatToFixed( 1.5f ) );
 	spDrawSprite( 2 * screen->w / 5, 5 * screen->h / 8, 0, sprite );
+	sprite->zoomX *= -1;
 	sprite->rotation = rotation * 4;
 	spDrawSprite( 3 * screen->w / 5, 5 * screen->h / 8, 0, sprite );
 	sprite->zoomX = SP_ONE;

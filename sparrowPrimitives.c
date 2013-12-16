@@ -3294,12 +3294,12 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 	Sint32 y3;
 	Sint32 y4;
 
-	x1 = - get_horizontal_add(w)*zoomX >> SP_ACCURACY;
+	x1 = - get_horizontal_add(w)*abs(zoomX) >> SP_ACCURACY;
 	x2 = x1;
-	x3 = (w - get_horizontal_add(w))*zoomX >> SP_ACCURACY;
+	x3 = (w - get_horizontal_add(w))*abs(zoomX) >> SP_ACCURACY;
 	x4 = x3;
-	y1 = - get_vertical_add(h)*zoomY >> SP_ACCURACY;
-	y2 = (h - get_vertical_add(h))*zoomY >> SP_ACCURACY;
+	y1 = - get_vertical_add(h)*abs(zoomY) >> SP_ACCURACY;
+	y2 = (h - get_vertical_add(h))*abs(zoomY) >> SP_ACCURACY;
 	y3 = y2;
 	y4 = y1;
 
@@ -3309,6 +3309,17 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 	Sint32 oldTextureY = spTextureX;
 	Uint16* oldTexturePixel = spTexturePixel;
 	spBindTexture( surface );
+	
+	if (zoomX < 0)
+	{
+		sx+=w-1;
+		w = -w;
+	}
+	if (zoomY < 0)
+	{
+		sy+=h-1;
+		h = -h;
+	}
 
 	if (angle == 0)
 	{
@@ -3316,6 +3327,7 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 		x3 += x;
 		y1 += y;
 		y3 += y;
+		
 		#ifndef NO_BLENDING
 		if ( spBlending == SP_ONE)
 		{
