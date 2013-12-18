@@ -266,6 +266,8 @@ spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointe
 				return error;
 			}
 		}
+		newOne->last_acc = 0;
+		newOne->last_mod = 0;
 	}
 	while (FindNextFile(hFind,&FindFileData));
 	FindClose(hFind);
@@ -284,12 +286,12 @@ spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointe
 				continue;
 			spFileListPointer newOne = (spFileListPointer)malloc(sizeof(spFileList));
 			sprintf(newOne->name,"%s/%s",directory,dir->d_name);
+			stat(dir->d_name,&stat_buf);
 			switch (dir->d_type)
 			{
 				case DT_DIR: newOne->type = SP_FILE_DIRECTORY; break;
 				case DT_LNK:
 					newOne->type = SP_FILE_LINK;
-					stat(dir->d_name,&stat_buf);
 					if (S_ISDIR(stat_buf.st_mode))
 						newOne->type |= SP_FILE_DIRECTORY;
 					else
@@ -297,6 +299,8 @@ spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointe
 					break;
 				default: newOne->type = SP_FILE_FILE;
 			}
+			newOne->last_mod = stat_buf.st_mtim.tv_sec;
+			newOne->last_acc = stat_buf.st_atim.tv_sec;
 			if (*last)
 			{
 				(*last)->next = newOne;

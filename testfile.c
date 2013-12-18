@@ -37,6 +37,8 @@ int main( int argc, char **argv )
 				printf("DL %s\n",mom->name);
 				break;
     }
+    printf("   Last mod: %s",ctime((time_t*)&mom->last_mod));
+    printf("   Last acc: %s",ctime((time_t*)&mom->last_acc));
 		mom = mom->next;
 	}
 	printf("Error: %i\n",error);

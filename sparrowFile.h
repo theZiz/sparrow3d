@@ -93,6 +93,8 @@ typedef SDL_RWops *spFilePointer;
  * Variables:
  * name (char*) - filename
  * type (spFileType) - filetype, see <spFileType>
+ * last_mod - time of the last modification in seconds since 1.1.1970 00:00:00
+ * last_acc - time of the last access in seconds since 1.1.1970 00:00:00
  * prev (spFileList*) - previous found
  * next (spFileList*) - next found
  * count (int) - only valid for the first element, describes the number of found files*/
@@ -100,6 +102,8 @@ typedef struct spFileListStruct *spFileListPointer;
 typedef struct spFileListStruct {
 	char name[256];
 	spFileType type;
+	Sint64 last_mod;
+	Sint64 last_acc;
 	spFileListPointer prev;
 	spFileListPointer next;
 	int count; //only valid for the first element!
