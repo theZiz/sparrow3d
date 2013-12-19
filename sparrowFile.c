@@ -286,7 +286,7 @@ spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointe
 				continue;
 			spFileListPointer newOne = (spFileListPointer)malloc(sizeof(spFileList));
 			sprintf(newOne->name,"%s/%s",directory,dir->d_name);
-			stat(dir->d_name,&stat_buf);
+			stat(newOne->name,&stat_buf);
 			switch (dir->d_type)
 			{
 				case DT_DIR: newOne->type = SP_FILE_DIRECTORY; break;
@@ -299,8 +299,8 @@ spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointe
 					break;
 				default: newOne->type = SP_FILE_FILE;
 			}
-			newOne->last_mod = stat_buf.st_mtim.tv_sec;
-			newOne->last_acc = stat_buf.st_atim.tv_sec;
+			newOne->last_mod = stat_buf.st_mtime;
+			newOne->last_acc = stat_buf.st_atime;
 			if (*last)
 			{
 				(*last)->next = newOne;
