@@ -844,6 +844,8 @@ PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, sp
 	{
 		char c;
 		int width;
+		if (buffer[start] == '\n')
+			pos = start;
 		if (buffer[pos] == ' ' || buffer[pos] == '\n' || buffer[pos] == 0)
 		{
 			c = buffer[pos];
@@ -858,7 +860,7 @@ PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, sp
 				count++;
 				if ( width <= max_width )
 					last_space = pos;
-				if (space_count > 0)
+				if (space_count > 0 || width <= max_width)
 				{
 					c = buffer[last_space];
 					buffer[last_space] = 0;
