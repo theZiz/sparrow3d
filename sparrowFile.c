@@ -285,7 +285,11 @@ spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointe
 			if (no_hidden_files && dir->d_name[0]=='.')
 				continue;
 			spFileListPointer newOne = (spFileListPointer)malloc(sizeof(spFileList));
-			sprintf(newOne->name,"%s/%s",directory,dir->d_name);
+			int l;
+			if ((l = strlen(directory)) > 1 && directory[l-1] == '/')
+				sprintf(newOne->name,"%s%s",directory,dir->d_name);
+			else
+				sprintf(newOne->name,"%s/%s",directory,dir->d_name);
 			stat(newOne->name,&stat_buf);
 			switch (dir->d_type)
 			{
