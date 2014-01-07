@@ -275,18 +275,27 @@ PREFIX void spQuitPrimitives()
 	int cacheline;
 	for ( cacheline = 0; cacheline < spZBufferCacheCount; cacheline++ )
 		if ( spZBufferCache[cacheline] )
+		{
 			free( spZBufferCache[cacheline] );
+			spZBufferCache[cacheline] = NULL;
+		}
 	if ( spZBufferCache )
 		free( spZBufferCache );
+	spZBufferCache = NULL;
 	if ( spTargetCache )
 		free( spTargetCache );
+	spTargetCache = NULL;
 	if ( spSizeCache )
 		free( spSizeCache );
+	spSizeCache = NULL;
 	if ( spUseParallelProcess )
 		spStopDrawingThread();
 	SDL_DestroyMutex( spScanLineMutex );
+	spScanLineMutex = NULL;
 	if ( spScanLineCache ) //TODO: Not on the gp2x!
 		free( spScanLineCache );
+	spScanLineCache = NULL;
+	spPrimitivesIsInitialized = 0;
 }
 
 PREFIX void spSelectRenderTarget( SDL_Surface* target )

@@ -1281,6 +1281,7 @@ PREFIX void spQuitCore( void )
 	//#endif
 	spQuitPrimitives();
 	SDL_Quit();
+	spCoreIsInitialized = 0;
 }
 
 PREFIX int spGetFPS( void )
