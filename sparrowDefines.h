@@ -170,7 +170,10 @@
  * SP_PRACTICE_OK - number of the button, which is on the specific device the
  * standard button for "ok".
  * SP_PRACTICE_CANCEL - number of the button, which is on the specific device
- * the standard button for canceling an action. */
+ * SP_PRACTICE_3 - number of the button, which is on the specific device the
+ * neither ok nor cancel.
+ * SP_PRACTICE_4 - number of the other button, which is on the specific device
+ * neither ok nor cancel. */
  
 /* Defines: Generic Buttons Names
  * 
@@ -190,7 +193,11 @@
  * SP_PRACTICE_OK_NAME - name of the button, which is on the specific device the
  * standard button for "ok".
  * SP_PRACTICE_CANCEL_NAME - name of the button, which is on the specific device
- * the standard button for canceling an action. */
+ * the standard button for canceling an action.
+ * SP_PRACTICE_3_NAME - name of the button, which is on the specific device the
+ * neither ok nor cancel.
+ * SP_PRACTICE_4_NAME - name of the other button, which is on the specific device
+ * neither ok nor cancel*/
 #ifdef GP2X
 	#define SP_AXIS_UP 0
 	#define SP_AXIS_LEFTUP 1
@@ -218,6 +225,8 @@
 	//just for different practices
 	#define SP_PRACTICE_OK SP_BUTTON_B
 	#define SP_PRACTICE_CANCEL SP_BUTTON_X
+	#define SP_PRACTICE_3 SP_BUTTON_A
+	#define SP_PRACTICE_4 SP_BUTTON_Y
 #elif defined CAANOO
 	#define SP_BUTTON_A 0
 	#define SP_BUTTON_X 1
@@ -235,6 +244,8 @@
 	//the Caanoo has a hardware volume control...
 	#define SP_PRACTICE_OK SP_BUTTON_B
 	#define SP_PRACTICE_CANCEL SP_BUTTON_X
+	#define SP_PRACTICE_3 SP_BUTTON_A
+	#define SP_PRACTICE_4 SP_BUTTON_Y
 #elif defined DINGUX
 	#define SP_BUTTON_START 8
 	#define SP_BUTTON_SELECT 9
@@ -250,6 +261,8 @@
 	#define SP_BUTTON_DOWN SP_BUTTON_B
 	#define SP_PRACTICE_OK SP_BUTTON_A
 	#define SP_PRACTICE_CANCEL SP_BUTTON_X
+	#define SP_PRACTICE_3 SP_BUTTON_B
+	#define SP_PRACTICE_4 SP_BUTTON_Y
 #elif defined GCW
 	#define SP_BUTTON_START 8
 	#define SP_BUTTON_SELECT 9
@@ -265,6 +278,8 @@
 	#define SP_BUTTON_DOWN SP_BUTTON_B
 	#define SP_PRACTICE_OK SP_BUTTON_A
 	#define SP_PRACTICE_CANCEL SP_BUTTON_B
+	#define SP_PRACTICE_3 SP_BUTTON_X
+	#define SP_PRACTICE_4 SP_BUTTON_Y
 #elif defined PANDORA
 	#define SP_AXIS_LEFTRIGHT 0
 	#define SP_AXIS_UPDOWN 1
@@ -282,6 +297,8 @@
 	#define SP_BUTTON_DOWN SP_BUTTON_X
 	#define SP_PRACTICE_OK SP_BUTTON_A
 	#define SP_PRACTICE_CANCEL SP_BUTTON_X
+	#define SP_PRACTICE_3 SP_BUTTON_B
+	#define SP_PRACTICE_4 SP_BUTTON_Y
 #else //PC
 	#define SP_AXIS_LEFTRIGHT 0
 	#define SP_AXIS_UPDOWN 1
@@ -310,8 +327,12 @@
 	#define SP_BUTTON_DOWN_NOWASD SP_BUTTON_X_NOWASD
 	#define SP_PRACTICE_OK SP_BUTTON_A
 	#define SP_PRACTICE_CANCEL SP_BUTTON_X
+	#define SP_PRACTICE_3 SP_BUTTON_B
+	#define SP_PRACTICE_4 SP_BUTTON_Y
 	#define SP_PRACTICE_OK_NOWASD SP_BUTTON_A_NOWASD
 	#define SP_PRACTICE_CANCEL_NOWASD SP_BUTTON_X_NOWASD
+	#define SP_PRACTICE_3_NOWASD SP_BUTTON_B_NOWASD
+	#define SP_PRACTICE_4_NOWASD SP_BUTTON_Y_NOWASD
 #endif
 
 #define SP_BUTTON_START_NOWASD SP_BUTTON_START
@@ -325,6 +346,8 @@
 	#define SP_BUTTON_Y_NOWASD SP_BUTTON_Y
 	#define SP_PRACTICE_OK_NOWASD SP_PRACTICE_OK
 	#define SP_PRACTICE_CANCEL_NOWASD SP_PRACTICE_CANCEL
+	#define SP_PRACTICE_3_NOWASD SP_PRACTICE_3
+	#define SP_PRACTICE_4_NOWASD SP_PRACTICE_4
 	#define SP_BUTTON_LEFT_NOWASD SP_BUTTON_LEFT
 	#define SP_BUTTON_UP_NOWASD SP_BUTTON_UP
 	#define SP_BUTTON_RIGHT_NOWASD SP_BUTTON_RIGHT
@@ -347,6 +370,8 @@
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_B_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
+	#define SP_PRACTICE_3_NAME SP_BUTTON_A_NAME
+	#define SP_PRACTICE_4_NAME SP_BUTTON_Y_NAME
 #elif defined WIZ
 	#define SP_BUTTON_START_NAME "Menu"
 	#define SP_BUTTON_SELECT_NAME "Select"
@@ -363,6 +388,8 @@
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_B_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
+	#define SP_PRACTICE_3_NAME SP_BUTTON_A_NAME
+	#define SP_PRACTICE_4_NAME SP_BUTTON_Y_NAME
 #elif defined CAANOO
 	#define SP_BUTTON_START_NAME "Home"
 	#define SP_BUTTON_SELECT_NAME "Help I"
@@ -379,6 +406,8 @@
 	#define SP_PAD_NAME "Stick"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_B_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
+	#define SP_PRACTICE_3_NAME SP_BUTTON_A_NAME
+	#define SP_PRACTICE_4_NAME SP_BUTTON_Y_NAME
 #elif defined DINGUX
 	#define SP_BUTTON_START_NAME "Start"
 	#define SP_BUTTON_SELECT_NAME "Select"
@@ -395,6 +424,8 @@
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
+	#define SP_PRACTICE_3_NAME SP_BUTTON_B_NAME
+	#define SP_PRACTICE_4_NAME SP_BUTTON_Y_NAME
 #elif defined GCW
 	#define SP_BUTTON_START_NAME "Start"
 	#define SP_BUTTON_SELECT_NAME "Select"
@@ -411,6 +442,8 @@
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_B_NAME
+	#define SP_PRACTICE_3_NAME SP_BUTTON_X_NAME
+	#define SP_PRACTICE_4_NAME SP_BUTTON_Y_NAME
 #elif defined PANDORA
 	#define SP_BUTTON_START_NAME "Start"
 	#define SP_BUTTON_SELECT_NAME "Select"
@@ -427,6 +460,8 @@
 	#define SP_PAD_NAME "D-Pad"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
+	#define SP_PRACTICE_3_NAME SP_BUTTON_B_NAME
+	#define SP_PRACTICE_4_NAME SP_BUTTON_Y_NAME
 #else
 	#define SP_BUTTON_START_NAME "Return"
 	#define SP_BUTTON_START_NOWASD_NAME "Return"
@@ -455,8 +490,12 @@
 	#define SP_PAD_NAME "Arrow Keys"
 	#define SP_PRACTICE_OK_NAME SP_BUTTON_A_NAME
 	#define SP_PRACTICE_CANCEL_NAME SP_BUTTON_X_NAME
+	#define SP_PRACTICE_3_NAME SP_BUTTON_B_NAME
+	#define SP_PRACTICE_4_NAME SP_BUTTON_Y_NAME
 	#define SP_PRACTICE_OK_NOWASD_NAME SP_BUTTON_A_NOWASD_NAME
 	#define SP_PRACTICE_CANCEL_NOWASD_NAME SP_BUTTON_X_NOWASD_NAME
+	#define SP_PRACTICE_3_NOWASD_NAME SP_BUTTON_B_NOWASD_NAME
+	#define SP_PRACTICE_4_NOWASD_NAME SP_BUTTON_Y_NOWASD_NAME
 #endif
 
 #ifndef X86CPU
@@ -470,6 +509,8 @@
 	#define SP_BUTTON_Y_NOWASD_NAME SP_BUTTON_Y_NAME
 	#define SP_PRACTICE_OK_NOWASD_NAME     SP_PRACTICE_OK_NAME
 	#define SP_PRACTICE_CANCEL_NOWASD_NAME SP_PRACTICE_CANCEL_NAME
+	#define SP_PRACTICE_3_NOWASD_NAME      SP_PRACTICE_3_NAME
+	#define SP_PRACTICE_4_NOWASD_NAME	     SP_PRACTICE_4_NAME
 	#define SP_BUTTON_LEFT_NOWASD_NAME     SP_BUTTON_LEFT_NAME
 	#define SP_BUTTON_UP_NOWASD_NAME       SP_BUTTON_UP_NAME
 	#define SP_BUTTON_RIGHT_NOWASD_NAME    SP_BUTTON_RIGHT_NAME
@@ -495,7 +536,11 @@
  * SP_PRACTICE_OK_MASK - mask of the button, which is on the specific device the
  * standard button for "ok".
  * SP_PRACTICE_CANCEL_MASK - mask of the button, which is on the specific device
- * the standard button for canceling an action. */
+ * the standard button for canceling an action.
+ * SP_PRACTICE_3_MASK - mask of the button, which is on the specific device the
+ * neither ok nor cancel.
+ * SP_PRACTICE_4_MASK - mask of the other button, which is on the specific device
+ * neither ok nor cancel. */
 
 //Bit masks for every button
 #define SP_BUTTON_START_MASK (1 << SP_BUTTON_START)
@@ -512,6 +557,8 @@
 #define SP_BUTTON_DOWN_MASK (1 << SP_BUTTON_DOWN)
 #define SP_PRACTICE_OK_MASK (1 << SP_PRACTICE_OK)
 #define SP_PRACTICE_CANCEL_MASK (1 << SP_PRACTICE_CANCEL)
+#define SP_PRACTICE_3_MASK (1 << SP_PRACTICE_3)
+#define SP_PRACTICE_4_MASK (1 << SP_PRACTICE_4)
 #define SP_BUTTON_START_NOWASD_MASK (1 << SP_BUTTON_START_NOWASD)
 #define SP_BUTTON_SELECT_NOWASD_MASK (1 << SP_BUTTON_SELECT_NOWASD)
 #define SP_BUTTON_L_NOWASD_MASK (1 << SP_BUTTON_L_NOWASD)
@@ -526,6 +573,8 @@
 #define SP_BUTTON_DOWN_NOWASD_MASK (1 << SP_BUTTON_DOWN_NOWASD)
 #define SP_PRACTICE_OK_NOWASD_MASK (1 << SP_PRACTICE_OK_NOWASD)
 #define SP_PRACTICE_CANCEL_NOWASD_MASK (1 << SP_PRACTICE_CANCEL_NOWASD)
+#define SP_PRACTICE_3_NOWASD_MASK (1 << SP_PRACTICE_3_NOWASD)
+#define SP_PRACTICE_4_NOWASD_MASK (1 << SP_PRACTICE_4_NOWASD)
 #ifdef GP2X
 	#define SP_BUTTON_GP2X_ONLY_VOLPLUS_MASK (1 << SP_BUTTON_GP2X_ONLY_VOLPLUS)
 	#define SP_BUTTON_GP2X_ONLY_VOLMINUS_MASK (1 << SP_BUTTON_GP2X_ONLY_VOLMINUS)
