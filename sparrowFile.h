@@ -133,6 +133,18 @@ PREFIX int spFileExists( const char* filename );
  * int - If the end of file is reached, 1 is returned, else 0*/
 PREFIX int spReadOneLine( spFilePointer file , char* buffer, int buffer_len);
 
+/* Function: spWriteOneLine
+ *
+ * Writes one line from a SDL_RWops file.
+ *
+ * Parameters:
+ * file - the file to read
+ * buffer - content to be written
+ *
+ * Returns:
+ * int - 1 at error, 0 else*/
+PREFIX int spWriteOneLine( spFilePointer file , char* buffer);
+
 /* Function: spReadUntil
  *
  * Reads signs from the file "file" until the buffer is full

@@ -83,6 +83,16 @@ PREFIX int spReadUntil( spFilePointer file , char* buffer, int buffer_len, char 
 	return 0; //not EOF
 }
 
+PREFIX int spWriteOneLine( spFilePointer file , char* buffer)
+{
+	if (SDL_RWwrite( file, buffer, strlen(buffer) , 1) != 1)
+		return 1;
+	char c = '\n';
+	if (SDL_RWwrite( file, &c, 1, 1) != 1)
+		return 1;
+	return 0;
+}
+
 PREFIX spFileError spCreateDirectoryChain( const char* directories)
 {
 	//Creating copy:
