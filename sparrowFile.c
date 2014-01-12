@@ -296,7 +296,7 @@ spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointe
 				continue;
 			spFileListPointer newOne = (spFileListPointer)malloc(sizeof(spFileList));
 			int l;
-			if ((l = strlen(directory)) > 1 && directory[l-1] == '/')
+			if ((l = strlen(directory)) > 0 && directory[l-1] == '/')
 				sprintf(newOne->name,"%s%s",directory,dir->d_name);
 			else
 				sprintf(newOne->name,"%s/%s",directory,dir->d_name);
@@ -394,14 +394,14 @@ int internalCompareByNameBackwards ( const void * elem1, const void * elem2 )
 	return -strcmp(left->name,right->name);
 }
 
-int internalCompareByType ( const void * elem1, const void * elem2 )
+int internalCompareByTypeBackwards ( const void * elem1, const void * elem2 )
 {
 	spFileListPointer left  = *((spFileListPointer*)(elem1));
 	spFileListPointer right = *((spFileListPointer*)(elem2));
 	return left->type < right->type?-1:(left->type > right->type?1:0);
 }
 
-int internalCompareByTypeBackwards ( const void * elem1, const void * elem2 )
+int internalCompareByType ( const void * elem1, const void * elem2 )
 {
 	spFileListPointer left  = *((spFileListPointer*)(elem1));
 	spFileListPointer right = *((spFileListPointer*)(elem2));
