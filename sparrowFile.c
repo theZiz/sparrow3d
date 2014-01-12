@@ -394,18 +394,18 @@ int internalCompareByNameBackwards ( const void * elem1, const void * elem2 )
 	return -strcmp(left->name,right->name);
 }
 
-int internalCompareByTypeBackwards ( const void * elem1, const void * elem2 )
-{
-	spFileListPointer left  = *((spFileListPointer*)(elem1));
-	spFileListPointer right = *((spFileListPointer*)(elem2));
-	return left->type < right->type?-1:(left->type > right->type?1:0);
-}
-
 int internalCompareByType ( const void * elem1, const void * elem2 )
 {
 	spFileListPointer left  = *((spFileListPointer*)(elem1));
 	spFileListPointer right = *((spFileListPointer*)(elem2));
-	return left->type < right->type?1:(left->type > right->type?-1:0);
+	return (left->type & 1) < (right->type & 1)?1:((left->type & 1) > (right->type & 1)?-1:0);
+}
+
+int internalCompareByTypeBackwards ( const void * elem1, const void * elem2 )
+{
+	spFileListPointer left  = *((spFileListPointer*)(elem1));
+	spFileListPointer right = *((spFileListPointer*)(elem2));
+	return (left->type & 1) < (right->type & 1)?-1:((left->type & 1) > (right->type & 1)?1:0);
 }
 
 int internalCompareByTypeName ( const void * elem1, const void * elem2 )
