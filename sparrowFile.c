@@ -384,14 +384,27 @@ int internalCompareByName ( const void * elem1, const void * elem2 )
 {
 	spFileListPointer left  = *((spFileListPointer*)(elem1));
 	spFileListPointer right = *((spFileListPointer*)(elem2));
-	return strcmp(left->name,right->name);
+	int ll = strlen(left->name)+1;
+	int rl = strlen(right->name)+1;
+	char left_name[ll];
+	char right_name[rl];
+	int i;
+	for (i = 0; i < ll; i++)
+		if (left->name[i] >= 'a' && left->name[i] <= 'z')
+			left_name[i] = left->name[i]-'a'+'A';
+		else
+			left_name[i] = left->name[i];
+	for (i = 0; i < rl; i++)
+		if (right->name[i] >= 'a' && right->name[i] <= 'z')
+			right_name[i] = right->name[i]-'a'+'A';
+		else
+			right_name[i] = right->name[i];
+	return strcmp(left_name,right_name);
 }
 
 int internalCompareByNameBackwards ( const void * elem1, const void * elem2 )
 {
-	spFileListPointer left  = *((spFileListPointer*)(elem1));
-	spFileListPointer right = *((spFileListPointer*)(elem2));
-	return -strcmp(left->name,right->name);
+	return -internalCompareByName(elem1,elem2);
 }
 
 int internalCompareByType ( const void * elem1, const void * elem2 )
