@@ -356,7 +356,7 @@ static void spHandleKeyboardInput( const SDL_keysym pressedKey)
 			}
 		}
 	}
-	/*else if ( pressedKey.sym == SDLK_RETURN )
+	else if ( pressedKey.sym == SDLK_RETURN )
 	{
 		if ( spGenericInput.keyboard.pos + 1 <= spGenericInput.keyboard.len )
 		{
@@ -364,7 +364,7 @@ static void spHandleKeyboardInput( const SDL_keysym pressedKey)
 			spGenericInput.keyboard.lastSize = 1;
 			spGenericInput.keyboard.pos += 1;
 		}
-	}*/
+	}
 	else if ( pressedKey.sym >= SDLK_SPACE )
 	{
 		Uint16 c = pressedKey.unicode;
@@ -525,7 +525,11 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 			case SDL_KEYDOWN:
 				//GCW and DINGUX use the "keyboard" for buttons
 				#if (!(defined GCW)) && (!(defined DINGUX))
-					if ( spGenericInput.keyboard.buffer )
+					if ( spGenericInput.keyboard.buffer
+					#ifdef X86CPU
+					&& spVirtualKeyboardState != SP_VIRTUAL_KEYBOARD_ALWAYS
+					#endif
+					)
 					{
 						spHandleKeyboardInput(event.key.keysym);
 						spLastKey = event.key.keysym;
