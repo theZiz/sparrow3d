@@ -85,8 +85,9 @@ PREFIX int spReadUntil( spFilePointer file , char* buffer, int buffer_len, char 
 
 PREFIX int spWriteOneLine( spFilePointer file , char* buffer)
 {
-	if (SDL_RWwrite( file, buffer, strlen(buffer) , 1) != 1)
-		return 1;
+	if (buffer && buffer[0])
+		if (SDL_RWwrite( file, buffer, strlen(buffer) , 1) != 1)
+			return 1;
 	char c = '\n';
 	if (SDL_RWwrite( file, &c, 1, 1) != 1)
 		return 1;
