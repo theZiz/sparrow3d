@@ -869,7 +869,7 @@ PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, sp
 					newLine->text = (char*)malloc(newLine->count+1);
 					memcpy(newLine->text,&buffer[start],newLine->count+1);
 					buffer[last_space] = c;
-					if (buffer[pos] == 0)
+					if (buffer[last_space] == 0)
 						break;
 					pos = last_space+1;
 				}
