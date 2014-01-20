@@ -940,7 +940,7 @@ PREFIX void spDeleteTextBlock(spTextBlockPointer block)
 	}
 }
 
-PREFIX void spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y, Sint32 z, spTextBlockPointer block, Sint32 height, Sint32 position, spFontPointer font )
+PREFIX int spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y, Sint32 z, spTextBlockPointer block, Sint32 height, Sint32 position, spFontPointer font )
 {
 	if (block == NULL)
 		return;
@@ -965,4 +965,5 @@ PREFIX void spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 
 		}
 		y+=font->maxheight;
 	}
+	return end_line-start_line;
 }
