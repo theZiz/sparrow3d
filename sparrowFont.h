@@ -539,6 +539,9 @@ PREFIX void spDeleteTextBlock(spTextBlockPointer block);
  * fits in the block->max_width X height block, of course this parameters doesn't
  * make any sense and is ignored
  * font - the font to draw the text. Should be the same as used in
- * <spCreateTextBlock>, but however don't have to*/
-PREFIX void spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y, Sint32 z, spTextBlockPointer block, Sint32 height, Sint32 position, spFontPointer font );
+ * <spCreateTextBlock>, but however don't have to
+ * 
+ * Returns:
+ * int - the number of lines drawn*/
+PREFIX int spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y, Sint32 z, spTextBlockPointer block, Sint32 height, Sint32 position, spFontPointer font );
 #endif

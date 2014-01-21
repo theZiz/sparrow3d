@@ -869,7 +869,7 @@ PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, sp
 					newLine->text = (char*)malloc(newLine->count+1);
 					memcpy(newLine->text,&buffer[start],newLine->count+1);
 					buffer[last_space] = c;
-					if (buffer[pos] == 0)
+					if (buffer[last_space] == 0)
 						break;
 					pos = last_space+1;
 				}
@@ -940,7 +940,7 @@ PREFIX void spDeleteTextBlock(spTextBlockPointer block)
 	}
 }
 
-PREFIX void spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y, Sint32 z, spTextBlockPointer block, Sint32 height, Sint32 position, spFontPointer font )
+PREFIX int spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y, Sint32 z, spTextBlockPointer block, Sint32 height, Sint32 position, spFontPointer font )
 {
 	if (block == NULL)
 		return;
@@ -965,4 +965,5 @@ PREFIX void spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 
 		}
 		y+=font->maxheight;
 	}
+	return end_line-start_line;
 }
