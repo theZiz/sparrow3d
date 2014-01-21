@@ -500,7 +500,7 @@ void spLetterMulWidth( spLetterPointer letter, Sint32 factor )
 		return;
 	spLetterMulWidth( letter->left, factor );
 	spLetterMulWidth( letter->right, factor );
-	letter->width = letter->width * factor >> SP_ACCURACY;
+	letter->width = letter->width * factor + (1 << SP_ACCURACY-1) >> SP_ACCURACY;
 }
 
 PREFIX void spFontMulWidth( spFontPointer font, Sint32 factor )
