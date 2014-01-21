@@ -334,40 +334,62 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
 	SDL_Color background =	{( bgColor >> 11 ) << 3, ( ( bgColor << 5 ) >> 10 ) << 2, ( ( bgColor & 31 ) << 3 )};
 	SDL_Surface* surface;
 	if (spFontButtonShade)
-		surface = TTF_RenderUTF8_Shaded( font->font, caption, sdlcolor ,background );
+		surface = TTF_RenderUTF8_Shaded( font->font, caption, sdlcolor , background);
 	else
 		surface = TTF_RenderUTF8_Solid( font->font, caption, sdlcolor );
 	int width;
 	if (spFontCorrectStrategy(caption) == SP_FONT_BUTTON)
 	{
-		width = font->maxheight + SP_FONT_EXTRASPACE * 2;
+		width = font->maxheight;
 		if ( width & 1 )
 			width++;
 		letter->surface = spCreateSurface(width, width);
+		SDL_Surface* result = SDL_ConvertSurface( surface , letter->surface->format, letter->surface->flags);
+		SDL_FreeSurface(surface);
+		surface = result;
 		SDL_LockSurface(letter->surface);
 		int x,y;
 		Uint16* pixel = (Uint16*)letter->surface->pixels;
 		int w = letter->surface->pitch/letter->surface->format->BytesPerPixel;
+		int R = spGetRFromColor(bgColor);
+		int G = spGetGFromColor(bgColor);
+		int B = spGetBFromColor(bgColor);
+		int circle_width = width*9/10;
 		for (x = 0; x < letter->surface->w; x++)
 			for (y = 0; y < letter->surface->h; y++)
 			{
-				if ((x-width/2)*(x-width/2)+(y-width/2)*(y-width/2) <= width*width/4)
+				if ((x-width/2)*(x-width/2)+(y-width/2)*(y-width/2) <= circle_width*circle_width/4)
 				{
-					if ((x-width/2)*(x-width/2)+(y-width/2)*(y-width/2) <= width*width/5)
-						pixel[x+y*w] = bgColor;
-					else
-						pixel[x+y*w] = fgColor;
+					int factor = ((x-width/2)*(x-width/2)+(y-width/2)*(y-width/2));
+					factor *= 256;
+					factor /= circle_width*circle_width/4;
+					if (factor > 256)
+						factor = 256;
+					factor = 256 - factor/2;
+					pixel[x+y*w] = spGetRGB(R*factor/256,
+																	G*factor/256,
+																	B*factor/256);
 				}
 				else
 					pixel[x+y*w] = SP_ALPHA_COLOR;
 			}
 		SDL_UnlockSurface(letter->surface);
+		SDL_LockSurface(surface);
+		pixel = (Uint16*)surface->pixels;
+		w = surface->pitch/surface->format->BytesPerPixel;
+		Uint16 BGCOLOR = pixel[0];//SDL_MapRGB(surface->format,background.r,background.g,background.b);
+		for (x = 0; x < surface->w; x++)
+			for (y = 0; y < surface->h; y++)
+				if (pixel[x+y*w] == BGCOLOR)
+					pixel[x+y*w] = SP_ALPHA_COLOR;
+		SDL_UnlockSurface(surface);
 
 		SDL_Rect DestR;
 		DestR.x = width/2-surface->w/2;
-		DestR.y = font->maxheight/2+SP_FONT_EXTRASPACE-surface->h/2;
+		DestR.y = width/2-surface->h/2;
 		DestR.w = surface->w;
 		DestR.h = surface->h;
+		SDL_SetColorKey( surface, SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
 		SDL_BlitSurface( surface, NULL, letter->surface, &DestR );
 	}
 	else

@@ -270,12 +270,14 @@ void resize( Uint16 w, Uint16 h )
 	spFontAdd( font, SP_FONT_GROUP_ASCII, 65535 ); //whole ASCII
 	spFontAdd( font, "äüöÄÜÖßẞ", 65535 ); //German stuff (same like spFontAdd( font, SP_FONT_GROUP_GERMAN, 0 ); )
 	spFontAddBorder( font, 0 );
+	spFontSetButtonStrategy(SP_FONT_BUTTON);
 	spFontAddButton( font, 'A', SP_BUTTON_A_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 	spFontAddButton( font, 'B', SP_BUTTON_B_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 	spFontAddButton( font, 'X', SP_BUTTON_X_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 	spFontAddButton( font, 'Y', SP_BUTTON_Y_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 	spFontAddButton( font, 'L', SP_BUTTON_L_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 	spFontAddButton( font, 'R', SP_BUTTON_R_NAME, 65535, spGetRGB( 64, 64, 64 ) );
+	spFontSetButtonStrategy(SP_FONT_INTELLIGENT);
 	spFontAddButton( font, 'S', SP_BUTTON_START_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 	spFontAddButton( font, 'E', SP_BUTTON_SELECT_NAME, 65535, spGetRGB( 64, 64, 64 ) );
 }
@@ -295,7 +297,7 @@ int main( int argc, char **argv )
 	if (argc > 1)
 		test = atoi(argv[1]);
 	//sparrow3D Init
-	//spSetDefaultWindowSize( 800, 480 ); //Creates a 800x480 window at PC instead of 320x240
+	spSetDefaultWindowSize( 800, 480 ); //Creates a 800x480 window at PC instead of 320x240
 	spInitCore();
 
 	//Setup
