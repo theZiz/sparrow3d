@@ -369,9 +369,7 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
 				if (factor > 256)
 					factor = 256;
 				factor = 256 - factor/2;
-				pixel[x+y*w] = spGetRGB(R*factor/256,
-																G*factor/256,
-																B*factor/256);
+				pixel[x+y*w] = spGetRGB(R*factor/256,G*factor/256,B*factor/256);
 			}
 			else
 				pixel[x+y*w] = SP_ALPHA_COLOR;
