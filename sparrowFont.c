@@ -386,8 +386,8 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
 	SDL_UnlockSurface(surface);
 
 	SDL_Rect DestR;
-	DestR.x = (width-surface->w)/2;
-	DestR.y = (height-surface->h)/2;
+	DestR.x = (width-surface->w+1)/2;
+	DestR.y = (height-surface->h+1)/2;
 	DestR.w = surface->w;
 	DestR.h = surface->h;
 	SDL_SetColorKey( surface, SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
@@ -492,7 +492,7 @@ void spLetterMulWidth( spLetterPointer letter, Sint32 factor )
 		return;
 	spLetterMulWidth( letter->left, factor );
 	spLetterMulWidth( letter->right, factor );
-	letter->width = letter->width * factor + (1 << SP_ACCURACY-1) >> SP_ACCURACY;
+	letter->width = letter->width * factor >> SP_ACCURACY;
 }
 
 PREFIX void spFontMulWidth( spFontPointer font, Sint32 factor )
