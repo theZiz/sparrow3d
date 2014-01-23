@@ -338,11 +338,11 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
 	else
 		surface = TTF_RenderUTF8_Solid( font->font, caption, sdlcolor );
 	int height = font->maxheight;
-	if ( height & 1 )
-		height++;
+	//if ( height & 1 )
+	//	height++;
 	int width = spMax(height,surface->w+font->maxheight/2);
-	if ( width & 1 )
-		width++;
+	//if ( width & 1 )
+	//	width++;
 	letter->surface = spCreateSurface(width, height);
 	SDL_Surface* result = SDL_ConvertSurface( surface , letter->surface->format, letter->surface->flags);
 	SDL_FreeSurface(surface);
@@ -386,14 +386,14 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
 	SDL_UnlockSurface(surface);
 
 	SDL_Rect DestR;
-	DestR.x = width/2-surface->w/2;
-	DestR.y = height/2-surface->h/2;
+	DestR.x = (width-surface->w)/2;
+	DestR.y = (height-surface->h)/2;
 	DestR.w = surface->w;
 	DestR.h = surface->h;
 	SDL_SetColorKey( surface, SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
 	SDL_BlitSurface( surface, NULL, letter->surface, &DestR );
 	SDL_FreeSurface( surface );
-	letter->height = font->maxheight;
+	letter->height = height;
 	letter->width = width;
 }
 
