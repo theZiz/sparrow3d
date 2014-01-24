@@ -544,4 +544,17 @@ PREFIX void spDeleteTextBlock(spTextBlockPointer block);
  * Returns:
  * int - the number of lines drawn*/
 PREFIX int spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y, Sint32 z, spTextBlockPointer block, Sint32 height, Sint32 position, spFontPointer font );
+
+/* Function: spFontGetLetterString
+ * 
+ * Generates a string to use maybe for another call of <spFontAdd>.
+ * 
+ * Parameters:
+ * font - spFontPointer to use
+ * buffer - char* buffer to fill
+ * length - size of the buffer
+ * 
+ * Returns:
+ * char* - the pointer to buffer*/
+PREFIX char* spFontGetLetterString(spFontPointer font,char* buffer,int length);
 #endif

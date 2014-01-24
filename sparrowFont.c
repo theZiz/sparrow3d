@@ -271,6 +271,7 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
 	{
 		buffer[0] = sign;
 		buffer[1] = 0;
+		spFontLastUTF8Length = 1;
 		return buffer;
 	}
 
@@ -281,6 +282,7 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
 		buffer[0] = 128+64+(sign >> 6);
 		buffer[1] = 128+	 (sign & 63);
 		buffer[2] = 0;
+		spFontLastUTF8Length = 2;
 		return buffer;
 	}
 
@@ -292,6 +294,7 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
 		buffer[1] = 128+			((sign >>	6) & 63);
 		buffer[2] = 128+			( sign				& 63);
 		buffer[3] = 0;
+		spFontLastUTF8Length = 3;
 		return buffer;
 	}
 
@@ -304,6 +307,7 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len)
 		buffer[2] = 128+				 ((sign >>	6) & 63);
 		buffer[3] = 128+				 ( sign				& 63);
 		buffer[4] = 0;
+		spFontLastUTF8Length = 4;
 	}
 	return buffer;
 }
@@ -958,4 +962,32 @@ PREFIX int spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y
 		y+=font->maxheight;
 	}
 	return end_line-start_line;
+}
+
+char* add_letter_to_string(spLetterPointer letter,char* buffer,int* length)
+{
+	if (*length < 5)
+		return buffer;
+	char buffer2[5];
+	sprintf(buffer,"%s",spFontGetUTF8FromUnicode(letter->character,buffer2,5));
+	*length -= spFontLastUTF8Length;
+	buffer = &buffer[spFontLastUTF8Length];
+	if (letter->left)
+		buffer = add_letter_to_string(letter->left,buffer,length);
+	if (letter->right)
+		buffer = add_letter_to_string(letter->right,buffer,length);
+	return buffer;
+}
+
+PREFIX char* spFontGetLetterString(spFontPointer font,char* buffer,int length)
+{
+	if (buffer == NULL || length==0)
+		return 0;
+	if (font == NULL || font->root == NULL)
+	{
+		buffer[0] = 0;
+		return 0;
+	}
+	add_letter_to_string(font->root,buffer,&length);
+	return buffer;
 }
