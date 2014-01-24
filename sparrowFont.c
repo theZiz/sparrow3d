@@ -365,7 +365,7 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
 			int f_width = abs(x-width/2);
 			f_width = f_width - width/2 + height/2;
 			f_width = spMax(0,f_width);
-			if (f_width*f_width+(y-height/2)*(y-height/2) <= circle_width*circle_width/4)
+			if (f_width*f_width+(y-height/2)*(y-height/2) <= (circle_width+1)*(circle_width+1)/4)
 			{
 				int factor = (f_width*f_width+(y-height/2)*(y-height/2));
 				factor *= 256;
