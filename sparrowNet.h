@@ -280,7 +280,6 @@ PREFIX void spNetCloseTCP(spNetTCPConnection connection);
  * 
  * Statuses for the committing and score-loading functions.
  * 
- * SP_C4A_ESTABLISHING - Connection is being established
  * SP_C4A_PROGRESS - transfer of data is in progress
  * SP_C4A_OK - process is done and everything was fine
  * SP_C4A_ERROR - process is done, but something went wrong */
@@ -359,8 +358,6 @@ typedef struct spNetC4AProfileStruct {
  * Reads your profile out of your c4a-prof file. On the pandora the file is
  * created by compo4all and stored on a pandora specific place. On other systems
  * for now your c4a-prof should be in the folder of your application.
- * Unfortunately it is quite hard for a not pandora owner to get such a
- * compo4all account. But a webserver for this purpose is in the making. :)
  * 
  * Returns:
  * spNetC4AProfilePointer - a pointer to an <spNetC4AProfile> struct*/
