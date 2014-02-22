@@ -18,7 +18,7 @@ int main( int argc, char **argv )
 	spFileListPointer list;
 	spFileError error = spFileGetDirectory(&list,".",1,1);
 	printf("Files: %i\n",list->count);
-	spFileSortList(&list,SP_FILE_SORT_BY_TYPE_AND_NAME | SP_FILE_SORT_BACKWARDS);
+	//spFileSortList(&list,SP_FILE_SORT_BY_TYPE_AND_NAME | SP_FILE_SORT_BACKWARDS);
 	spFileListPointer mom = list;
 	while (mom)
 	{
