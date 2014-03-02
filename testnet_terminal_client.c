@@ -91,9 +91,9 @@ int main( int argc, char **argv )
 	spNetC4ATaskPointer p1 = spNetC4AGetScoreParallel(&score1,profile,"puzzletube_points",10000);
 	spNetC4ATaskPointer p2 = spNetC4AGetScoreParallel(&score2,NULL,"puzzletube_race",10000);
 	spNetC4ATaskPointer p3 = spNetC4AGetScoreParallel(&score3,NULL,"puzzletube_survival",10000);
-	while ((p1 && spNetC4AGetStatusParallel(p1) == SP_C4A_PROGRESS) ||
-			(p2 && spNetC4AGetStatusParallel(p2) == SP_C4A_PROGRESS) ||
-			(p3 && spNetC4AGetStatusParallel(p3) == SP_C4A_PROGRESS))
+	while (spNetC4AGetStatusParallel(p1) == SP_C4A_PROGRESS ||
+			spNetC4AGetStatusParallel(p2) == SP_C4A_PROGRESS ||
+			spNetC4AGetStatusParallel(p3) == SP_C4A_PROGRESS)
 	#ifdef WIN32
 		Sleep(1);
 	#else
