@@ -45,22 +45,19 @@ int main( int argc, char **argv )
 		printf("No profile found. Put it to this folder or create it with compo4all!\n");
 	
 	//spNetC4AGetScoreOfMonth(&score,profile,"puzzletube_points",2013,6);
+	printf("Getting Scores serial:\n");
 	int i;
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 2; i++)
 	{
 		switch (i)
 		{
 			case 0:
-				spNetC4AGetScore(&score,profile,"puzzletube_points",10000);
-				printf("Highscore of Puzzletube Points:\n");
+				spNetC4AGetScore(&score,profile,"snowman_hard",10000);
+				printf("Highscore of Snowman Hard (with profile if available):\n");
 				break;
 			case 1:
-				spNetC4AGetScore(&score,profile,"puzzletube_race",10000);
-				printf("Highscore of Puzzletube Race:\n");
-				break;
-			case 2:
-				spNetC4AGetScore(&score,profile,"puzzletube_survival",10000);
-				printf("Highscore of Puzzletube Survival:\n");
+				spNetC4AGetScore(&score,NULL,"snowman_easy",10000);
+				printf("Highscore of Snowman Easy (wihtout profile):\n");
 				break;
 		}
 		while (spNetC4AGetStatus() == SP_C4A_PROGRESS)
@@ -84,6 +81,60 @@ int main( int argc, char **argv )
 			printf("Fetshing Highscore failed with status code: %i\n",spNetC4AGetStatus());
 	}
 
+
+
+
+	printf("Getting Scores parallel:\n");
+	spNetC4AScorePointer score1;
+	spNetC4AScorePointer score2;
+	spNetC4AScorePointer score3;
+	spNetC4ATaskPointer p1 = spNetC4AGetScoreParallel(&score1,profile,"puzzletube_points",10000);
+	spNetC4ATaskPointer p2 = spNetC4AGetScoreParallel(&score2,NULL,"puzzletube_race",10000);
+	spNetC4ATaskPointer p3 = spNetC4AGetScoreParallel(&score3,NULL,"puzzletube_survival",10000);
+	while ((p1 && spNetC4AGetStatusParallel(p1) == SP_C4A_PROGRESS) ||
+			(p2 && spNetC4AGetStatusParallel(p2) == SP_C4A_PROGRESS) ||
+			(p3 && spNetC4AGetStatusParallel(p3) == SP_C4A_PROGRESS))
+	#ifdef WIN32
+		Sleep(1);
+	#else
+		usleep(200);
+	#endif
+	for (i = 0; i < 3; i++)
+	{
+		spNetC4ATaskPointer p;
+		switch (i)
+		{
+			case 0:
+				printf("Highscore of Puzzletube Points (with profile if available):\n");
+				p = p1;
+				score = score1;
+				break;
+			case 1:
+				printf("Highscore of Puzzletube Race (wihtout profile):\n");
+				p = p2;
+				score = score2;
+				break;
+			case 2:
+				printf("Highscore of Puzzletube Survival (without profile):\n");
+				p = p3;
+				score = score3;
+				break;
+		}
+		if (spNetC4AGetStatusParallel(p) == SP_C4A_OK)
+		{
+			spNetC4AScorePointer mom = score;
+			while (mom)
+			{
+				struct tm * local = localtime (&(mom->commitTime));
+				printf("  %2i.%2i.%i - %2i:%02i: %s (%s) - %i\n",local->tm_mday,local->tm_mon+1,local->tm_year+1900,local->tm_hour,local->tm_min,mom->longname,mom->shortname,mom->score);
+				mom = mom->next;
+			}
+			spNetC4ADeleteScores(&score);
+		}
+		else
+			printf("Fetshing Highscore failed with status code: %i\n",spNetC4AGetStatus());
+		spNetC4ADeleteTask(p);
+	}
 	//Client setup
 	spNetIP ip;
 	if (argc < 2)
