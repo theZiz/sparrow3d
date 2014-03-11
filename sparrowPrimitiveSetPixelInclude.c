@@ -131,212 +131,65 @@
 /* draw_pixel functions with textures */
 /* ********************************** */
 
-#ifdef PANDORA
+/*#ifdef PANDORA
 	#define TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY) \
 		int32x2_t T = {u,v}; \
 		int32x2_t MAX = {0,0}; \
 		int32x2_t MIN = {textureX-1,textureY-1}; \
 		T = vmin_s32(vmax_s32(T,MAX),MIN); \
-		Uint32 pixel = texturePixel[T[0] + T[1] * textureScanLine];
+		Uint32 pixel = texturePixel[T[0] + T[1] * textureScanLine];*/
+#ifdef UNSAFE_MAGIC
+	#define TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY) \
+		Uint32 pixel = (u) + (v) * textureScanLine; \
+		pixel = texturePixel[(pixel < 0)?0:(pixel>textureY*textureScanLine)?textureY*textureScanLine:pixel];
 #else
 	#define TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY) \
 		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];
 #endif
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#else
-	#define draw_pixel_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#else
-	#define draw_pixel_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-	}
-#else
-	#define draw_pixel_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
+#define draw_pixel_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
 		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-	}
-#endif
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-	}
-#else
-	#define draw_pixel_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
+#define draw_pixel_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-	}
-#endif
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#else
-	#define draw_pixel_blending_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#endif
+#define draw_pixel_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+	TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
+	spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																				+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																					+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#else
-	#define draw_pixel_blending_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#endif
+#define draw_pixel_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
+	spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																				+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																					+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-					+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		Sint32 one_minus_blend = SP_ONE - (blend); \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = \
-			( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-	}
-#else
-	#define draw_pixel_blending_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+#define draw_pixel_blending_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
 		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
@@ -352,28 +205,12 @@
 		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
 		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
 		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-	}
-#endif
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-					+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		Sint32 one_minus_blend = SP_ONE - (blend); \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = \
-			( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-	}
-#else
-	#define draw_pixel_blending_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+#define draw_pixel_blending_tex_ztest(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
@@ -388,9 +225,43 @@
 		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
 		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
 		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-	}
-#endif
+	} \
+}
 
+#define draw_pixel_blending_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+	TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
+	Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
+	pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
+				+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+				+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	Sint32 one_minus_blend = SP_ONE - (blend); \
+	spTargetPixel[(x) + (y) * spTargetScanLine] = \
+		( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
+	+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
+	+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
+	+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
+	+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
+	+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
+}
+
+#define draw_pixel_blending_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
+	Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
+	pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
+				+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+				+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	Sint32 one_minus_blend = SP_ONE - (blend); \
+	spTargetPixel[(x) + (y) * spTargetScanLine] = \
+		( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
+	+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
+	+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
+	+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
+	+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
+	+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
+}
 
 //Perspective
 
@@ -398,211 +269,62 @@
 #define reciprocal_w_clip(parameter,w) ((parameter >> SP_HALF_ACCURACY)*(spOne_over_x_look_up_fixed[(w>>spMaxWLogDiff+SP_MAGIC_W_CLIP_ACCURACY_CONSTANT) & (SP_ONE-1)]>>spMaxWLogDiff) >> SP_ACCURACY)
 //#define reciprocal_w_clip(parameter,w) ((parameter)/(w>>SP_MAGIC_W_CLIP_ACCURACY_CONSTANT))
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+#define draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#else
-	#define draw_pixel_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#else
-	#define draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
+		Sint32 uw = reciprocal_w_clip(u,w); \
+		Sint32 vw = reciprocal_w_clip(v,w); \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Sint32 uw = reciprocal_w_clip(u,w); \
-		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-	}
-#else
-	#define draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+	} \
+}
+
+#define draw_pixel_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
+		Sint32 uw = reciprocal_w_clip(u,w); \
+		Sint32 vw = reciprocal_w_clip(v,w); \
+		TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	} \
+}
+
+#define draw_pixel_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+	Sint32 uw = reciprocal_w_clip(u,w); \
+	Sint32 vw = reciprocal_w_clip(v,w); \
+	TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
+	spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																				+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																					+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+}
+
+#define draw_pixel_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	Sint32 uw = reciprocal_w_clip(u,w); \
+	Sint32 vw = reciprocal_w_clip(v,w); \
+	TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
+	spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																				+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																					+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+}
+
+#define draw_pixel_blending_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
+	{ \
+		Sint32 uw = reciprocal_w_clip(u,w); \
+		Sint32 vw = reciprocal_w_clip(v,w); \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Sint32 uw = reciprocal_w_clip(u,w); \
-		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		Sint32 uw = reciprocal_w_clip(u,w); \
-		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-	}
-#else
-	#define draw_pixel_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		Sint32 uw = reciprocal_w_clip(u,w); \
-		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#else
-	#define draw_pixel_blending_tex_ztest_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#else
-	#define draw_pixel_blending_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Sint32 uw = reciprocal_w_clip(u,w); \
-		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -615,35 +337,16 @@
 		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
 		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
 		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-	}
-#else
-	#define draw_pixel_blending_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Sint32 uw = reciprocal_w_clip(u,w); \
-		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-					+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		Sint32 one_minus_blend = SP_ONE - (blend); \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = \
-			( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-	}
-#endif
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+#define draw_pixel_blending_tex_ztest_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -656,27 +359,47 @@
 		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
 		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
 		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-	}
-#else
-	#define draw_pixel_blending_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		Sint32 uw = reciprocal_w_clip(u,w); \
-		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-					+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		Sint32 one_minus_blend = SP_ONE - (blend); \
-		spTargetPixel[(x) + (y) * spTargetScanLine] = \
-			( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-	}
-#endif
+	} \
+}
+
+#define draw_pixel_blending_tex_zset_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+	Sint32 uw = reciprocal_w_clip(u,w); \
+	Sint32 vw = reciprocal_w_clip(v,w); \
+	TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
+	Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
+	pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
+				+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+				+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	Sint32 one_minus_blend = SP_ONE - (blend); \
+	spTargetPixel[(x) + (y) * spTargetScanLine] = \
+		( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
+	+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
+	+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
+	+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
+	+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
+	+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
+}
+
+#define draw_pixel_blending_tex_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	Sint32 uw = reciprocal_w_clip(u,w); \
+	Sint32 vw = reciprocal_w_clip(v,w); \
+	TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
+	Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
+	pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
+				+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+				+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	Sint32 one_minus_blend = SP_ONE - (blend); \
+	spTargetPixel[(x) + (y) * spTargetScanLine] = \
+		( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
+	+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
+	+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
+	+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
+	+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
+	+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
+}
 
 // + Pattern
 #define draw_pixel_tex_ztest_zset_pattern(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,pattern) \
@@ -747,78 +470,9 @@
 /* draw_pixel functions with textures and alpha */
 /* ******************************************** */
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																								+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			} \
-		} \
-	}
-#else
-	#define draw_pixel_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																								+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			} \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																								+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#else
-	#define draw_pixel_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
-			if (pixel != SP_ALPHA_COLOR) \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																								+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-		if (pixel != SP_ALPHA_COLOR) \
-		{ \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#else
-	#define draw_pixel_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
+#define draw_pixel_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		if (pixel != SP_ALPHA_COLOR) \
@@ -828,101 +482,49 @@
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
 		} \
-	}
-#endif
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-		if (pixel != SP_ALPHA_COLOR) \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-	}
-#else
-	#define draw_pixel_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
+#define draw_pixel_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		if (pixel != SP_ALPHA_COLOR) \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-	}
-#endif
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+#define draw_pixel_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
+	if (pixel != SP_ALPHA_COLOR) \
 	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																								+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			} \
-		} \
-	}
-#else
-	#define draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																								+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			} \
-		} \
-	}
-#endif
+		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																								+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#else
-	#define draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																								+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#endif
+#define draw_pixel_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
+	if (pixel != SP_ALPHA_COLOR) \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+#define draw_pixel_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -930,170 +532,51 @@
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
 		} \
-	}
-#else
-	#define draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		Sint32 uw = reciprocal_w_clip(u,w); \
-		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-		if (pixel != SP_ALPHA_COLOR) \
-		{ \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-		} \
-	}
-#endif
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+#define draw_pixel_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
 		if (pixel != SP_ALPHA_COLOR) \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-	}
-#else
-	#define draw_pixel_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
-	{ \
-		Sint32 uw = reciprocal_w_clip(u,w); \
-		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-		if (pixel != SP_ALPHA_COLOR) \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
-																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-	}
-#endif
+	} \
+}
 
+#define draw_pixel_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	Sint32 uw = reciprocal_w_clip(u,w); \
+	Sint32 vw = reciprocal_w_clip(v,w); \
+	TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
+	if (pixel != SP_ALPHA_COLOR) \
+	{ \
+		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+	} \
+}
 
+#define draw_pixel_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY) \
+{ \
+	Sint32 uw = reciprocal_w_clip(u,w); \
+	Sint32 vw = reciprocal_w_clip(v,w); \
+	TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
+	if (pixel != SP_ALPHA_COLOR) \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
+																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-				pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-				Sint32 one_minus_blend = SP_ONE - (blend); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = \
-					( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-				+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-			} \
-		} \
-	}
-#else
-	#define draw_pixel_blending_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-				pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-				Sint32 one_minus_blend = SP_ONE - (blend); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = \
-					( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-				+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-			} \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-				pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-				Sint32 one_minus_blend = SP_ONE - (blend); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = \
-					( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-				+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-			} \
-		} \
-	}
-#else
-	#define draw_pixel_blending_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-				pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-				Sint32 one_minus_blend = SP_ONE - (blend); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = \
-					( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-				+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-			} \
-		} \
-	}
-#endif
-
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-		if (pixel != SP_ALPHA_COLOR) \
-		{ \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#else
-	#define draw_pixel_blending_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+#define draw_pixel_blending_tex_ztest_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		if (pixel != SP_ALPHA_COLOR) \
@@ -1112,31 +595,12 @@
 			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
 			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
 		} \
-	}
-#endif
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		Uint32 pixel = texturePixel[(u) + (v) * textureScanLine];  \
-		if (pixel != SP_ALPHA_COLOR) \
-		{ \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#else
-	#define draw_pixel_blending_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+#define draw_pixel_blending_tex_ztest_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		if (pixel != SP_ALPHA_COLOR) \
@@ -1154,121 +618,57 @@
 			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
 			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
 		} \
-	}
-#endif
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+#define draw_pixel_blending_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
+	if (pixel != SP_ALPHA_COLOR) \
 	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-				pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-				Sint32 one_minus_blend = SP_ONE - (blend); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = \
-					( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-				+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-			} \
-		} \
-	}
-#else
-	#define draw_pixel_blending_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-				pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-				Sint32 one_minus_blend = SP_ONE - (blend); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = \
-					( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-				+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-			} \
-		} \
-	}
-#endif
+		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
+		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
+					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+					+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		Sint32 one_minus_blend = SP_ONE - (blend); \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = \
+			( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
+		+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
+		+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
+		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
+		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
+		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+#define draw_pixel_blending_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
+	if (pixel != SP_ALPHA_COLOR) \
 	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-				pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-				Sint32 one_minus_blend = SP_ONE - (blend); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = \
-					( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-				+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-			} \
-		} \
-	}
-#else
-	#define draw_pixel_blending_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
-		{ \
-			Sint32 uw = reciprocal_w_clip(u,w); \
-			Sint32 vw = reciprocal_w_clip(v,w); \
-			Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-			if (pixel != SP_ALPHA_COLOR) \
-			{ \
-				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-				pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-				Sint32 one_minus_blend = SP_ONE - (blend); \
-				spTargetPixel[(x) + (y) * spTargetScanLine] = \
-					( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-				+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-				+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-				+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-			} \
-		} \
-	}
-#endif
+		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
+		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
+					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+					+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		Sint32 one_minus_blend = SP_ONE - (blend); \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = \
+			( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
+		+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
+		+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
+		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
+		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
+		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+#define draw_pixel_blending_tex_ztest_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -1285,38 +685,16 @@
 			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
 			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
 		} \
-	}
-#else
-	#define draw_pixel_blending_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
-	{ \
-		Sint32 uw = reciprocal_w_clip(u,w); \
-		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-		if (pixel != SP_ALPHA_COLOR) \
-		{ \
-			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#endif
+	} \
+}
 
-#ifdef UNSAFE_MAGIC
-	#define draw_pixel_blending_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+#define draw_pixel_blending_tex_ztest_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 	{ \
 		Sint32 uw = reciprocal_w_clip(u,w); \
 		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(uw) + (vw) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
@@ -1332,30 +710,53 @@
 			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
 			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
 		} \
-	}
-#else
-	#define draw_pixel_blending_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+	} \
+}
+
+#define draw_pixel_blending_tex_zset_alpha_perspect(x,y,z,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	Sint32 uw = reciprocal_w_clip(u,w); \
+	Sint32 vw = reciprocal_w_clip(v,w); \
+	TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
+	if (pixel != SP_ALPHA_COLOR) \
 	{ \
-		Sint32 uw = reciprocal_w_clip(u,w); \
-		Sint32 vw = reciprocal_w_clip(v,w); \
-		Uint32 pixel = texturePixel[(((uw)<0)?0:((uw)>=textureX)?textureX-1:(uw)) + (((vw)<0)?0:((vw)>=textureY)?textureY-1:(vw)) * textureScanLine];  \
-		if (pixel != SP_ALPHA_COLOR) \
-		{ \
-			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
-			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
-						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
-						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
-			Sint32 one_minus_blend = SP_ONE - (blend); \
-			spTargetPixel[(x) + (y) * spTargetScanLine] = \
-				( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
-			+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
-			+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
-			+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
-		} \
-	}
-#endif
+		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
+		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
+		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
+					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+					+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		Sint32 one_minus_blend = SP_ONE - (blend); \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = \
+			( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
+		+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
+		+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
+		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
+		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
+		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
+	} \
+}
+
+#define draw_pixel_blending_tex_alpha_perspect(x,y,u,v,w,color,texturePixel,textureScanLine,textureX,textureY,blend) \
+{ \
+	Sint32 uw = reciprocal_w_clip(u,w); \
+	Sint32 vw = reciprocal_w_clip(v,w); \
+	TEXTURE_CLAMP_MACRO(uw,vw,texturePixel,textureScanLine,textureX,textureY)  \
+	if (pixel != SP_ALPHA_COLOR) \
+	{ \
+		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
+		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
+					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
+					+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
+		Sint32 one_minus_blend = SP_ONE - (blend); \
+		spTargetPixel[(x) + (y) * spTargetScanLine] = \
+			( ( (  pixel & 63488 ) *           blend >> SP_ACCURACY) & 63488 ) \
+		+ ( ( (  pixel & 2016  ) *           blend >> SP_ACCURACY) & 2016  ) \
+		+ ( ( (  pixel & 31    ) *           blend >> SP_ACCURACY) & 31    ) \
+		+ ( ( ( buffer & 63488 ) * one_minus_blend >> SP_ACCURACY) & 63488 ) \
+		+ ( ( ( buffer & 2016  ) * one_minus_blend >> SP_ACCURACY) & 2016  ) \
+		+ ( ( ( buffer & 31    ) * one_minus_blend >> SP_ACCURACY) & 31    ); \
+	} \
+}
 
 
 // + Pattern
