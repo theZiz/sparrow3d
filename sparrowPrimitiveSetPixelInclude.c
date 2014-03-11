@@ -131,6 +131,18 @@
 /* draw_pixel functions with textures */
 /* ********************************** */
 
+#ifdef PANDORA
+	#define TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY) \
+		int32x2_t T = {u,v}; \
+		int32x2_t MAX = {0,0}; \
+		int32x2_t MIN = {textureX-1,textureY-1}; \
+		T = vmin_s32(vmax_s32(T,MAX),MIN); \
+		Uint32 pixel = texturePixel[T[0] + T[1] * textureScanLine];
+#else
+	#define TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY) \
+		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];
+#endif
+
 #ifdef UNSAFE_MAGIC
 	#define draw_pixel_tex_ztest_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
@@ -149,7 +161,7 @@
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
@@ -173,7 +185,7 @@
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																							+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
@@ -194,7 +206,7 @@
 	#define draw_pixel_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
@@ -212,7 +224,7 @@
 #else
 	#define draw_pixel_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
 																						+ ( ( pixel & 31 ) * ( (color) & 31 ) >> 5 ); \
@@ -246,7 +258,7 @@
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -288,7 +300,7 @@
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 			pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -327,7 +339,7 @@
 	#define draw_pixel_blending_tex_zset(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
 		spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -363,7 +375,7 @@
 #else
 	#define draw_pixel_blending_tex(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
 		pixel = ( ( pixel * (color) >> 16 ) & 63488 )  \
 					+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -755,7 +767,7 @@
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 			if (pixel != SP_ALPHA_COLOR) \
 			{ \
 				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -784,7 +796,7 @@
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 			if (pixel != SP_ALPHA_COLOR) \
 				spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																							+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -808,7 +820,7 @@
 #else
 	#define draw_pixel_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -831,7 +843,7 @@
 #else
 	#define draw_pixel_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		if (pixel != SP_ALPHA_COLOR) \
 			spTargetPixel[(x) + (y) * spTargetScanLine] = ( ( pixel * (color) >> 16 ) & 63488 )  \
 																						+ ( ( ( pixel & 2047 ) * ( (color) & 2047 ) >> 11 ) & 2016 )  \
@@ -990,7 +1002,7 @@
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 			if (pixel != SP_ALPHA_COLOR) \
 			{ \
 				spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -1039,7 +1051,7 @@
 	{ \
 		if ( (Uint32)(z) < spZBuffer[(x) + (y) * spTargetScanLine] ) \
 		{ \
-			Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+			TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 			if (pixel != SP_ALPHA_COLOR) \
 			{ \
 				Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \
@@ -1083,7 +1095,7 @@
 #else
 	#define draw_pixel_blending_tex_zset_alpha(x,y,z,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			spZBuffer[(x) + (y) * spTargetScanLine] = (z); \
@@ -1126,7 +1138,7 @@
 #else
 	#define draw_pixel_blending_tex_alpha(x,y,u,v,color,texturePixel,textureScanLine,textureX,textureY,blend) \
 	{ \
-		Uint32 pixel = texturePixel[(((u)<0)?0:((u)>=textureX)?textureX-1:(u)) + (((v)<0)?0:((v)>=textureY)?textureY-1:(v)) * textureScanLine];  \
+		TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY)  \
 		if (pixel != SP_ALPHA_COLOR) \
 		{ \
 			Uint32 buffer = spTargetPixel[(x) + (y) * spTargetScanLine]; \

@@ -16,6 +16,9 @@
   * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
   
 #include "sparrowPrimitives.h"
+#ifdef PANDORA
+	#include <arm_neon.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 SDL_Surface* spTarget = NULL;
@@ -256,6 +259,19 @@ PREFIX void spInitPrimitives()
 	if (spPrimitivesIsInitialized)
 		return;
 	spPrimitivesIsInitialized = 1;
+	#ifdef PANDORA
+		static const unsigned int x = 0x04086060;
+		static const unsigned int y = 0x03000000;
+		int r;
+		asm volatile (
+			"fmrx	%0, fpscr			\n\t"	//r0 = FPSCR
+			"and	%0, %0, %1			\n\t"	//r0 = r0 & 0x04086060
+			"orr	%0, %0, %2			\n\t"	//r0 = r0 | 0x03000000
+			"fmxr	fpscr, %0			\n\t"	//FPSCR = r0
+			: "=r"(r)
+			: "r"(x), "r"(y)
+		);
+	#endif
 	int i;
 	for ( i = 1; i < ( 1 << SP_ACCURACY ); i++ )
 	{
