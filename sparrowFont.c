@@ -140,6 +140,8 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 		SDL_Color background =	{( spFontBackgroundColor >> 11 ) << 3, ( ( spFontBackgroundColor << 5 ) >> 10 ) << 2, ( ( spFontBackgroundColor & 31 ) << 3 )};
 		surface = TTF_RenderUNICODE_Shaded( font->font, buffer, sdlcolor ,background );
 	}
+	if (!surface)
+		surface = spCreateSurface(0,font->maxheight);
 	int width = surface->w + SP_FONT_EXTRASPACE * 2;
 	if ( width & 1 )
 		width++;

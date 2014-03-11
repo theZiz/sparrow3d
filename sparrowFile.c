@@ -301,19 +301,18 @@ spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointe
 				sprintf(newOne->name,"%s%s",directory,dir->d_name);
 			else
 				sprintf(newOne->name,"%s/%s",directory,dir->d_name);
-			stat(newOne->name,&stat_buf);
-			switch (dir->d_type)
+			lstat(newOne->name,&stat_buf);
+			if (S_ISLNK(stat_buf.st_mode))
 			{
-				case DT_DIR: newOne->type = SP_FILE_DIRECTORY; break;
-				case DT_LNK:
-					newOne->type = SP_FILE_LINK;
-					if (S_ISDIR(stat_buf.st_mode))
-						newOne->type |= SP_FILE_DIRECTORY;
-					else
-						newOne->type |= SP_FILE_FILE;
-					break;
-				default: newOne->type = SP_FILE_FILE;
+				newOne->type = SP_FILE_LINK;
+				stat(newOne->name,&stat_buf);
 			}
+			else
+				newOne->type = 0;
+			if (S_ISDIR(stat_buf.st_mode))
+				newOne->type |= SP_FILE_DIRECTORY;
+			else
+				newOne->type |= SP_FILE_FILE;
 			newOne->last_mod = stat_buf.st_mtime;
 			newOne->last_acc = stat_buf.st_atime;
 			if (*last)

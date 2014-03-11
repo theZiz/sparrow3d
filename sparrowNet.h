@@ -62,6 +62,17 @@ typedef struct spNetIPStruct {
 	IPaddress sdl_address;
 } spNetIP;
 
+typedef struct spNetC4ATaskStruct *spNetC4ATaskPointer;
+typedef struct spNetC4ATaskStruct {
+	SDL_mutex* statusMutex;
+	int status;
+	void *dataPointer;
+	int timeOut;
+	SDL_Thread* thread;
+	int result;
+	int threadStatus;
+} spNetC4ATask;
+
 /* Define: SP_INVALID_IP
  * 
  * Same as INADDR_NONE of SDL_Net. Means, that the ip returned by <spNetResolve>
@@ -371,7 +382,7 @@ PREFIX spNetC4AProfilePointer spNetC4AGetProfile();
  * profile - profile to free. However of course your profile is not deleted. ;)*/
 PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile);
 
-/* Function: spNetC4AGetGameList
+/* Function: spNetC4AGetGame
  * 
  * Loads all games listed on the C4A server. Use <spNetC4AGetStatus> to get the
  * status of the task. Only one compo4all background task can run at one time!
@@ -386,6 +397,24 @@ PREFIX void spNetC4AFreeProfile(spNetC4AProfilePointer profile);
  * int - 1 if the function failed for some reason, 0 at success starting
  * the task.*/
 PREFIX int spNetC4AGetGame(spNetC4AGamePointer* gameList,int timeOut);
+
+/* Function: spNetC4AGetGameParallel
+ * 
+ * Loads all games listed on the C4A server. Use
+ * <spNetC4AGetStatusParallel> to get the status of the task. Don't
+ * forget to delete the returned task struct with <spNetC4ADeleteTask>
+ * at the end.
+ * 
+ * Parameters:
+ * gameList - a pointer to spNetC4AGamePointer, which is in fact a pointer to
+ * <spNetC4AGame>. The available games are saved here.
+ * timeOut - after this time in ms the thread is killed. Get it with
+ * <spNetC4AGetTimeOut>
+ * 
+ * Returns:
+ * spNetC4ATaskPointer - Pointer to <spNetC4ATask> at success and NULL if an
+ * error occured.*/
+PREFIX spNetC4ATaskPointer spNetC4AGetGameParallel(spNetC4AGamePointer* gameList,int timeOut);
 
 /* Function: spNetC4ADeleteGames
  * 
@@ -442,6 +471,54 @@ PREFIX int spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProfilePoint
  * See also: <spNetC4AGetScore>*/
 PREFIX int spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int year,int month,int timeOut);
 
+/* Function: spNetC4AGetScore
+ * 
+ * Loads a top 500 for a given game from the compo4all server. The task runs
+ * in background! Use <spNetC4AGetStatus> to get the status of the task. Only
+ * one compo4all background task can run at one time!
+ * 
+ * Parameters:
+ * scoreList - a pointer to spNetC4AScorePointer, which is in fact a pointer to
+ * <spNetC4AScore>. The scores are saved here.
+ * profile - an optional pointer to your profile. If given only your scores are
+ * added to the scores-list above
+ * game - name of the game on the server
+ * timeOut - after this time in ms the thread is killed. Get it with
+ * <spNetC4AGetTimeOut>
+ * 
+ * Returns:
+ * spNetC4ATaskPointer - Pointer to <spNetC4ATask> at success and NULL if an
+ * error occured.
+ * 
+ * See also: <spNetC4AGetScoreOfMonthParallel>*/
+PREFIX spNetC4ATaskPointer spNetC4AGetScoreParallel(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int timeOut);
+
+/* Function: spNetC4AGetScoreOfMonth
+ * 
+ * Loads a top 500 of a month for a given game from the compo4all
+ * server. The task runs in background! Use
+ * <spNetC4AGetStatusParallel> to get the status of the task. Don't
+ * forget to delete the returned task struct with <spNetC4ADeleteTask>
+ * at the end.
+ * 
+ * Parameters:
+ * scoreList - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
+ * <spNetC4AScore>. The scores are saved here.
+ * profile - an optional pointer to your profile. If given only your scores are
+ * added to the scores-list above
+ * game - name of the game on the server
+ * year - year to load (e.g. 2013)
+ * month - month to load (e.g. 3 for march)
+ * timeOut - after this time in ms the thread is killed. Get it with
+ * <spNetC4AGetTimeOut>
+ * 
+ * Returns:
+ * spNetC4ATaskPointer - Pointer to <spNetC4ATask> at success and NULL if an
+ * error occured.
+ * 
+ * See also: <spNetC4AGetScoreParallel>*/
+PREFIX spNetC4ATaskPointer spNetC4AGetScoreOfMonthParallel(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int year,int month,int timeOut);
+
 /* Function: spNetC4ADeleteScores
  * 
  * Frees the linked list returned by <spNetC4AGetScore>.
@@ -453,8 +530,9 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList);
 /* Function: spNetC4ACommitScore
  * 
  * Commits a score to a specific game to compo4all server. The task runs
- * in background! Use <spNetC4AGetStatus> to get the status of the task. Only
- * one compo4all background task can run at one time!
+ * in background! Use <spNetC4AGetStatusParallel> to get the status of the task.
+ * Don't forget to delete the returned task struct with <spNetC4ADeleteTask>
+ * at the end.
  * 
  * Parameters:
  * profile - the profile you want to commit tthe score with
@@ -471,6 +549,29 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList);
  * int - 1 if the function failed for some reason (e.g. the score is
  * already in the scoreList), 0 at success starting the task.*/
 PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* scoreList,int timeOut);
+
+/* Function: spNetC4ACommitScoreParallel
+ * 
+ * Commits a score to a specific game to compo4all server. The task runs
+ * in background! Use <spNetC4AGetStatusParallel> to get the status of the task.
+ * Don't forget to delete the returned task struct with <spNetC4ADeleteTask>
+ * at the end.
+ * 
+ * Parameters:
+ * profile - the profile you want to commit tthe score with
+ * game - name of the game on the server
+ * score - reached score
+ * scoreList - pass the struct returned by <spNetC4AGetScore> to compare
+ * your score to that list and avoid committing the same score twice. If
+ * it is not in the list, it will added afterwards for later
+ * comparements.
+ * timeOut - after this time in ms the thread is killed. Get it with
+ * <spNetC4AGetTimeOut>
+ * 
+ * Returns:
+ * spNetC4ATaskPointer - Pointer to <spNetC4ATask> at success and NULL if an
+ * error occured.*/
+PREFIX spNetC4ATaskPointer spNetC4ACommitScoreParallel(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* scoreList,int timeOut);
 
 /* Function: spNetC4ACreateProfile
  * 
@@ -556,6 +657,15 @@ PREFIX int spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,ch
  * Cancels the C4A task running right now (if one is started).*/
 PREFIX void spNetC4ACancelTask();
 
+/* Function: spNetC4ACancelTaskParallel
+ * 
+ * Cancels the given C4A task. Don't forget to delete it afterwards with
+ * <spNetC4ADeleteTask>!
+ * 
+ * Parameters:
+ * task - pointer to <spNetC4ATask> returned from the parallel functions.*/
+PREFIX void spNetC4ACancelTaskParallel(spNetC4ATaskPointer task);
+
 /* Function: spNetC4AGetTaskResult
  * 
  * Gets the result of the task when finished (check with
@@ -565,6 +675,18 @@ PREFIX void spNetC4ACancelTask();
  * int - 0 if everything went fine, 1 at error*/
 PREFIX int spNetC4AGetTaskResult();
 
+/* Function: spNetC4AGetTaskResultParallel
+ * 
+ * Gets the result of the given task when finished (check with
+ * <spNetC4AGetStatusParallel>).
+ * 
+ * Parameters:
+ * task - pointer to <spNetC4ATask> returned from the parallel functions.
+ * 
+ * Returns:
+ * int - 0 if everything went fine, 1 at error*/
+PREFIX int spNetC4AGetTaskResultParallel(spNetC4ATaskPointer task);
+
 /* Function: spNetC4AGetTimeOut
  * 
  * Gives you the time out of the C4A tasks.
@@ -572,6 +694,17 @@ PREFIX int spNetC4AGetTaskResult();
  * Returns:
  * int - the timeOut in ms.*/
 PREFIX int spNetC4AGetTimeOut();
+
+/* Function: spNetC4AGetTimeOutParallel
+ * 
+ * Gives you the time out of the given C4A task.
+ * 
+ * Parameters:
+ * task - pointer to <spNetC4ATask> returned from the parallel functions.
+ * 
+ * Returns:
+ * int - the timeOut in ms.*/
+PREFIX int spNetC4AGetTimeOutParallel(spNetC4ATaskPointer task);
 
 /* Function: spNetC4AGetStatus
  * 
@@ -582,10 +715,30 @@ PREFIX int spNetC4AGetTimeOut();
  * int - <Compo4all statuses>*/
 PREFIX int spNetC4AGetStatus();
 
+/* Function: spNetC4AGetStatusParallel
+ * 
+ * Gets the status of <spNetC4AGetScoreParallel> & <spNetC4ACommitScoreParallel>.
+ * 
+ * Parameters:
+ * task - pointer to <spNetC4ATask> returned from the parallel functions
+ * 
+ * Returns:
+ * int - <Compo4all statuses>*/
+PREFIX int spNetC4AGetStatusParallel(spNetC4ATaskPointer task);
+
+
 /* Function: spNetC4ADeleteProfileFile
  * 
  * Deletes the profile file on your system, NOT the online account at skeezix
  * server. See also <spNetC4ADeleteAccount>.*/
 PREFIX void spNetC4ADeleteProfileFile();
+
+/* Function: spNetC4ADeleteTask
+ * 
+ * Deletes the task struct returned by the parallel working task functions.
+ * 
+ * Parameters:
+ * task - Pointer to <spNetC4ATask>, which is returned by the parallel functions.*/
+void spNetC4ADeleteTask(spNetC4ATaskPointer task);
 
 #endif
