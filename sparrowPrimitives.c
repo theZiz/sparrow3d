@@ -259,7 +259,7 @@ PREFIX void spInitPrimitives()
 	if (spPrimitivesIsInitialized)
 		return;
 	spPrimitivesIsInitialized = 1;
-	#ifdef PANDORA
+	#ifdef PANDORA_NEON
 		static const unsigned int x = 0x04086060;
 		static const unsigned int y = 0x03000000;
 		int r;

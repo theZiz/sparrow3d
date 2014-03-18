@@ -596,7 +596,7 @@
 		return;
 	if ( x2 < 0 )
 		return;
-	#ifdef PANDORA
+	#ifdef PANDORA_NEON
 		#ifdef __SPARROW_INTERNAL_PERSPECT__
 			#ifndef __SPARROW_INTERNAL_ZNOTHING__
 				int32x4_t t = {u1,v1,w1,z1};
@@ -626,7 +626,7 @@
 	#endif
 	if ( x1 < 0 )
 	{
-		#ifdef PANDORA
+		#ifdef PANDORA_NEON
 			int32x4_t scalar = {x1,x1,x1,x1};
 			t = vmlaq_s32(t,s,scalar);
 		#else
@@ -646,7 +646,7 @@
 	int x;
 	for ( x = x1; x <= x2; x++ )
 	{
-		#ifdef PANDORA
+		#ifdef PANDORA_NEON
 			pixel_macro( x, y, t[3], t[0], t[1], t[2], color)
 			t = vaddq_s32(t,s);
 		#else
