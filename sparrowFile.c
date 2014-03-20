@@ -495,3 +495,145 @@ PREFIX void spFileSortList(spFileListPointer* list,spFileSortType sortBy)
 	delete[] sarray;
 #endif
 }
+
+PREFIX char* spConfigGetPath(char* buffer,char* subfolder,char* file)
+{
+	#if defined GCW || (defined X86CPU && !defined WIN32)
+		sprintf(buffer,"%s/.config/%s",getenv("HOME"),subfolder);
+		spCreateDirectoryChain(buffer);
+		sprintf(buffer,"%s/.config/%s/%s",getenv("HOME"),subfolder,file);
+	#else
+		sprintf(buffer,"./%s",file);
+	#endif
+	return buffer;	
+}
+
+spConfigEntryPointer internalNewEntry(spConfigPointer config,char* key,char* value)
+{
+	spConfigEntryPointer entry = (spConfigEntryPointer)malloc(sizeof(spConfigEntry));
+	sprintf(entry->key,"%s",key);
+	sprintf(entry->value,"%s",value);
+	entry->next = config->firstEntry;
+	config->firstEntry = entry;
+	return entry;
+}	
+
+PREFIX spConfigPointer spConfigRead(char* filename,char* subfolder)
+{
+	spConfigPointer config = (spConfigPointer)malloc(sizeof(spConfig));
+	config->firstEntry = NULL;
+	config->filename = (char*)malloc(strlen(filename)+strlen(subfolder)+20);
+	spConfigGetPath(config->filename,subfolder,filename);
+	spFilePointer file = SDL_RWFromFile(config->filename,"rb");
+	if (file == NULL)
+		return config;
+	char buffer[1024];
+	char key[64];
+	char value[512];
+	while (spReadOneLine(file,buffer,1024) == 0)
+	{
+		char* middle = strchr(buffer,':');
+		if (middle == NULL)
+			continue;
+		middle[0] = 0;
+		sprintf(key,"%s",buffer);
+		middle++;
+		while (middle[0] == ' ')
+			middle++;
+		sprintf(value,"%s",middle);
+		internalNewEntry(config,key,value);
+	}
+	SDL_RWclose(file);
+	return config;
+}
+
+PREFIX void spConfigWrite(spConfigPointer config)
+{
+	spFilePointer file = SDL_RWFromFile(config->filename,"wb");
+	spConfigEntryPointer entry = config->firstEntry;
+	while (entry)
+	{
+		char buffer[1024];
+		sprintf(buffer,"%s: %s",entry->key,entry->value);
+		spWriteOneLine(file,buffer);
+		entry = entry->next;
+	}
+	SDL_RWclose(file);
+}
+
+PREFIX void spConfigFree(spConfigPointer config)
+{
+	spConfigEntryPointer entry = config->firstEntry;
+	while (entry)
+	{
+		spConfigEntryPointer next = entry->next;
+		free(entry);
+		entry = next;
+	}
+	free(config->filename);
+	free(config);
+}
+
+spConfigEntryPointer internalGetEntry(spConfigPointer config,char* key)
+{
+	spConfigEntryPointer entry = config->firstEntry;
+	while (entry)
+	{
+		if (strcmp(entry->key,key) == 0)
+			return entry;
+		entry = entry->next;
+	}
+	return NULL;
+}
+
+PREFIX char* spConfigGetString(spConfigPointer config,char* key,char* default_value)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+		entry = internalNewEntry(config,key,default_value);
+	return entry->value;
+}
+
+PREFIX int spConfigGetBool(spConfigPointer config,char* key,int default_value)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		if (default_value)
+			entry = internalNewEntry(config,key,"True");
+		else
+			entry = internalNewEntry(config,key,"False");
+	}
+	if (strcmp(entry->value,"True") == 0)
+		return 1;
+	if (strcmp(entry->value,"true") == 0)
+		return 1;
+	if (strcmp(entry->value,"1") == 0)
+		return 1;
+	return 0;
+}
+
+PREFIX int spConfigGetInt(spConfigPointer config,char* key,int default_value)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		char buffer[32];
+		sprintf(buffer,"%i",default_value);
+		entry = internalNewEntry(config,key,buffer);
+	}
+	return atoi(entry->value);
+}
+
+
+PREFIX float spConfigGetFloat(spConfigPointer config,char* key,float default_value)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		char buffer[32];
+		sprintf(buffer,"%f",default_value);
+		entry = internalNewEntry(config,key,buffer);
+	}
+	return atof(entry->value);
+}

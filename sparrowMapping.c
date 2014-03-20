@@ -42,7 +42,7 @@ struct
 int __spMapIsInitialized = 0;
 int __spMapStrategy = SP_MAPPING_NONE;
 
-void spInitMapping()
+PREFIX void spInitMapping()
 {
 	if (__spMapIsInitialized)
 		return;
@@ -54,7 +54,7 @@ void spInitMapping()
 		__spMapPool[i].active = 0;
 };
 
-void spMapClean()
+PREFIX void spMapClean()
 {
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
@@ -68,7 +68,7 @@ void spMapClean()
 		__spMapPool[i].active = 0;
 }
 
-void spMapPoolAdd(int button_id,char* caption)
+PREFIX void spMapPoolAdd(int button_id,char* caption)
 {
 	if (button_id < 0 || button_id >= SP_MAPPING_POOL_MAX)
 		return;
@@ -77,12 +77,12 @@ void spMapPoolAdd(int button_id,char* caption)
 	sprintf(__spMapPool[button_id].realCaption,"%s",caption);
 }
 
-void spMapSetStrategy(int strategy)
+PREFIX void spMapSetStrategy(int strategy)
 {
 	__spMapStrategy = strategy;
 }
 
-void spMapChange(int id,int poolButton)
+PREFIX void spMapChange(int id,int poolButton)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return;
@@ -116,7 +116,7 @@ void spMapChange(int id,int poolButton)
 	}
 }
 
-void spMapChangeNextInPool(int id)
+PREFIX void spMapChangeNextInPool(int id)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return;
@@ -128,7 +128,7 @@ void spMapChangeNextInPool(int id)
 	spMapChange(id,poolButton);
 }
 
-void spMapChangePreviousInPool(int id)
+PREFIX void spMapChangePreviousInPool(int id)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return;
@@ -140,7 +140,7 @@ void spMapChangePreviousInPool(int id)
 	spMapChange(id,poolButton);
 }
 
-void spMapButtonAdd(int id,char* name,char* caption,int poolButton)
+PREFIX void spMapButtonAdd(int id,char* name,char* caption,int poolButton)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return;
@@ -158,7 +158,7 @@ void spMapButtonAdd(int id,char* name,char* caption,int poolButton)
 	sprintf(__spMapButton[id].name,"%s",name);
 }
 
-int spMapGetByID(int id)
+PREFIX int spMapGetByID(int id)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return 0;
@@ -169,7 +169,7 @@ int spMapGetByID(int id)
 	return spGetInput()->button[__spMapButton[id].poolButton];
 }
 
-void spMapSetByID(int id, int value)
+PREFIX void spMapSetByID(int id, int value)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return;
@@ -180,7 +180,7 @@ void spMapSetByID(int id, int value)
 	spGetInput()->button[__spMapButton[id].poolButton] = value;
 }
 
-int spMapGetByName(char* name)
+PREFIX int spMapGetByName(char* name)
 {
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
@@ -189,7 +189,7 @@ int spMapGetByName(char* name)
 	return 0;
 }
 
-void spMapSetByName(char* name, int value)
+PREFIX void spMapSetByName(char* name, int value)
 {
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
@@ -200,7 +200,7 @@ void spMapSetByName(char* name, int value)
 		}
 }
 
-char* spMapCaptionByID(int id)
+PREFIX char* spMapCaptionByID(int id)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return __spMapError;
@@ -209,7 +209,7 @@ char* spMapCaptionByID(int id)
 	return __spMapButton[id].caption;
 }
 
-char* spMapCaptionByName(char* name)
+PREFIX char* spMapCaptionByName(char* name)
 {
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
@@ -218,7 +218,7 @@ char* spMapCaptionByName(char* name)
 	return __spMapError;
 }
 
-char* spMapButtonByID(int id)
+PREFIX char* spMapButtonByID(int id)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return __spMapError;
@@ -229,7 +229,7 @@ char* spMapButtonByID(int id)
 	return __spMapPool[__spMapButton[id].poolButton].realCaption;
 }
 
-char* spMapButtonByName(char* name)
+PREFIX char* spMapButtonByName(char* name)
 {
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
@@ -240,7 +240,7 @@ char* spMapButtonByName(char* name)
 
 int __spMapChangingID = -1;
 
-void spMapStartChangeByID(int id)
+PREFIX void spMapStartChangeByID(int id)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return;
@@ -253,7 +253,7 @@ void spMapStartChangeByID(int id)
 	__spMapChangingID = id;
 }
 
-void spMapStartChangeByName(char* name)
+PREFIX void spMapStartChangeByName(char* name)
 {
 	int i,id = -1;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
@@ -264,7 +264,7 @@ void spMapStartChangeByName(char* name)
 		}
 }
 
-int spMapContinueChange()
+PREFIX int spMapContinueChange()
 {
 	if (__spMapChangingID < 0)
 		return -1;

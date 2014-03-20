@@ -28,7 +28,7 @@
 
 #ifndef _SPARROW_MAPPING_H
 #define _SPARROW_MAPPING_H
-
+#include "sparrowDefines.h"
 
 /* Define: SP_MAPPING_MAX
  *
@@ -52,12 +52,12 @@
 /* Function: spInitMapping
  *
  * Inits sparrowMapping. This function should be called by <spInitCore>.*/
-void spInitMapping();
+PREFIX void spInitMapping();
 
 /* Function: spMapClean();
  * 
  * Deletes all mappings and all buttons in the pool.*/
-void spMapClean();
+PREFIX void spMapClean();
 
 /* Function: spMapPoolAdd
  * 
@@ -69,7 +69,7 @@ void spMapClean();
  * SP_BUTTON_LEFT.
  * caption - the caption of the button. Later used from <spMapButtonByID> and
  * <spMapButtonByName>.*/
-void spMapPoolAdd(int button_id,char* caption);
+PREFIX void spMapPoolAdd(int button_id,char* caption);
 
 /* Function: spMapSetStrategy
  * 
@@ -81,7 +81,7 @@ void spMapPoolAdd(int button_id,char* caption);
  * SP_MAPPING_SWITCH, which means, that the mappings are switched at conflict or
  * SP_MAPPING_OTHER_INVALID, which deletes the conflict mapping if it already
  * exists.*/
-void spMapSetStrategy(int strategy);
+PREFIX void spMapSetStrategy(int strategy);
 
 /* Function: spMapButtonAdd
  * 
@@ -96,7 +96,7 @@ void spMapSetStrategy(int strategy);
  * need. The user should semanticly understand this caption
  * poolButton - the real sparrow3d button (e.g. SP_BUTTON_A) to be used. Don't
  * forget to add this button via <spMapPoolAdd> _before_!*/
-void spMapButtonAdd(int id,char* name,char* caption,int poolButton);
+PREFIX void spMapButtonAdd(int id,char* name,char* caption,int poolButton);
 
 /* Function: spMapChange
  * 
@@ -107,7 +107,7 @@ void spMapButtonAdd(int id,char* name,char* caption,int poolButton);
  * id - button id to change
  * poolButton - real sparrow3d button to change the mapping to. Don't forget to
  * add this button to the pool first with <spMapPoolAdd>!*/
-void spMapChange(int id,int poolButton);
+PREFIX void spMapChange(int id,int poolButton);
 
 /* Function: spMapChangeNextInPool
  * 
@@ -118,7 +118,7 @@ void spMapChange(int id,int poolButton);
  * 
  * See also:
  * <spMapChangePreviousInPool>*/
-void spMapChangeNextInPool(int id);
+PREFIX void spMapChangeNextInPool(int id);
 
 /* Function: spMapChangePreviousInPool
  * 
@@ -129,7 +129,7 @@ void spMapChangeNextInPool(int id);
  * 
  * See also:
  * <spMapChangeNextInPool>*/
-void spMapChangePreviousInPool(int id);
+PREFIX void spMapChangePreviousInPool(int id);
 
 /* Function: spMapGetByID
  * 
@@ -141,7 +141,7 @@ void spMapChangePreviousInPool(int id);
  * 
  * Returns:
  * int - 0 not pressed, 1 pressed*/
-int spMapGetByID(int id);
+PREFIX int spMapGetByID(int id);
 
 /* Function: spMapSetByID
  * 
@@ -151,7 +151,7 @@ int spMapGetByID(int id);
  * Parameters:
  * id - the id of the button
  * value - value to set, where 0 means not pressed and 1 means pressed*/
-void spMapSetByID(int id, int value);
+PREFIX void spMapSetByID(int id, int value);
 
 /* Function: spMapGetByName
  * 
@@ -163,7 +163,7 @@ void spMapSetByID(int id, int value);
  * 
  * Returns:
  * int - 0 not pressed, 1 pressed*/
-int spMapGetByName(char* name);
+PREFIX int spMapGetByName(char* name);
 
 /* Function: spMapSetByName
  * 
@@ -173,7 +173,7 @@ int spMapGetByName(char* name);
  * Parameters:
  * name - the name of the button
  * value - value to set, where 0 means not pressed and 1 means pressed*/
-void spMapSetByName(char* name, int value);
+PREFIX void spMapSetByName(char* name, int value);
 
 /* Function: spMapCaptionByID
  * 
@@ -185,7 +185,7 @@ void spMapSetByName(char* name, int value);
  * 
  * Returns:
  * char* - the name of the button*/
-char* spMapCaptionByID(int id);
+PREFIX char* spMapCaptionByID(int id);
 
 /* Function: spMapCaptionByName
  * 
@@ -197,7 +197,7 @@ char* spMapCaptionByID(int id);
  * 
  * Returns:
  * char* - the name of the button*/
-char* spMapCaptionByName(char* name);
+PREFIX char* spMapCaptionByName(char* name);
 
 /* Function: spMapButtonByID
  * 
@@ -209,7 +209,7 @@ char* spMapCaptionByName(char* name);
  * 
  * Returns:
  * char* - the name of the mapped button*/
-char* spMapButtonByID(int id);
+PREFIX char* spMapButtonByID(int id);
 
 /* Function: spMapButtonByName
  * 
@@ -221,7 +221,7 @@ char* spMapButtonByID(int id);
  * 
  * Returns:
  * char* - the name of the mapped button*/
-char* spMapButtonByName(char* name);
+PREFIX char* spMapButtonByName(char* name);
 
 /* Function: spMapStartChangeByID
  * 
@@ -230,7 +230,7 @@ char* spMapButtonByName(char* name);
  * 
  * Parameters:
  * id - the id of the semantic button to change it's mapping*/
-void spMapStartChangeByID(int id);
+PREFIX void spMapStartChangeByID(int id);
 
 /* Function: spMapStartChangeByName
  * 
@@ -239,7 +239,7 @@ void spMapStartChangeByID(int id);
  * 
  * Parameters:
  * name - the name of the semantic button to change it's mapping*/
-void spMapStartChangeByName(char* name);
+PREFIX void spMapStartChangeByName(char* name);
 
 /* Function: spMapContinueChange
  * 
@@ -252,6 +252,6 @@ void spMapStartChangeByName(char* name);
  * program should be supressed like going back to another menu or similar.
  * 1 means the button mapping has been changed just know with this call.
  * -1 means no button changing process is running right know.*/
-int spMapContinueChange();
+PREFIX int spMapContinueChange();
 
 #endif

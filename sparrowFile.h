@@ -279,4 +279,134 @@ PREFIX void spFileDeleteList(spFileListPointer list);
  * backwards */
 PREFIX void spFileSortList(spFileListPointer* list,spFileSortType sortBy);
 
+/* Function: spConfigGetPath
+ * 
+ * Returns the path to config files, which may be everywhere on different
+ * targets, e.g. in appdata for the pandora, home-folder for the gcw, etc.
+ * 
+ * Parameters:
+ * buffer - buffer to fill with the path
+ * subfolder - name of the program used to create subfolders e.g. in ~/.config.
+ * Not used by every target. In fact only by x86 linux and gcw.
+ * file - name of the config file to give the path to
+ * 
+ * Returns:
+ * char* - filled pointer to buffer*/
+PREFIX char* spConfigGetPath(char* buffer,char* subfolder,char* file);
+
+/* type: spConfigEntry
+ *
+ * List type for config entries.
+ *
+ * Variables:
+ * key (char[64]) - name of the config setting, e.g. "resolution"
+ * value (char[512]) - value of the config setting, e.g. "800x480"
+ * next (pointer) - next element in list*/
+typedef struct spConfigEntryStruct *spConfigEntryPointer;
+typedef struct spConfigEntryStruct
+{
+	char key[64];
+	char value[512];
+	spConfigEntryPointer next;
+} spConfigEntry;
+
+/* type: spConfig
+ *
+ * Config type
+ *
+ * Variables:
+ * filename (char*) - full path of the config
+ * firstEntry (pointer) - pointer to the first entry in the config file*/
+typedef struct spConfigStruct *spConfigPointer;
+typedef struct spConfigStruct
+{
+	char* filename;
+	spConfigEntryPointer firstEntry;
+} spConfig;
+
+/* Function: spConfigRead
+ * 
+ * Reads a config and saves it to a <spConfig> struct
+ * 
+ * Parameters:
+ * filename - filename of the config. It will be saved to a specific folder on
+ * every target
+ * subfolder - needed to "calculate" this specific folder. Should just be your
+ * program name
+ * 
+ * Returns:
+ * spConfigPointer - Pointer to a <spConfig> Struct*/
+PREFIX spConfigPointer spConfigRead(char* filename,char* subfolder);
+
+/* Function: spConfigWrite
+ * 
+ * Writes the config to the file.
+ * 
+ * Parameters:
+ * config - config, that shall be written */
+PREFIX void spConfigWrite(spConfigPointer config);
+
+/* Function: spConfigFree
+ * 
+ * Frees the struct if you don't need it anymore
+ * 
+ * Parameters:
+ * config - config, that shall be freed */
+PREFIX void spConfigFree(spConfigPointer config);
+
+/* Function: spConfigGetString
+ * 
+ * Returns the string value to a specific key. If the key is not found, it will
+ * be added with the default_value.
+ * 
+ * Parameters:
+ * config - config to read from
+ * key - key of the item
+ * default_value - value to add/return if the key is not available yet
+ * 
+ * Returns:
+ * char* - the value*/
+PREFIX char* spConfigGetString(spConfigPointer config,char* key,char* default_value);
+
+/* Function: spConfigGetBool
+ * 
+ * Returns the bool value to a specific key. If the key is not found, it will
+ * be added with the default_value.
+ * 
+ * Parameters:
+ * config - config to read from
+ * key - key of the item
+ * default_value - value to add/return if the key is not available yet
+ * 
+ * Returns:
+ * int - the value. 1 means true, 0 false*/
+PREFIX int spConfigGetBool(spConfigPointer config,char* key,int default_value);
+
+/* Function: spConfigGetInt
+ * 
+ * Returns the int value to a specific key. If the key is not found, it will
+ * be added with the default_value.
+ * 
+ * Parameters:
+ * config - config to read from
+ * key - key of the item
+ * default_value - value to add/return if the key is not available yet
+ * 
+ * Returns:
+ * int - the value*/
+PREFIX int spConfigGetInt(spConfigPointer config,char* key,int default_value);
+
+/* Function: spConfigGetFloat
+ * 
+ * Returns the float value to a specific key. If the key is not found, it will
+ * be added with the default_value.
+ * 
+ * Parameters:
+ * config - config to read from
+ * key - key of the item
+ * default_value - value to add/return if the key is not available yet
+ * 
+ * Returns:
+ * float - the value*/
+PREFIX float spConfigGetFloat(spConfigPointer config,char* key,float default_value);
 #endif
