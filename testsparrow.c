@@ -20,6 +20,7 @@
 #include "test_yinyang.h"
 #include "test_target.h"
 #include "test_text.h"
+#include "test_mapping.h"
 SDL_Surface *screen;
 Sint32 rotation = 0;
 spFontPointer font = NULL;
@@ -28,7 +29,7 @@ int threading = 0;
 int test = 0;
 int no_movement = 0;
 char input[32] = "";
-#define TEST_COUNT 10
+#define TEST_COUNT 11
 
 void draw_test( void )
 {
@@ -41,20 +42,23 @@ void draw_test( void )
 	spFontDraw( 2, font-> maxheight+2, 0, "[L] Previous", font );
 	spFontDrawRight( screen->w - 2 , font-> maxheight+2, 0, "[R] next", font );
 	spFontDrawRight( screen->w - 2 , 2, 0, "[S] Exit", font );
-	switch (spIsKeyboardPolled())
+	if (test != 10)
 	{
-		case 0: spFontDraw( 2, 2, 0, "[E] Enter Text", font ); break;
-		case 1: spFontDraw( 2, 2, 0, "[E] Finish Text", font ); break;
-	}
-	switch (threading)
-	{
-		case 0: spFontDrawRight( screen->w - 2, screen->h - 1*font-> maxheight, 0, "[X] No draw thread", font ); break;
-		case 1: spFontDrawRight( screen->w - 2, screen->h - 1*font-> maxheight, 0, "[X] Extra draw thread", font ); break;
-	}
-	switch (pause)
-	{
-		case 0: spFontDrawRight( screen->w - 2, screen->h - 2*font-> maxheight, 0, "[Y] Pause", font ); break;
-		case 1: spFontDrawRight( screen->w - 2, screen->h - 2*font-> maxheight, 0, "[Y] Unpause", font ); break;
+		switch (spIsKeyboardPolled())
+		{
+			case 0: spFontDraw( 2, 2, 0, "[E] Enter Text", font ); break;
+			case 1: spFontDraw( 2, 2, 0, "[E] Finish Text", font ); break;
+		}
+		switch (threading)
+		{
+			case 0: spFontDrawRight( screen->w - 2, screen->h - 1*font-> maxheight, 0, "[X] No draw thread", font ); break;
+			case 1: spFontDrawRight( screen->w - 2, screen->h - 1*font-> maxheight, 0, "[X] Extra draw thread", font ); break;
+		}
+		switch (pause)
+		{
+			case 0: spFontDrawRight( screen->w - 2, screen->h - 2*font-> maxheight, 0, "[Y] Pause", font ); break;
+			case 1: spFontDrawRight( screen->w - 2, screen->h - 2*font-> maxheight, 0, "[Y] Unpause", font ); break;
+		}
 	}
 	spFontDrawMiddle( screen->w /2, screen->h - 2*font-> maxheight, 0, input, font );
 	char buffer[256];
@@ -110,6 +114,11 @@ void draw_test( void )
 			spFontDraw( 2, screen->h - 1*font->maxheight,0, settings_text(buffer,SP_BUTTON_A), font);
 			spFontDraw( 2, screen->h - 2*font->maxheight,0, settings_text(buffer,SP_BUTTON_B), font);
 			break;
+		case 10:
+			spFontDrawMiddle( screen->w / 2, font->maxheight + 2, 0, caption_mapping(buffer), font );
+			spFontDraw( 2, screen->h - 1*font->maxheight,0, settings_mapping(buffer,SP_BUTTON_A), font);
+			spFontDraw( 2, screen->h - 2*font->maxheight,0, settings_mapping(buffer,SP_BUTTON_B), font);
+			break;
 	}
 
 	sprintf( buffer, "fps: %i", spGetFPS() );
@@ -127,6 +136,9 @@ void draw_test( void )
 	spSetZTest( 1 );
 	switch ( test )
 	{
+	case 10:
+		draw_mapping(rotation,font);
+		break;
 	case 9:
 		draw_text(rotation,font);
 		break;
@@ -171,7 +183,7 @@ int calc_test( Uint32 steps )
 	else
 		rotation += steps*32;
 	
-	if ( spIsKeyboardPolled())
+	if ( test!=10 && spIsKeyboardPolled())
 	{
 		if ( spGetInput()->button[SP_BUTTON_SELECT] )
 		{
@@ -180,13 +192,13 @@ int calc_test( Uint32 steps )
 		}
 		return 0;
 	}
-	if ( spGetInput()->button[SP_BUTTON_X] )
+	if ( test!=10 && spGetInput()->button[SP_BUTTON_X] )
 	{
 		spGetInput()->button[SP_BUTTON_X] = 0;
 		threading = (threading+1) % 2;
 		spDrawInExtraThread(threading);
 	}
-	if ( spGetInput()->button[SP_BUTTON_Y] )
+	if ( test!=10 && spGetInput()->button[SP_BUTTON_Y] )
 	{
 		spGetInput()->button[SP_BUTTON_Y] = 0;
 		pause = 1-pause;
@@ -235,6 +247,9 @@ int calc_test( Uint32 steps )
 			break;
 		case 9:
 			calc_text(steps);
+			break;
+		case 10:
+			calc_mapping(steps);
 			break;
 	}
 	if ( spGetInput()->button[SP_BUTTON_SELECT] )
@@ -325,6 +340,7 @@ int main( int argc, char **argv )
 	init_yinyang();
 	init_target();
 	init_text(argc,argv,font);
+	init_mapping();
 	spSelectRenderTarget(screen);
 
 	spSetAffineTextureHack(0);
@@ -345,6 +361,7 @@ int main( int argc, char **argv )
 	quit_yinyang();
 	quit_target();
 	quit_text();
+	quit_mapping();
 	spQuitCore();
 	return 0;
 }

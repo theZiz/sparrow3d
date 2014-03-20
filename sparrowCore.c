@@ -18,6 +18,7 @@
 #include "sparrowCore.h"
 #include "sparrowMath.h"
 #include "sparrowPrimitives.h"
+#include "sparrowMapping.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -216,6 +217,7 @@ PREFIX void spInitCore( void )
 
 	spInitPrimitives();
 	spInitMath();
+	spInitMapping();
 	memset(sp_cache_name,0,SP_CACHE_SIZE*sizeof(sp_cache_pointer));
 	memset(sp_cache_surface,0,SP_CACHE_SIZE*sizeof(sp_cache_pointer));
 }
