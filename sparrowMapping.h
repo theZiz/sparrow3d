@@ -44,10 +44,13 @@
  * SP_MAPPING_SWITCH - If the button is already used by another mapping switch
  * the mappings. Otherwise just set it.
  * SP_MAPPING_OTHER_INVALID - If the button is already used by another mapping
- * delete the other mapping.*/
+ * delete the other mapping.
+ * SP_MAPPING_CANCEL - If the button is already used, don't set it to the new
+ * mapping, but keep the old.*/
 #define SP_MAPPING_NONE 0
 #define SP_MAPPING_SWITCH 1
 #define SP_MAPPING_OTHER_INVALID 2
+#define SP_MAPPING_CANCEL 3
 
 /* Function: spInitMapping
  *
@@ -78,9 +81,10 @@ PREFIX void spMapPoolAdd(int button_id,char* caption);
  * 
  * Parameters:
  * strategy - may be SP_MAPPING_NONE, which means no strategy use,
- * SP_MAPPING_SWITCH, which means, that the mappings are switched at conflict or
+ * SP_MAPPING_SWITCH, which means, that the mappings are switched at conflict,
  * SP_MAPPING_OTHER_INVALID, which deletes the conflict mapping if it already
- * exists.*/
+ * exists or SP_MAPPING_CANCEL, which means, if the button is already used,
+ * don't set it to the new mapping, but keep the old one.*/
 PREFIX void spMapSetStrategy(int strategy);
 
 /* Function: spMapButtonAdd
@@ -106,8 +110,12 @@ PREFIX void spMapButtonAdd(int id,char* name,char* caption,int poolButton);
  * Parameters:
  * id - button id to change
  * poolButton - real sparrow3d button to change the mapping to. Don't forget to
- * add this button to the pool first with <spMapPoolAdd>!*/
-PREFIX void spMapChange(int id,int poolButton);
+ * add this button to the pool first with <spMapPoolAdd>!
+ * 
+ * Returns:
+ * int - 0 if the button was changed or 1 if not. This can happen, if the
+ * strategy is <SP_MAPPING_CANCEL> and the button was already used.*/
+PREFIX int spMapChange(int id,int poolButton);
 
 /* Function: spMapChangeNextInPool
  * 
@@ -252,11 +260,35 @@ PREFIX void spMapStartChangeByName(char* name);
  * program should be supressed like going back to another menu or similar.
  * 1 means the button mapping has been changed just know with this call, what is
  * e.g. a good time to save the mapping. -1 means no button changing process is
- * running right know.*/
+ * running right know. If 2 is returned the function is done, but no new button
+ * was set. That can be the case, if the strategy is <SP_MAPPING_CANCEL>, but
+ * the mapped was already in use.*/
 PREFIX int spMapContinueChange();
 
+/* Function: spMapLoad
+ * 
+ * Loads a mapping. Important: You should first create the pool, than add your
+ * semantic buttons (same as in the saved mapping!) and then load the config. If
+ * no config is there yet, the value set by you will be kept.
+ * 
+ * Parameters:
+ * subfolder - subfolder for the config to be used. Not used on any system, but
+ * this should be the name of your application, so that the config is read e.g.
+ * from ~/.config/subfolder/filename
+ * filename - filename to read from*/
 PREFIX void spMapLoad(char* subfolder,char* filename);
 
+/* Function: spMapSave
+ * 
+ * Saves a mapping. Important: You should first create the pool, than add your
+ * semantic buttons (same as in the saved mapping!) and then load the config. If
+ * no config is there yet, the value set by you will be kept.
+ * 
+ * Parameters:
+ * subfolder - subfolder for the config to be used. Not used on any system, but
+ * this should be the name of your application, so that the config is saved e.g.
+ * to ~/.config/subfolder/filename
+ * filename - filename to save to*/
 PREFIX void spMapSave(char* subfolder,char* filename);
 
 #endif

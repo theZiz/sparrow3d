@@ -12,6 +12,7 @@
 #include <strings.h>
 
 int map_selection = 0;
+int already_used = 0;
 
 void init_mapping()
 {
@@ -25,7 +26,7 @@ void init_mapping()
 	spMapButtonAdd(2,"run","Run",SP_BUTTON_X);
 	spMapButtonAdd(3,"bomb","Bomb",SP_BUTTON_Y);
 	spMapLoad("testsparrow","controls.cfg");
-	spMapSetStrategy(SP_MAPPING_OTHER_INVALID); //or SP_MAPPING_NONE or SP_MAPPING_SWITCH
+	spMapSetStrategy(SP_MAPPING_CANCEL); //or SP_MAPPING_NONE or SP_MAPPING_SWITCH or SP_MAPPING_OTHER_INVALID
 }
 
 char* caption_mapping(char* caption)
@@ -55,9 +56,13 @@ void draw_mapping(int rotation, spFontPointer font)
 	int r = spMapContinueChange();
 	if (r == 0)
 		spFontDrawMiddle(spGetWindowSurface()->w/2,font->maxheight*3,0,"Press [A],[B],[X],[Y] or [E]!",font);
+	else
+	if (already_used)
+		spFontDrawMiddle(spGetWindowSurface()->w/2,font->maxheight*3,0,"This button is already used!",font);
 	if (r == 1)
 		spMapSave("testsparrow","controls.cfg");
-		
+	if (r == 2)
+		already_used = 1;
 	int i;
 	for (i = 0; i < 4; i++)
 	{
@@ -88,10 +93,13 @@ void calc_mapping(int steps)
 		return;
 	if (r == 1)
 		spMapSave("testsparrow","controls.cfg");
+	if (r == 2)
+		already_used = 1;
 	if (spGetInput()->button[SP_BUTTON_SELECT])
 	{
 		spGetInput()->button[SP_BUTTON_SELECT] = 0;
 		spMapStartChangeByID(map_selection);
+		already_used = 0;
 		return;
 	}
 	if (spGetInput()->axis[0] > 0)
@@ -99,12 +107,14 @@ void calc_mapping(int steps)
 		spGetInput()->axis[0] = 0;
 		spMapChangeNextInPool(map_selection);
 		spMapSave("testsparrow","controls.cfg");
+		already_used = 0;
 	}
 	if (spGetInput()->axis[0] < 0)
 	{
 		spGetInput()->axis[0] = 0;
 		spMapChangePreviousInPool(map_selection);
 		spMapSave("testsparrow","controls.cfg");
+		already_used = 0;
 	}
 	if (spGetInput()->axis[1] > 0 && map_selection < 3)
 	{

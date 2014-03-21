@@ -83,7 +83,7 @@ PREFIX void spMapSetStrategy(int strategy)
 	__spMapStrategy = strategy;
 }
 
-PREFIX void spMapChange(int id,int poolButton)
+PREFIX int spMapChange(int id,int poolButton)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return;
@@ -112,9 +112,20 @@ PREFIX void spMapChange(int id,int poolButton)
 					__spMapButton[i].poolButton = -1;
 			__spMapButton[id].poolButton = poolButton;
 			break;
+		case SP_MAPPING_CANCEL:
+			//Searching, whether the button is already used.
+			for (i = 0; i < SP_MAPPING_MAX; i++)
+				if (__spMapButton[i].active && __spMapButton[i].poolButton == poolButton)
+					break;
+			if (i == SP_MAPPING_MAX) //no break!
+				__spMapButton[id].poolButton = poolButton;
+			else
+				return 1;
+			break;
 		default:
 			__spMapButton[id].poolButton = poolButton;
 	}
+	return 0;
 }
 
 PREFIX void spMapChangeNextInPool(int id)
@@ -123,10 +134,14 @@ PREFIX void spMapChangeNextInPool(int id)
 		return;
 	if (!__spMapButton[id].active)
 		return;
-	int poolButton = (__spMapButton[id].poolButton+1)%SP_MAPPING_POOL_MAX;
-	while (!__spMapPool[poolButton].active) //not in pool
+	int poolButton = __spMapButton[id].poolButton;
+	do
+	{
 		poolButton = (poolButton+1)%SP_MAPPING_POOL_MAX;
-	spMapChange(id,poolButton);
+		while (!__spMapPool[poolButton].active) //not in pool
+			poolButton = (poolButton+1)%SP_MAPPING_POOL_MAX;
+	}
+	while (spMapChange(id,poolButton));
 }
 
 PREFIX void spMapChangePreviousInPool(int id)
@@ -135,10 +150,14 @@ PREFIX void spMapChangePreviousInPool(int id)
 		return;
 	if (!__spMapButton[id].active)
 		return;
-	int poolButton = (__spMapButton[id].poolButton+SP_MAPPING_POOL_MAX-1)%SP_MAPPING_POOL_MAX;
-	while (!__spMapPool[poolButton].active) //not in pool
+	int poolButton = __spMapButton[id].poolButton;
+	do
+	{
 		poolButton = (poolButton+SP_MAPPING_POOL_MAX-1)%SP_MAPPING_POOL_MAX;
-	spMapChange(id,poolButton);
+		while (!__spMapPool[poolButton].active) //not in pool
+			poolButton = (poolButton+SP_MAPPING_POOL_MAX-1)%SP_MAPPING_POOL_MAX;
+	}
+	while (spMapChange(id,poolButton));
 }
 
 PREFIX void spMapButtonAdd(int id,char* name,char* caption,int poolButton)
@@ -273,9 +292,11 @@ PREFIX int spMapContinueChange()
 	for (i = 0; i < SP_MAPPING_POOL_MAX; i++)
 		if (__spMapPool[i].active && spGetInput()->button[i])
 		{
-			spMapChange(__spMapChangingID,i);
+			int r = spMapChange(__spMapChangingID,i);
 			spGetInput()->button[i] = 0;
 			__spMapChangingID = -1;
+			if (r == 1)
+				return 2;
 			return 1;
 		}
 	return 0;
