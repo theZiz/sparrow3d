@@ -58,7 +58,11 @@ void draw_mapping(int rotation, spFontPointer font)
 		spFontDrawMiddle(spGetWindowSurface()->w/2,font->maxheight*3,0,"Press [A],[B],[X],[Y] or [E]!",font);
 	else
 	if (already_used)
-		spFontDrawMiddle(spGetWindowSurface()->w/2,font->maxheight*3,0,"This button is already used!",font);
+	{
+		char buffer[256];
+		sprintf(buffer,"Button %s is already used by %s!",spMapLastCollisionPool(),spMapLastCollisionCaption());
+		spFontDrawMiddle(spGetWindowSurface()->w/2,font->maxheight*3,0,buffer,font);
+	}
 	if (r == 1)
 		spMapSave("testsparrow","controls.cfg");
 	if (r == 2)

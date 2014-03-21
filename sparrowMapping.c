@@ -83,6 +83,9 @@ PREFIX void spMapSetStrategy(int strategy)
 	__spMapStrategy = strategy;
 }
 
+char* __spMapCollisionCaption = NULL;
+char* __spMapCollisionPool = NULL;
+
 PREFIX int spMapChange(int id,int poolButton)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
@@ -120,7 +123,11 @@ PREFIX int spMapChange(int id,int poolButton)
 			if (i == SP_MAPPING_MAX) //no break!
 				__spMapButton[id].poolButton = poolButton;
 			else
+			{
+				__spMapCollisionCaption = __spMapButton[i].caption;
+				__spMapCollisionPool = __spMapPool[poolButton].realCaption;
 				return 1;
+			}
 			break;
 		default:
 			__spMapButton[id].poolButton = poolButton;
@@ -300,6 +307,16 @@ PREFIX int spMapContinueChange()
 			return 1;
 		}
 	return 0;
+}
+
+PREFIX char* spMapLastCollisionCaption()
+{
+	return __spMapCollisionCaption;
+}
+	
+PREFIX char* spMapLastCollisionPool()
+{
+	return __spMapCollisionPool;
 }
 
 PREFIX void spMapCancelChange()

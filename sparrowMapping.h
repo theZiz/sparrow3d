@@ -258,12 +258,31 @@ PREFIX void spMapStartChangeByName(char* name);
  * Returns:
  * int - 0 means changes are still in progress, so maybe some functions of the
  * program should be supressed like going back to another menu or similar.
- * 1 means the button mapping has been changed just know with this call, what is
+ * 1 means the button mapping has been changed just now with this call, what is
  * e.g. a good time to save the mapping. -1 means no button changing process is
  * running right know. If 2 is returned the function is done, but no new button
- * was set. That can be the case, if the strategy is <SP_MAPPING_CANCEL>, but
- * the mapped was already in use.*/
+ * was set. That is the case, if the strategy is <SP_MAPPING_CANCEL>, but
+ * the mapped was already in use. The collision semantic button and pool button
+ * can be read via <spMapLastCollisionName> and <spMapLastCollisionPool>. */
 PREFIX int spMapContinueChange();
+
+/* Function: spMapLastCollisionName
+ * 
+ * Returns the name of the semantic button caption of last collision if
+ * <spMapContinueChange> returned 2.
+ * 
+ * Returns:
+ * char* - caption of the semantic button, may be NULL!*/
+PREFIX char* spMapLastCollisionCaption();
+
+/* Function: spMapLastCollisionPool
+ * 
+ * Returns the name of the pool button of last collision if
+ * <spMapContinueChange> returned 2.
+ * 
+ * Returns:
+ * char* - name of the pool button, may be NULL!*/
+PREFIX char* spMapLastCollisionPool();
 
 /* Function: spMapCancelChange
  * 
