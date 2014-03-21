@@ -357,7 +357,8 @@ PREFIX void spConfigFree(spConfigPointer config);
 /* Function: spConfigGetString
  * 
  * Returns the string value to a specific key. If the key is not found, it will
- * be added with the default_value.
+ * be added with the default_value. There is no Setter function, because you
+ * can edit the returned pointer directly.
  * 
  * Parameters:
  * config - config to read from
@@ -382,6 +383,17 @@ PREFIX char* spConfigGetString(spConfigPointer config,char* key,char* default_va
  * int - the value. 1 means true, 0 false*/
 PREFIX int spConfigGetBool(spConfigPointer config,char* key,int default_value);
 
+/* Function: spConfigSetBool
+ * 
+ * Sets the bool value to a specific key. If the key is not found, it will
+ * be added.
+ * 
+ * Parameters:
+ * config - config to write to
+ * key - key of the item
+ * value - value to set*/
+PREFIX void spConfigSetBool(spConfigPointer config,char* key,int value);
+
 /* Function: spConfigGetInt
  * 
  * Returns the int value to a specific key. If the key is not found, it will
@@ -396,6 +408,17 @@ PREFIX int spConfigGetBool(spConfigPointer config,char* key,int default_value);
  * int - the value*/
 PREFIX int spConfigGetInt(spConfigPointer config,char* key,int default_value);
 
+/* Function: spConfigSetInt
+ * 
+ * Sets the int value to a specific key. If the key is not found, it will
+ * be added.
+ * 
+ * Parameters:
+ * config - config to write to
+ * key - key of the item
+ * value - value to set*/
+PREFIX void spConfigSetInt(spConfigPointer config,char* key,int value);
+
 /* Function: spConfigGetFloat
  * 
  * Returns the float value to a specific key. If the key is not found, it will
@@ -409,4 +432,15 @@ PREFIX int spConfigGetInt(spConfigPointer config,char* key,int default_value);
  * Returns:
  * float - the value*/
 PREFIX float spConfigGetFloat(spConfigPointer config,char* key,float default_value);
+
+/* Function: spConfigSetFloat
+ * 
+ * Sets the float value to a specific key. If the key is not found, it will
+ * be added.
+ * 
+ * Parameters:
+ * config - config to write to
+ * key - key of the item
+ * value - value to set*/
+PREFIX void spConfigSetFloat(spConfigPointer config,char* key,float value);
 #endif

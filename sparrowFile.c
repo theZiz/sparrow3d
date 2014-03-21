@@ -522,7 +522,7 @@ PREFIX spConfigPointer spConfigRead(char* filename,char* subfolder)
 {
 	spConfigPointer config = (spConfigPointer)malloc(sizeof(spConfig));
 	config->firstEntry = NULL;
-	config->filename = (char*)malloc(strlen(filename)+strlen(subfolder)+20);
+	config->filename = (char*)malloc(strlen(filename)+strlen(subfolder)+128);
 	spConfigGetPath(config->filename,subfolder,filename);
 	spFilePointer file = SDL_RWFromFile(config->filename,"rb");
 	if (file == NULL)
@@ -613,6 +613,25 @@ PREFIX int spConfigGetBool(spConfigPointer config,char* key,int default_value)
 	return 0;
 }
 
+PREFIX void spConfigSetBool(spConfigPointer config,char* key,int value)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		if (value)
+			entry = internalNewEntry(config,key,"True");
+		else
+			entry = internalNewEntry(config,key,"False");
+	}
+	else
+	{
+		if (value)
+			sprintf(entry->value,"True");
+		else
+			sprintf(entry->value,"False");
+	}		
+}
+
 PREFIX int spConfigGetInt(spConfigPointer config,char* key,int default_value)
 {
 	spConfigEntryPointer entry = internalGetEntry(config,key);
@@ -625,6 +644,18 @@ PREFIX int spConfigGetInt(spConfigPointer config,char* key,int default_value)
 	return atoi(entry->value);
 }
 
+PREFIX void spConfigSetInt(spConfigPointer config,char* key,int value)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		char buffer[32];
+		sprintf(buffer,"%i",value);
+		entry = internalNewEntry(config,key,buffer);
+	}
+	else
+		sprintf(entry->value,"%i",value);
+}
 
 PREFIX float spConfigGetFloat(spConfigPointer config,char* key,float default_value)
 {
@@ -636,4 +667,17 @@ PREFIX float spConfigGetFloat(spConfigPointer config,char* key,float default_val
 		entry = internalNewEntry(config,key,buffer);
 	}
 	return atof(entry->value);
+}
+
+PREFIX void spConfigSetFloat(spConfigPointer config,char* key,float value)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		char buffer[32];
+		sprintf(buffer,"%f",value);
+		entry = internalNewEntry(config,key,buffer);
+	}
+	else
+		sprintf(entry->value,"%f",value);
 }

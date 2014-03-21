@@ -18,6 +18,7 @@
 #include "sparrowMapping.h"
 #include "sparrowDefines.h"
 #include "sparrowCore.h"
+#include "sparrowFile.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -278,4 +279,29 @@ PREFIX int spMapContinueChange()
 			return 1;
 		}
 	return 0;
+}
+
+PREFIX void spMapLoad(char* subfolder,char* filename)
+{
+	printf("Load mapping...\n");
+	spConfigPointer config = spConfigRead(filename,subfolder);
+	//For every mapping changing the config:
+	int i;
+	for (i = 0; i < SP_MAPPING_MAX; i++)
+		if (__spMapButton[i].active)
+			__spMapButton[i].poolButton = spConfigGetInt(config,__spMapButton[i].name,__spMapButton[i].poolButton);
+	spConfigFree(config);
+}
+
+PREFIX void spMapSave(char* subfolder,char* filename)
+{
+	printf("Save mapping...\n");
+	spConfigPointer config = spConfigRead(filename,subfolder);
+	//For every mapping changing the config:
+	int i;
+	for (i = 0; i < SP_MAPPING_MAX; i++)
+		if (__spMapButton[i].active)
+			spConfigSetInt(config,__spMapButton[i].name,__spMapButton[i].poolButton);
+	spConfigWrite(config);
+	spConfigFree(config);
 }

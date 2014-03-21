@@ -24,7 +24,8 @@ void init_mapping()
 	spMapButtonAdd(1,"jump","Jump",SP_BUTTON_B);
 	spMapButtonAdd(2,"run","Run",SP_BUTTON_X);
 	spMapButtonAdd(3,"bomb","Bomb",SP_BUTTON_Y);
-	spMapSetStrategy(SP_MAPPING_OTHER_INVALID);
+	spMapLoad("testsparrow","controls.cfg");
+	spMapSetStrategy(SP_MAPPING_OTHER_INVALID); //or SP_MAPPING_NONE or SP_MAPPING_SWITCH
 }
 
 char* caption_mapping(char* caption)
@@ -51,8 +52,12 @@ void draw_mapping(int rotation, spFontPointer font)
 {
 	spSetZTest( 0 );
 	spSetZSet( 0 );
-	if (spMapContinueChange() == 0)
+	int r = spMapContinueChange();
+	if (r == 0)
 		spFontDrawMiddle(spGetWindowSurface()->w/2,font->maxheight*3,0,"Press [A],[B],[X],[Y] or [E]!",font);
+	if (r == 1)
+		spMapSave("testsparrow","controls.cfg");
+		
 	int i;
 	for (i = 0; i < 4; i++)
 	{
@@ -78,8 +83,11 @@ void draw_mapping(int rotation, spFontPointer font)
 
 void calc_mapping(int steps)
 {
-	if (spMapContinueChange() == 0)
+	int r = spMapContinueChange();
+	if (r == 0)
 		return;
+	if (r == 1)
+		spMapSave("testsparrow","controls.cfg");
 	if (spGetInput()->button[SP_BUTTON_SELECT])
 	{
 		spGetInput()->button[SP_BUTTON_SELECT] = 0;
@@ -90,11 +98,13 @@ void calc_mapping(int steps)
 	{
 		spGetInput()->axis[0] = 0;
 		spMapChangeNextInPool(map_selection);
+		spMapSave("testsparrow","controls.cfg");
 	}
 	if (spGetInput()->axis[0] < 0)
 	{
 		spGetInput()->axis[0] = 0;
 		spMapChangePreviousInPool(map_selection);
+		spMapSave("testsparrow","controls.cfg");
 	}
 	if (spGetInput()->axis[1] > 0 && map_selection < 3)
 	{

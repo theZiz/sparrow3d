@@ -250,8 +250,13 @@ PREFIX void spMapStartChangeByName(char* name);
  * Returns:
  * int - 0 means changes are still in progress, so maybe some functions of the
  * program should be supressed like going back to another menu or similar.
- * 1 means the button mapping has been changed just know with this call.
- * -1 means no button changing process is running right know.*/
+ * 1 means the button mapping has been changed just know with this call, what is
+ * e.g. a good time to save the mapping. -1 means no button changing process is
+ * running right know.*/
 PREFIX int spMapContinueChange();
+
+PREFIX void spMapLoad(char* subfolder,char* filename);
+
+PREFIX void spMapSave(char* subfolder,char* filename);
 
 #endif
