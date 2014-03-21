@@ -265,6 +265,13 @@ PREFIX void spMapStartChangeByName(char* name);
  * the mapped was already in use.*/
 PREFIX int spMapContinueChange();
 
+/* Function: spMapCancelChange
+ * 
+ * Cancels the mapping change started with <spMapStartChangeByID> or
+ * <spMapStartChangeByName>. No new mapping is set! <spMapContinueChange> will
+ * just throw -1 like always when nothing is to do. ;) */
+PREFIX void spMapCancelChange();
+
 /* Function: spMapLoad
  * 
  * Loads a mapping. Important: You should first create the pool, than add your

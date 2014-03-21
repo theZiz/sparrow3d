@@ -302,6 +302,11 @@ PREFIX int spMapContinueChange()
 	return 0;
 }
 
+PREFIX void spMapCancelChange()
+{
+	__spMapChangingID = -1;
+}
+
 PREFIX void spMapLoad(char* subfolder,char* filename)
 {
 	printf("Load mapping...\n");
