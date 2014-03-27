@@ -23,6 +23,8 @@
 
 Uint32 spFontButtonLeft = '[';
 Uint32 spFontButtonRight = ']';
+Uint32 spFontMapLeft = '{';
+Uint32 spFontMapRight = '}';
 int spFontStrategy = SP_FONT_INTELLIGENT;
 int spFontLastUTF8Length = 0;
 int spFontBackgroundColor = SP_FONT_NO_BORDER;
@@ -421,6 +423,12 @@ PREFIX void spFontSetButtonBorderSigns(Uint32 left,Uint32 right)
 	spFontButtonRight = right;
 }
 
+PREFIX void spFontSetSemanticButtonBorderSigns(Uint32 left,Uint32 right)
+{
+	spFontMapLeft = left;
+	spFontMapRight = right;
+}
+
 PREFIX void spFontSetButtonStrategy(int strategy)
 {
 	spFontStrategy = strategy;
@@ -517,6 +525,48 @@ static spLetterPointer spLetterFind( spLetterPointer root, Uint32 character )
 	return root;
 }
 
+static spLetterPointer spLetterFindMap( spLetterPointer root, spLetterPointer buttonRoot,const char* button, int *length)
+{
+	if ( root == NULL )
+		return NULL;
+	//Getting the semantic button
+	char temp[64];
+	int i;
+	for (i = 0; i < 64; i++)
+	{
+		if (button[i] == spFontMapRight)
+			break;
+		temp[i] = button[i];
+	}
+	if (i == 64)
+	{
+		*length = 0;
+		return spLetterFind(root,spFontMapLeft);
+	}
+	
+	temp[i] = 0;
+	*length = i+1;
+	//Finding the button:
+	char* realButton = spMapButtonByName(temp);
+	if (realButton == NULL || strcmp(realButton,"None") == 0)
+	{
+		*length = 0;
+		return spLetterFind(root,spFontMapLeft);
+	}
+	//a button?
+	if (realButton[0] == spFontButtonLeft)
+	{
+		spLetterPointer letter;
+		if (realButton[2] == spFontButtonRight)
+			letter = spLetterFind(buttonRoot,realButton[1]);
+		if (letter)
+			return letter;
+		*length = 0;
+		return spLetterFind(root,spFontButtonLeft);		
+	}
+	return NULL;
+}
+
 PREFIX spLetterPointer spFontGetLetter( spFontPointer font, Uint32 character )
 {
 	//Caching
@@ -554,8 +604,12 @@ PREFIX int spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPoi
 		}
 		spLetterPointer letter;
 		//first we look for buttons
+		int l_add = 0;
 		if (text[l]==spFontButtonLeft && (letter = spLetterFind( font->buttonRoot, text[l+1])) && text[l+2]==spFontButtonRight)
 			l+=2;
+		else
+		if (text[l]==spFontMapLeft && (letter = spLetterFindMap( font->root, font->buttonRoot, &(text[l+1]), &l_add)))
+			l+=l_add;
 		else
 		{
 			Uint32 sign = spFontGetUnicodeFromUTF8(&(text[l]));
@@ -601,8 +655,12 @@ PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, const char *text, spFo
 			}
 			spLetterPointer letter;
 			//first we look for buttons
+			int l_add;
 			if ( text[l] == spFontButtonLeft && ( letter = spLetterFind( font->buttonRoot, text[l + 1] ) ) && text[l + 2] == spFontButtonRight )
 				l += 2;
+			else
+			if (text[l] == spFontMapLeft && (letter = spLetterFindMap( font->root, font->buttonRoot, &(text[l+1]), &l_add)))
+				l+=l_add;
 			else
 			{
 				Uint32 sign = spFontGetUnicodeFromUTF8( &( text[l] ) );
@@ -664,8 +722,12 @@ PREFIX int spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, const char *text, spF
 			}
 			spLetterPointer letter;
 			//first we look for buttons
+			int l_add;
 			if ( text[l] == spFontButtonLeft && ( letter = spLetterFind( font->buttonRoot, text[l + 1] ) ) && text[l + 2] == spFontButtonRight )
 				l += 2;
+			else
+			if (text[l] == spFontMapLeft && (letter = spLetterFindMap( font->root, font->buttonRoot, &(text[l+1]), &l_add)))
+				l+=l_add;
 			else
 			{
 				Uint32 sign = spFontGetUnicodeFromUTF8( &( text[l] ) );
@@ -728,8 +790,12 @@ PREFIX int spFontWidth(const char* text, spFontPointer font )
 			}
 			spLetterPointer letter;
 			//first we look for buttons
+			int l_add;
 			if ( text[l] == spFontButtonLeft && ( letter = spLetterFind( font->buttonRoot, text[l + 1] ) ) && text[l + 2] == spFontButtonRight )
 				l += 2;
+			else
+			if (text[l] == spFontMapLeft && (letter = spLetterFindMap( font->root, font->buttonRoot, &(text[l+1]), &l_add)))
+				l+=l_add;
 			else
 			{
 				Uint32 sign = spFontGetUnicodeFromUTF8( &( text[l] ) );

@@ -279,6 +279,17 @@ PREFIX void spFontAddButton( spFontPointer font, Uint32 character, char* caption
  * right - the end of a button*/
 PREFIX void spFontSetButtonBorderSigns(Uint32 left,Uint32 right);
 
+/* Function: spFontSetSemanticButtonBoderSigns
+ *
+ * Sets the starting and end sign for semantic buttons from <sparrowMapping>,
+ * the defaults are '{' and '}', which means, that "{fire}" will be drawn as a
+ * the button mapping to "fire".
+ *
+ * Parameters:
+ * left - the start of a semantic button
+ * right - the end of a semantic button*/
+PREFIX void spFontSetSemanticButtonBorderSigns(Uint32 left,Uint32 right);
+
 /* Function: spFontSetButtonStrategy
  *
  * Sets the strategy used to determine, whether buttons are round (like normal
