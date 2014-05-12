@@ -425,7 +425,7 @@ int spNetC4AUberThread(getgenericPointer data)
 			return result;
 		}
 		if (status <= 0) //finished somehow
-		{
+		{			
 			SDL_WaitThread(thread,&(data->task->result));
 			SDL_mutexP(data->task->statusMutex);
 			data->task->threadStatus = 0;
@@ -1188,6 +1188,87 @@ PREFIX spNetC4ATaskPointer spNetC4ACommitScoreParallel(spNetC4AProfilePointer pr
 	#endif
 	return task;
 }
+
+PREFIX void spNetC4ACopyScoreList(spNetC4AScorePointer* scoreList,spNetC4AScorePointer* newList)
+{
+	if (scoreList == NULL)
+		return;
+	if (newList == NULL)
+		return;
+	spNetC4AScorePointer mom = *scoreList;
+	spNetC4AScorePointer last = NULL;
+	while (mom)
+	{
+		spNetC4AScorePointer copy_score = (spNetC4AScorePointer)malloc(sizeof(spNetC4AScore));
+		sprintf(copy_score->longname,"%s",mom->longname);
+		sprintf(copy_score->shortname,"%s",mom->shortname);
+		copy_score->score = mom->score;
+		copy_score->commitTime = mom->commitTime;
+		if (last)
+			last->next = copy_score;
+		else
+			*newList = copy_score;
+		last = copy_score;
+		mom = mom->next;
+	}
+	if (last)
+		last->next = NULL;
+	else
+		*newList = NULL;
+}
+
+typedef struct __ScoreNameStruct *__ScoreNamePointer;
+typedef struct __ScoreNameStruct {
+	char longname[256];
+	char shortname[256];
+	__ScoreNamePointer next;
+} __ScoreName;
+
+PREFIX void spNetC4AMakeScoresUnique(spNetC4AScorePointer* scoreList)
+{
+	if (scoreList == NULL)
+		return;
+	spNetC4AScorePointer mom = *scoreList;
+	spNetC4AScorePointer before = NULL;
+	__ScoreNamePointer name = NULL;
+	__ScoreNamePointer searchStart = NULL;
+	while (mom)
+	{
+		//search mom in name:
+		__ScoreNamePointer search = searchStart;
+		while (search)
+		{
+			if (strcmp(mom->shortname,search->shortname) == 0 &&
+				strcmp(mom->longname,search->longname) == 0 )
+				break; //found
+			search = search->next;
+		}
+		if (search) //found -> remove
+		{
+			spNetC4AScorePointer next = mom->next;
+			before->next = next;
+			free(mom);
+			mom = next;
+		}
+		else //add
+		{
+			__ScoreNamePointer add = (__ScoreNamePointer)malloc(sizeof(__ScoreName));
+			sprintf(add->longname,"%s",mom->longname);
+			sprintf(add->shortname,"%s",mom->shortname);
+			add->next = searchStart;
+			searchStart = add;
+			before = mom;
+			mom = mom->next;
+		}
+	}
+	while (searchStart)
+	{
+		__ScoreNamePointer next = searchStart->next;
+		free(searchStart);
+		searchStart = next;
+	}
+}
+
 PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList)
 {
 	if (scoreList == NULL)

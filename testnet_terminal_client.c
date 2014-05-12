@@ -47,26 +47,28 @@ int main( int argc, char **argv )
 	//spNetC4AGetScoreOfMonth(&score,profile,"puzzletube_points",2013,6);
 	printf("Getting Scores serial:\n");
 	int i;
+	int result = 0;
 	for (i = 0; i < 2; i++)
 	{
 		switch (i)
 		{
 			case 0:
-				spNetC4AGetScore(&score,profile,"snowman_hard",10000);
+				result = spNetC4AGetScore(&score,profile,"snowman_hard",10000);
 				printf("Highscore of Snowman Hard (with profile if available):\n");
 				break;
 			case 1:
-				spNetC4AGetScore(&score,NULL,"snowman_easy",10000);
+				result = spNetC4AGetScore(&score,NULL,"snowman_easy",10000);
 				printf("Highscore of Snowman Easy (wihtout profile):\n");
 				break;
 		}
-		while (spNetC4AGetStatus() == SP_C4A_PROGRESS)
-		#ifdef WIN32
-			Sleep(1);
-		#else
-			usleep(200);
-		#endif
-		if (spNetC4AGetStatus() == SP_C4A_OK)
+		if (result)
+			while (spNetC4AGetStatus() == SP_C4A_PROGRESS)
+			#ifdef WIN32
+				Sleep(1);
+			#else
+				usleep(200);
+			#endif
+		if (!result && spNetC4AGetStatus() == SP_C4A_OK)
 		{
 			spNetC4AScorePointer mom = score;
 			while (mom)
@@ -77,6 +79,9 @@ int main( int argc, char **argv )
 			}
 			spNetC4ADeleteScores(&score);
 		}
+		else
+		if (result)
+			printf("Fetshing Highscore failed with error code: %i\n",result);
 		else
 			printf("Fetshing Highscore failed with status code: %i\n",spNetC4AGetStatus());
 	}
@@ -91,6 +96,7 @@ int main( int argc, char **argv )
 	spNetC4ATaskPointer p1 = spNetC4AGetScoreParallel(&score1,profile,"puzzletube_points",10000);
 	spNetC4ATaskPointer p2 = spNetC4AGetScoreParallel(&score2,NULL,"puzzletube_race",10000);
 	spNetC4ATaskPointer p3 = spNetC4AGetScoreParallel(&score3,NULL,"puzzletube_survival",10000);
+	if (p1 && p2 && p3)
 	while (spNetC4AGetStatusParallel(p1) == SP_C4A_PROGRESS ||
 			spNetC4AGetStatusParallel(p2) == SP_C4A_PROGRESS ||
 			spNetC4AGetStatusParallel(p3) == SP_C4A_PROGRESS)
@@ -120,7 +126,7 @@ int main( int argc, char **argv )
 				score = score3;
 				break;
 		}
-		if (spNetC4AGetStatusParallel(p) == SP_C4A_OK)
+		if (p && spNetC4AGetStatusParallel(p) == SP_C4A_OK)
 		{
 			spNetC4AScorePointer mom = score;
 			while (mom)
@@ -131,8 +137,10 @@ int main( int argc, char **argv )
 			}
 			spNetC4ADeleteScores(&score);
 		}
+		if (p == NULL)
+			printf("Fetshing Highscore failed with error code: 0\n");
 		else
-			printf("Fetshing Highscore failed with status code: %i\n",spNetC4AGetStatus());
+			printf("Fetshing Highscore failed with status code: %i\n",spNetC4AGetStatusParallel(p));
 		spNetC4ADeleteTask(p);
 	}
 	//Client setup

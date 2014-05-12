@@ -519,6 +519,32 @@ PREFIX spNetC4ATaskPointer spNetC4AGetScoreParallel(spNetC4AScorePointer* scoreL
  * See also: <spNetC4AGetScoreParallel>*/
 PREFIX spNetC4ATaskPointer spNetC4AGetScoreOfMonthParallel(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int year,int month,int timeOut);
 
+/* Function: spNetC4CopyScoreList
+ * 
+ * Makes an unique copy of the passed scorelist, e.g. if you want to remove
+ * double names with <spNetC4AMakeScoresUnique> afterwards. Don't forget to
+ * free every copy with <spNetC4ADeleteScores> afterwards!
+ * 
+ * Parameters:
+ * scoreList - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
+ * <spNetC4AScore>, which shall be copied
+ * newList - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
+ * <spNetC4AScore>, to which the copy shall be written*/
+PREFIX void spNetC4ACopyScoreList(spNetC4AScorePointer* scoreList,spNetC4AScorePointer* newList);
+
+/* Function: spNetC4AMakeScoresUnique
+ * 
+ * Removes any double occurence of names in the score. Afterwars every
+ * name only occurs ones with the best score of this player. Be careful:
+ * Afterwards you can't use this list for uploading scores if they don't
+ * exist anymore. If you want both make a copy of the list with
+ * <spNetC4ACopyScoreList> before (instead of getting the scores twice).
+ * 
+ * Parameters:
+ * scoreList - a pointer to spNetC4AProfilePointer, which is in fact a pointer to
+ * <spNetC4AScore> */
+PREFIX void spNetC4AMakeScoresUnique(spNetC4AScorePointer* scoreList);
+
 /* Function: spNetC4ADeleteScores
  * 
  * Frees the linked list returned by <spNetC4AGetScore>.
