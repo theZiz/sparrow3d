@@ -110,8 +110,12 @@ CPP += $(PARAMETER)
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
 
-all: libsparrow3d.so libsparrowSound.so libsparrowNet.so testsparrow testfile testnet testreal3d testnet_terminal_server testnet_terminal_client
+all: dynamic static testsparrow testfile testnet testreal3d testnet_terminal_server testnet_terminal_client
 	@echo "=== Built for Target "$(TARGET)" ==="
+
+static: libsparrow3d.a libsparrowNet.a libsparrowSound.a
+
+dynamic: libsparrow3d.so libsparrowNet.so libsparrowSound.so
 
 targets:
 	@echo "The targets are:"
@@ -168,6 +172,15 @@ testnet_terminal_server: testnet_terminal_server.c libsparrowNet.so
 
 testnet_terminal_client: testnet_terminal_client.c libsparrowNet.so
 	$(CPP_LINK) $(CFLAGS) testnet_terminal_client.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/testnet_terminal_client
+
+libsparrow3d.a: libsparrow3d.so
+	ar rcs $(BUILD)/libsparrow3d.a sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowGUI.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o
+
+libsparrowSound.a: libsparrowSound.so
+	ar rcs $(BUILD)/libsparrowSound.a sparrowSound.o
+
+libsparrowNet.a: libsparrowNet.so
+	ar rcs $(BUILD)/libsparrowNet.a sparrowNet.o
 
 libsparrow3d.so: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowGUI.o sparrowMapping.o
 	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
@@ -231,7 +244,8 @@ sparrowNet.o: sparrowNet.c sparrowNet.h
 
 clean:
 	rm -f *.o
-	rm -f libsparrow3d.so
+	rm -f *.so
+	rm -f *.a
 	rm -f testsparrow
 	rm -f testnet
 	rm -f testfile

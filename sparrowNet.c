@@ -1076,7 +1076,6 @@ int c4a_commit_thread(void* data)
 	SDL_mutexP(commitData->task->statusMutex);
 	commitData->task->status = SP_C4A_OK;
 	SDL_mutexV(commitData->task->statusMutex);
-	printf("XXX %s\n",commit_string);
 	return 0;
 }
 
