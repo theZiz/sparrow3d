@@ -336,7 +336,8 @@ typedef struct spNetC4AGameStruct {
  * commitTime - time of type time_t (seconds since 1.1.1970 00:00:00),
  * when the score was committed. Use localtime of time.h to "decrypt"
  * this type. ;)
- * next - pointer to the next element in the list*/
+ * next - pointer to the next element in the list
+ * rank - rank in the score */
 typedef struct spNetC4AScoreStruct *spNetC4AScorePointer;
 typedef struct spNetC4AScoreStruct {
 	char longname[256];
@@ -344,6 +345,7 @@ typedef struct spNetC4AScoreStruct {
 	int score;
 	time_t commitTime;
 	spNetC4AScorePointer next;
+	int rank;
 } spNetC4AScore;
 
 /* Type: spNetC4AProfile
