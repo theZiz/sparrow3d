@@ -146,6 +146,6 @@ PREFIX void spSetRand( Uint32 seed )
 PREFIX Uint32 spRand()
 {
 	//I stole the magic numbers from glibc...
-	spLastRandValue = (Uint32)(12345*spLastRandValue + 1103515245);
+	spLastRandValue = (Uint32)(1103515245*spLastRandValue + 12345);
 	return spLastRandValue;
 }
