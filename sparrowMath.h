@@ -180,4 +180,29 @@ PREFIX Sint32 spMax( Sint32 a, Sint32 b );
  * not 12. ;)*/
 PREFIX Sint32 spAtof( char* buffer );
 
+/* Function: spSetRand
+ * 
+ * Does in fact the same as srand() of the glibc or other implementations. It
+ * sets the start value of the random function. However this implementation is
+ * deterministic the same on every target, doesn't matter whether Windows, Linux
+ * or a Toaster.
+ * 
+ * Parameters:
+ * seed - seed of the Randomness. Default is 0.
+ * 
+ * See Also:
+ * <spRand>*/
+PREFIX void spSetRand( Uint32 seed );
+
+/* Function: spRand
+ * 
+ * Returns a pseudo random number. Don't use it for cryptographic stuff. ;)
+ * 
+ * Returns:
+ * Uint32 - "random" number between 0 and 2^32-1
+ * 
+ * See Also:
+ * <spSetRand>*/
+PREFIX Uint32 spRand();
+
 #endif

@@ -135,3 +135,17 @@ PREFIX Sint32 spAtof( char* buffer )
 {
 	return (Sint32)(atof(buffer)*SP_ACCURACY_FACTOR);
 }
+
+Uint32 spLastRandValue = 0;
+
+PREFIX void spSetRand( Uint32 seed )
+{
+	spLastRandValue = seed;
+}
+
+PREFIX Uint32 spRand()
+{
+	//I stole the magic numbers from glibc...
+	spLastRandValue = (Uint32)(12345*spLastRandValue + 1103515245);
+	return spLastRandValue;
+}
