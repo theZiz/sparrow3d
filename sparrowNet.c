@@ -831,6 +831,7 @@ int c4a_getscore_thread(void* data)
 	}
 	//Reading score by score
 	//Searching the starting {
+	int rank = 1;
 	spNetC4AScorePointer lastScore = NULL;
 	while (found)
 	{
@@ -887,11 +888,13 @@ int c4a_getscore_thread(void* data)
 		new_score->score = score;
 		new_score->commitTime = commitTime;
 		new_score->next = NULL;
+		new_score->rank = rank;
 		if (lastScore == NULL)
 			(*(scoreData->score)) = new_score;
 		else
 			lastScore->next = new_score;
 		lastScore = new_score;
+		rank++;
 	}	
 	
 	SDL_mutexP(scoreData->task->statusMutex);
@@ -1203,6 +1206,7 @@ PREFIX void spNetC4ACopyScoreList(spNetC4AScorePointer* scoreList,spNetC4AScoreP
 		sprintf(copy_score->shortname,"%s",mom->shortname);
 		copy_score->score = mom->score;
 		copy_score->commitTime = mom->commitTime;
+		copy_score->rank = mom->rank;
 		if (last)
 			last->next = copy_score;
 		else

@@ -61,26 +61,35 @@ int main( int argc, char **argv )
 				printf("Highscore of Snowman Easy (wihtout profile):\n");
 				break;
 		}
-		if (result)
+		if (result == 0)
 			while (spNetC4AGetStatus() == SP_C4A_PROGRESS)
 			#ifdef WIN32
 				Sleep(1);
 			#else
 				usleep(200);
 			#endif
-		if (!result && spNetC4AGetStatus() == SP_C4A_OK)
+		if (result == 0 && spNetC4AGetStatus() == SP_C4A_OK)
 		{
 			spNetC4AScorePointer mom = score;
 			while (mom)
 			{
 				struct tm * local = localtime (&(mom->commitTime));
-				printf("  %2i.%2i.%i - %2i:%02i: %s (%s) - %i\n",local->tm_mday,local->tm_mon+1,local->tm_year+1900,local->tm_hour,local->tm_min,mom->longname,mom->shortname,mom->score);
+				printf("  %2i: %2i.%2i.%i - %2i:%02i: %s (%s) - %i\n",mom->rank,local->tm_mday,local->tm_mon+1,local->tm_year+1900,local->tm_hour,local->tm_min,mom->longname,mom->shortname,mom->score);
+				mom = mom->next;
+			}
+			printf("  Same with every player just once:\n");
+			spNetC4AMakeScoresUnique(&score);
+			mom = score;
+			while (mom)
+			{
+				struct tm * local = localtime (&(mom->commitTime));
+				printf("  %2i: %2i.%2i.%i - %2i:%02i: %s (%s) - %i\n",mom->rank,local->tm_mday,local->tm_mon+1,local->tm_year+1900,local->tm_hour,local->tm_min,mom->longname,mom->shortname,mom->score);
 				mom = mom->next;
 			}
 			spNetC4ADeleteScores(&score);
 		}
 		else
-		if (result)
+		if (result == 1)
 			printf("Fetshing Highscore failed with error code: %i\n",result);
 		else
 			printf("Fetshing Highscore failed with status code: %i\n",spNetC4AGetStatus());
@@ -132,11 +141,12 @@ int main( int argc, char **argv )
 			while (mom)
 			{
 				struct tm * local = localtime (&(mom->commitTime));
-				printf("  %2i.%2i.%i - %2i:%02i: %s (%s) - %i\n",local->tm_mday,local->tm_mon+1,local->tm_year+1900,local->tm_hour,local->tm_min,mom->longname,mom->shortname,mom->score);
+				printf("  %2i: %2i.%2i.%i - %2i:%02i: %s (%s) - %i\n",mom->rank,local->tm_mday,local->tm_mon+1,local->tm_year+1900,local->tm_hour,local->tm_min,mom->longname,mom->shortname,mom->score);
 				mom = mom->next;
 			}
 			spNetC4ADeleteScores(&score);
 		}
+		else
 		if (p == NULL)
 			printf("Fetshing Highscore failed with error code: 0\n");
 		else
