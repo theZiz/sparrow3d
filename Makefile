@@ -50,7 +50,7 @@ SMALL_RESOLUTION_DEVICES = -DFAST_MULTIPLICATION -DFAST_DIVISION
 
 # The default Compiler is gcc with debug symbols and a X86CPU (that's a define
 # for sparrow or your game, not used by gcc.
-CPP = gcc -march=native -DX86CPU -g $(GENERAL_TWEAKS)
+CPP = gcc -DX86CPU -g $(GENERAL_TWEAKS)
 
 # SDL sets some SDL options with the program "sdl-config".
 SDL = `sdl-config --cflags`
@@ -93,8 +93,13 @@ SDL_PATH = -I/usr/include/SDL
 # obviously. Even spSleep is slow moooooo'ed.
 # CFLAGS += -DDEBUG_SLOWMOTION=5
 
+#TARGET = nativ
+
 ifdef TARGET
 include ./target-files/$(TARGET).mk
+
+#TARGET = pandora
+
 BUILD = ./build/$(TARGET)/sparrow3d
 # SPARROW_LIB determines, where the sparrow library is.
 SPARROW_LIB += -L$(BUILD)

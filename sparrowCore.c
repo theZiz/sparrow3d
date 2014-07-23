@@ -1111,7 +1111,7 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 	//time of the current loop pass
 	newticks = oldticks;
 
-	while( back == 0 && !spDone )
+	while(!spDone )
 	{
 #ifdef CORE_DEBUG
 		spPrintDebug( "Start mainloop" );
@@ -1155,6 +1155,8 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 		if ( spCalc && diffticks)
 		{
 			back = spCalc( diffticks );
+			if (back)
+				break;
 #ifdef CORE_DEBUG
 			spPrintDebug( "  Did calc" );
 #endif
