@@ -192,17 +192,17 @@ PREFIX Sint32 spAtof( char* buffer );
  * 
  * See Also:
  * <spRand>*/
-PREFIX void spSetRand( Uint32 seed );
+PREFIX void spSetRand( Sint32 seed );
 
 /* Function: spRand
  * 
  * Returns a pseudo random number. Don't use it for cryptographic stuff. ;)
  * 
  * Returns:
- * Uint32 - "random" number between 0 and 2^32-1
+ * Sint32 - "random" number between 0 and 2^30-1
  * 
  * See Also:
  * <spSetRand>*/
-PREFIX Uint32 spRand();
+PREFIX Sint32 spRand();
 
 #endif
