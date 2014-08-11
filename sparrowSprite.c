@@ -76,6 +76,32 @@ PREFIX spSubSpritePointer spNewSubSpriteWithTiling( spSpritePointer sprite, SDL_
 	sub->sy = sy;
 	sub->sw = sw;
 	sub->sh = sh;
+	
+	//Calculating average pixel
+	SDL_LockSurface(surface);
+	Uint16* pixel = (Uint16*)surface->pixels;
+	int line = surface->pitch/surface->format->BytesPerPixel;
+	int x,y;
+	int r=0,g=0,b=0;
+	sub->pixelCount = 0;
+	for (x = sx; x < sx+sw; x++)
+		for (y = sy; y < sy+sh; y++)
+			if (pixel[x+y*line] != SP_ALPHA_COLOR)
+			{
+				r += spGetRawRFromColor( pixel[x+y*line] );
+				g += spGetRawGFromColor( pixel[x+y*line] );
+				b += spGetRawBFromColor( pixel[x+y*line] );
+				sub->pixelCount++;
+			}
+	if (sub->pixelCount)
+	{
+		r /= sub->pixelCount;
+		g /= sub->pixelCount;
+		b /= sub->pixelCount;
+		sub->averageColor = (r<<11) | (g<<5) | b;
+	}
+	SDL_UnlockSurface(surface);
+	
 	if (duration <= 0)
 		duration = 1;
 	sub->duration = duration;
@@ -426,4 +452,9 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 	spSelectSprite(collection,sprite_d);
 	SDL_RWclose(file);
 	return collection;
+}
+
+PREFIX Uint16 spSpriteAverageColor(spSpritePointer sprite)
+{
+	return sprite->momSub->averageColor;
 }

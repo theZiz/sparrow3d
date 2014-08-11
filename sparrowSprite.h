@@ -57,6 +57,8 @@ typedef struct spSubSpriteStruct
 	Sint32 age;
 	spSubSpritePointer before;
 	spSubSpritePointer next;
+	Uint32 pixelCount;
+	Uint16 averageColor;
 } spSubSprite;
 
 /* Type: spSprite
@@ -342,5 +344,7 @@ PREFIX spSpritePointer spActiveSprite(spSpriteCollectionPointer collection);
  * Returns
  * spSpriteCollection* - pointer to the loaded <spSpriteCollection>*/
 PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surface* fallback_surface);
+
+PREFIX Uint16 spSpriteAverageColor(spSpritePointer sprite);
 
 #endif
