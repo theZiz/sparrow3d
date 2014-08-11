@@ -26,7 +26,8 @@
 #ifndef _SPARROW_SPRITE_H
 #define _SPARROW_SPRITE_H
 
-#include "sparrow3d.h"
+#include "sparrowDefines.h"
+#include "sparrowCore.h"
 #include <SDL.h>
 
 typedef struct spSubSpriteStruct *spSubSpritePointer;
@@ -345,6 +346,14 @@ PREFIX spSpritePointer spActiveSprite(spSpriteCollectionPointer collection);
  * spSpriteCollection* - pointer to the loaded <spSpriteCollection>*/
 PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surface* fallback_surface);
 
+/* Function spSpriteAverageColor
+ * 
+ * Gives the average color of the recent subsprite of a sprite.
+ * 
+ * Parameters:
+ * sprite - a pointer to a <spSprite> struct
+ * 
+ * Returns:
+ * Uint16 - average color*/
 PREFIX Uint16 spSpriteAverageColor(spSpritePointer sprite);
-
 #endif

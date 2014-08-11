@@ -33,6 +33,7 @@
 #include "sparrowSprite.h"
 #include "sparrowText.h"
 #include "sparrowMapping.h"
+#include "sparrowParticles.h"
 
 #include "sparrowSound.h"
 #include "sparrowNet.h"

@@ -187,10 +187,10 @@ libsparrowSound.a: libsparrowSound.so
 libsparrowNet.a: libsparrowNet.so
 	ar rcs $(BUILD)/libsparrowNet.a sparrowNet.o
 
-libsparrow3d.so: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowGUI.o sparrowMapping.o
+libsparrow3d.so: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowGUI.o sparrowMapping.o sparrowParticles.o
 	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
 	@if [ ! -d $(BUILD) ]; then mkdir $(BUILD);fi
-	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -rdynamic -o $(BUILD)/libsparrow3d.so sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowGUI.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
+	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -rdynamic -o $(BUILD)/libsparrow3d.so sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowGUI.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o sparrowParticles.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
 libsparrowSound.so: sparrowSound.o
 	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
@@ -240,6 +240,9 @@ sparrowGUI.o: sparrowGUI.c sparrowGUI.h
 
 sparrowMapping.o: sparrowMapping.c sparrowMapping.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowMapping.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+
+sparrowParticles.o: sparrowParticles.c sparrowParticles.h
+	$(CPP) $(CFLAGS) -fPIC -c sparrowParticles.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
 
 sparrowSound.o: sparrowSound.c sparrowSound.h
 	$(CPP) $(CFLAGS) -fPIC -c sparrowSound.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
