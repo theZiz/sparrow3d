@@ -1581,6 +1581,49 @@ PREFIX Uint16 spGetRGB(int r, int g, int b )
   //return SDL_MapRGB(spGetWindowSurface()->format,r,g,b);
 }
 
+PREFIX Sint32 spGetHFromColor(Uint16 color)
+{
+	int r = spGetRFromColor(color);
+	int g = spGetGFromColor(color);
+	int b = spGetBFromColor(color);
+	int max = spMax(r,spMax(g,b));
+	int min = spMin(r,spMin(g,b));
+	if (max == min)
+		return 0;
+	Sint32 h;
+	if (max == r)
+		h = SP_PI*0/3+SP_PI/3*(g-b)/(max-min);
+	else
+	if (max == g)
+		h = SP_PI*2/3+SP_PI/3*(b-r)/(max-min);
+	else
+		h = SP_PI*4/3+SP_PI/3*(r-g)/(max-min);
+	if (h < 0)
+		h += SP_PI*2;
+	return h;
+}
+
+PREFIX Uint8 spGetSFromColor(Uint16 color)
+{
+	int r = spGetRFromColor(color);
+	int g = spGetGFromColor(color);
+	int b = spGetBFromColor(color);
+	int max = spMax(r,spMax(g,b));
+	if (max == 0)
+		return 0;
+	int min = spMin(r,spMin(g,b));
+	Sint32 s = (max-min)*255/max;
+	return s;
+}
+
+PREFIX Uint8 spGetVFromColor(Uint16 color)
+{
+	int r = spGetRFromColor(color);
+	int g = spGetGFromColor(color);
+	int b = spGetBFromColor(color);
+	return spMax(r,spMax(g,b));
+}
+
 PREFIX Uint16 spGetHSV(Sint32 h, Uint8 s, Uint8 v)
 {
 	h = h % (SP_PI*2);

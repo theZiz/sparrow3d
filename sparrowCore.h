@@ -544,6 +544,7 @@ PREFIX Uint16 spGetRGB(int r, int g, int b );
  * Returns:
  * int - the red value*/
 #define spGetRFromColor(color) (( (color)         >> 11) << 3 )
+
 /* Function: spGetGFromColor
  * 
  * Gives you the green value of a color. The result is an 8bit integer.
@@ -554,6 +555,7 @@ PREFIX Uint16 spGetRGB(int r, int g, int b );
  * Returns:
  * int - the green value*/
 #define spGetGFromColor(color) ((((color) & 2016) >>  5) << 2 )
+
 /* Function: spGetBFromColor
  * 
  * Gives you the blue value of a color. The result is an 8bit integer.
@@ -611,6 +613,12 @@ PREFIX Uint16 spGetRGB(int r, int g, int b );
  * Returns:
  * Uint16 - 16 bit color value*/
 PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
+
+PREFIX Sint32 spGetHFromColor(Uint16 color);
+
+PREFIX Uint8 spGetSFromColor(Uint16 color);
+
+PREFIX Uint8 spGetVFromColor(Uint16 color);
 
 /* Function: spScale2XFast
  * 
