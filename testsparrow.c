@@ -60,7 +60,10 @@ void draw_test( void )
 			case 1: spFontDrawRight( screen->w - 2, screen->h - 2*font-> maxheight, 0, "[Y] Unpause", font ); break;
 		}
 	}
-	spFontDrawMiddle( screen->w /2, screen->h - 2*font-> maxheight, 0, input, font );
+	if (spIsKeyboardPolled() && spGetVirtualKeyboardState() == SP_VIRTUAL_KEYBOARD_ALWAYS)
+		spFontDrawMiddle( screen->w /2, screen->h - font-> maxheight-spGetVirtualKeyboard()->h, 0, input, font );
+	else
+		spFontDrawMiddle( screen->w /2, screen->h - 2*font-> maxheight, 0, input, font );
 	char buffer[256];
 	switch ( test )
 	{
