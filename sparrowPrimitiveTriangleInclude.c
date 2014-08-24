@@ -665,8 +665,8 @@
 #endif
 {
 	int y;
-	for ( ; x1 <= x2; x1++ )
-		for ( y = y1; y <= y2; y++ )
+	for ( ; x1 < x2; x1++ )
+		for ( y = y1; y < y2; y++ )
 			pixel_macro(x1,y,z,color)
 }
 
@@ -718,20 +718,20 @@
 {
 	int cx,cy;
 	//top border
-	for ( cy = y1; cy < y1 + by && cy <= y2; cy++ )
-		for ( cx = x1; cx <= x2; cx++ )
+	for ( cy = y1; cy < y1 + by && cy < y2; cy++ )
+		for ( cx = x1; cx < x2; cx++ )
 			pixel_macro( cx, cy, z, color )
 	//left & right border
-	for ( ; cy < y2 - by && cy <= y2; cy++ )
+	for ( ; cy < y2 - by && cy < y2; cy++ )
 	{
-		for ( cx = x1; cx <= x1 + bx && cx <= x2; cx++ )
+		for ( cx = x1; cx < x1 + bx && cx < x2; cx++ )
 			pixel_macro( cx, cy, z, color )
-		for ( cx = x2 - bx; cx <= x2; cx++ )
+		for ( cx = x2 - bx; cx < x2; cx++ )
 			pixel_macro( cx, cy, z, color )
 	}
 	//bottom border
-	for ( ; cy <= y2; cy++ )
-		for ( cx = x1; cx <= x2; cx++ )
+	for ( ; cy < y2; cy++ )
+		for ( cx = x1; cx < x2; cx++ )
 			pixel_macro( cx, cy, z, color )
 }
 

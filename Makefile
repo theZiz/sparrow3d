@@ -93,12 +93,12 @@ SDL_PATH = -I/usr/include/SDL
 # obviously. Even spSleep is slow moooooo'ed.
 # CFLAGS += -DDEBUG_SLOWMOTION=5
 
-#TARGET = nativ
+TARGET = nativ
 
 ifdef TARGET
 include ./target-files/$(TARGET).mk
 
-#TARGET = pandora
+TARGET = pandora
 
 BUILD = ./build/$(TARGET)/sparrow3d
 # SPARROW_LIB determines, where the sparrow library is.
