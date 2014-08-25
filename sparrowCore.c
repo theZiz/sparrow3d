@@ -1007,39 +1007,33 @@ void spHandleVirtualKeyboard( int steps )
 		spVirtualKeyboardTime -= steps;
 	if (spVirtualKeyboardTime <= 0)
 	{
-		int change = 0;
 		if (spGenericInput.axis[0] || spGenericInput.axis[1])
+		{
 			spInternalCleanVirtualKeyboard();
-		if (spGenericInput.axis[0] < 0)
-		{
-			spVirtualKeyboardX = (spVirtualKeyboardX+19) % 20;
-			change = 1;
-		}
-		else
-		if (spGenericInput.axis[0] > 0)
-		{
-			spVirtualKeyboardX = (spVirtualKeyboardX+1) % 20;
-			change = 1;
-		}
-		if (spGenericInput.axis[1] < 0)
-		{
-			spVirtualKeyboardY = (spVirtualKeyboardY+2) % 3;
-			change = 1;
-		}
-		else
-		if (spGenericInput.axis[1] > 0)
-		{
-			spVirtualKeyboardY = (spVirtualKeyboardY+1) % 3;
-			change = 1;
-		}
-		
-		if (change)
-		{
+			if (spGenericInput.axis[0] < 0)
+				spVirtualKeyboardX = (spVirtualKeyboardX+19) % 20;
+			else
+			if (spGenericInput.axis[0] > 0)
+				spVirtualKeyboardX = (spVirtualKeyboardX+1) % 20;
+			if (spGenericInput.axis[1] < 0)
+				spVirtualKeyboardY = (spVirtualKeyboardY+2) % 3;
+			else
+			if (spGenericInput.axis[1] > 0)
+				spVirtualKeyboardY = (spVirtualKeyboardY+1) % 3;
 			spInternalUpdateVirtualKeyboard();
 			if (was_greater)
 				spVirtualKeyboardTime = SP_VIRTUAL_KEYBOARD_WAIT;
 			else
 				spVirtualKeyboardTime = SP_VIRTUAL_KEYBOARD_FIRST_WAIT;
+
+			spVirtualLastKeyCountDown = SP_KEYBOARD_FIRST_WAIT;
+			char* ptr = (char*)spVirtualKeyboardMap;
+			if (spVirtualKeyboardShift)
+				ptr = (char*)spVirtualKeyboardMapShift;
+			SDL_keysym key = {spVirtualKeyboardMap[spVirtualKeyboardY][spVirtualKeyboardX],
+				(SDLKey)spVirtualKeyboardMap[spVirtualKeyboardY][spVirtualKeyboardX],(SDLMod)0,
+				ptr[spVirtualKeyboardY*20+spVirtualKeyboardX]};
+			spVirtualLastKey = key;
 		}
 		else
 			spVirtualKeyboardTime = 0;
