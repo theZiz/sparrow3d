@@ -767,6 +767,6 @@ PREFIX void spNetC4ADeleteProfileFile();
  * 
  * Parameters:
  * task - Pointer to <spNetC4ATask>, which is returned by the parallel functions.*/
-void spNetC4ADeleteTask(spNetC4ATaskPointer task);
+PREFIX void spNetC4ADeleteTask(spNetC4ATaskPointer task);
 
 #endif
