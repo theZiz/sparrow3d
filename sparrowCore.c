@@ -643,17 +643,17 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_RETURN:
 					spGenericInput.button[SP_BUTTON_START] = 1;
 					break;
-					case SDLK_MODE:
+					case SDLK_LCTRL:
 						spGenericInput.button[SP_BUTTON_A_NOWASD] = 1;
 						break;
-					case SDLK_LCTRL:
+					case SDLK_LALT:
 						spGenericInput.button[SP_BUTTON_B_NOWASD] = 1;
 						break;
-					case SDLK_LALT:case SDLK_RALT:
-						spGenericInput.button[SP_BUTTON_Y_NOWASD] = 1;
-						break;
-					case SDLK_LSUPER:case SDLK_RSUPER:
+					case SDLK_RALT:case SDLK_MODE:
 						spGenericInput.button[SP_BUTTON_X_NOWASD] = 1;
+						break;
+					case SDLK_LSHIFT:
+						spGenericInput.button[SP_BUTTON_Y_NOWASD] = 1;
 						break;
 					case SDLK_ESCAPE:
 						spGenericInput.button[SP_BUTTON_SELECT_NOWASD] = 1;
@@ -811,17 +811,17 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_RETURN:
 					spGenericInput.button[SP_BUTTON_START] = 0;
 					break;
-					case SDLK_MODE:
+					case SDLK_LCTRL:
 						spGenericInput.button[SP_BUTTON_A_NOWASD] = 0;
 						break;
-					case SDLK_LCTRL:
+					case SDLK_LALT:
 						spGenericInput.button[SP_BUTTON_B_NOWASD] = 0;
 						break;
-					case SDLK_LALT:case SDLK_RALT:
-						spGenericInput.button[SP_BUTTON_Y_NOWASD] = 0;
-						break;
-					case SDLK_LSUPER:case SDLK_RSUPER:
+					case SDLK_RALT:case SDLK_MODE:
 						spGenericInput.button[SP_BUTTON_X_NOWASD] = 0;
+						break;
+					case SDLK_LSHIFT:
+						spGenericInput.button[SP_BUTTON_Y_NOWASD] = 0;
 						break;
 					case SDLK_ESCAPE:
 						spGenericInput.button[SP_BUTTON_SELECT_NOWASD] = 0;
