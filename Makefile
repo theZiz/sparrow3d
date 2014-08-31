@@ -93,6 +93,10 @@ SDL_PATH = -I/usr/include/SDL
 # obviously. Even spSleep is slow moooooo'ed.
 # CFLAGS += -DDEBUG_SLOWMOTION=5
 
+SPARROW3D_LIB = libsparrow3d.so
+SPARROWNET_LIB = libsparrowNet.so
+SPARROWSOUND_LIB = libsparrowSound.so
+
 #TARGET = nativ
 
 ifdef TARGET
@@ -114,16 +118,6 @@ CPP += $(PARAMETER)
 
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
-
-SPARROW3D_LIB = libsparrow3d.so
-SPARROWNET_LIB = libsparrowNet.so
-SPARROWSOUND_LIB = libsparrow3d.so
-
-ifeq ($(DLL_BUILD),yes)
-	SPARROW3D_LIB = sparrow3d.dll
-	SPARROWNET_LIB = sparrowNet.dll
-	SPARROWSOUND_LIB = sparrowSound.dll
-endif
 
 all: dynamic static testsparrow testfile testnet testreal3d testnet_terminal_server testnet_terminal_client
 	@echo "=== Built for Target "$(TARGET)" ==="
@@ -265,8 +259,9 @@ sparrowNet.o: sparrowNet.c sparrowNet.h
 
 clean:
 	rm -f *.o
-	rm -f *.so
-	rm -f *.a
+	rm -f $(BUILD)/*.so
+	rm -f $(BUILD)/*.a
+	rm -f $(BUILD)/*.dll
 	rm -f testsparrow
 	rm -f testnet
 	rm -f testfile
