@@ -650,9 +650,12 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 						spGenericInput.button[SP_BUTTON_B_NOWASD] = 1;
 						break;
 					case SDLK_RALT:case SDLK_MODE:
+					#ifdef WIN32
+					case 0: //AltGr doesn't have a symcode in windows. O_o
+					#endif
 						spGenericInput.button[SP_BUTTON_X_NOWASD] = 1;
 						break;
-					case SDLK_LSHIFT:
+					case SDLK_LSHIFT:case SDLK_RSHIFT:
 						spGenericInput.button[SP_BUTTON_Y_NOWASD] = 1;
 						break;
 					case SDLK_ESCAPE:
@@ -818,9 +821,12 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 						spGenericInput.button[SP_BUTTON_B_NOWASD] = 0;
 						break;
 					case SDLK_RALT:case SDLK_MODE:
+					#ifdef WIN32
+					case 0: //AltGr doesn't have a symcode in windows. O_o
+					#endif
 						spGenericInput.button[SP_BUTTON_X_NOWASD] = 0;
 						break;
-					case SDLK_LSHIFT:
+					case SDLK_LSHIFT:case SDLK_RSHIFT:
 						spGenericInput.button[SP_BUTTON_Y_NOWASD] = 0;
 						break;
 					case SDLK_ESCAPE:
@@ -893,47 +899,50 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 	return result;
 }
 
+signed char gp2x_axis[SP_INPUT_AXIS_COUNT] = {0,0};
+
 inline void spUpdateAxis( int axis )
 {
 #ifdef GP2X
+	int old_state = spGenericInput.axis[axis];
 	if ( axis == 0 )
 	{
-		spGenericInput.axis[axis] = 0;
+		spGenericInput.axis[0] = 0;
 		if ( spGenericInput.button[SP_AXIS_LEFTUP] ||
 				spGenericInput.button[SP_AXIS_LEFT]   ||
 				spGenericInput.button[SP_AXIS_LEFTDOWN] )
-			spGenericInput.axis[axis] = -1;
+			spGenericInput.axis[0] = -1;
 		if ( spGenericInput.button[SP_AXIS_RIGHTUP] ||
 				spGenericInput.button[SP_AXIS_RIGHT]   ||
 				spGenericInput.button[SP_AXIS_RIGHTDOWN] )
-			spGenericInput.axis[axis] = 1;
-		if (spGenericInput.axis[axis] == -1)
-			spGenericInput.analog_axis[axis] = SP_ANALOG_AXIS_MIN;
-		else
-		if (spGenericInput.axis[axis] ==  1)
-			spGenericInput.analog_axis[axis] = SP_ANALOG_AXIS_MAX;
-		else
-		spGenericInput.analog_axis[axis] = 0;
+			spGenericInput.axis[0] = 1;
 	}
 	else
 	{
-		spGenericInput.axis[axis] = 0;
+		spGenericInput.axis[1] = 0;
 		if ( spGenericInput.button[SP_AXIS_LEFTUP] ||
 				spGenericInput.button[SP_AXIS_UP]   ||
 				spGenericInput.button[SP_AXIS_RIGHTUP] )
-			spGenericInput.axis[axis] = -1;
+			spGenericInput.axis[1] = -1;
 		if ( spGenericInput.button[SP_AXIS_LEFTDOWN] ||
 				spGenericInput.button[SP_AXIS_DOWN]   ||
 				spGenericInput.button[SP_AXIS_RIGHTDOWN] )
-			spGenericInput.axis[axis] = 1;
-		if (spGenericInput.axis[axis] == -1)
-			spGenericInput.analog_axis[axis] = SP_ANALOG_AXIS_MIN;
-		else
-		if (spGenericInput.axis[axis] ==  1)
-			spGenericInput.analog_axis[axis] = SP_ANALOG_AXIS_MAX;
-		else
-		spGenericInput.analog_axis[axis] = 0;
+			spGenericInput.axis[1] = 1;
 	}
+	
+	int sav_state = gp2x_axis[axis];
+	gp2x_axis[axis] = spGenericInput.axis[axis];
+	if (old_state != spGenericInput.axis[axis] && //it is different from the old state, but
+		sav_state == spGenericInput.axis[axis]) //not different from the last input!
+		spGenericInput.axis[axis] = old_state;
+	//3
+	if (spGenericInput.axis[axis] == -1)
+		spGenericInput.analog_axis[axis] = SP_ANALOG_AXIS_MIN;
+	else
+	if (spGenericInput.axis[axis] ==  1)
+		spGenericInput.analog_axis[axis] = SP_ANALOG_AXIS_MAX;
+	else
+	spGenericInput.analog_axis[axis] = 0;
 #endif
 }
 

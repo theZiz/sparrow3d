@@ -1182,11 +1182,11 @@ PREFIX void spSetBlending( Sint32 value )
 {
 	#ifndef NO_BLENDING
 	#ifndef NO_PERSPECTIVE
-#ifdef GP2X
-	if (spBlendingPatternEmulation == 2 || spBlendingPatternEmulation == 1)
-#else
+//#ifdef GP2X
+//	if (spBlendingPatternEmulation == 2 || spBlendingPatternEmulation == 1)
+//#else
 	if (spBlendingPatternEmulation == 2)
-#endif
+//#endif
 	{
 		spBlending = SP_ONE;
 		if (value <= 0)
