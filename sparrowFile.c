@@ -513,8 +513,12 @@ spConfigEntryPointer internalNewEntry(spConfigPointer config,char* key,char* val
 	spConfigEntryPointer entry = (spConfigEntryPointer)malloc(sizeof(spConfigEntry));
 	sprintf(entry->key,"%s",key);
 	sprintf(entry->value,"%s",value);
-	entry->next = config->firstEntry;
-	config->firstEntry = entry;
+	entry->next = NULL;
+	if (config->lastEntry)
+		config->lastEntry->next = entry;
+	else
+		config->firstEntry = entry;
+	config->lastEntry = entry;
 	return entry;
 }	
 
@@ -522,6 +526,7 @@ PREFIX spConfigPointer spConfigRead(char* filename,char* subfolder)
 {
 	spConfigPointer config = (spConfigPointer)malloc(sizeof(spConfig));
 	config->firstEntry = NULL;
+	config->lastEntry = NULL;
 	config->filename = (char*)malloc(strlen(filename)+strlen(subfolder)+128);
 	spConfigGetPath(config->filename,subfolder,filename);
 	spFilePointer file = SDL_RWFromFile(config->filename,"rb");
@@ -532,6 +537,13 @@ PREFIX spConfigPointer spConfigRead(char* filename,char* subfolder)
 	char value[512];
 	while (spReadOneLine(file,buffer,1024) == 0)
 	{
+		if (buffer[0] == '#') //comment
+		{
+			key[0] = 0;
+			sprintf(value,"%s",&(buffer[1]));
+			internalNewEntry(config,key,value);
+			continue;
+		}
 		char* middle = strchr(buffer,':');
 		if (middle == NULL)
 			continue;
@@ -554,7 +566,10 @@ PREFIX void spConfigWrite(spConfigPointer config)
 	while (entry)
 	{
 		char buffer[1024];
-		sprintf(buffer,"%s: %s",entry->key,entry->value);
+		if (entry->key[0] == 0) //comment
+			sprintf(buffer,"#%s",entry->value);
+		else
+			sprintf(buffer,"%s: %s",entry->key,entry->value);
 		spWriteOneLine(file,buffer);
 		entry = entry->next;
 	}
@@ -674,6 +689,111 @@ PREFIX void spConfigSetFloat(spConfigPointer config,char* key,float value)
 	spConfigEntryPointer entry = internalGetEntry(config,key);
 	if (entry == NULL)
 	{
+		char buffer[32];
+		sprintf(buffer,"%f",value);
+		entry = internalNewEntry(config,key,buffer);
+	}
+	else
+		sprintf(entry->value,"%f",value);
+}
+
+PREFIX char* spConfigGetStringWithCommentBefore(spConfigPointer config,char* key,char* default_value,char* comment)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		internalNewEntry(config,"",comment);
+		entry = internalNewEntry(config,key,default_value);
+	}
+	return entry->value;
+}
+
+PREFIX int spConfigGetBoolWithCommentBefore(spConfigPointer config,char* key,int default_value,char* comment)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		internalNewEntry(config,"",comment);
+		if (default_value)
+			entry = internalNewEntry(config,key,"True");
+		else
+			entry = internalNewEntry(config,key,"False");
+	}
+	if (strcmp(entry->value,"True") == 0)
+		return 1;
+	if (strcmp(entry->value,"true") == 0)
+		return 1;
+	if (strcmp(entry->value,"1") == 0)
+		return 1;
+	return 0;
+}
+
+PREFIX void spConfigSetBoolWithCommentBefore(spConfigPointer config,char* key,int value,char* comment)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		internalNewEntry(config,"",comment);
+		if (value)
+			entry = internalNewEntry(config,key,"True");
+		else
+			entry = internalNewEntry(config,key,"False");
+	}
+	else
+	{
+		if (value)
+			sprintf(entry->value,"True");
+		else
+			sprintf(entry->value,"False");
+	}		
+}
+
+PREFIX int spConfigGetIntWithCommentBefore(spConfigPointer config,char* key,int default_value,char* comment)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		internalNewEntry(config,"",comment);
+		char buffer[32];
+		sprintf(buffer,"%i",default_value);
+		entry = internalNewEntry(config,key,buffer);
+	}
+	return atoi(entry->value);
+}
+
+PREFIX void spConfigSetIntWithCommentBefore(spConfigPointer config,char* key,int value,char* comment)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		internalNewEntry(config,"",comment);
+		char buffer[32];
+		sprintf(buffer,"%i",value);
+		entry = internalNewEntry(config,key,buffer);
+	}
+	else
+		sprintf(entry->value,"%i",value);
+}
+
+PREFIX float spConfigGetFloatWithCommentBefore(spConfigPointer config,char* key,float default_value,char* comment)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		internalNewEntry(config,"",comment);
+		char buffer[32];
+		sprintf(buffer,"%f",default_value);
+		entry = internalNewEntry(config,key,buffer);
+	}
+	return atof(entry->value);
+}
+
+PREFIX void spConfigSetFloatWithCommentBefore(spConfigPointer config,char* key,float value,char* comment)
+{
+	spConfigEntryPointer entry = internalGetEntry(config,key);
+	if (entry == NULL)
+	{
+		internalNewEntry(config,"",comment);
 		char buffer[32];
 		sprintf(buffer,"%f",value);
 		entry = internalNewEntry(config,key,buffer);

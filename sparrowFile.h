@@ -322,6 +322,7 @@ typedef struct spConfigStruct
 {
 	char* filename;
 	spConfigEntryPointer firstEntry;
+	spConfigEntryPointer lastEntry;
 } spConfig;
 
 /* Function: spConfigRead
@@ -369,6 +370,25 @@ PREFIX void spConfigFree(spConfigPointer config);
  * char* - the value*/
 PREFIX char* spConfigGetString(spConfigPointer config,char* key,char* default_value);
 
+/* Function: spConfigGetStringWithComment
+ * 
+ * Returns the string value to a specific key. If the key is not found, it will
+ * be added with the default_value. There is no Setter function, because you
+ * can edit the returned pointer directly.
+ * If the key is not available in the config yet, the comment will be added
+ * before the setting
+ * 
+ * Parameters:
+ * config - config to read from
+ * key - key of the item
+ * default_value - value to add/return if the key is not available yet
+ * comment - a comment, which will be set before the key-value-pair in the
+ * config if it doesn't exist yet
+ * 
+ * Returns:
+ * char* - the value*/
+PREFIX char* spConfigGetStringWithComment(spConfigPointer config,char* key,char* default_value,char* comment);
+
 /* Function: spConfigGetBool
  * 
  * Returns the bool value to a specific key. If the key is not found, it will
@@ -383,6 +403,24 @@ PREFIX char* spConfigGetString(spConfigPointer config,char* key,char* default_va
  * int - the value. 1 means true, 0 false*/
 PREFIX int spConfigGetBool(spConfigPointer config,char* key,int default_value);
 
+/* Function: spConfigGetBoolWithComment
+ * 
+ * Returns the bool value to a specific key. If the key is not found, it will
+ * be added with the default_value.
+ * If the key is not available in the config yet, the comment will be added
+ * before the setting
+ * 
+ * Parameters:
+ * config - config to read from
+ * key - key of the item
+ * default_value - value to add/return if the key is not available yet
+ * comment - a comment, which will be set before the key-value-pair in the
+ * config if it doesn't exist yet
+ * 
+ * Returns:
+ * int - the value. 1 means true, 0 false*/
+PREFIX int spConfigGetBoolWithComment(spConfigPointer config,char* key,int default_value,char* comment);
+
 /* Function: spConfigSetBool
  * 
  * Sets the bool value to a specific key. If the key is not found, it will
@@ -393,6 +431,21 @@ PREFIX int spConfigGetBool(spConfigPointer config,char* key,int default_value);
  * key - key of the item
  * value - value to set*/
 PREFIX void spConfigSetBool(spConfigPointer config,char* key,int value);
+
+/* Function: spConfigSetBoolWithComment
+ * 
+ * Sets the bool value to a specific key. If the key is not found, it will
+ * be added.
+ * If the key is not available in the config yet, the comment will be added
+ * before the setting
+ * 
+ * Parameters:
+ * config - config to write to
+ * key - key of the item
+ * value - value to set
+ * comment - a comment, which will be set before the key-value-pair in the
+ * config if it doesn't exist yet*/
+PREFIX void spConfigSetBoolWithComment(spConfigPointer config,char* key,int value,char* comment);
 
 /* Function: spConfigGetInt
  * 
@@ -408,6 +461,24 @@ PREFIX void spConfigSetBool(spConfigPointer config,char* key,int value);
  * int - the value*/
 PREFIX int spConfigGetInt(spConfigPointer config,char* key,int default_value);
 
+/* Function: spConfigGetIntWithComment
+ * 
+ * Returns the int value to a specific key. If the key is not found, it will
+ * be added with the default_value.
+ * If the key is not available in the config yet, the comment will be added
+ * before the setting
+ * 
+ * Parameters:
+ * config - config to read from
+ * key - key of the item
+ * default_value - value to add/return if the key is not available yet
+ * comment - a comment, which will be set before the key-value-pair in the
+ * config if it doesn't exist yet
+ * 
+ * Returns:
+ * int - the value*/
+PREFIX int spConfigGetIntWithComment(spConfigPointer config,char* key,int default_value,char* comment);
+
 /* Function: spConfigSetInt
  * 
  * Sets the int value to a specific key. If the key is not found, it will
@@ -418,6 +489,21 @@ PREFIX int spConfigGetInt(spConfigPointer config,char* key,int default_value);
  * key - key of the item
  * value - value to set*/
 PREFIX void spConfigSetInt(spConfigPointer config,char* key,int value);
+
+/* Function: spConfigSetIntWithComment
+ * 
+ * Sets the int value to a specific key. If the key is not found, it will
+ * be added.
+ * If the key is not available in the config yet, the comment will be added
+ * before the setting
+ * 
+ * Parameters:
+ * config - config to write to
+ * key - key of the item
+ * value - value to set
+ * comment - a comment, which will be set before the key-value-pair in the
+ * config if it doesn't exist yet*/
+PREFIX void spConfigSetIntWithComment(spConfigPointer config,char* key,int value,char* comment);
 
 /* Function: spConfigGetFloat
  * 
@@ -433,6 +519,24 @@ PREFIX void spConfigSetInt(spConfigPointer config,char* key,int value);
  * float - the value*/
 PREFIX float spConfigGetFloat(spConfigPointer config,char* key,float default_value);
 
+/* Function: spConfigGetFloatWithComment
+ * 
+ * Returns the float value to a specific key. If the key is not found, it will
+ * be added with the default_value.
+ * If the key is not available in the config yet, the comment will be added
+ * before the setting
+ * 
+ * Parameters:
+ * config - config to read from
+ * key - key of the item
+ * default_value - value to add/return if the key is not available yet
+ * comment - a comment, which will be set before the key-value-pair in the
+ * config if it doesn't exist yet
+ * 
+ * Returns:
+ * float - the value*/
+PREFIX float spConfigGetFloatWithComment(spConfigPointer config,char* key,float default_value,char* comment);
+
 /* Function: spConfigSetFloat
  * 
  * Sets the float value to a specific key. If the key is not found, it will
@@ -443,4 +547,19 @@ PREFIX float spConfigGetFloat(spConfigPointer config,char* key,float default_val
  * key - key of the item
  * value - value to set*/
 PREFIX void spConfigSetFloat(spConfigPointer config,char* key,float value);
+
+/* Function: spConfigSetFloatWithComment
+ * 
+ * Sets the float value to a specific key. If the key is not found, it will
+ * be added.
+ * If the key is not available in the config yet, the comment will be added
+ * before the setting
+ * 
+ * Parameters:
+ * config - config to write to
+ * key - key of the item
+ * value - value to set
+ * comment - a comment, which will be set before the key-value-pair in the
+ * config if it doesn't exist yet*/
+PREFIX void spConfigSetFloatWithComment(spConfigPointer config,char* key,float value,char* comment);
 #endif
