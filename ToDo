@@ -1,4 +1,5 @@
-- 
+- spSetReturnFinishesKeyboardPoll(int value)
+- spGetReturnFinishesKeyboardPoll()
 
 
 Roadmap til 1.4:
