@@ -1,50 +1,11 @@
+- 
+
+
 Roadmap til 1.4:
 - sparrowNet new example
 	- new server registers with broadcast!
 - all 12 tutorials (4/12 done)
 - Skeleton project
-
-Roadmap til 1.5:
-- GUI
-	- relative GUI in a 1.0f x 1.0f screen
-	- If keyboard have to be shown => smaller
-	- own font managaing, however possible to get font pointer
-	- GUI-interface-mode
-		- arrows control GUI
-		- some buttons are used to select an itm (like for touchscreen input)
-	- every element shares some attributes
-		- position (relative)
-		- size (relative)
-		- design
-			- simple (just lines + spFont output)
-			- bitmap (just the surface scaled or unscaled)
-			- design
-				- every corner and every edge an own surface
-				- background surface
-				- on the fly baking
-	- elements
-		- Area ( == window) can be in Area or at root
-		- Button
-			- Feedback function if clicked
-			- Shortcut-button
-		- Label
-			- Text
-		- Checkbox
-			- Feedback function if state is changed
-			- Shortcut-button
-		- Radiobutton
-			- Feedback function if state is changed to true
-			- Shortcut-button
-			- list of corresponding radio buttons, which are set to false
-		- Textbox
-			- Text (changeable)
-			- Scrollbar
-		- Bitmaplabel
-			- Surface to show (maybe scaled)
-	- draw_gui function
-	- every gui is encapsulated in a bundle
-	- gui file format
-	- new testsparrow.c with gui
 
 general Roadmap:
 - drawing primitives as parallel process
@@ -60,13 +21,3 @@ general Roadmap:
 - rotozoom on second processor
 - all blits on second processor
 	- with hardware blitter
-- third device layer (controlled by sparrowCore)
-  - axis are exactly the same
-  - as much buttons createable as you want
-  - button relation changeable
-  - button name from host spGetButtonName
-  - button is identifyable by name and id.
-    - int spNewButton(char* name) => returns id (faster)
-    - spGetButtonByName, spGetButtonByID
-    - Returns *int => changeable
-- sparrowText understands \n

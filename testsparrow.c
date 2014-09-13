@@ -352,7 +352,7 @@ int main( int argc, char **argv )
 	//All glory the main loop
 	spLoop( draw_test, calc_test, 10, resize, eventHandling );
 	
-	//Winter Wrap up, Winter Wrap up 
+	//Winter Wrap up, Winter Wrap up z
 	spFontDelete( font );
 	quit_cube();
 	quit_tube();
