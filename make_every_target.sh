@@ -5,7 +5,11 @@ for f in $FILES
 do
 	TARGET=`echo "$f" | cut -d/ -f3 | cut -d. -f1`
 	make clean > /dev/null
-	make -j 4 TARGET=$TARGET PARAMETER=-w all_no_static> /dev/null
+	if [ $TARGET = "win32" ]; then
+		make -j 4 TARGET=$TARGET PARAMETER=-w all_no_static> /dev/null
+	else
+		make -j 4 TARGET=$TARGET PARAMETER=-w all> /dev/null
+	fi
 	if [ $? -ne 0 ]; then
 		echo "Error compiling for \033[1;31m$TARGET\033[0m!"
 	else
