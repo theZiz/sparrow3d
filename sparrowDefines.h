@@ -607,7 +607,8 @@
 // If alphatest is enabled, this (pink) color will not be drawn, it is "transparent".
 #define SP_ALPHA_COLOR 63519
 
-
+// Define: SP_DEVICE_STRING
+// Gives you the name of the device, e.g. "GP2X F100" or "Personal Computer"
 #ifdef F100
 	#define SP_DEVICE_STRING "GP2X F100"
 #elif defined WIZ

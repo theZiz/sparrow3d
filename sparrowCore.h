@@ -292,6 +292,17 @@ PREFIX void spPollKeyboardInput( char *buffer, int bufferSize, Sint32 enter_key_
  * automatically when the buffer passed to spPollKeyboardInput is full.*/
 PREFIX void spStopKeyboardInput( void );
 
+/* Function: spSetReturnBehavior
+ * 
+ * Changes the behaviour, what happens, if Return is pressed while keyboard
+ * input is pulled.
+ * Note: Every combination of "ignore" and "stops" is possible
+ * 
+ * Parameters:
+ * ignore - Return should be ignored and not appear in the keyboard buffer
+ * stops - Return should stop the keyboard polling.*/
+PREFIX void spSetReturnBehavior(int ignore,int stops);
+
 /* Function: spIsKeyboardPolled
  * 
  * Says, whether input from the keyboard is polled.
@@ -614,10 +625,38 @@ PREFIX Uint16 spGetRGB(int r, int g, int b );
  * Uint16 - 16 bit color value*/
 PREFIX Uint16 spGetHSV( Sint32 h, Uint8 s, Uint8 v );
 
+/* Function: spGetHFromColor
+ * 
+ * Gives you the hue of a color. The result is a fixed point number from
+ * 0 to 2*SP_PI.
+ * 
+ * Parameters:
+ * color - the color
+ * 
+ * Returns:
+ * Sint32 - the hue as fixed point number from 0 to 2*SP_PI.*/
 PREFIX Sint32 spGetHFromColor(Uint16 color);
 
+/* Function: spGetSFromColor
+ * 
+ * Gives you the saturation of a color. The result is a 8bit integer.
+ * 
+ * Parameters:
+ * color - the color
+ * 
+ * Returns:
+ * Uint8 - the saturation*/
 PREFIX Uint8 spGetSFromColor(Uint16 color);
 
+/* Function: spGetSFromColor
+ * 
+ * Gives you the value of a color. The result is a 8bit integer.
+ * 
+ * Parameters:
+ * color - the color
+ * 
+ * Returns:
+ * Uint8 - the value*/
 PREFIX Uint8 spGetVFromColor(Uint16 color);
 
 /* Function: spScale2XFast
