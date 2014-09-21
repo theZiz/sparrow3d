@@ -3,18 +3,18 @@
   * it under the terms of the GNU General Public License as published by
   * the Free Software Foundation, either version 2 of the License, or
   * (at your option) any later version.
-  * 
+  *
   * Sparrow3d is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU General Public License for more details.
-  * 
+  *
   * You should have received a copy of the GNU General Public License
   * along with Foobar.  If not, see <http://www.gnu.org/licenses/>
-  * 
+  *
   * For feedback and questions about my Files and Projects please mail me,
   * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
-  
+
 #include "sparrowPrimitives.h"
 #ifdef PANDORA
 	#include <arm_neon.h>
@@ -453,7 +453,7 @@ PREFIX int spTriangle( Sint32 x1, Sint32 y1, Sint32 z1,   Sint32 x2, Sint32 y2, 
 	int result = spGetPixelPosition( x1, y1 ) | spGetPixelPosition( x2, y2 ) | spGetPixelPosition( x3, y3 );
 	if ( !result )
 		return 0;
-	
+
 	if (spUseParallelProcess)
 		sp_intern_Triangle_overlord( x1, y1, z1, x2, y2, z2, x3, y3, z3, color );
 	else
@@ -1290,7 +1290,7 @@ static Sint32 get_horizontal_add(Sint32 w)
 		case SP_LEFT: return 0;
 		case SP_RIGHT: return w - 1;
 		case SP_FIXED: return spFixedX;
-	}	
+	}
 	return w >> 1;
 }
 
@@ -1362,7 +1362,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 					Sint32 oldTextureX = spTextureY;
 					Sint32 oldTextureY = spTextureX;
 					Uint16* oldTexturePixel = spTexturePixel;
-	
+
 					spBindTexture( surface );
 					int u = sx;
 					#ifndef NO_BLENDING
@@ -1390,7 +1390,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							}
 							u++;
 						}
-					#endif			
+					#endif
 					spTexture = oldTexture;
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
@@ -1544,8 +1544,8 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 								v++;
 							}
 							u++;
-						}	
-					#endif				
+						}
+					#endif
 					spTexture = oldTexture;
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
@@ -1703,7 +1703,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							}
 							u++;
 						}
-					#endif				
+					#endif
 					spTexture = oldTexture;
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
@@ -1778,7 +1778,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							}
 							u++;
 						}
-					#endif			
+					#endif
 					spTexture = oldTexture;
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
@@ -1858,7 +1858,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							}
 							u++;
 						}
-					#endif			
+					#endif
 					spTexture = oldTexture;
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
@@ -1933,7 +1933,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							}
 							u++;
 						}
-					#endif				
+					#endif
 					spTexture = oldTexture;
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
@@ -2020,7 +2020,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							}
 							u++;
 						}
-					#endif				
+					#endif
 					spTexture = oldTexture;
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
@@ -2414,7 +2414,7 @@ PREFIX void spBlitSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surfac
 							}
 							u++;
 						}
-					#endif			
+					#endif
 					spTexture = oldTexture;
 					spTextureScanLine = oldTextureScanLine;
 					spTextureX = oldTextureY;
@@ -2649,13 +2649,13 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 		return;
 	if (spZTest && z < 0)
 		return;
-	
+
 	int addv = h-by >> 1;
 	if ( spVerticalOrigin == SP_TOP )
 		addv = 0;
 	if ( spVerticalOrigin == SP_BOTTOM )
 		addv = h-by - 1;
-	
+
 	spRectangle(x,y-addv     ,z,w,by,color);
 	spRectangle(x,y-addv+h-by,z,w,by,color);
 
@@ -2664,15 +2664,15 @@ PREFIX void spRectangleBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 w, Sint32 h,
 		addv = -by;
 	if ( spVerticalOrigin == SP_BOTTOM )
 		addv = by;
-	
+
 	int addu = w-bx >> 1;
 	if ( spHorizontalOrigin == SP_LEFT )
 		addu = 0;
 	if ( spHorizontalOrigin == SP_RIGHT )
 		addu = w-bx - 1;
-	
+
 	spRectangle(x-addu     ,y-addv,z,bx,h-2*by,color);
-	spRectangle(x-addu+w-bx,y-addv,z,bx,h-2*by,color);	
+	spRectangle(x-addu+w-bx,y-addv,z,bx,h-2*by,color);
 }
 
 PREFIX void spEllipse( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uint32 color )
@@ -2909,7 +2909,7 @@ PREFIX void spEllipseBorder( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry,
 				else
 					sp_intern_EllipseBorder_blending_ztest_pattern(x1,y1,rxl,rxr,rx,ryl,ryr,ry,z,bx,by,color,spPattern,spBlending);
 				#endif
-				
+
 			}
 			else
 			{
@@ -3334,7 +3334,7 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 	Sint32 oldTextureY = spTextureX;
 	Uint16* oldTexturePixel = spTexturePixel;
 	spBindTexture( surface );
-	
+
 	if (zoomX < 0)
 	{
 		sx+=w-1;
@@ -3352,7 +3352,7 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 		x3 += x;
 		y1 += y;
 		y3 += y;
-		
+
 		#ifndef NO_BLENDING
 		if ( spBlending == SP_ONE)
 		{
@@ -3532,7 +3532,7 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 		                        nx3,ny3,sx + w,sy + h,
 		                        nx4,ny4,sx + w,sy    ,z);
 	}
-	
+
 	spTexture = oldTexture;
 	spTextureScanLine = oldTextureScanLine;
 	spTextureX = oldTextureY;
@@ -3877,7 +3877,7 @@ void spStartDrawingThread()
 		return;
 	if (spScanLineThread)
 		return;
-		
+
 	if ( spScanLineCache == NULL ) //TODO: The gp2x just gets an adress of the upper memory
 		spScanLineCache = (type_spScanLineCache*)malloc(sizeof(type_spScanLineCache)*SP_MAX_SCANLINES);
 
@@ -3901,28 +3901,55 @@ PREFIX void spDrawInExtraThread(int value)
 PREFIX void spUpdateTargetPixels()
 {
 	if (spTarget)
-		spTargetPixel = ( Uint16* )spTarget->pixels;	
+		spTargetPixel = ( Uint16* )spTarget->pixels;
 }
 
 #define FLOOD_PIXEL(x,y) spTargetPixel[(x) + (y) * spTargetScanLine]
 
+struct spFloodFillPixel
+{
+	int x;
+	int y;
+	struct spFloodFillPixel *next;
+};
+struct spFloodFillPixel *spFloodFillStack = NULL;
+
+void flood_fill_stack_push(int x, int y)
+{
+	struct spFloodFillPixel *add = malloc(sizeof(struct spFloodFillPixel));
+	add->x = x;
+	add->y = y;
+	add->next = spFloodFillStack;
+	spFloodFillStack = add;
+}
+
+struct spFloodFillPixel* flood_fill_stack_pop()
+{
+	if (spFloodFillStack == NULL)
+		return NULL;
+	struct spFloodFillPixel *temp = spFloodFillStack;
+	spFloodFillStack = spFloodFillStack->next;
+	return temp;
+}
+
 void floodFill(int x,int y,Uint16 newColor,Uint16 oldColor)
 {
-	if (x < 0)
-		return;
-	if (y < 0)
-		return;
-	if (x >= spTargetX)
-		return;
-	if (y >= spTargetY)
-		return;
-	if (FLOOD_PIXEL(x,y) != oldColor)
-		return;
-	FLOOD_PIXEL(x,y) = newColor;
-	floodFill(x-1,y,newColor,oldColor);
-	floodFill(x+1,y,newColor,oldColor);
-	floodFill(x,y-1,newColor,oldColor);
-	floodFill(x,y+1,newColor,oldColor);
+	flood_fill_stack_push(x,y);
+	struct spFloodFillPixel *curr = NULL;
+	while (spFloodFillStack != NULL)
+	{
+		curr = flood_fill_stack_pop();
+		if (curr->x >= 0 && curr->y >= 0 && curr->x < spTargetX && curr->y < spTargetY &&
+				FLOOD_PIXEL(curr->x,curr->y) == oldColor)
+		{
+			FLOOD_PIXEL(curr->x,curr->y) = newColor;
+			flood_fill_stack_push(curr->x+1,curr->y);
+			flood_fill_stack_push(curr->x,curr->y+1);
+			flood_fill_stack_push(curr->x-1,curr->y);
+			flood_fill_stack_push(curr->x,curr->y-1);
+		}
+		free(curr);
+	}
 }
 
 PREFIX void spFloodFill(int x,int y,Uint16 color)
