@@ -3912,21 +3912,31 @@ struct spFloodFillPixel
 	int y;
 	struct spFloodFillPixel *next;
 };
-struct spFloodFillPixel *spFloodFillStack = NULL;
 
-void flood_fill_stack_push(int x, int y)
+struct spFloodFillPixel* spFloodFillStack = NULL;
+
+#ifdef __GNUC__
+inline void flood_fill_stack_test_and_push(int x, int y,Uint16 oldColor) __attribute__((always_inline));
+#endif
+inline void flood_fill_stack_test_and_push(int x, int y,Uint16 oldColor)
 {
-	struct spFloodFillPixel *add = malloc(sizeof(struct spFloodFillPixel));
-	add->x = x;
-	add->y = y;
-	add->next = spFloodFillStack;
-	spFloodFillStack = add;
+	if (x >= 0 && y >= 0 && x < spTargetX && y < spTargetY && FLOOD_PIXEL(x,y) == oldColor)
+	{
+		struct spFloodFillPixel *add = malloc(sizeof(struct spFloodFillPixel));
+		add->x = x;
+		add->y = y;
+		add->next = spFloodFillStack;
+		spFloodFillStack = add;
+	}
 }
 
-struct spFloodFillPixel* flood_fill_stack_pop()
+#ifdef __GNUC__
+inline struct spFloodFillPixel* flood_fill_stack_pop() __attribute__((always_inline));
+#endif
+inline struct spFloodFillPixel* flood_fill_stack_pop()
 {
-	if (spFloodFillStack == NULL)
-		return NULL;
+	//if (spFloodFillStack == NULL) //This SHOULD never happen...
+	//	return NULL;
 	struct spFloodFillPixel *temp = spFloodFillStack;
 	spFloodFillStack = spFloodFillStack->next;
 	return temp;
@@ -3934,20 +3944,15 @@ struct spFloodFillPixel* flood_fill_stack_pop()
 
 void floodFill(int x,int y,Uint16 newColor,Uint16 oldColor)
 {
-	flood_fill_stack_push(x,y);
-	struct spFloodFillPixel *curr = NULL;
-	while (spFloodFillStack != NULL)
+	flood_fill_stack_test_and_push(x,y,oldColor);
+	while (spFloodFillStack)
 	{
-		curr = flood_fill_stack_pop();
-		if (curr->x >= 0 && curr->y >= 0 && curr->x < spTargetX && curr->y < spTargetY &&
-				FLOOD_PIXEL(curr->x,curr->y) == oldColor)
-		{
-			FLOOD_PIXEL(curr->x,curr->y) = newColor;
-			flood_fill_stack_push(curr->x+1,curr->y);
-			flood_fill_stack_push(curr->x,curr->y+1);
-			flood_fill_stack_push(curr->x-1,curr->y);
-			flood_fill_stack_push(curr->x,curr->y-1);
-		}
+		struct spFloodFillPixel *curr = flood_fill_stack_pop();
+		FLOOD_PIXEL(curr->x,curr->y) = newColor;
+		flood_fill_stack_test_and_push(curr->x+1,curr->y,oldColor);
+		flood_fill_stack_test_and_push(curr->x,curr->y+1,oldColor);
+		flood_fill_stack_test_and_push(curr->x-1,curr->y,oldColor);
+		flood_fill_stack_test_and_push(curr->x,curr->y-1,oldColor);
 		free(curr);
 	}
 }
