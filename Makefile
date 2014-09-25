@@ -119,6 +119,10 @@ endif
 
 CPP += $(PARAMETER)
 
+ifndef AR
+AR = ar
+endif
+
 # I tried a bit with different compilers for building and linking. However: That just sets CPP_LINK to CPP. ;-)
 CPP_LINK = $(CPP)
 
@@ -189,13 +193,13 @@ testnet_terminal_client: testnet_terminal_client.c libsparrowNet.so
 	$(CPP_LINK) $(CFLAGS) testnet_terminal_client.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/testnet_terminal_client
 
 libsparrow3d.a: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o
-	ar rcs $(BUILD)/$(SPARROW3D_STATIC_LIB) sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o
+	$(AR) rcs $(BUILD)/$(SPARROW3D_STATIC_LIB) sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o
 
 libsparrowSound.a: sparrowSound.o
-	ar rcs $(BUILD)/$(SPARROWSOUND_STATIC_LIB) sparrowSound.o
+	$(AR) rcs $(BUILD)/$(SPARROWSOUND_STATIC_LIB) sparrowSound.o
 
 libsparrowNet.a: sparrowNet.o
-	ar rcs $(BUILD)/$(SPARROWNET_STATIC_LIB) sparrowNet.o
+	$(AR) rcs $(BUILD)/$(SPARROWNET_STATIC_LIB) sparrowNet.o
 
 libsparrow3d.so: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o
 	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
