@@ -1,6 +1,4 @@
-- spSetReturnFinishesKeyboardPoll(int value)
-	- deactivates other behaviours of Return at PC like Start!
-- spGetReturnFinishesKeyboardPoll()
+- c4a caching
 
 Roadmap til 1.4:
 - sparrowNet new example

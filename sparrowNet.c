@@ -527,7 +527,20 @@ void internal_CreateDirectoryChain( const char* directories)
 }
 
 #ifdef PANDORA
-	#define PROFILE_FILENAME_MAKRO char *filename = pnd_locate_filename ( "/media/*/pandora/appdata/c4a-mame/:.", "c4a-prof" );
+	#define PROFILE_FILENAME_MAKRO char *locate_filename = pnd_locate_filename ( "/media/*/pandora/appdata/c4a-mame/:.", "c4a-prof" ); \
+		char filename[256] = "./c4a-prof"; \
+		if (locate_filename) \
+			sprintf(filename,"%s",locate_filename); \
+		else \
+		{ \
+			locate_filename = pnd_locate_filename ( "/media/*/pandora/:.", "appdata" ); \
+			if (locate_filename) \
+			{ \
+				sprintf(filename,"%s/c4a-mame",locate_filename); \
+				internal_CreateDirectoryChain(filename); \
+				sprintf(filename,"%s/c4a-mame/c4a-prof",locate_filename); \
+			} \
+		}
 #elif defined GCW || (defined X86CPU && !defined WIN32)
 	#define PROFILE_FILENAME_MAKRO char filename[256]; \
 		sprintf(filename,"%s/.config/compo4all",getenv("HOME"));\
