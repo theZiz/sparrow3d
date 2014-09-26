@@ -122,7 +122,16 @@ int main( int argc, char **argv )
 	spInitCore();
 	spInitNet();
 	printf("Init spNet\n");
+	spNetC4AProfilePointer profile = spNetC4AGetProfile();
 
+	spNetC4ASetCaching(1);
+	if (spNetC4ACommitScore(profile,"test",12345,NULL,10000) == 0)
+	while (spNetC4AGetStatus() == SP_C4A_PROGRESS)
+		#ifdef WIN32
+			Sleep(1);
+		#else
+			usleep(200);
+		#endif
 	//Testing stuff ;)
 	spNetIP ip = spNetResolve("ziz.gp2x.de",80);
 	printf("IP of ziz.gp2x.de: %i.%i.%i.%i\n",ip.address.ipv4_bytes[0],ip.address.ipv4_bytes[1],ip.address.ipv4_bytes[2],ip.address.ipv4_bytes[3]);
@@ -144,7 +153,6 @@ int main( int argc, char **argv )
 
 	//C4A Example
 	spNetC4AScorePointer score;
-	spNetC4AProfilePointer profile = spNetC4AGetProfile();
 	if (profile)
 	{
 		printf("Your profile:\n");
@@ -203,10 +211,6 @@ int main( int argc, char **argv )
 			printf("%2i.%2i.%i - %2i:%02i: %s (%s) - %i\n",local->tm_mday,local->tm_mon+1,local->tm_year+1900,local->tm_hour,local->tm_min,mom->longname,mom->shortname,mom->score);
 			mom = mom->next;
 		}
-		//If you just uncomment this code, you cheat! Copy it to your game and try
-		//with YOUR game. Thank you. ;)
-		//SDL_WaitThread(spNetC4ACommitScore(profile,"puzzletube_points",10003,&score),NULL);
-		//printf("Commit end status code: %i\n",spNetC4AGetStatus());
 		spNetC4ADeleteScores(&score);
 	}
 	else
@@ -214,6 +218,8 @@ int main( int argc, char **argv )
 	if (server_connection)
 		spNetCloseTCP(server_connection);
 	spNetCloseTCP(server);
+
+
 
 	//Winter Wrap up, Winter Wrap up
 	spFontDelete( font );
