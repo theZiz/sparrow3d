@@ -550,6 +550,21 @@ void internal_CreateDirectoryChain( const char* directories)
 	#define PROFILE_FILENAME_MAKRO char filename[256] = "./c4a-prof";
 #endif
 
+int spNetC4ACaching = 0;
+char spCacheFilename[256] = "";
+
+PREFIX spNetC4ASetCaching(int value)
+{
+	spNetC4ACaching = value;
+	if (spNetC4ACaching && spCacheFilename[0] == 0)
+	{
+		PROFILE_FILENAME_MAKRO
+		sprintf(spCacheFilename,"%s",filename);
+		sprintf(&spCacheFilename[strlen(spCacheFilename)-4],"cache");
+		printf("%s\n",spCacheFilename);
+	}
+}
+
 PREFIX spNetC4AProfilePointer spNetC4AGetProfile()
 {
 	spNetC4AProfilePointer profile = NULL;

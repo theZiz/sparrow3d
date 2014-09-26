@@ -777,4 +777,16 @@ PREFIX void spNetC4ADeleteProfileFile();
  * task - Pointer to <spNetC4ATask>, which is returned by the parallel functions.*/
 PREFIX void spNetC4ADeleteTask(spNetC4ATaskPointer task);
 
+/* Function: spNetC4ASetCaching
+ * 
+ * NO IMPLEMENTED YET!
+ * (De)Activates caching for C4A scores. If caching is enabled every time
+ * spNetC4ACommitScore* fails, it is written to a cache file and the next time
+ * spNetC4ACommitScore* is called it will be tried to be committed again
+ * 
+ * Parameters:
+ * value - 1 activates caching, 0 deactivates it.*/
+PREFIX void spNetC4ASetCaching(int value);
+
+
 #endif
