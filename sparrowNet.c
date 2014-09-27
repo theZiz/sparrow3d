@@ -395,18 +395,18 @@ SDL_Thread* SDL_CreateThreadWithoutThreading(int (*fn)(void *),void* data)
 	return NULL;
 }*/
 
-void write_to_cache(commitPointer commitData)
+void write_to_cache(char* game,char* system,char* prid,int score,int lock)
 {
-	if (spNetC4ACaching == 0)
-		return;
-	SDL_mutexP(spCacheMutex);
+	if (lock)
+		SDL_mutexP(spCacheMutex);
 	SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "ab");
-	SDL_RWwrite(file,commitData->game,256,1);
-	SDL_RWwrite(file,commitData->system,256,1);
-	SDL_RWwrite(file,commitData->profile->prid,256,1);
-	SDL_RWwrite(file,&commitData->score,sizeof(int),1);
+	SDL_RWwrite(file,game,256,1);
+	SDL_RWwrite(file,system,256,1);
+	SDL_RWwrite(file,prid,256,1);
+	SDL_RWwrite(file,&score,sizeof(int),1);
 	SDL_RWclose(file);
-	SDL_mutexV(spCacheMutex);
+	if (lock)
+		SDL_mutexV(spCacheMutex);
 }
 
 int spNetC4AUberThread(getgenericPointer data)
@@ -417,11 +417,11 @@ int spNetC4AUberThread(getgenericPointer data)
 	{
 	#ifdef REALGP2X
 		//TODO: Implement!
-		SDL_Delay(1);
+		SDL_Delay(100);
 	#elif defined WIN32
-		SDL_Delay(1);	
+		SDL_Delay(100);	
 	#else
-		usleep(100);
+		usleep(100000);
 	#endif
 		int newTime = SDL_GetTicks();
 		int diff = newTime - startTime;
@@ -1078,55 +1078,128 @@ PREFIX spNetC4ATaskPointer spNetC4AGetScoreOfMonthParallel(spNetC4AScorePointer*
 	return task;
 }
 
-int c4a_commit_thread(void* data)
+static int do_the_real_c4a_commit(spNetIP ip,commitPointer commitData,char* game,char* system,char* prid,int score)
 {
-	commitPointer commitData = (commitPointer)data;
-	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
-	if (ip.address.ipv4 == SP_INVALID_IP)
-	{
-		write_to_cache(commitData);
-		SDL_mutexP(commitData->task->statusMutex);
-		commitData->task->status = SP_C4A_ERROR;
-		SDL_mutexV(commitData->task->statusMutex);
-		return 1;
-	}	
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
-	{
-		write_to_cache(commitData);
-		SDL_mutexP(commitData->task->statusMutex);
-		commitData->task->status = SP_C4A_ERROR;
-		SDL_mutexV(commitData->task->statusMutex);
 		return 1;
-	}
 	char commit_string[2048];
-	sprintf(commit_string,"score=%i",commitData->score);
-	int dataSize = strlen(commit_string);
-	sprintf(commit_string,"PUT /plugtally_1/scoreonly/%s/%s/%s?score=%i HTTP/1.1\r\nHost: skeezix.wallednetworks.com:13001\r\nAccept: */*\r\nContent-Length: 0\r\nExpect: 100-continue\r\n",commitData->game,commitData->system,commitData->profile->prid,commitData->score);
+	sprintf(commit_string,"PUT /plugtally_1/scoreonly/%s/%s/%s?score=%i HTTP/1.1\r\nHost: skeezix.wallednetworks.com:13001\r\nAccept: */*\r\nContent-Length: 0\r\nExpect: 100-continue\r\n",game,system,prid,score);
 	if (spNetSendHTTP(connection,commit_string) == 0)
 	{
 		spNetCloseTCP(connection);
-		write_to_cache(commitData);
-		SDL_mutexP(commitData->task->statusMutex);
-		commitData->task->status = SP_C4A_ERROR;
-		SDL_mutexV(commitData->task->statusMutex);
 		return 1;
 	}
 	spNetCloseTCP(connection);
-	
-	//TODO: c4a-cache
-	
 	//Adding to scoreList ;)
 	if (commitData->scoreList)
 	{
 		spNetC4AScorePointer new_score = (spNetC4AScorePointer)malloc(sizeof(spNetC4AScore));
 		sprintf(new_score->longname,"%s",commitData->profile->longname);
 		sprintf(new_score->shortname,"%s",commitData->profile->shortname);
-		new_score->score = commitData->score;
+		new_score->score = score;
 		new_score->commitTime = time(NULL);
 		new_score->next = (*(commitData->scoreList));
 		(*(commitData->scoreList)) = new_score;
 	}
+	return 0;
+}
+
+typedef struct cacheStruct *cachePointer;
+typedef struct cacheStruct {
+	char game[256];
+	char system[256];
+	char prid[256];
+	int score;
+	cachePointer next;
+} cacheType;
+
+#ifndef __GNUC__
+	#include <windows.h>
+	#include <tchar.h>
+#else
+	#include <dirent.h>
+	#include <sys/types.h>
+	#include <sys/stat.h>
+	#include <unistd.h>
+#endif
+
+int c4a_commit_thread(void* data)
+{
+	commitPointer commitData = (commitPointer)data;
+	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
+	if (ip.address.ipv4 == SP_INVALID_IP)
+	{
+		if (spNetC4ACaching)
+			write_to_cache(commitData->game,commitData->system,commitData->profile->prid,commitData->score,1);
+		SDL_mutexP(commitData->task->statusMutex);
+		commitData->task->status = SP_C4A_ERROR;
+		SDL_mutexV(commitData->task->statusMutex);
+		return 1;
+	}	
+	if (do_the_real_c4a_commit(ip,commitData,commitData->game,commitData->system,commitData->profile->prid,commitData->score))
+	{
+		if (spNetC4ACaching)
+			write_to_cache(commitData->game,commitData->system,commitData->profile->prid,commitData->score,1);
+		SDL_mutexP(commitData->task->statusMutex);
+		commitData->task->status = SP_C4A_ERROR;
+		SDL_mutexV(commitData->task->statusMutex);
+		return 1;
+	}
+	//Checking for stuff in the cache
+	SDL_mutexP(spCacheMutex);
+	SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "rb");
+	if (file)
+	{
+		char game[256];
+		char system[256];
+		char prid[256];
+		int score;
+		cachePointer cache = NULL;
+		while (1)
+		{
+			if (SDL_RWread(file,game,256,1) <= 0)
+				break;
+			if (SDL_RWread(file,system,256,1) <= 0)
+				break;
+			if (SDL_RWread(file,prid,256,1) <= 0)
+				break;
+			if (SDL_RWread(file,&score,sizeof(int),1) <= 0)
+				break;
+			cachePointer new_cache = (cachePointer)malloc(sizeof(cacheType));
+			memcpy(new_cache->game,game,256);
+			memcpy(new_cache->system,system,256);
+			memcpy(new_cache->prid,prid,256);
+			new_cache->score = score;
+			new_cache->next = cache;
+			cache = new_cache;
+		}
+		SDL_RWclose(file);
+		while (cache)
+		{
+			cachePointer next = cache->next;
+			if (do_the_real_c4a_commit(ip,commitData,cache->game,cache->system,cache->prid,cache->score))
+				break;
+			free(cache);
+			cache = next;
+		}
+		#ifdef WIN32
+			DeleteFile(spCacheFilename);
+		#else
+			remove(spCacheFilename);
+		#endif
+		//if cache is still existing, we need to write back the rest of the cache
+		while (cache)
+		{
+			cachePointer next = cache->next;
+			write_to_cache(cache->game,cache->system,cache->prid,cache->score,0);
+			free(cache);
+			cache = next;
+		}
+			
+	}
+	SDL_mutexV(spCacheMutex);
+	
 	SDL_mutexP(commitData->task->statusMutex);
 	commitData->task->status = SP_C4A_OK;
 	SDL_mutexV(commitData->task->statusMutex);
