@@ -39,6 +39,7 @@ int internal_spNet_spReadOneLine( SDL_RWops* file , char* buffer, int buffer_len
 }
 
 spNetC4ATaskPointer spGlobalC4ATask = NULL;
+SDL_mutex* spCacheMutex = NULL;
 
 spNetC4ATaskPointer createNewC4ATask()
 {
@@ -64,6 +65,7 @@ PREFIX void spInitNet()
 	if(SDLNet_Init()==-1)
 		printf("SDLNet_Init: %s\n", SDLNet_GetError());
 	spGlobalC4ATask = createNewC4ATask();
+	spCacheMutex = SDL_CreateMutex();
 }
 
 void fill_ip_struct(spNetIPPointer ip)
@@ -326,6 +328,8 @@ PREFIX void spQuitNet()
 {
 	spNetC4ADeleteTask(spGlobalC4ATask);
 	spGlobalC4ATask = NULL;
+	SDL_mutexP(spCacheMutex);
+	SDL_DestroyMutex(spCacheMutex);
 	SDLNet_Quit();
 }
 
@@ -380,6 +384,8 @@ typedef struct createStruct {
 	int deleteFile;
 } createType;
 
+int spNetC4ACaching = 0;
+char spCacheFilename[256] = "";
 
 //This is usefull for debugging without threading influences:
 /*#define SDL_CreateThread SDL_CreateThreadWithoutThreading
@@ -388,6 +394,20 @@ SDL_Thread* SDL_CreateThreadWithoutThreading(int (*fn)(void *),void* data)
 	fn(data);
 	return NULL;
 }*/
+
+void write_to_cache(commitPointer commitData)
+{
+	if (spNetC4ACaching == 0)
+		return;
+	SDL_mutexP(spCacheMutex);
+	SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "ab");
+	SDL_RWwrite(file,commitData->game,256,1);
+	SDL_RWwrite(file,commitData->system,256,1);
+	SDL_RWwrite(file,commitData->profile->prid,256,1);
+	SDL_RWwrite(file,&commitData->score,sizeof(int),1);
+	SDL_RWclose(file);
+	SDL_mutexV(spCacheMutex);
+}
 
 int spNetC4AUberThread(getgenericPointer data)
 {
@@ -527,7 +547,20 @@ void internal_CreateDirectoryChain( const char* directories)
 }
 
 #ifdef PANDORA
-	#define PROFILE_FILENAME_MAKRO char *filename = pnd_locate_filename ( "/media/*/pandora/appdata/c4a-mame/:.", "c4a-prof" );
+	#define PROFILE_FILENAME_MAKRO char *locate_filename = pnd_locate_filename ( "/media/*/pandora/appdata/c4a-mame/:.", "c4a-prof" ); \
+		char filename[256] = "./c4a-prof"; \
+		if (locate_filename) \
+			sprintf(filename,"%s",locate_filename); \
+		else \
+		{ \
+			locate_filename = pnd_locate_filename ( "/media/*/pandora/:.", "appdata" ); \
+			if (locate_filename) \
+			{ \
+				sprintf(filename,"%s/c4a-mame",locate_filename); \
+				internal_CreateDirectoryChain(filename); \
+				sprintf(filename,"%s/c4a-mame/c4a-prof",locate_filename); \
+			} \
+		}
 #elif defined GCW || (defined X86CPU && !defined WIN32)
 	#define PROFILE_FILENAME_MAKRO char filename[256]; \
 		sprintf(filename,"%s/.config/compo4all",getenv("HOME"));\
@@ -537,8 +570,21 @@ void internal_CreateDirectoryChain( const char* directories)
 	#define PROFILE_FILENAME_MAKRO char filename[256] = "./c4a-prof";
 #endif
 
+PREFIX void spNetC4ASetCaching(int value)
+{
+	spNetC4ACaching = value;
+}
+
+void set_cache_filename()
+{
+	PROFILE_FILENAME_MAKRO
+	sprintf(spCacheFilename,"%s",filename);
+	sprintf(&spCacheFilename[strlen(spCacheFilename)-4],"cache");
+}
+
 PREFIX spNetC4AProfilePointer spNetC4AGetProfile()
 {
+	set_cache_filename();
 	spNetC4AProfilePointer profile = NULL;
 	PROFILE_FILENAME_MAKRO
 	//Parsing the file
@@ -1038,6 +1084,7 @@ int c4a_commit_thread(void* data)
 	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
 	if (ip.address.ipv4 == SP_INVALID_IP)
 	{
+		write_to_cache(commitData);
 		SDL_mutexP(commitData->task->statusMutex);
 		commitData->task->status = SP_C4A_ERROR;
 		SDL_mutexV(commitData->task->statusMutex);
@@ -1046,6 +1093,7 @@ int c4a_commit_thread(void* data)
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
 	{
+		write_to_cache(commitData);
 		SDL_mutexP(commitData->task->statusMutex);
 		commitData->task->status = SP_C4A_ERROR;
 		SDL_mutexV(commitData->task->statusMutex);
@@ -1058,13 +1106,16 @@ int c4a_commit_thread(void* data)
 	if (spNetSendHTTP(connection,commit_string) == 0)
 	{
 		spNetCloseTCP(connection);
+		write_to_cache(commitData);
 		SDL_mutexP(commitData->task->statusMutex);
 		commitData->task->status = SP_C4A_ERROR;
 		SDL_mutexV(commitData->task->statusMutex);
 		return 1;
 	}
-	//printf("Did:\n%s",commit_string);
 	spNetCloseTCP(connection);
+	
+	//TODO: c4a-cache
+	
 	//Adding to scoreList ;)
 	if (commitData->scoreList)
 	{

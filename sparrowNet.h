@@ -609,6 +609,14 @@ PREFIX spNetC4ATaskPointer spNetC4ACommitScoreParallel(spNetC4AProfilePointer pr
  * platform depended. Overwrites an already existing file! The task runs
  * in background! Use <spNetC4AGetStatus> to get the status of the task. Only
  * one compo4all background task can run at one time!
+ * Only for Pandora: If no c4a-prof is created until now and no c4a-mame appdata
+ * folder is available it will be created in the first folder in /media with
+ * pandora/appdata in it. It MAY be, that skeezix's C4A Manager will not find
+ * this c4a-prof if it will be installed later on another SD card! However the
+ * spaghetti client, the fusilli client and the Sparrow C4A Manager will find
+ * this profile file in any case (if you don't create a second c4a-prof with
+ * skeezix c4a manager. It that case it is random which c4a-prof is used in the
+ * end...)
  * 
  * Parameters:
  * 
@@ -768,5 +776,17 @@ PREFIX void spNetC4ADeleteProfileFile();
  * Parameters:
  * task - Pointer to <spNetC4ATask>, which is returned by the parallel functions.*/
 PREFIX void spNetC4ADeleteTask(spNetC4ATaskPointer task);
+
+/* Function: spNetC4ASetCaching
+ * 
+ * NO IMPLEMENTED YET!
+ * (De)Activates caching for C4A scores. If caching is enabled every time
+ * spNetC4ACommitScore* fails, it is written to a cache file and the next time
+ * spNetC4ACommitScore* is called it will be tried to be committed again
+ * 
+ * Parameters:
+ * value - 1 activates caching, 0 deactivates it.*/
+PREFIX void spNetC4ASetCaching(int value);
+
 
 #endif

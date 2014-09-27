@@ -75,6 +75,8 @@ char spVirtualKeyboardMapShift[3][20] =
 	 {'[', ']', '{','}','?',  1 ,'A','S','D','F','G','H','J','K','L',            '*','4','5','6','+'},
 	 {'/','\\', '<','>','\'','Z','X','C','V',' ',' ',' ','B','N','M',            '0','1','2','3','='}};
 	 //1 is "shift"...
+int spKeyboardReturnIgnore = 0;
+int spKeyboardReturnStops = 0;
 int spLastAxisType = 0; //digital
 int spLastFirstTime = 0;
 char spIconName[512] = "";
@@ -360,12 +362,14 @@ static void spHandleKeyboardInput( const SDL_keysym pressedKey)
 	}
 	else if ( pressedKey.sym == SDLK_RETURN )
 	{
-		if ( spGenericInput.keyboard.pos + 1 <= spGenericInput.keyboard.len )
+		if ( spGenericInput.keyboard.pos + 1 <= spGenericInput.keyboard.len && spKeyboardReturnIgnore == 0)
 		{
 			strcat( spGenericInput.keyboard.buffer, "\n" );
 			spGenericInput.keyboard.lastSize = 1;
 			spGenericInput.keyboard.pos += 1;
 		}
+		if (spKeyboardReturnStops)
+			spStopKeyboardInput();
 	}
 	else if ( pressedKey.sym >= SDLK_SPACE )
 	{
@@ -2028,4 +2032,10 @@ PREFIX void spSleep(Uint32 microSeconds)
 PREFIX int spGetLastAxisType()
 {
 	return spLastAxisType;
+}
+
+PREFIX void spSetReturnBehavior(int ignore,int stops)
+{
+	spKeyboardReturnIgnore = ignore;
+	spKeyboardReturnStops = stops;
 }

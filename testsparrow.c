@@ -185,7 +185,7 @@ int calc_test( Uint32 steps )
 		rotation = 20000;//SP_PI;
 	else
 		rotation += steps*32;
-	
+
 	if ( test!=10 && spIsKeyboardPolled())
 	{
 		if ( spGetInput()->button[SP_BUTTON_SELECT] )
@@ -275,7 +275,7 @@ void resize( Uint16 w, Uint16 h )
 		spSetVirtualKeyboard(SP_VIRTUAL_KEYBOARD_IF_NEEDED,0,h-w*48/320,w,w*48/320,spLoadSurface("./data/keyboard640.png"),spLoadSurface("./data/keyboardShift640.png"));
 	else
 		spSetVirtualKeyboard(SP_VIRTUAL_KEYBOARD_IF_NEEDED,0,h-w*48/320,w,w*48/320,spLoadSurface("./data/keyboard1280.png"),spLoadSurface("./data/keyboardShift1280.png"));
-		
+
 	//Setup of the new/resized window
 	spSetPerspective( 45.0, ( float )spGetWindowSurface()->w / ( float )spGetWindowSurface()->h, 1.0f, 100.0f );
 
@@ -322,14 +322,14 @@ int main( int argc, char **argv )
 	screen = spCreateDefaultWindow();
 	spUsePrecalculatedNormals(0);
 	resize( screen->w, screen->h );
-	
+
 	char* parameter1 = NULL;
 	char* parameter2 = NULL;
 	if (argc > 2)
 		parameter1 = argv[2];
 	if (argc > 3)
 		parameter2 = argv[3];
-	
+
 	init_cube();
 	init_tube();
 	init_fill();
@@ -351,7 +351,7 @@ int main( int argc, char **argv )
 
 	//All glory the main loop
 	spLoop( draw_test, calc_test, 10, resize, eventHandling );
-	
+
 	//Winter Wrap up, Winter Wrap up z
 	spFontDelete( font );
 	quit_cube();
