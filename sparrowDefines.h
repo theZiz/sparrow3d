@@ -621,8 +621,10 @@
 	#define SP_DEVICE_STRING "GCW Zero"
 #elif defined PANDORA
 	#define SP_DEVICE_STRING "Open Pandora"
+#elif defined WIN32
+	#define SP_DEVICE_STRING "Windows PC"
 #else
-	#define SP_DEVICE_STRING "Personal Computer"
+	#define SP_DEVICE_STRING "Linux PC"
 #endif
 
 #endif

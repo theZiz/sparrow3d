@@ -1247,7 +1247,7 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
 		#elif defined(WIZ)
 			sprintf(data->system,"wiz");
 		#elif defined(DINGUX)
-				sprintf(data->system,"dingux");
+			sprintf(data->system,"dingux");
 		#elif defined(GCW)	
 			sprintf(data->system,"gcw");
 		#elif defined(PANDORA)	
