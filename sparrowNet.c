@@ -1212,6 +1212,7 @@ int c4a_commit_thread(void* data)
 PREFIX int spNetC4AHowManyCached()
 {
 	int result = 0;
+	SDL_mutexP(spCacheMutex);
 	SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "rb");
 	if (file)
 	{
@@ -1224,6 +1225,7 @@ PREFIX int spNetC4AHowManyCached()
 		}
 		SDL_RWclose(file);
 	}
+	SDL_mutexV(spCacheMutex);
 	return result;
 }
 
