@@ -1130,7 +1130,7 @@ int c4a_commit_thread(void* data)
 	spNetIP ip = spNetResolve("skeezix.wallednetworks.com",13001);
 	if (ip.address.ipv4 == SP_INVALID_IP)
 	{
-		if (spNetC4ACaching)
+		if (spNetC4ACaching && commitData->game[0] != 0)
 			write_to_cache(commitData->game,commitData->system,commitData->profile->prid,commitData->score,1);
 		SDL_mutexP(commitData->task->statusMutex);
 		commitData->task->status = SP_C4A_ERROR;
@@ -1209,13 +1209,19 @@ int c4a_commit_thread(void* data)
 	return 0;
 }
 
-PREFIX int spNetC4AIsSomethingCached()
+PREFIX int spNetC4AHowManyCached()
 {
 	int result = 0;
 	SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "rb");
 	if (file)
 	{
-		result = 1;
+		char buffer[256*3+sizeof(int)];
+		while (1)
+		{
+			if (SDL_RWread(file,buffer,256*3+sizeof(int),1) <= 0)
+				break;
+			result++;
+		}
 		SDL_RWclose(file);
 	}
 	return result;
@@ -1238,7 +1244,7 @@ int already_in_highscore(spNetC4AScorePointer scoreList,spNetC4AProfilePointer p
 
 PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* scoreList,int timeOut)
 {
-	if (profile == NULL)
+	if (profile == NULL && game[0]!=0)
 		return 1;
 	if (scoreList && already_in_highscore(*scoreList,profile,score))
 		return 1;

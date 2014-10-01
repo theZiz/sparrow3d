@@ -788,11 +788,11 @@ PREFIX void spNetC4ADeleteTask(spNetC4ATaskPointer task);
  * value - 1 activates caching, 0 deactivates it.*/
 PREFIX void spNetC4ASetCaching(int value);
 
-/* Function: spNetC4AIsSomethingCached
+/* Function: spNetC4AHowManyCached
  * 
- * Returns whether something is in the C4A cache or not
+ * Returns how many scores are cached
  * 
  * Returns:
- * int - 1 if something is in the cache, 0 if not*/
-PREFIX int spNetC4AIsSomethingCached();
+ * int - the number of cached scores*/
+PREFIX int spNetC4AHowManyCached();
 #endif
