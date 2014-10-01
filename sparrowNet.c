@@ -1136,15 +1136,18 @@ int c4a_commit_thread(void* data)
 		commitData->task->status = SP_C4A_ERROR;
 		SDL_mutexV(commitData->task->statusMutex);
 		return 1;
-	}	
-	if (do_the_real_c4a_commit(ip,commitData,commitData->game,commitData->system,commitData->profile->prid,commitData->score))
+	}
+	if (commitData->game[0] != 0)
 	{
-		if (spNetC4ACaching)
-			write_to_cache(commitData->game,commitData->system,commitData->profile->prid,commitData->score,1);
-		SDL_mutexP(commitData->task->statusMutex);
-		commitData->task->status = SP_C4A_ERROR;
-		SDL_mutexV(commitData->task->statusMutex);
-		return 1;
+		if (do_the_real_c4a_commit(ip,commitData,commitData->game,commitData->system,commitData->profile->prid,commitData->score))
+		{
+			if (spNetC4ACaching)
+				write_to_cache(commitData->game,commitData->system,commitData->profile->prid,commitData->score,1);
+			SDL_mutexP(commitData->task->statusMutex);
+			commitData->task->status = SP_C4A_ERROR;
+			SDL_mutexV(commitData->task->statusMutex);
+			return 1;
+		}
 	}
 	//Checking for stuff in the cache
 	SDL_mutexP(spCacheMutex);
@@ -1204,6 +1207,18 @@ int c4a_commit_thread(void* data)
 	commitData->task->status = SP_C4A_OK;
 	SDL_mutexV(commitData->task->statusMutex);
 	return 0;
+}
+
+PREFIX int spNetC4AIsSomethingCached()
+{
+	int result = 0;
+	SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "rb");
+	if (file)
+	{
+		result = 1;
+		SDL_RWclose(file);
+	}
+	return result;
 }
 
 int already_in_highscore(spNetC4AScorePointer scoreList,spNetC4AProfilePointer profile,int score)

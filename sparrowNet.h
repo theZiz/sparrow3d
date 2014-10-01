@@ -564,7 +564,8 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList);
  * 
  * Parameters:
  * profile - the profile you want to commit tthe score with
- * game - name of the game on the server
+ * game - name of the game on the server. If this is empty (""), at least the
+ * c4a cache will be tried to commit.
  * score - reached score
  * scoreList - pass the struct returned by <spNetC4AGetScore> to compare
  * your score to that list and avoid committing the same score twice. If
@@ -779,7 +780,6 @@ PREFIX void spNetC4ADeleteTask(spNetC4ATaskPointer task);
 
 /* Function: spNetC4ASetCaching
  * 
- * NO IMPLEMENTED YET!
  * (De)Activates caching for C4A scores. If caching is enabled every time
  * spNetC4ACommitScore* fails, it is written to a cache file and the next time
  * spNetC4ACommitScore* is called it will be tried to be committed again
@@ -788,5 +788,11 @@ PREFIX void spNetC4ADeleteTask(spNetC4ATaskPointer task);
  * value - 1 activates caching, 0 deactivates it.*/
 PREFIX void spNetC4ASetCaching(int value);
 
-
+/* Function: spNetC4AIsSomethingCached
+ * 
+ * Returns whether something is in the C4A cache or not
+ * 
+ * Returns:
+ * int - 1 if something is in the cache, 0 if not*/
+PREFIX int spNetC4AIsSomethingCached();
 #endif
