@@ -652,9 +652,11 @@ int c4a_getgame_thread(void* data)
 		SDL_mutexV(gameData->task->statusMutex);
 		return 1;
 	}
-	char buffer[50001]; //skeezix saves the top500. So 100 byte should be enough...
+	//skeezix saves the top500. So 100 byte should be enough...
+	//Haha. NOT! minislug had 50950 with a top 500...
+	char buffer[100001]; 
 	int length;
-	if ((length = spNetReceiveHTTP(connection,buffer,50000)) == 0)
+	if ((length = spNetReceiveHTTP(connection,buffer,100000)) == 0)
 	{
 		spNetCloseTCP(connection);
 		SDL_mutexP(gameData->task->statusMutex);
@@ -854,9 +856,11 @@ int c4a_getscore_thread(void* data)
 		SDL_mutexV(scoreData->task->statusMutex);
 		return 1;
 	}
-	char buffer[50001]; //skeezix saves the top500. So 100 byte should be enough...
+	//skeezix saves the top500. So 100 byte should be enough...
+	//Haha. NOT! minislug had 50950 with a top 500...
+	char buffer[100001]; 
 	int length;
-	if ((length = spNetReceiveHTTP(connection,buffer,50000)) == 0)
+	if ((length = spNetReceiveHTTP(connection,buffer,100000)) == 0)
 	{
 		spNetCloseTCP(connection);
 		SDL_mutexP(scoreData->task->statusMutex);
