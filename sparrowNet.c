@@ -51,6 +51,7 @@ spNetC4ATaskPointer createNewC4ATask()
 	task->thread = NULL;
 	task->result = 0;
 	task->threadStatus = 0;
+	task->message = 0;
 	return task;
 }
 
@@ -430,9 +431,16 @@ int spNetC4AUberThread(getgenericPointer data)
 		SDL_mutexP(data->task->statusMutex);
 		int status = data->task->status;
 		SDL_mutexV(data->task->statusMutex);
-		if (status == SP_C4A_CANCELED || data->task->timeOut <= 0)
+		//only 1 second left, lets send a message
+		if (data->task->message == 0 && (status == SP_C4A_CANCELED || data->task->timeOut <= 1000))
+			data->task->message = 1;
+		//time is over. If the message is reset we assume the thread will finish, otherwise...
+		if (data->task->message == 1 && (status == SP_C4A_CANCELED || data->task->timeOut <= 0))
 		{
+			//Waiting for the write cache mutex ANYWAY.
+			SDL_mutexP(spCacheMutex);
 			SDL_KillThread(thread);
+			SDL_mutexV(spCacheMutex);
 			data->task->result = 1;
 			SDL_mutexP(data->task->statusMutex);
 			if (data->task->timeOut <= 0)
@@ -1189,6 +1197,11 @@ int c4a_commit_thread(void* data)
 				break;
 			free(cache);
 			cache = next;
+			if (commitData->task->message == 1)
+			{
+				commitData->task->message = 2;
+				break;
+			}
 		}
 		#ifdef WIN32
 			DeleteFile(spCacheFilename);

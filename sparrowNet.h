@@ -71,6 +71,7 @@ typedef struct spNetC4ATaskStruct {
 	SDL_Thread* thread;
 	int result;
 	int threadStatus;
+	int message;
 } spNetC4ATask;
 
 /* Define: SP_INVALID_IP
