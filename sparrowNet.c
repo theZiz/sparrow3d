@@ -1265,9 +1265,8 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
 {
 	if (profile == NULL && game[0]!=0)
 		return 1;
-	int already = 0;
 	if (scoreList && already_in_highscore(*scoreList,profile,score))
-		already = 1;
+		return 1;
 	SDL_mutexP(spGlobalC4ATask->statusMutex);
 	if (spGlobalC4ATask->status != SP_C4A_PROGRESS)
 	{
@@ -1280,10 +1279,7 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
 		data->score = score;
 		data->profile = profile;
 		data->scoreList = scoreList;
-		if (already_in_highscore)
-			data->game[0] = 0;
-		else
-			sprintf(data->game,"%s",game);
+		sprintf(data->game,"%s",game);
 		#ifdef GP2X
 			sprintf(data->system,"gp2x");
 		#elif defined(CAANOO)
@@ -1309,7 +1305,7 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
 		#else
 			spGlobalC4ATask->thread = SDL_CreateThread(spNetC4AUberThread,data);
 		#endif
-		return already;
+		return 0;
 	}
 	SDL_mutexV(spGlobalC4ATask->statusMutex);
 	return 1;
@@ -1319,9 +1315,8 @@ PREFIX spNetC4ATaskPointer spNetC4ACommitScoreParallel(spNetC4AProfilePointer pr
 {
 	if (profile == NULL)
 		return NULL;
-	int already = 0;
 	if (scoreList && already_in_highscore(*scoreList,profile,score))
-		already = 1;
+		return NULL;
 	spNetC4ATaskPointer task = createNewC4ATask();
 	task->status = SP_C4A_PROGRESS;
 	//Starting a background thread, which does the fancy stuff
@@ -1331,10 +1326,7 @@ PREFIX spNetC4ATaskPointer spNetC4ACommitScoreParallel(spNetC4AProfilePointer pr
 	data->score = score;
 	data->profile = profile;
 	data->scoreList = scoreList;
-	if (already)
-		data->game[0] = 0;
-	else
-		sprintf(data->game,"%s",game);
+	sprintf(data->game,"%s",game);
 	#ifdef GP2X
 		sprintf(data->system,"gp2x");
 	#elif defined(CAANOO)
