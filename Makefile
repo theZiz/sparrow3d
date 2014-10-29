@@ -100,12 +100,8 @@ SPARROW3D_STATIC_LIB = libsparrow3d.a
 SPARROWNET_STATIC_LIB = libsparrowNet.a
 SPARROWSOUND_STATIC_LIB = libsparrowSound.a
 
-#TARGET = nativ
-
 ifdef TARGET
 include ./target-files/$(TARGET).mk
-
-#TARGET = pandora
 
 BUILD = ./build/$(TARGET)/sparrow3d
 # SPARROW_LIB determines, where the sparrow library is.
@@ -192,28 +188,26 @@ testnet_terminal_server: testnet_terminal_server.c libsparrowNet.so
 testnet_terminal_client: testnet_terminal_client.c libsparrowNet.so
 	$(CPP_LINK) $(CFLAGS) testnet_terminal_client.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/testnet_terminal_client
 
-libsparrow3d.a: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o
+makeBuildDir:
+	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
+	@if [ ! -d $(BUILD) ]; then mkdir $(BUILD);fi
+
+libsparrow3d.a: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o makeBuildDir
 	$(AR) rcs $(BUILD)/$(SPARROW3D_STATIC_LIB) sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o
 
-libsparrowSound.a: sparrowSound.o
+libsparrowSound.a: sparrowSound.o makeBuildDir
 	$(AR) rcs $(BUILD)/$(SPARROWSOUND_STATIC_LIB) sparrowSound.o
 
-libsparrowNet.a: sparrowNet.o
+libsparrowNet.a: sparrowNet.o makeBuildDir
 	$(AR) rcs $(BUILD)/$(SPARROWNET_STATIC_LIB) sparrowNet.o
 
-libsparrow3d.so: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o
-	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
-	@if [ ! -d $(BUILD) ]; then mkdir $(BUILD);fi
+libsparrow3d.so: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o makeBuildDir
 	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -rdynamic -o $(BUILD)/$(SPARROW3D_LIB) sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o sparrowParticles.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
-libsparrowSound.so: sparrowSound.o
-	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
-	@if [ ! -d $(BUILD) ]; then mkdir $(BUILD);fi
+libsparrowSound.so: sparrowSound.o makeBuildDir
 	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrowSound.so -rdynamic -o $(BUILD)/$(SPARROWSOUND_LIB) sparrowSound.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
-libsparrowNet.so: sparrowNet.o
-	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
-	@if [ ! -d $(BUILD) ]; then mkdir $(BUILD);fi
+libsparrowNet.so: sparrowNet.o makeBuildDir
 	$(CPP_LINK) $(CFLAGS) -shared -Wl,-soname,libsparrowNet.so -rdynamic -o $(BUILD)/$(SPARROWNET_LIB) sparrowNet.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
 sparrowCore.o: sparrowCore.c sparrowCore.h
@@ -269,6 +263,9 @@ clean:
 	rm -f testsparrow
 	rm -f testnet
 	rm -f testfile
+
+oclean:
+	rm -f *.o
 
 documentation: *.h
 	mkdir -p /tmp/sparrowDocumentationTemp

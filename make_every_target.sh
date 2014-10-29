@@ -4,7 +4,7 @@ echo "Compiling for all targets..."
 for f in $FILES
 do
 	TARGET=`echo "$f" | cut -d/ -f3 | cut -d. -f1`
-	make clean > /dev/null
+	make oclean > /dev/null
 	make -j 4 TARGET=$TARGET PARAMETER=-w all> /dev/null
 	if [ $? -ne 0 ]; then
 		echo "Error compiling for \033[1;31m$TARGET\033[0m!"
