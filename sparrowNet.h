@@ -573,7 +573,8 @@ PREFIX void spNetC4ADeleteScores(spNetC4AScorePointer* scoreList);
  * it is not in the list, it will added afterwards for later
  * comparements.
  * timeOut - after this time in ms the thread is killed. Get it with
- * <spNetC4AGetTimeOut>
+ * <spNetC4AGetTimeOut>. If timeOut is 0, no thread is started, but the
+ * score is written to the cache if enabled!
  * 
  * Returns:
  * int - 1 if the function failed for some reason (e.g. the score is
@@ -596,7 +597,8 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
  * it is not in the list, it will added afterwards for later
  * comparements.
  * timeOut - after this time in ms the thread is killed. Get it with
- * <spNetC4AGetTimeOut>
+ * <spNetC4AGetTimeOut> If timeOut is 0, no thread is started, but the
+ * score is written to the cache if enabled!
  * 
  * Returns:
  * spNetC4ATaskPointer - Pointer to <spNetC4ATask> at success and NULL if an
@@ -786,7 +788,10 @@ PREFIX void spNetC4ADeleteTask(spNetC4ATaskPointer task);
  * spNetC4ACommitScore* is called it will be tried to be committed again
  * 
  * Parameters:
- * value - 1 activates caching, 0 deactivates it.*/
+ * value - 0: No caching
+ * 1: Everything is cached
+ * 2: Only the best score of a game is cached
+ * 3: Same like 2, but lower score is better*/
 PREFIX void spNetC4ASetCaching(int value);
 
 /* Function: spNetC4AHowManyCached

@@ -396,16 +396,110 @@ SDL_Thread* SDL_CreateThreadWithoutThreading(int (*fn)(void *),void* data)
 	return NULL;
 }*/
 
+
+typedef struct cacheStruct *cachePointer;
+typedef struct cacheStruct {
+	char game[256];
+	char system[256];
+	char prid[256];
+	int score;
+	cachePointer next;
+} cacheType;
+
+cachePointer read_cache()
+{
+	SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "rb");
+	if (file)
+	{
+		char game[256];
+		char system[256];
+		char prid[256];
+		int score;
+		cachePointer cache = NULL;
+		cachePointer last = NULL;
+		while (1)
+		{
+			if (SDL_RWread(file,game,256,1) <= 0)
+				break;
+			if (SDL_RWread(file,system,256,1) <= 0)
+				break;
+			if (SDL_RWread(file,prid,256,1) <= 0)
+				break;
+			if (SDL_RWread(file,&score,sizeof(int),1) <= 0)
+				break;
+			cachePointer new_cache = (cachePointer)malloc(sizeof(cacheType));
+			memcpy(new_cache->game,game,256);
+			memcpy(new_cache->system,system,256);
+			memcpy(new_cache->prid,prid,256);
+			new_cache->score = score;
+			new_cache->next = NULL;
+			if (last)
+				last->next = new_cache;
+			else
+				cache = new_cache;
+			last = new_cache;
+		}
+		SDL_RWclose(file);
+		return cache;
+	}
+	return NULL;
+}
+
 void write_to_cache(char* game,char* system,char* prid,int score,int lock)
 {
 	if (lock)
 		SDL_mutexP(spCacheMutex);
-	SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "ab");
-	SDL_RWwrite(file,game,256,1);
-	SDL_RWwrite(file,system,256,1);
-	SDL_RWwrite(file,prid,256,1);
-	SDL_RWwrite(file,&score,sizeof(int),1);
-	SDL_RWclose(file);
+	cachePointer cache;
+	if (spNetC4ACaching == 1 ||
+		(cache = read_cache()) == NULL)
+	{
+		SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "ab");
+		SDL_RWwrite(file,game,256,1);
+		SDL_RWwrite(file,system,256,1);
+		SDL_RWwrite(file,prid,256,1);
+		SDL_RWwrite(file,&score,sizeof(int),1);
+		SDL_RWclose(file);
+	}
+	else
+	{
+		//Searching one of game
+		cachePointer mom = cache;
+		int nr = 0;
+		while (mom)
+		{
+			if (strcmp(mom->game,game) == 0)
+				break;
+			nr++;
+			mom = mom->next;
+		}
+		if (mom)
+		{
+			if  ((spNetC4ACaching == 2 && mom->score < score) ||
+				(spNetC4ACaching == 3 && mom->score > score))
+			{
+				//Seek and rewrite
+				SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "r+b");
+				SDL_RWseek(file,nr*(256*3+sizeof(int))+256*3,SEEK_SET);
+				SDL_RWwrite(file,&score,sizeof(int),1);
+				SDL_RWclose(file);
+			}
+		}
+		else
+		{
+			SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "ab");
+			SDL_RWwrite(file,game,256,1);
+			SDL_RWwrite(file,system,256,1);
+			SDL_RWwrite(file,prid,256,1);
+			SDL_RWwrite(file,&score,sizeof(int),1);
+			SDL_RWclose(file);
+		}		
+		while (cache)
+		{
+			mom = cache->next;
+			free(cache);
+			cache = mom;
+		}
+	}
 	if (lock)
 		SDL_mutexV(spCacheMutex);
 }
@@ -1117,14 +1211,6 @@ static int do_the_real_c4a_commit(spNetIP ip,commitPointer commitData,char* game
 	return 0;
 }
 
-typedef struct cacheStruct *cachePointer;
-typedef struct cacheStruct {
-	char game[256];
-	char system[256];
-	char prid[256];
-	int score;
-	cachePointer next;
-} cacheType;
 
 #ifndef __GNUC__
 	#include <windows.h>
@@ -1163,33 +1249,9 @@ int c4a_commit_thread(void* data)
 	}
 	//Checking for stuff in the cache
 	SDL_mutexP(spCacheMutex);
-	SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "rb");
-	if (file)
+	cachePointer cache = read_cache();
+	if (cache)
 	{
-		char game[256];
-		char system[256];
-		char prid[256];
-		int score;
-		cachePointer cache = NULL;
-		while (1)
-		{
-			if (SDL_RWread(file,game,256,1) <= 0)
-				break;
-			if (SDL_RWread(file,system,256,1) <= 0)
-				break;
-			if (SDL_RWread(file,prid,256,1) <= 0)
-				break;
-			if (SDL_RWread(file,&score,sizeof(int),1) <= 0)
-				break;
-			cachePointer new_cache = (cachePointer)malloc(sizeof(cacheType));
-			memcpy(new_cache->game,game,256);
-			memcpy(new_cache->system,system,256);
-			memcpy(new_cache->prid,prid,256);
-			new_cache->score = score;
-			new_cache->next = cache;
-			cache = new_cache;
-		}
-		SDL_RWclose(file);
 		while (cache)
 		{
 			cachePointer next = cache->next;
@@ -1261,6 +1323,25 @@ int already_in_highscore(spNetC4AScorePointer scoreList,spNetC4AProfilePointer p
 	return 0;
 }
 
+#ifdef GP2X
+	#define SET_SYSTEM(system) sprintf(system,"gp2x");
+#elif defined(CAANOO)
+	#define SET_SYSTEM(system) sprintf(system,"caanoo");
+#elif defined(WIZ)
+	#define SET_SYSTEM(system) sprintf(system,"wiz");
+#elif defined(DINGUX)
+	#define SET_SYSTEM(system) sprintf(system,"dingux");
+#elif defined(GCW)	
+	#define SET_SYSTEM(system) sprintf(system,"gcw");
+#elif defined(PANDORA)	
+	#define SET_SYSTEM(system) sprintf(system,"pandora");
+#elif defined(WIN32)
+	#define SET_SYSTEM(system) sprintf(system,"win32");
+#else
+	#define SET_SYSTEM(system) sprintf(system,"linux");
+#endif
+
+
 PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int score,spNetC4AScorePointer* scoreList,int timeOut)
 {
 	if (profile == NULL && game[0]!=0)
@@ -1268,6 +1349,16 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
 	int already = 0;
 	if (scoreList && already_in_highscore(*scoreList,profile,score))
 		already = 1;
+	if (timeOut == 0)
+	{
+		if (already == 0 && spNetC4ACaching)
+		{
+			char system[256];
+			SET_SYSTEM(system);
+			write_to_cache(game,system,profile->prid,score,1);			
+		}
+		return 1;
+	}
 	SDL_mutexP(spGlobalC4ATask->statusMutex);
 	if (spGlobalC4ATask->status != SP_C4A_PROGRESS)
 	{
@@ -1284,23 +1375,7 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
 			data->game[0] = 0;
 		else
 			sprintf(data->game,"%s",game);
-		#ifdef GP2X
-			sprintf(data->system,"gp2x");
-		#elif defined(CAANOO)
-			sprintf(data->system,"caanoo");
-		#elif defined(WIZ)
-			sprintf(data->system,"wiz");
-		#elif defined(DINGUX)
-			sprintf(data->system,"dingux");
-		#elif defined(GCW)	
-			sprintf(data->system,"gcw");
-		#elif defined(PANDORA)	
-			sprintf(data->system,"pandora");
-		#elif defined(WIN32)
-			sprintf(data->system,"win32");
-		#else
-			sprintf(data->system,"linux");
-		#endif
+		SET_SYSTEM(data->system);
 		spGlobalC4ATask->dataPointer = data;
 		spGlobalC4ATask->timeOut = timeOut;
 		spGlobalC4ATask->threadStatus = 1;
@@ -1322,6 +1397,16 @@ PREFIX spNetC4ATaskPointer spNetC4ACommitScoreParallel(spNetC4AProfilePointer pr
 	int already = 0;
 	if (scoreList && already_in_highscore(*scoreList,profile,score))
 		already = 1;
+	if (timeOut == 0)
+	{
+		if (already == 0 && spNetC4ACaching)
+		{
+			char system[256];
+			SET_SYSTEM(system);
+			write_to_cache(game,system,profile->prid,score,1);			
+		}
+		return NULL;
+	}
 	spNetC4ATaskPointer task = createNewC4ATask();
 	task->status = SP_C4A_PROGRESS;
 	//Starting a background thread, which does the fancy stuff
@@ -1335,23 +1420,7 @@ PREFIX spNetC4ATaskPointer spNetC4ACommitScoreParallel(spNetC4AProfilePointer pr
 		data->game[0] = 0;
 	else
 		sprintf(data->game,"%s",game);
-	#ifdef GP2X
-		sprintf(data->system,"gp2x");
-	#elif defined(CAANOO)
-		sprintf(data->system,"caanoo");
-	#elif defined(WIZ)
-		sprintf(data->system,"wiz");
-	#elif defined(DINGUX)
-			sprintf(data->system,"dingux");
-	#elif defined(GCW)	
-		sprintf(data->system,"gcw");
-	#elif defined(PANDORA)	
-		sprintf(data->system,"pandora");
-	#elif defined(WIN32)
-		sprintf(data->system,"win32");
-	#else
-		sprintf(data->system,"linux");
-	#endif
+	SET_SYSTEM(data->system);
 	task->dataPointer = data;
 	task->timeOut = timeOut;
 	task->threadStatus = 1;
