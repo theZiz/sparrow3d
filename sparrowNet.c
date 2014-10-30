@@ -449,9 +449,32 @@ void write_to_cache(char* game,char* system,char* prid,int score,int lock)
 {
 	if (lock)
 		SDL_mutexP(spCacheMutex);
-	cachePointer cache;
-	if (spNetC4ACaching == 1 ||
-		(cache = read_cache()) == NULL)
+	cachePointer cache = NULL;
+	if (spNetC4ACaching != 1)
+		cache = read_cache();
+	//Searching one of game
+	cachePointer mom = cache;
+	int nr = 0;
+	while (mom)
+	{
+		if (strcmp(mom->game,game) == 0)
+			break;
+		nr++;
+		mom = mom->next;
+	}
+	if (mom)
+	{
+		if  ((spNetC4ACaching == 2 && mom->score < score) ||
+			(spNetC4ACaching == 3 && mom->score > score))
+		{
+			//Seek and rewrite
+			SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "r+b");
+			SDL_RWseek(file,nr*(256*3+sizeof(int))+256*3,SEEK_SET);
+			SDL_RWwrite(file,&score,sizeof(int),1);
+			SDL_RWclose(file);
+		}
+	}
+	else
 	{
 		SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "ab");
 		SDL_RWwrite(file,game,256,1);
@@ -459,46 +482,12 @@ void write_to_cache(char* game,char* system,char* prid,int score,int lock)
 		SDL_RWwrite(file,prid,256,1);
 		SDL_RWwrite(file,&score,sizeof(int),1);
 		SDL_RWclose(file);
-	}
-	else
+	}		
+	while (cache)
 	{
-		//Searching one of game
-		cachePointer mom = cache;
-		int nr = 0;
-		while (mom)
-		{
-			if (strcmp(mom->game,game) == 0)
-				break;
-			nr++;
-			mom = mom->next;
-		}
-		if (mom)
-		{
-			if  ((spNetC4ACaching == 2 && mom->score < score) ||
-				(spNetC4ACaching == 3 && mom->score > score))
-			{
-				//Seek and rewrite
-				SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "r+b");
-				SDL_RWseek(file,nr*(256*3+sizeof(int))+256*3,SEEK_SET);
-				SDL_RWwrite(file,&score,sizeof(int),1);
-				SDL_RWclose(file);
-			}
-		}
-		else
-		{
-			SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "ab");
-			SDL_RWwrite(file,game,256,1);
-			SDL_RWwrite(file,system,256,1);
-			SDL_RWwrite(file,prid,256,1);
-			SDL_RWwrite(file,&score,sizeof(int),1);
-			SDL_RWclose(file);
-		}		
-		while (cache)
-		{
-			mom = cache->next;
-			free(cache);
-			cache = mom;
-		}
+		mom = cache->next;
+		free(cache);
+		cache = mom;
 	}
 	if (lock)
 		SDL_mutexV(spCacheMutex);
