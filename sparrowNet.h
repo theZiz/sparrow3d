@@ -496,6 +496,15 @@ PREFIX int spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfi
  * See also: <spNetC4AGetScoreOfMonthParallel>*/
 PREFIX spNetC4ATaskPointer spNetC4AGetScoreParallel(spNetC4AScorePointer* scoreList,spNetC4AProfilePointer profile,char* game,int timeOut);
 
+/* Function: spNetC4AFilterScore
+ * 
+ * Makes, that every name appears only once in the scoreList
+ * 
+ * Parameter:
+ * scoreList - a pointer to spNetC4AScorePointer, which is in fact a pointer to
+ * <spNetC4AScore>. These scores are changed.*/
+PREFIX void spNetC4AFilterScore(spNetC4AScorePointer* scoreList);
+
 /* Function: spNetC4AGetScoreOfMonth
  * 
  * Loads a top 500 of a month for a given game from the compo4all

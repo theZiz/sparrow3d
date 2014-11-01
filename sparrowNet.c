@@ -1173,6 +1173,35 @@ PREFIX spNetC4ATaskPointer spNetC4AGetScoreOfMonthParallel(spNetC4AScorePointer*
 	return task;
 }
 
+PREFIX void spNetC4AFilterScore(spNetC4AScorePointer* scoreList)
+{
+	spNetC4AScorePointer mom = *scoreList;
+	spNetC4AScorePointer before = NULL;
+	while (mom)
+	{
+		//Search for mom:
+		spNetC4AScorePointer inner = *scoreList;
+		while (inner != NULL && inner != mom)
+		{
+			if (strcmp(mom->longname,inner->longname) == 0 &&
+				strcmp(mom->shortname,inner->shortname) == 0)
+				break;
+			inner = inner->next;
+		}
+		spNetC4AScorePointer next = mom->next;
+		//already there!
+		if (inner != mom)
+		{
+			if (before)
+				before->next = next;
+			free(mom);
+		}
+		else
+			before = mom;
+		mom = next;
+	}
+}
+
 static int do_the_real_c4a_commit(spNetIP ip,commitPointer commitData,char* game,char* system,char* prid,int score)
 {
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
