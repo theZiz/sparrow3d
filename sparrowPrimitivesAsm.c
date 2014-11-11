@@ -18,7 +18,7 @@
 #include "sparrowPrimitives.h"
 #include <stdlib.h>
 
-#ifdef ARMCPU
+#ifdef __arm__
 PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint32 color_, Uint32 check, Sint32 engineWindowX, Sint32 engineWindowY )
 {
 	//l_++;

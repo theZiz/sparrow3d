@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -249,7 +249,7 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	SDL_FreeSurface( surface );
 #else
 	spScreen = NULL;
-	#ifdef X86CPU
+	#ifdef DESKTOP
 		spWindow = SDL_SetVideoMode( x, y, 16, SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | ( allowresize ? SDL_RESIZABLE : 0 ) | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
 	#else
 		spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
@@ -274,7 +274,7 @@ PREFIX SDL_Surface* spCreateWindow( int width, int height, int fullscreen, int a
 
 PREFIX SDL_Surface* spCreateDefaultWindow( void )
 {
-	#ifdef X86CPU
+	#ifdef DESKTOP
 		return spCreateWindow( 0, 0, 0, 1 );
 	#else
 		return spCreateWindow( 0, 0, 1, 1 );
@@ -532,7 +532,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				//GCW and DINGUX use the "keyboard" for buttons
 				#if (!(defined GCW)) && (!(defined DINGUX))
 					if ( spGenericInput.keyboard.buffer
-					#ifdef X86CPU
+					#ifdef DESKTOP
 					&& spVirtualKeyboardState != SP_VIRTUAL_KEYBOARD_ALWAYS
 					#endif
 					)
@@ -654,7 +654,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 						spGenericInput.button[SP_BUTTON_B_NOWASD] = 1;
 						break;
 					case SDLK_RALT:case SDLK_MODE:
-					#ifdef WIN32
+					#ifdef _WIN32
 					case 0: //AltGr doesn't have a symcode in windows. O_o
 					#endif
 						spGenericInput.button[SP_BUTTON_X_NOWASD] = 1;
@@ -825,7 +825,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 						spGenericInput.button[SP_BUTTON_B_NOWASD] = 0;
 						break;
 					case SDLK_RALT:case SDLK_MODE:
-					#ifdef WIN32
+					#ifdef _WIN32
 					case 0: //AltGr doesn't have a symcode in windows. O_o
 					#endif
 						spGenericInput.button[SP_BUTTON_X_NOWASD] = 0;
@@ -1904,7 +1904,7 @@ PREFIX void spSetVirtualKeyboard(int state,int x,int y,int width,int height,SDL_
 	switch (state)
 	{
 		case SP_VIRTUAL_KEYBOARD_NEVER: spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_NEVER; break;
-		#if defined PANDORA || defined X86CPU
+		#if defined PANDORA || defined DESKTOP
 			case SP_VIRTUAL_KEYBOARD_IF_NEEDED: spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_NEVER; break;
 		#else
 			case SP_VIRTUAL_KEYBOARD_IF_NEEDED: spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_ALWAYS; break;
@@ -2011,7 +2011,7 @@ PREFIX void spSleep(Uint32 microSeconds)
 		if (t <= 0)
 			t = 1;
 		SDL_Delay(t);
-	#elif defined WIN32
+	#elif defined _WIN32
 		//#warning Implement me better for windows pleeeease. :)
 		// There is no better way, sorry :)
 		#ifdef DEBUG_SLOWMOTION

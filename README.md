@@ -86,15 +86,6 @@ SDL_INCLUDE_SUBDIR
    
 Target platforms (defines, use with -D...):
 
-X86CPU  
--	Generic 32bit PC
-
-WIN32  
--	Windows operating system (usually set automatically)
-
-ARMCPU  
--	Generic mobile device, used in combination with a device switch
-
 GP2X  
 -	Second and third generation of GPH devices, use with one of the following
 	switches: F100, WIZ

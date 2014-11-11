@@ -114,7 +114,7 @@ PREFIX spFileError spCreateDirectoryChain( const char* directories)
 	{
 		char oldChar = endOfString[0];
 		endOfString[0] = 0;
-		#ifdef WIN32
+		#ifdef _WIN32
 
 			if (CreateDirectory(directoriesCopy,NULL))
 				result = SP_FILE_EVERYTHING_OK;
@@ -156,7 +156,7 @@ PREFIX spFileError spCreateDirectoryChain( const char* directories)
 
 PREFIX spFileError spRemoveFile( const char* filename )
 {
-#ifdef WIN32
+#ifdef _WIN32
 	if (DeleteFile(filename))
 		return SP_FILE_EVERYTHING_OK;
 	if (GetLastError() == ERROR_FILE_NOT_FOUND)
@@ -175,7 +175,7 @@ PREFIX spFileError spRemoveFile( const char* filename )
 
 PREFIX spFileError spRemoveDirectory( const char* dirname )
 {
-#ifdef WIN32
+#ifdef _WIN32
 	char *windowsName = (char*)malloc(strlen(dirname)+1);
 	sprintf(windowsName,"%s",dirname);
 	replaceLinuxWithWindowsStuff(windowsName);
@@ -201,7 +201,7 @@ PREFIX spFileError spRemoveDirectory( const char* dirname )
 
 PREFIX spFileError spRenameFile( const char* filename , const char* newname)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	if (MoveFile(filename,newname))
 		return SP_FILE_EVERYTHING_OK;
 	if (GetLastError() == ERROR_FILE_NOT_FOUND)
@@ -220,7 +220,7 @@ PREFIX spFileError spRenameFile( const char* filename , const char* newname)
 
 spFileError internalFileGetDirectory(spFileListPointer* pointer,spFileListPointer* last,char* directory,int recursive,int no_hidden_files)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	char* realDirectory = directory;
 	if (strcmp(directory,".") == 0)
 		realDirectory = &(directory[1]);
@@ -498,7 +498,7 @@ PREFIX void spFileSortList(spFileListPointer* list,spFileSortType sortBy)
 
 PREFIX char* spConfigGetPath(char* buffer,char* subfolder,char* file)
 {
-	#if defined GCW || (defined X86CPU && !defined WIN32)
+	#if defined GCW || (defined DESKTOP && !defined _WIN32)
 		sprintf(buffer,"%s/.config/%s",getenv("HOME"),subfolder);
 		spCreateDirectoryChain(buffer);
 		sprintf(buffer,"%s/.config/%s/%s",getenv("HOME"),subfolder,file);

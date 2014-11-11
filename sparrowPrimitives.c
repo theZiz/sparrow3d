@@ -393,7 +393,7 @@ PREFIX void spClearTarget( Uint32 color )
 	//testfill with CLEAR_PER_FRAME = 64 assembler spHorizentalLine: 32 fps
 	//testfill with CLEAR_PER_FRAME = 128 with SDL_FillRect: 14 fps
 	//testfill with CLEAR_PER_FRAME = 128 assembler spHorizentalLine: 17 fps
-	#ifdef ARMCPU
+	#ifdef __arm__
 		spHorizentalLine(spTargetPixel,0,0,spTargetScanLine*spTargetY,color,0,0,0);
 	#else
 		spUnlockRenderTarget();
@@ -1214,8 +1214,8 @@ PREFIX void spSetAffineTextureHack( Uint32 test )
 	spQuadQuali = test;
 }
 
-#ifndef ARMCPU
-#ifndef X86CPU
+#ifndef __arm__
+#ifndef DESKTOP
 PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint32 color_, Uint32 check, Sint32 engineWindowX, Sint32 engineWindowY )
 {
 	//l_++;
@@ -1240,10 +1240,9 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
 	for ( a = pos; a < pos + l_; a++ )
 		pixel[a] = color_;
 }
-#endif
-#endif
 
-#ifdef X86CPU
+#else
+
 PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint32 color_, Uint32 check, Sint32 engineWindowX, Sint32 engineWindowY )
 {
 	//l_++;
@@ -1276,6 +1275,7 @@ PREFIX void spHorizentalLine( Uint16* pixel, Sint32 x, Sint32 y, Sint32 l_, Uint
 		( ( Uint32* )pixel )[a] = color;
 	pixel[pos + l_ - 1] = color_;
 }
+#endif
 #endif
 
 PREFIX void spBlitSurface( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* surface )

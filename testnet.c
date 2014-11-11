@@ -127,7 +127,7 @@ int main( int argc, char **argv )
 	spNetC4ASetCaching(1);
 	if (spNetC4ACommitScore(profile,"test",12345,NULL,10000) == 0)
 	while (spNetC4AGetStatus() == SP_C4A_PROGRESS)
-		#ifdef WIN32
+		#ifdef _WIN32
 			Sleep(1);
 		#else
 			usleep(200);

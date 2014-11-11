@@ -63,7 +63,7 @@ int main( int argc, char **argv )
 		}
 		if (result == 0)
 			while (spNetC4AGetStatus() == SP_C4A_PROGRESS)
-			#ifdef WIN32
+			#ifdef _WIN32
 				Sleep(1);
 			#else
 				usleep(200);
@@ -109,7 +109,7 @@ int main( int argc, char **argv )
 	while (spNetC4AGetStatusParallel(p1) == SP_C4A_PROGRESS ||
 			spNetC4AGetStatusParallel(p2) == SP_C4A_PROGRESS ||
 			spNetC4AGetStatusParallel(p3) == SP_C4A_PROGRESS)
-	#ifdef WIN32
+	#ifdef _WIN32
 		Sleep(1);
 	#else
 		usleep(200);

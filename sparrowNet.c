@@ -502,7 +502,7 @@ int spNetC4AUberThread(getgenericPointer data)
 	#ifdef REALGP2X
 		//TODO: Implement!
 		SDL_Delay(100);
-	#elif defined WIN32
+	#elif defined _WIN32
 		SDL_Delay(100);	
 	#else
 		usleep(100000);
@@ -610,7 +610,7 @@ void internal_CreateDirectoryChain( const char* directories)
 	{
 		char oldChar = endOfString[0];
 		endOfString[0] = 0;
-		#ifdef WIN32
+		#ifdef _WIN32
 
 			if (CreateDirectory(directoriesCopy,NULL))
 			{}
@@ -652,7 +652,7 @@ void internal_CreateDirectoryChain( const char* directories)
 				sprintf(filename,"%s/c4a-mame/c4a-prof",locate_filename); \
 			} \
 		}
-#elif defined GCW || (defined X86CPU && !defined WIN32)
+#elif defined GCW || (defined DESKTOP && !defined _WIN32)
 	#define PROFILE_FILENAME_MAKRO char filename[256]; \
 		sprintf(filename,"%s/.config/compo4all",getenv("HOME"));\
 		internal_CreateDirectoryChain(filename);\
@@ -1283,7 +1283,7 @@ int c4a_commit_thread(void* data)
 				break;
 			}
 		}
-		#ifdef WIN32
+		#ifdef _WIN32
 			DeleteFile(spCacheFilename);
 		#else
 			remove(spCacheFilename);
@@ -1353,7 +1353,7 @@ int already_in_highscore(spNetC4AScorePointer scoreList,spNetC4AProfilePointer p
 	#define SET_SYSTEM(system) sprintf(system,"gcw");
 #elif defined(PANDORA)	
 	#define SET_SYSTEM(system) sprintf(system,"pandora");
-#elif defined(WIN32)
+#elif defined(_WIN32)
 	#define SET_SYSTEM(system) sprintf(system,"win32");
 #else
 	#define SET_SYSTEM(system) sprintf(system,"linux");
@@ -1743,7 +1743,7 @@ PREFIX void spNetC4ADeleteProfileFile()
 {
 	PROFILE_FILENAME_MAKRO
 //Copied from spRemoveFile to avoid dependencies
-#ifdef WIN32
+#ifdef _WIN32
 	DeleteFile(filename);
 #else
 	remove(filename);

@@ -24,7 +24,7 @@
 #define _SPARROW_DEFINES_H
 
 /* These are defines for creating or using the library in C or C++ */
-#ifdef WIN32
+#ifdef _WIN32
 	#include <windows.h>
 	#if BUILDING_DLL
 		# define DLLIMPORT __declspec (dllexport)
@@ -336,7 +336,7 @@
 #endif
 
 #define SP_BUTTON_START_NOWASD SP_BUTTON_START
-#ifndef X86CPU
+#ifndef DESKTOP
 	#define SP_BUTTON_SELECT_NOWASD SP_BUTTON_SELECT
 	#define SP_BUTTON_L_NOWASD SP_BUTTON_L
 	#define SP_BUTTON_R_NOWASD SP_BUTTON_R
@@ -498,7 +498,7 @@
 	#define SP_PRACTICE_4_NOWASD_NAME SP_BUTTON_Y_NOWASD_NAME
 #endif
 
-#ifndef X86CPU
+#ifndef DESKTOP
 	#define SP_BUTTON_START_NOWASD_NAME SP_BUTTON_START_NAME
 	#define SP_BUTTON_SELECT_NOWASD_NAME SP_BUTTON_SELECT_NAME
 	#define SP_BUTTON_L_NOWASD_NAME SP_BUTTON_L_NAME
@@ -621,7 +621,7 @@
 	#define SP_DEVICE_STRING "GCW Zero"
 #elif defined PANDORA
 	#define SP_DEVICE_STRING "Open Pandora"
-#elif defined WIN32
+#elif defined _WIN32
 	#define SP_DEVICE_STRING "Windows PC"
 #else
 	#define SP_DEVICE_STRING "Linux PC"
