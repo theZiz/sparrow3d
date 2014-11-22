@@ -445,12 +445,12 @@ cachePointer read_cache()
 	return NULL;
 }
 
-void write_to_cache(char* game,char* system,char* prid,int score,int lock,int cachingStyle)
+void write_to_cache(char* game,char* system,char* prid,int score,int lock)
 {
 	if (lock)
 		SDL_mutexP(spCacheMutex);
 	cachePointer cache = NULL;
-	if (cachingStyle != 1)
+	if (spNetC4ACaching != 1)
 		cache = read_cache();
 	//Searching one of game
 	cachePointer mom = cache;
@@ -464,8 +464,8 @@ void write_to_cache(char* game,char* system,char* prid,int score,int lock,int ca
 	}
 	if (mom)
 	{
-		if  ((cachingStyle == 2 && mom->score < score) ||
-			(cachingStyle == 3 && mom->score > score))
+		if  ((spNetC4ACaching == 2 && mom->score < score) ||
+			(spNetC4ACaching == 3 && mom->score > score))
 		{
 			//Seek and rewrite
 			SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "r+b");
@@ -1247,7 +1247,7 @@ int c4a_commit_thread(void* data)
 	if (ip.address.ipv4 == SP_INVALID_IP)
 	{
 		if (spNetC4ACaching && commitData->game[0] != 0)
-			write_to_cache(commitData->game,commitData->system,commitData->profile->prid,commitData->score,1,spNetC4ACaching);
+			write_to_cache(commitData->game,commitData->system,commitData->profile->prid,commitData->score,1);
 		SDL_mutexP(commitData->task->statusMutex);
 		commitData->task->status = SP_C4A_ERROR;
 		SDL_mutexV(commitData->task->statusMutex);
@@ -1258,7 +1258,7 @@ int c4a_commit_thread(void* data)
 		if (do_the_real_c4a_commit(ip,commitData,commitData->game,commitData->system,commitData->profile->prid,commitData->score))
 		{
 			if (spNetC4ACaching)
-				write_to_cache(commitData->game,commitData->system,commitData->profile->prid,commitData->score,1,spNetC4ACaching);
+				write_to_cache(commitData->game,commitData->system,commitData->profile->prid,commitData->score,1);
 			SDL_mutexP(commitData->task->statusMutex);
 			commitData->task->status = SP_C4A_ERROR;
 			SDL_mutexV(commitData->task->statusMutex);
@@ -1289,12 +1289,20 @@ int c4a_commit_thread(void* data)
 			remove(spCacheFilename);
 		#endif
 		//if cache is still existing, we need to write back the rest of the cache
-		while (cache)
+		if (cache)
 		{
-			cachePointer next = cache->next;
-			write_to_cache(cache->game,cache->system,cache->prid,cache->score,0,1);
-			free(cache);
-			cache = next;
+			SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "ab");
+			while (cache)
+			{
+				cachePointer next = cache->next;
+				SDL_RWwrite(file,cache->game,256,1);
+				SDL_RWwrite(file,cache->system,256,1);
+				SDL_RWwrite(file,cache->prid,256,1);
+				SDL_RWwrite(file,&(cache->score),sizeof(int),1);
+				free(cache);
+				cache = next;
+			}
+			SDL_RWclose(file);
 		}
 			
 	}
@@ -1373,7 +1381,7 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
 		{
 			char system[256];
 			SET_SYSTEM(system);
-			write_to_cache(game,system,profile->prid,score,1,spNetC4ACaching);
+			write_to_cache(game,system,profile->prid,score,1);			
 		}
 		return 1;
 	}
@@ -1421,7 +1429,7 @@ PREFIX spNetC4ATaskPointer spNetC4ACommitScoreParallel(spNetC4AProfilePointer pr
 		{
 			char system[256];
 			SET_SYSTEM(system);
-			write_to_cache(game,system,profile->prid,score,1,spNetC4ACaching);
+			write_to_cache(game,system,profile->prid,score,1);			
 		}
 		return NULL;
 	}
