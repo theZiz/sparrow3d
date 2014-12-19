@@ -268,6 +268,27 @@ PREFIX char* spFontGetUTF8FromUnicode(Uint32 sign,char* buffer,int len);
  * bgColor - a 16 bit color value identifying the background color of the button*/
 PREFIX void spFontAddButton( spFontPointer font, Uint32 character, char* caption, Uint16 fgColor, Uint16 bgColor );
 
+#define SP_BUTTON_ARROW_LEFT 1
+#define SP_BUTTON_ARROW_UP 2
+#define SP_BUTTON_ARROW_RIGHT 3
+#define SP_BUTTON_ARROW_DOWN 4
+
+/* Function: spFontAddArrowButton
+ *
+ * Adds an arrow button the the font.
+ *
+ * Parameters:
+ * font - the font pointer, which shall be filled with new stuff
+ * character - this unicode character will identify the arrow button, e.g. '<'
+ * for the left arrow or 'v' for down. Use whatever you want.
+ * direction - Possible values are 1 (left), 2 (up), 3 (right) and 4 (down),
+ * also called SP_BUTTON_ARROW_LEFT, SP_BUTTON_ARROW_UP, SP_BUTTON_ARROW_RIGHT
+ * and SP_BUTTON_ARROW_DOWN
+ * fgColor - a 16 bit color value identifying the foreground color of the
+ * button, that means the color of the caption and the border
+ * bgColor - a 16 bit color value identifying the background color of the button*/
+PREFIX void spFontAddArrowButton( spFontPointer font, Uint32 character, int direction, Uint16 fgColor, Uint16 bgColor );
+
 /* Function: spFontSetButtonBoderSigns
  *
  * Sets the starting and end sign for buttons, the defaults are '[' and ']',
@@ -282,7 +303,7 @@ PREFIX void spFontSetButtonBorderSigns(Uint32 left,Uint32 right);
 /* Function: spFontSetSemanticButtonBoderSigns
  *
  * Sets the starting and end sign for semantic buttons from <sparrowMapping>,
- * the defaults are '{' and '}', which means, that "{fire}" will be drawn as a
+ * the defaults are '{' and '}', which means, that "{fire}" will be drawn as
  * the button mapping to "fire".
  *
  * Parameters:
@@ -362,6 +383,10 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 // Function: spFontChangeButton
 // Same like <spFontChangeLetter>, but for the Buttons.
 PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint32 character, char* caption,  Uint16 fgColor, Uint16 bgColor);
+
+// Function: spFontChangeArrowButton
+// Same like <spFontChangeLetter>, but for the arrow buttons.
+PREFIX void spFontChangeArrowButton( spFontPointer font, spLetterPointer letter, Uint32 character, int direction,  Uint16 fgColor, Uint16 bgColor);
 
 /* Function: spFontGetLetter
  *

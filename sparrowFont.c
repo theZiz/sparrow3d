@@ -406,11 +406,78 @@ PREFIX void spFontChangeButton( spFontPointer font, spLetterPointer letter, Uint
 }
 
 
+PREFIX void spFontChangeArrowButton( spFontPointer font, spLetterPointer letter, Uint32 character, int direction, Uint16 fgColor, Uint16 bgColor )
+{
+	letter->color = fgColor;
+	SDL_Color sdlcolor = {( fgColor >> 11 ) << 3, ( ( fgColor << 5 ) >> 10 ) << 2, ( ( fgColor & 31 ) << 3 )};
+	SDL_Color background =	{( bgColor >> 11 ) << 3, ( ( bgColor << 5 ) >> 10 ) << 2, ( ( bgColor & 31 ) << 3 )};
+	int height = font->maxheight;
+	int width = height;
+	letter->surface = spCreateSurface(width, height);
+	SDL_LockSurface(letter->surface);
+	int x,y;
+	Uint16* pixel = (Uint16*)letter->surface->pixels;
+	int w = letter->surface->pitch/letter->surface->format->BytesPerPixel;
+	int R = spGetRFromColor(bgColor);
+	int G = spGetGFromColor(bgColor);
+	int B = spGetBFromColor(bgColor);
+	int circle_width = height*9/10;
+	for (x = 0; x < letter->surface->w; x++)
+		for (y = 0; y < letter->surface->h; y++)
+		{
+			int f_width = abs(x-width/2);
+			f_width = f_width - width/2 + height/2;
+			f_width = spMax(0,f_width);
+			if (f_width*f_width+(y-height/2)*(y-height/2) <= (circle_width+1)*(circle_width+1)/4)
+			{
+				int X = x-letter->surface->w/2;
+				int Y = y-letter->surface->h/2;
+				if (direction == SP_BUTTON_ARROW_LEFT && X+letter->surface->w/4 > abs(Y) && X < letter->surface->w/8)
+					pixel[x+y*w] = fgColor;
+				else
+				if (direction == SP_BUTTON_ARROW_RIGHT && letter->surface->w/4-X > abs(Y) && X > -letter->surface->w/8)
+					pixel[x+y*w] = fgColor;
+				else
+				if (direction == SP_BUTTON_ARROW_UP && Y+letter->surface->h/4 > abs(X) && Y < letter->surface->h/8)
+					pixel[x+y*w] = fgColor;
+				else
+				if (direction == SP_BUTTON_ARROW_DOWN && letter->surface->h/4-Y > abs(X) && Y > -letter->surface->h/8)
+					pixel[x+y*w] = fgColor;
+				else
+				{
+					int factor = (f_width*f_width+(y-height/2)*(y-height/2));
+					factor *= 256;
+					factor /= circle_width*circle_width/4;
+					if (factor > 256)
+						factor = 256;
+					factor = 256 - factor/2;
+					pixel[x+y*w] = spGetRGB(R*factor/256,G*factor/256,B*factor/256);
+				}
+			}
+			else
+				pixel[x+y*w] = SP_ALPHA_COLOR;
+		}
+	SDL_UnlockSurface(letter->surface);
+	letter->height = height;
+	letter->width = width;
+}
+
 PREFIX void spFontAddButton( spFontPointer font, Uint32 character, char* caption, Uint16 fgColor, Uint16 bgColor )
 {
 	spLetterPointer letter = ( spLetterPointer )malloc( sizeof( spLetter ) );
 
 	spFontChangeButton( font, letter, character, caption, fgColor, bgColor );
+	letter->character = character;
+
+	//tree insert
+	font->buttonRoot = spFontInsert( letter, font->buttonRoot );
+}
+
+PREFIX void spFontAddArrowButton( spFontPointer font, Uint32 character, int direction, Uint16 fgColor, Uint16 bgColor )
+{
+	spLetterPointer letter = ( spLetterPointer )malloc( sizeof( spLetter ) );
+
+	spFontChangeArrowButton( font, letter, character, direction, fgColor, bgColor );
 	letter->character = character;
 
 	//tree insert
