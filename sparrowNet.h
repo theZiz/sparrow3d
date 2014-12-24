@@ -30,7 +30,8 @@
  * part of SDL_net on your own. ;)
  * 
  * Furthermore sparrowNet has some fancy functions for getting and submitting
- * scores for the compo4all online highscore system.*/
+ * scores for the compo4all online highscore system and for the IRC chat
+ * protocol.*/
 
 enum spAddress {IPV4, IPV6};
 
@@ -101,7 +102,7 @@ PREFIX void spQuitNet();
 
 /* Function: spNetResolve
  * 
- * Resolves a hostname to an ip. Only ipv4 is supported at the moment!
+ * Resolves a ip to a hostname. Only ipv4 is supported at the moment!
  * 
  * Parameters:
  * host - the host name
@@ -274,6 +275,20 @@ PREFIX SDL_Thread* spNetReceiveHTTPUnblocked(spNetTCPConnection connection,char*
  * Returns:
  * int - 1 if the thread still waits or 0 if not.*/
 PREFIX int spNetReceiveStillWaiting(SDL_Thread* thread);
+
+/* Function: spNetReceiveFinished
+ * 
+ * Says, whether a receive call (identified by the thread handle) still waits
+ * for an incoming signal. Usefull for timeouts. If the thread is finished the
+ * number of received bytes is returned.
+ * 
+ * Parameters:
+ * thread - thread of the receiving call, which is maybe still running
+ * 
+ * Returns:
+ * int - 0 if the thread still waits, -1 if the thread is not found and the
+ * number of received bytes else.*/
+PREFIX int spNetReceiveFinished(SDL_Thread* thread);
 
 /* Function: spNetCloseTCP
  * 
@@ -810,4 +825,216 @@ PREFIX void spNetC4ASetCaching(int value);
  * Returns:
  * int - the number of cached scores*/
 PREFIX int spNetC4AHowManyCached();
+
+/* Section: IRC chat protocol stuff
+ * 
+ * Types and Functions for connecting to an IRC server, join channels and
+ * receive and send message.*/
+
+/* Type: spNetIRCMessage
+ * 
+ * Type for a linked list of IRC messages managed from the IRC server. 
+ * 
+ * Variables:
+ * type - type of the message (not always set)
+ * user - user. * means server
+ * message - message of the message
+ * next - pointer to the next element in the list*/
+typedef struct spNetIRCMessageStruct *spNetIRCMessagePointer;
+typedef struct spNetIRCMessageStruct {
+	char type[128];
+	char user[128];
+	char message[1024];
+	spNetIRCMessagePointer next;
+} spNetIRCMessage;
+
+/* Type: spNetIRCNick
+ * 
+ * Type for a linked list of IRC nicks managed from the IRC server.
+ * 
+ * Variables:
+ * name - name of the nick
+ * rights - rights of the nick, e.g. ' ', @ or +
+ * next - pointer to the next element in the list*/
+typedef struct spNetIRCNickStruct *spNetIRCNickPointer;
+typedef struct spNetIRCNickStruct {
+	char name[256];
+	char rights;
+	spNetIRCNickPointer next;
+} spNetIRCNick;
+
+/* Type: spNetIRCChannel
+ * 
+ * Type for a linked list of IRC channels managed from the IRC server. With
+ * channel are meant channels from the type #meow and queries!
+ * 
+ * Variables:
+ * name - name of the channel
+ * status - internal status flag of the channel
+ * first_nick - pointer to <spNetIRCNick>, first nick in the channel
+ * last_nick - pointer to <spNetIRCNick>, last nick in the channel
+ * next - pointer to the next element in the list
+ * first_message - pointer to <spNetIRCMessage>, first message in the channel
+ * last_message - pointer to <spNetIRCMessage>, last message in the channel
+ * last_read_message - pointer to <spNetIRCMessage>, last read message. You have
+ * to update this yourself!
+ * close_query - internal message flag
+ * first_add_message - pointer to <spNetIRCMessage>, internal chain
+ * last_add_message - pointer to <spNetIRCMessage>, internal chain
+ * last_add_read_message - pointer to <spNetIRCMessage>, internal chain*/ 
+typedef struct spNetIRCChannelStruct *spNetIRCChannelPointer;
+typedef struct spNetIRCChannelStruct {
+	char name[256];
+	int status;
+	spNetIRCNickPointer first_nick;
+	spNetIRCNickPointer last_nick;
+	spNetIRCChannelPointer next;
+	spNetIRCMessagePointer first_message;
+	spNetIRCMessagePointer last_message;
+	spNetIRCMessagePointer last_read_message;
+	int close_query;
+	spNetIRCMessagePointer first_add_message;
+	spNetIRCMessagePointer last_add_message;
+	spNetIRCMessagePointer last_add_read_message;
+} spNetIRCChannel;
+
+/* Type: spNetIRCServer
+ * 
+ * Handle type for interaction with the irc server. You should not use it
+ * direct but with the spNetIRC* functions.
+ * 
+ * Variables:
+ * name - name/url of the server
+ * port - port of the server (most of the time 6667)
+ * nickname - nickname of the chatter
+ * realname - the REAL name of the chatter!
+ * firstChannel - pointer the first element of a list of all channels
+ * ip - <spNetIP> struct. IP of the server.
+ * connection - <spNetTCPConnection> struct. connection handle to the server
+ * thread - SDL thread struct
+ * finish_flag - messages for the server to finish
+ * status - internal status flag
+ * counter - internal nickname counter
+ * original_nickname - internal nickname to copy from
+ * first_message - pointer to <spNetIRCMessage>, first message of the server
+ * last_message - pointer to <spNetIRCMessage>, last message of the server
+ * last_read_message - pointer to <spNetIRCMessage>, last read message. You have
+ * to update this yourself!
+ * first_add_message - pointer to <spNetIRCMessage>, internal chain
+ * last_add_message - pointer to <spNetIRCMessage>, internal chain
+ * last_add_read_message - pointer to <spNetIRCMessage>, internal chain*/ 
+typedef struct spNetIRCServerStruct *spNetIRCServerPointer;
+typedef struct spNetIRCServerStruct {
+	char name[256];
+	Uint16 port;
+	char nickname[256];
+	char username[256];
+	char realname[256];
+	spNetIRCChannelPointer first_channel;
+	spNetIRCChannelPointer last_channel;
+	spNetIP ip;
+	spNetTCPConnection connection;
+	SDL_Thread* thread;
+	int finish_flag;
+	int status;
+	int counter;
+	char original_nickname[256];
+	spNetIRCMessagePointer first_message;
+	spNetIRCMessagePointer last_message;
+	spNetIRCMessagePointer last_read_message;
+	spNetIRCMessagePointer first_add_message;
+	spNetIRCMessagePointer last_add_message;
+	spNetIRCMessagePointer last_add_read_message;
+} spNetIRCServer;
+
+/* Function: spNetIRCConnectServer
+ * 
+ * Connects to an IRC server. If the attempt was sucessful a new thread is
+ * created and a pointer to <spNetIRCServer> returned.
+ * 
+ * Parameters:
+ * name - name/url of the server
+ * port - port of the server (e.g. 6667)
+ * nickname - nickname to use. If the nickname is already used, it will be used
+ * another one with numbers and stuff
+ * username - your user name
+ * realname - your real name
+ * 
+ * Returns:
+ * spNetIRCServerPointer - a pointer to <spNetIRCServer> to use in further
+ * spNetIRC* functions*/
+PREFIX spNetIRCServerPointer spNetIRCConnectServer(char* name,Uint16 port,char* nickname,char* username,char* realname);
+
+/* Function: spNetIRCServerReady
+ * 
+ * Returns, whether the server is ready to be used, e.g. for joining channels
+ * 
+ * Parameters:
+ * server - pointer to <spNetIRCServer> struct
+ * 
+ * Returns:
+ * int - 1: the server is ready; 0: not ready. If you try to join a channel on a 
+ * not ready server, it may not work!*/
+PREFIX int spNetIRCServerReady(spNetIRCServerPointer server);
+
+/* Function: spNetIRCJoinChannel
+ * 
+ * Joins an IRC channel. Call it only if <spNetIRCReady> returns 1!
+ * 
+ * Parameters:
+ * server - pointer to <spNetIRCServer> struct
+ * name - name of the channel. Has to start with #!
+ * 
+ * Returns:
+ * spNetIRCChannelPointer - Pointer to <spNetIRCServerReady> struct, handle for
+ * the channel*/
+PREFIX spNetIRCChannelPointer spNetIRCJoinChannel(spNetIRCServerPointer server,char* name);
+
+/* Function: spNetIRCChannelReady
+ * 
+ * Returns, whether the channel is ready to be used, e.g. for sending messages
+ * 
+ * Parameters:
+ * channel - pointer to <spNetIRCChannel> struct
+ * 
+ * Returns:
+ * int - 1: the channel is ready; 0: not ready. -1: an error occured, e.g. you
+ * are banned*/
+PREFIX int spNetIRCChannelReady(spNetIRCChannelPointer channel);
+
+/* Function: spNetIRCSendMessage
+ * 
+ * Sends a message (PRIVMSG) to a channel or another user. If channel is NULL
+ * it will be send to the server instead (e.g.
+ * spNetIRCSendMessage(server,NULL,"quit") for /quit).
+ * 
+ * Parameters:
+ * server - pointer to <spNetIRCServer> struct
+ * channel - pointer to <spNetIRCChannel> struct, may be NULL
+ * message - message to send*/
+PREFIX void spNetIRCSendMessage(spNetIRCServerPointer server,spNetIRCChannelPointer channel,char* message);
+
+/* Function: spNetIRCPartChannel
+ * 
+ * Leave a channel / conversation. You should not use the channel pointer after
+ * this point. It may need some time for the PART command to get to the server
+ * but at one point the pointer will be invalid! It will removed from server
+ * then automaticly.
+ * 
+ * Parameters:
+ * spNetIRCServerPointer - a pointer to <spNetIRCServer>
+ * channel - pointer to <spNetIRCChannel> struct*/
+PREFIX void spNetIRCPartChannel(spNetIRCServerPointer server,spNetIRCChannelPointer channel);
+
+/* Function: spNetIRCCloseServer
+ * 
+ * Closes the connection to the server, finishs the thread and releases the
+ * pointer handle!
+ * 
+ * Parameters:
+ * spNetIRCServerPointer - a pointer to <spNetIRCServer>, which describes which
+ * server shall be exited*/
+PREFIX void spNetIRCCloseServer(spNetIRCServerPointer server);
+
+
 #endif

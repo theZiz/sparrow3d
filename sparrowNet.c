@@ -320,6 +320,41 @@ PREFIX int spNetReceiveStillWaiting(SDL_Thread* thread)
 	return 0;
 }
 
+PREFIX int spNetReceiveFinished(SDL_Thread* thread)
+{
+	receivingPointer before = NULL;
+	receivingPointer mom = firstReceiving;
+	while (mom)
+	{
+		if (mom->thread == thread)
+		{
+			SDL_mutexP(mom->mutex);
+			if (mom->done)
+			{
+				SDL_mutexV(mom->mutex); //The Thread lost the interest on this struct
+				//Removing mom
+				if (before)
+				{
+					SDL_mutexP(before->mutex);
+					before->next = mom->next;
+					SDL_mutexV(before->mutex);
+				}
+				else
+					firstReceiving = mom->next;
+				SDL_DestroyMutex(mom->mutex);
+				int res = mom->result;
+				free(mom);
+				return res;
+			}
+			SDL_mutexV(mom->mutex);
+			return 0;
+		}
+		before = mom;
+		mom = mom->next;
+	}	
+	return -1;
+}
+
 PREFIX void spNetCloseTCP(spNetTCPConnection connection)
 {
 	SDLNet_TCP_Close(connection);
@@ -886,7 +921,7 @@ PREFIX int spNetC4AGetGame(spNetC4AGamePointer* gameList,int timeOut)
 		#ifdef _MSC_VER
 			spGlobalC4ATask->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,data);
 		#else
-			spGlobalC4ATask->thread = SDL_CreateThread(spNetC4AUberThread,data);
+			spGlobalC4ATask->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,data);
 		#endif
 		return 0;
 	}
@@ -910,7 +945,7 @@ PREFIX spNetC4ATaskPointer spNetC4AGetGameParallel(spNetC4AGamePointer* gameList
 	#ifdef _MSC_VER
 		task->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,data);
 	#else
-		task->thread = SDL_CreateThread(spNetC4AUberThread,data);
+		task->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,data);
 	#endif
 	return task;
 }
@@ -1079,7 +1114,7 @@ PREFIX int spNetC4AGetScore(spNetC4AScorePointer* scoreList,spNetC4AProfilePoint
 		#ifdef _MSC_VER
 			spGlobalC4ATask->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,data);
 		#else
-			spGlobalC4ATask->thread = SDL_CreateThread(spNetC4AUberThread,data);
+			spGlobalC4ATask->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,data);
 		#endif
 		return 0;
 	}
@@ -1112,7 +1147,7 @@ PREFIX int spNetC4AGetScoreOfMonth(spNetC4AScorePointer* scoreList,spNetC4AProfi
 		#ifdef _MSC_VER
 			spGlobalC4ATask->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,data);
 		#else
-			spGlobalC4ATask->thread = SDL_CreateThread(spNetC4AUberThread,data);
+			spGlobalC4ATask->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,data);
 		#endif
 		return 0;
 	}
@@ -1140,7 +1175,7 @@ PREFIX spNetC4ATaskPointer spNetC4AGetScoreParallel(spNetC4AScorePointer* scoreL
 	#ifdef _MSC_VER
 		task->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,data);
 	#else
-		task->thread = SDL_CreateThread(spNetC4AUberThread,data);
+		task->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,data);
 	#endif
 	return task;
 }
@@ -1168,7 +1203,7 @@ PREFIX spNetC4ATaskPointer spNetC4AGetScoreOfMonthParallel(spNetC4AScorePointer*
 	#ifdef _MSC_VER
 		task->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,data);
 	#else
-		task->thread = SDL_CreateThread(spNetC4AUberThread,data);
+		task->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,data);
 	#endif
 	return task;
 }
@@ -1408,7 +1443,7 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
 		#ifdef _MSC_VER
 			spGlobalC4ATask->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,data);
 		#else
-			spGlobalC4ATask->thread = SDL_CreateThread(spNetC4AUberThread,data);
+			spGlobalC4ATask->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,data);
 		#endif
 		return already;
 	}
@@ -1453,7 +1488,7 @@ PREFIX spNetC4ATaskPointer spNetC4ACommitScoreParallel(spNetC4AProfilePointer pr
 	#ifdef _MSC_VER
 		task->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,data);
 	#else
-		task->thread = SDL_CreateThread(spNetC4AUberThread,data);
+		task->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,data);
 	#endif
 	return task;
 }
@@ -1661,7 +1696,7 @@ PREFIX int spNetC4ACreateProfile(spNetC4AProfilePointer* profile, char* longname
 		#ifdef _MSC_VER
 			spGlobalC4ATask->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,data);
 		#else
-			spGlobalC4ATask->thread = SDL_CreateThread(spNetC4AUberThread,data);
+			spGlobalC4ATask->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,data);
 		#endif
 		return 0;
 	}
@@ -1739,7 +1774,7 @@ PREFIX int spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile,
 		#ifdef _MSC_VER
 			spGlobalC4ATask->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_delete_thread);
 		#else
-			spGlobalC4ATask->thread = SDL_CreateThread(spNetC4AUberThread,c4a_delete_thread);
+			spGlobalC4ATask->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,c4a_delete_thread);
 		#endif
 		return 0;
 	}
@@ -1839,7 +1874,7 @@ PREFIX int spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,ch
 		#ifdef _MSC_VER
 			spGlobalC4ATask->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,data);
 		#else
-			spGlobalC4ATask->thread = SDL_CreateThread(spNetC4AUberThread,data);
+			spGlobalC4ATask->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,data);
 		#endif
 		return 0;
 	}
@@ -1901,4 +1936,649 @@ PREFIX int spNetC4AGetTimeOut()
 PREFIX int spNetC4AGetTimeOutParallel(spNetC4ATaskPointer task)
 {
 	return task->timeOut;
+}
+
+// IRC:
+
+PREFIX void spNetIRCSend(spNetIRCServerPointer server,char* message)
+{
+	char buffer[1024];
+	sprintf(buffer,"%s\n",message);
+	spNetSendTCP(server->connection,buffer,strlen(buffer));
+}
+
+spNetIRCChannelPointer irc_add_channel(spNetIRCServerPointer server,char* name,int* already)
+{
+	spNetIRCChannelPointer mom = server->first_channel;
+	while (mom)
+	{
+		if (strcmp(mom->name,name) == 0)
+			break;
+		mom = mom->next;
+	}
+	if (mom)
+	{
+		*already = 1;
+		return mom;
+	}
+	*already = 0;
+	spNetIRCChannelPointer channel = (spNetIRCChannelPointer)malloc(sizeof(spNetIRCChannel));
+	channel->status = 0;
+	channel->first_message = NULL;
+	channel->last_message = NULL;
+	channel->last_read_message = NULL;
+	channel->first_add_message = NULL;
+	channel->last_add_message = NULL;
+	channel->last_add_read_message = NULL;
+	channel->first_nick = NULL;
+	channel->last_nick = NULL;
+	channel->next = NULL;
+	channel->close_query = 0;
+	sprintf(channel->name,"%s",name);
+	if (server->last_channel)
+		server->last_channel->next = channel;
+	else
+		server->first_channel = channel;
+	server->last_channel = channel;
+	return channel;
+}
+
+void irc_remove_channel(spNetIRCServerPointer server,spNetIRCChannelPointer channel)
+{
+	spNetIRCChannelPointer mom = server->first_channel;
+	spNetIRCChannelPointer before = NULL;
+	while (mom)
+	{
+		if (mom == channel)
+			break;
+		before = mom;
+		mom = mom->next;
+	}
+	while (channel->first_add_message)
+	{
+		spNetIRCMessagePointer next = channel->first_add_message->next;
+		free(channel->first_add_message);
+		channel->first_add_message = next;
+	}
+	while (channel->first_message)
+	{
+		spNetIRCMessagePointer next = channel->first_message->next;
+		free(channel->first_message);
+		channel->first_message = next;
+	}
+	if (mom)
+	{
+		if (before)
+			before->next = mom->next;
+		else
+			server->first_channel = mom->next;
+		if (mom == server->last_channel)
+			server->last_channel = before;
+	}
+}
+
+
+void irc_add_nick(spNetIRCChannelPointer channel,char* name,char rights)
+{
+	//if (strcmp(name,"ChanServ") == 0)
+	//	return;
+	spNetIRCNickPointer nick = (spNetIRCNickPointer)malloc(sizeof(spNetIRCNick));
+	sprintf(nick->name,"%s",name);
+	nick->rights = rights;
+	nick->next = NULL;
+	if (channel->last_nick)
+		channel->last_nick->next = nick;
+	else
+		channel->first_nick = nick;
+	channel->last_nick = nick;
+}
+
+void irc_add_message(spNetIRCServerPointer server,spNetIRCMessagePointer* first_message,spNetIRCMessagePointer* last_message,char* type,char* message,char* user)
+{
+	spNetIRCMessagePointer msg = (spNetIRCMessagePointer)malloc(sizeof(spNetIRCMessage));
+	sprintf(msg->type,"%s",type);
+	if (user)
+		sprintf(msg->user,"%s",user);
+	else
+		sprintf(msg->user,"%s",server->name);
+	sprintf(msg->message,"%s",message);
+	msg->next = NULL;
+	if (*last_message)
+		(*last_message)->next = msg;
+	else
+		*first_message = msg;
+	*last_message = msg;
+}
+
+void irc_split_user_destiny(char** parameters,char** user,char** prefix,char** destiny)
+{
+	*user = *prefix;
+	(*user)++;
+	char* end_of_user = strchr(*prefix,'!');
+	if (end_of_user) //user found
+		end_of_user[0] = 0;
+	//extract destiny
+	*destiny = *parameters;
+	char* end = strchr(*parameters,' ');
+	if (end)
+	{
+		end[0] = 0;
+		*parameters = end;
+		(*parameters)++;
+	}
+	else
+		*parameters = &((*parameters)[strlen(*parameters)]);
+}
+
+int irc_split_destiny_parameters(char** parameters,char** destiny)
+{
+	*destiny = strchr(*parameters,'#');
+	if (!(*destiny))
+		return 1;
+	*parameters = strchr(*parameters,':');
+	if (*parameters)
+		(*parameters)++;
+	else
+		return 1;
+	char* end = strchr(*destiny,' ');
+	if (end)
+		end[0] = 0;
+	else
+		return 1;
+	return 0;
+}
+
+
+spNetIRCChannelPointer irc_get_channel(spNetIRCServerPointer server,char* name)
+{
+	spNetIRCChannelPointer channel = server->first_channel;
+	while (channel)
+	{
+		if (strcmp(channel->name,name) == 0)
+			return channel;
+		channel = channel->next;
+	}
+	return NULL;
+}
+
+void irc_command_handling(spNetIRCServerPointer server,char* command,char* parameters,char* prefix)
+{
+	spNetIRCChannelPointer channel = NULL;
+	char* user = NULL;
+	char* destiny = NULL;
+	if (strcmp(command,"PING") == 0)
+	{
+		char buffer[256];
+		sprintf(buffer,"PONG %s",parameters);
+		spNetIRCSend(server,buffer);
+	}
+	if (strcmp(command,"JOIN") == 0)
+	{
+		irc_split_user_destiny(&parameters,&user,&prefix,&destiny);
+		//if (strcmp(user,"ChanServ") == 0)
+		//	return;
+		if (strcmp(user,server->nickname) == 0) //force join?
+		{
+			int already = 0;
+			channel = irc_add_channel(server,destiny,&already);
+			if (already)
+				channel->status = 1;
+			return;
+		}
+		//Is the channel / user known?
+		channel = irc_get_channel(server,destiny);
+		if (channel)
+		{
+			char buffer[256];
+			sprintf(buffer,"%s joined the channel.",user);
+			irc_add_message(server,&(channel->first_message),&(channel->last_message),command,buffer,user);
+			sprintf(buffer,"NAMES %s",channel->name);
+			spNetIRCSend(server,buffer);
+			return;
+		}
+	}
+	if (strcmp(command,"PART") == 0)
+	{
+		irc_split_user_destiny(&parameters,&user,&prefix,&destiny);
+		//if (strcmp(user,"ChanServ") == 0)
+		//	return;
+		//Is the channel / user known?
+		channel = irc_get_channel(server,destiny);
+		if (channel)
+		{
+			if (strcmp(user,server->nickname) == 0) //myself
+				irc_remove_channel(server,channel);
+			else
+			{
+				char buffer[256];
+				sprintf(buffer,"%s has left the channel.",user);
+				irc_add_message(server,&(channel->first_message),&(channel->last_message),command,buffer,user);
+				sprintf(buffer,"NAMES %s",channel->name);
+				spNetIRCSend(server,buffer);
+			}
+		}
+		return;
+	}
+	if (strcmp(command,"QUIT") == 0)
+	{
+		user = prefix;
+		user++;
+		char* end_of_user = strchr(prefix,'!');
+		if (end_of_user) //user found
+			end_of_user[0] = 0;
+		channel = server->first_channel;
+		while (channel)
+		{
+			spNetIRCNickPointer nick = channel->first_nick;
+			while (nick)
+			{
+				if (strcmp(nick->name,user) == 0)
+					break;
+				nick = nick->next;
+			}
+			if (nick)
+			{
+				char buffer[256];
+				parameters = strchr(parameters,':');
+				if (parameters)
+				{
+					char *plus = parameters;
+					plus++;
+					sprintf(buffer,"%s has quit (%s).",user,plus);
+				}
+				else
+					sprintf(buffer,"%s has quit.",user);
+				irc_add_message(server,&(channel->first_message),&(channel->last_message),command,buffer,user);
+				sprintf(buffer,"NAMES %s",channel->name);
+				spNetIRCSend(server,buffer);
+			}
+			channel = channel->next;
+		}
+		return;
+	}
+	if (strcmp(command,"PRIVMSG") == 0)
+	{
+		irc_split_user_destiny(&parameters,&user,&prefix,&destiny);
+		//Is the channel / user known?
+		channel = irc_get_channel(server,destiny);
+		if (!channel) //TODO: add channel!
+		{
+			int already;
+			channel = irc_add_channel(server,destiny,&already);
+		}
+	}
+	if (command[0] >= '0' && command[0] <= '9') //nr
+	{
+		char* begin;
+		char* end;
+		int nr = atoi(command);
+		switch (nr) //See: https://www.alien.net.au/irc/irc2numerics.html
+		{
+			case 451:
+				break;
+			case 470: case 471: case 473: case 474: case 475:
+				begin = strchr(parameters,'#');
+				if (!begin)
+					return;
+				end = strchr(begin,' ');
+				if (end)
+					end[0] = 0;
+				else
+					return;
+				channel = irc_get_channel(server,begin);
+				if (channel)
+					channel->status = -1;
+				return;
+			case 433:case 043:
+				server->status = 0;
+				server->counter++;
+				sprintf(server->nickname,"%s%i",server->original_nickname,server->counter);
+				break;
+			case 332: //topic
+				if (irc_split_destiny_parameters(&parameters,&destiny))
+					return;
+				//Is the channel / user known?
+				channel = irc_get_channel(server,destiny);
+				if (channel)
+					irc_add_message(server,&(channel->first_message),&(channel->last_message),command,parameters,"Topic is");
+				return;
+			case 353: //nicks of the channel, furthermore reply to "names"
+				if (irc_split_destiny_parameters(&parameters,&destiny))
+					return;
+				channel = irc_get_channel(server,destiny);
+				if (!channel)
+					return;
+				while (channel->first_nick)
+				{
+					spNetIRCNickPointer next = channel->first_nick->next;
+					free(channel->first_nick);
+					channel->first_nick = next;
+				}
+				channel->last_nick = NULL;
+				begin = parameters;
+				while (1)
+				{
+					end = strchr(begin,' ');
+					if (end)
+						end[0] = 0;
+					char rights = ' ';
+					if (begin[0] == '@' || begin[0] == '+')
+					{
+						rights = begin[0];
+						begin++;
+					}
+					irc_add_nick(channel,begin,rights);
+					if (!end)
+						break;
+					begin = end;
+					begin++;
+				}
+				return;
+			case 366: //end of names => ignore
+				return;
+			default:
+				if (server->status == 2)
+					server->status = 3;
+		}
+	}
+	parameters = strchr(parameters,':');
+	if (parameters)
+	{
+		parameters++;
+		if (channel)
+			irc_add_message(server,&(channel->first_message),&(channel->last_message),command,parameters,user);
+		else
+			irc_add_message(server,&(server->first_message),&(server->last_message),command,parameters,user);
+	}
+}
+
+void irc_parse_one_line(spNetIRCServerPointer server,char* line)
+{
+	//printf("\t%s\n",line);
+	char* prefix = NULL;
+	if (line[0] == ':') //comment thing, let's ignore it!
+	{
+		prefix = line;
+		line = strchr(line,' ');
+		line[0] = 0;
+		if (line)
+			line++;
+		else
+			return;
+	}
+	char* command = line;
+	line = strchr(line,' ');
+	if (line)
+	{
+		line[0] = 0;
+		line++;
+	}
+	else
+		return;
+	irc_command_handling(server,command,line,prefix);
+}
+
+void irc_parse_result(spNetIRCServerPointer server,char* buffer)
+{
+	char* line = buffer;
+	while (line)
+	{
+		int first = 0;
+		char* endline = strchr(line,'\r');
+		if (endline)
+		{
+			first = 1;
+			endline[0] = 0;
+		}
+		else
+		{
+			endline = strchr(line,'\n');
+			if (endline)
+				endline[0] = 0;
+			else
+				break;
+		}
+		irc_parse_one_line(server,line);
+		if (first)
+			endline++;
+		line = endline;
+		if (line)
+			line++;
+	}
+}
+
+int irc_server_thread(void* data)
+{
+	spNetIRCServerPointer server = data;
+	SDL_Thread* tcp_thread = NULL;
+	char buffer[65536];
+	spNetIRCSend(server,"PASS *");
+	while (1)
+	{
+		if (server->status == 1)
+		{
+			sprintf(buffer,"USER %s 8 * :%s",server->username,server->realname);
+			spNetIRCSend(server,buffer);
+			server->status++;
+		}
+		if (server->status == 0)
+		{
+			sprintf(buffer,"NICK %s",server->nickname);
+			spNetIRCSend(server,buffer);
+			server->status++;
+		}
+		
+		int finish_flag = server->finish_flag; // same flag for whole loop run
+		if (tcp_thread == NULL)
+			tcp_thread = spNetReceiveTCPUnblocked(server->connection,buffer,65536);
+		else
+		{
+			int l;
+			if (l = spNetReceiveFinished(tcp_thread))
+			{
+				buffer[l] = 0;
+				if (buffer[l-1] == 3)
+					buffer[l-1] = 0;
+				irc_parse_result(server,buffer);
+				tcp_thread = NULL;
+			}
+			spNetIRCChannelPointer mom = server->first_channel;
+			while (mom)
+			{
+				spNetIRCChannelPointer next = mom->next;
+				if (mom->close_query)
+					irc_remove_channel(server,mom);
+				mom = next;
+			}
+			if (server->last_add_message != server->last_add_read_message)
+			{
+				if (server->last_add_read_message == NULL)
+					server->last_add_read_message = server->first_add_message;
+				else
+					server->last_add_read_message = server->last_add_read_message->next;
+				while (1)
+				{
+					irc_add_message(server,&(server->first_message),&(server->last_message),"PRIVMSG",server->last_add_read_message->message,server->last_add_read_message->user);
+					if (server->last_add_read_message->next)
+						server->last_add_read_message = server->last_add_read_message->next;
+					else
+						break;
+				}
+			}
+			mom = server->first_channel;
+			while (mom)
+			{
+				if (mom->last_add_message != mom->last_add_read_message)
+				{
+					if (mom->last_add_read_message == NULL)
+						mom->last_add_read_message = mom->first_add_message;
+					else
+						mom->last_add_read_message = mom->last_add_read_message->next;
+					while (1)
+					{
+						irc_add_message(server,&(mom->first_message),&(mom->last_message),"PRIVMSG",mom->last_add_read_message->message,mom->last_add_read_message->user);
+						if (mom->last_add_read_message->next)
+							mom->last_add_read_message = mom->last_add_read_message->next;
+						else
+							break;
+					}
+				}
+				mom = mom->next;
+			}
+			if (finish_flag)
+			{
+				if (tcp_thread)
+					SDL_KillThread(tcp_thread);
+				break;
+			}
+		}
+		
+		#ifdef REALGP2X
+			//TODO: Implement!
+			SDL_Delay(100);
+		#elif defined _WIN32
+			SDL_Delay(100);	
+		#else
+			usleep(100000);
+		#endif
+	}
+	spNetIRCSend(server,"QUIT");
+}
+
+
+PREFIX spNetIRCServerPointer spNetIRCConnectServer(char* name,Uint16 port,char* nickname,char* username,char* realname)
+{
+	spNetIRCServerPointer server = (spNetIRCServerPointer)malloc(sizeof(spNetIRCServer));
+	server->ip = spNetResolve(name,port);
+	if (server->ip.address.ipv4 == SP_INVALID_IP)
+	{
+		free(server);
+		return NULL;
+	}
+	server->connection = spNetOpenClientTCP(server->ip);
+	if (server->connection == NULL)
+	{
+		free(server);
+		return NULL;
+	}
+
+	sprintf(server->name,"%s",name);
+	sprintf(server->nickname,"%s",nickname);
+	sprintf(server->original_nickname,"%s",nickname);
+	sprintf(server->username,"%s",username);
+	sprintf(server->realname,"%s",realname);
+
+	server->counter = 0;
+	server->first_message = NULL;
+	server->last_message = NULL;
+	server->last_read_message = NULL;
+	server->first_add_message = NULL;
+	server->last_add_message = NULL;
+	server->last_add_read_message = NULL;
+	server->status = 0;
+	server->finish_flag = 0;
+	server->first_channel = NULL;
+	server->last_channel = NULL;
+	server->thread = SDL_CreateThread(irc_server_thread,server);	
+	return server;
+}
+
+PREFIX spNetIRCChannelPointer spNetIRCJoinChannel(spNetIRCServerPointer server,char* name)
+{
+	int already;
+	spNetIRCChannelPointer channel = irc_add_channel(server,name,&already);
+	if (already)
+		return channel;
+	if (name[0] != '#')
+	{
+		channel->status = 1;
+		return channel;
+	}
+	char buffer[1024];
+	sprintf(buffer,"JOIN %s",name);
+	spNetIRCSend(server,buffer);
+	return channel;
+}
+
+
+PREFIX void spNetIRCCloseServer(spNetIRCServerPointer server)
+{
+	if (server == NULL)
+		return;
+	server->finish_flag = 1;
+	int result;
+	SDL_WaitThread(server->thread,&result);
+	spNetCloseTCP(server->connection);
+	while (server->first_message)
+	{
+		spNetIRCMessagePointer next = server->first_message->next;
+		free(server->first_message);
+		server->first_message = next;
+	}
+	while (server->first_channel)
+	{
+		while (server->first_channel->first_nick)
+		{
+			spNetIRCNickPointer next = server->first_channel->first_nick->next;
+			free(server->first_channel->first_nick);
+			server->first_channel->first_nick = next;			
+		}
+		spNetIRCChannelPointer next = server->first_channel->next;
+		free(server->first_channel);
+		server->first_channel = next;
+	}
+	free(server);
+}
+
+PREFIX int spNetIRCServerReady(spNetIRCServerPointer server)
+{
+	return server->status >= 3;
+}
+
+PREFIX int spNetIRCChannelReady(spNetIRCChannelPointer channel)
+{
+	return channel->status;
+}
+
+PREFIX void spNetIRCPartChannel(spNetIRCServerPointer server,spNetIRCChannelPointer channel)
+{
+	//Searching channel in server
+	if (channel->name[0] == '#')
+	{
+		char buffer[512];
+		sprintf(buffer,"PART %s",channel->name);
+		spNetIRCSend(server,buffer);
+	}
+	else
+		channel->close_query = 1;
+}
+
+char upper_case(char c)
+{
+	if (c >= 'a' && c < 'z')
+		c -= 32;
+	return c;
+}
+
+PREFIX void spNetIRCSendMessage(spNetIRCServerPointer server,spNetIRCChannelPointer channel,char* message)
+{
+	char buffer[4096];
+	if (channel)
+	{
+		sprintf(buffer,"PRIVMSG %s :%s",channel->name,message);
+		irc_add_message(server,&(channel->first_add_message),&(channel->last_add_message),"PRIVMSG",message,server->nickname);
+	}
+	else
+	{
+		sprintf(buffer,"%s",message);
+		//uppercase the command
+		int i = 0;
+		while (buffer[i] != 0 && buffer[i] != ' ')
+		{
+			buffer[i] = upper_case(buffer[i]);
+			i++;
+		}
+		irc_add_message(server,&(server->first_add_message),&(server->last_add_message),"PRIVMSG",message,server->nickname);
+	}
+	spNetIRCSend(server,buffer);	
 }
