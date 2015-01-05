@@ -317,9 +317,14 @@ static void spInternalUpdateVirtualKeyboard()
 	SDL_Rect dest;
 	dest.x = spVirtualKeyboardX * spVirtualKeyboardInternal[spVirtualKeyboardShift]->w / 20;
 	dest.y = spVirtualKeyboardY * spVirtualKeyboardInternal[spVirtualKeyboardShift]->h / 3;
-	dest.w = spVirtualKeyboardInternal[spVirtualKeyboardShift]->w;
-	dest.h = spVirtualKeyboardInternal[spVirtualKeyboardShift]->h;
+	dest.w = spVirtualKeyboardInternal[spVirtualKeyboardShift]->w/20;
+	dest.h = spVirtualKeyboardInternal[spVirtualKeyboardShift]->h/3;
 	SDL_BlitSurface( spVirtualKeyboardSelect[0], NULL, spVirtualKeyboard[spVirtualKeyboardShift], &dest );
+}
+
+static void spInternalResetVirtualKeyboard()
+{
+	SDL_BlitSurface( spVirtualKeyboardInternal[spVirtualKeyboardShift], NULL, spVirtualKeyboard[spVirtualKeyboardShift], NULL );
 }
 
 static void spInternalCleanVirtualKeyboard()
@@ -327,12 +332,12 @@ static void spInternalCleanVirtualKeyboard()
 	SDL_Rect src,dest;
 	dest.x = spVirtualKeyboardX * spVirtualKeyboardInternal[spVirtualKeyboardShift]->w / 20;
 	dest.y = spVirtualKeyboardY * spVirtualKeyboardInternal[spVirtualKeyboardShift]->h / 3;
-	dest.w = spVirtualKeyboardInternal[spVirtualKeyboardShift]->w;
-	dest.h = spVirtualKeyboardInternal[spVirtualKeyboardShift]->h;
+	dest.w = spVirtualKeyboardInternal[spVirtualKeyboardShift]->w/20;
+	dest.h = spVirtualKeyboardInternal[spVirtualKeyboardShift]->h/3;
 	src.x = spVirtualKeyboardX * spVirtualKeyboardInternal[spVirtualKeyboardShift]->w / 20;
 	src.y = spVirtualKeyboardY * spVirtualKeyboardInternal[spVirtualKeyboardShift]->h / 3;
-	src.w = spVirtualKeyboardInternal[spVirtualKeyboardShift]->w;
-	src.h = spVirtualKeyboardInternal[spVirtualKeyboardShift]->h;
+	src.w = spVirtualKeyboardInternal[spVirtualKeyboardShift]->w/20;
+	src.h = spVirtualKeyboardInternal[spVirtualKeyboardShift]->h/3;
 	SDL_BlitSurface( spVirtualKeyboardInternal[spVirtualKeyboardShift], &src, spVirtualKeyboard[spVirtualKeyboardShift], &dest );
 }
 
@@ -1960,6 +1965,18 @@ PREFIX int spGetVirtualKeyboardState()
 PREFIX SDL_Surface* spGetVirtualKeyboard()
 {
 	return spVirtualKeyboard[spVirtualKeyboardShift];
+}
+
+PREFIX void spSetVirtualKeyboardShiftState(int state)
+{
+	spVirtualKeyboardShift = state;
+	spInternalResetVirtualKeyboard();
+	spInternalUpdateVirtualKeyboard();
+}
+
+PREFIX int spGetVirtualKeyboardShiftState()
+{
+	return spVirtualKeyboardShift;
 }
 
 PREFIX int spIsKeyboardPolled()

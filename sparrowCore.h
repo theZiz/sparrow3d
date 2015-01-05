@@ -358,6 +358,22 @@ PREFIX int spGetVirtualKeyboardState();
  * changes. Don't save the result, call it every frame.*/
 PREFIX SDL_Surface* spGetVirtualKeyboard();
 
+/* Function: spSetVirtualKeyboardShiftState
+ * 
+ * Sets the state of the Shift mode of the virtual keyboard.
+ * 
+ * Parameters:
+ * state - 1 shift shall be on, 0 shift shall be off*/
+PREFIX void spSetVirtualKeyboardShiftState(int state);
+
+/* Function: spGetVirtualKeyboardShiftState
+ * 
+ * Returns the state of the Shift mode of the virtual keyboard.
+ * 
+ * Returns:
+ * int - 1 shift is on, 0 shift is off*/
+PREFIX int spGetVirtualKeyboardShiftState();
+
 /* Function: spSetTouchscreenEmulationButtons
  * 
  * Sets, whether on systems without touchscreen or

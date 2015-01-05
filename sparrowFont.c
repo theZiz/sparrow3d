@@ -952,7 +952,6 @@ typedef struct spInternalTextLineStruct
 	spInternalTextLinePointer next;
 } spInternalTextLine;
 
-
 PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, spFontPointer font)
 {
 	//Cutting at spaces. If line break, do!
@@ -1024,8 +1023,8 @@ PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, sp
 					buffer_with_minus[b_pos+1] = 0;
 					newLine->width = spFontWidth(buffer_with_minus,font);
 					newLine->count = (pos-start);
-					newLine->text = (char*)malloc(newLine->count+1);
-					memcpy(newLine->text,buffer_with_minus,newLine->count+1);
+					newLine->text = (char*)malloc(newLine->count+2);//+2 because of the -
+					memcpy(newLine->text,buffer_with_minus,newLine->count+2);
 					if (buffer[pos] == 0)
 						break;
 					last_space = pos;
@@ -1076,7 +1075,7 @@ PREFIX int spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y
 	if (block == NULL)
 		return;
 	int showable_lines = height/font->maxheight;
-	int unseen_lines = block->line_count- showable_lines;
+	int unseen_lines = spMax(0,block->line_count - showable_lines);
 	int start_line = spFixedRoundInt(position*unseen_lines);
 	int end_line = spMin(start_line+showable_lines,block->line_count);
 	int i;

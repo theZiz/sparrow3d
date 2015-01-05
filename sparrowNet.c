@@ -1947,6 +1947,21 @@ PREFIX void spNetIRCSend(spNetIRCServerPointer server,char* message)
 	spNetSendTCP(server->connection,buffer,strlen(buffer));
 }
 
+void irc_add_nick(spNetIRCChannelPointer channel,char* name,char rights)
+{
+	//if (strcmp(name,"ChanServ") == 0)
+	//	return;
+	spNetIRCNickPointer nick = (spNetIRCNickPointer)malloc(sizeof(spNetIRCNick));
+	sprintf(nick->name,"%s",name);
+	nick->rights = rights;
+	nick->next = NULL;
+	if (channel->last_nick)
+		channel->last_nick->next = nick;
+	else
+		channel->first_nick = nick;
+	channel->last_nick = nick;
+}
+
 spNetIRCChannelPointer irc_add_channel(spNetIRCServerPointer server,char* name,int* already)
 {
 	spNetIRCChannelPointer mom = server->first_channel;
@@ -1980,6 +1995,11 @@ spNetIRCChannelPointer irc_add_channel(spNetIRCServerPointer server,char* name,i
 	else
 		server->first_channel = channel;
 	server->last_channel = channel;
+	if (name[0] != '#') //query
+	{
+		irc_add_nick(channel,name,' ');
+		irc_add_nick(channel,server->nickname,' ');
+	}
 	return channel;
 }
 
@@ -2015,22 +2035,6 @@ void irc_remove_channel(spNetIRCServerPointer server,spNetIRCChannelPointer chan
 		if (mom == server->last_channel)
 			server->last_channel = before;
 	}
-}
-
-
-void irc_add_nick(spNetIRCChannelPointer channel,char* name,char rights)
-{
-	//if (strcmp(name,"ChanServ") == 0)
-	//	return;
-	spNetIRCNickPointer nick = (spNetIRCNickPointer)malloc(sizeof(spNetIRCNick));
-	sprintf(nick->name,"%s",name);
-	nick->rights = rights;
-	nick->next = NULL;
-	if (channel->last_nick)
-		channel->last_nick->next = nick;
-	else
-		channel->first_nick = nick;
-	channel->last_nick = nick;
 }
 
 void irc_add_message(spNetIRCServerPointer server,spNetIRCMessagePointer* first_message,spNetIRCMessagePointer* last_message,char* type,char* message,char* user)
@@ -2200,7 +2204,10 @@ void irc_command_handling(spNetIRCServerPointer server,char* command,char* param
 	{
 		irc_split_user_destiny(&parameters,&user,&prefix,&destiny);
 		//Is the channel / user known?
-		channel = irc_get_channel(server,destiny);
+		if (destiny[0] == '#')
+			channel = irc_get_channel(server,destiny);
+		else
+			channel = irc_get_channel(server,user);
 		if (!channel) //TODO: add channel!
 		{
 			int already;
