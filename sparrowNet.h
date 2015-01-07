@@ -887,7 +887,7 @@ typedef struct spNetIRCChannelStruct {
 	char name[256];
 	int status;
 	spNetIRCNickPointer first_nick;
-	spNetIRCNickPointer last_nick;
+	int got_end_366;
 	spNetIRCChannelPointer next;
 	spNetIRCMessagePointer first_message;
 	spNetIRCMessagePointer last_message;
