@@ -930,6 +930,7 @@ typedef struct spNetIRCServerStruct {
 	char nickname[256];
 	char username[256];
 	char realname[256];
+	char password[256];
 	spNetIRCChannelPointer first_channel;
 	spNetIRCChannelPointer last_channel;
 	spNetIP ip;
@@ -959,11 +960,12 @@ typedef struct spNetIRCServerStruct {
  * another one with numbers and stuff
  * username - your user name
  * realname - your real name
+ * password - password
  * 
  * Returns:
  * spNetIRCServerPointer - a pointer to <spNetIRCServer> to use in further
  * spNetIRC* functions*/
-PREFIX spNetIRCServerPointer spNetIRCConnectServer(char* name,Uint16 port,char* nickname,char* username,char* realname);
+PREFIX spNetIRCServerPointer spNetIRCConnectServer(char* name,Uint16 port,char* nickname,char* username,char* realname,char* password);
 
 /* Function: spNetIRCServerReady
  * 

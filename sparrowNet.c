@@ -2388,9 +2388,16 @@ int __irc_server_thread(void* data)
 	spNetIRCServerPointer server = data;
 	SDL_Thread* tcp_thread = NULL;
 	char buffer[65536];
-	spNetIRCSend(server,"PASS *");
+	sprintf(buffer,"PASS %s",server->password);
+	spNetIRCSend(server,buffer);
 	while (1)
 	{
+		if (server->status == 3)
+		{
+			sprintf(buffer,"PRIVMSG NickServ :IDENTIFY %s %s",server->nickname,server->password);
+			spNetIRCSend(server,buffer);
+			server->status++;
+		}
 		if (server->status == 1)
 		{
 			sprintf(buffer,"USER %s 8 * :%s",server->username,server->realname);
@@ -2482,7 +2489,7 @@ int __irc_server_thread(void* data)
 }
 
 
-PREFIX spNetIRCServerPointer spNetIRCConnectServer(char* name,Uint16 port,char* nickname,char* username,char* realname)
+PREFIX spNetIRCServerPointer spNetIRCConnectServer(char* name,Uint16 port,char* nickname,char* username,char* realname,char* password)
 {
 	spNetIRCServerPointer server = (spNetIRCServerPointer)malloc(sizeof(spNetIRCServer));
 	server->ip = spNetResolve(name,port);
@@ -2503,6 +2510,7 @@ PREFIX spNetIRCServerPointer spNetIRCConnectServer(char* name,Uint16 port,char* 
 	sprintf(server->original_nickname,"%s",nickname);
 	sprintf(server->username,"%s",username);
 	sprintf(server->realname,"%s",realname);
+	sprintf(server->password,"%s",password);
 
 	server->counter = 0;
 	server->first_message = NULL;
