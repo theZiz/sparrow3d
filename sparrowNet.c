@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <errno.h>
 
+//#define DEBUG_MESSAGES
+
 //This is a copy of spReadOneLine sparrowFile. However, I don't want the
 //extra dependency of libSparrow3d or linking sparrowFile twice.
 int internal_spNet_spReadOneLine( SDL_RWops* file , char* buffer, int buffer_len)
@@ -2141,6 +2143,9 @@ void __irc_command_handling(spNetIRCServerPointer server,char* command,char* par
 	{
 		char buffer[256];
 		sprintf(buffer,"PONG %s",parameters);
+		#ifdef DEBUG_MESSAGES
+			printf("\t--> PONG %s\n",parameters);
+		#endif
 		spNetIRCSend(server,buffer);
 	}
 	if (strcmp(command,"JOIN") == 0)
@@ -2342,7 +2347,9 @@ void __irc_command_handling(spNetIRCServerPointer server,char* command,char* par
 
 void __irc_parse_one_line(spNetIRCServerPointer server,char* line)
 {
-	//printf("\t%s\n",line);
+	#ifdef DEBUG_MESSAGES
+		printf("\t%s\n",line);
+	#endif
 	char* prefix = NULL;
 	if (line[0] == ':') //comment thing, let's ignore it!
 	{
