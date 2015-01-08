@@ -1986,10 +1986,15 @@ void __irc_add_nick(spNetIRCChannelPointer channel,char* name,char rights)
 
 spNetIRCChannelPointer __irc_add_channel(spNetIRCServerPointer server,char* name,int* already)
 {
+	char namestring[512];
+	sprintf(namestring,"%s",name);
+	char *pos;
+	if (pos = strchr(namestring,' '))
+		pos[0] = 0;
 	spNetIRCChannelPointer mom = server->first_channel;
 	while (mom)
 	{
-		if (strcmp(mom->name,name) == 0)
+		if (strcmp(mom->name,namestring) == 0)
 			break;
 		mom = mom->next;
 	}
@@ -2011,7 +2016,7 @@ spNetIRCChannelPointer __irc_add_channel(spNetIRCServerPointer server,char* name
 	channel->got_end_366 = 0;
 	channel->next = NULL;
 	channel->close_query = 0;
-	sprintf(channel->name,"%s",name);
+	sprintf(channel->name,"%s",namestring);
 	if (server->last_channel)
 		server->last_channel->next = channel;
 	else
@@ -2019,7 +2024,7 @@ spNetIRCChannelPointer __irc_add_channel(spNetIRCServerPointer server,char* name
 	server->last_channel = channel;
 	if (name[0] != '#') //query
 	{
-		__irc_add_nick(channel,name,' ');
+		__irc_add_nick(channel,namestring,' ');
 		__irc_add_nick(channel,server->nickname,' ');
 	}
 	return channel;
@@ -2244,6 +2249,13 @@ void __irc_command_handling(spNetIRCServerPointer server,char* command,char* par
 		switch (nr) //See: https://www.alien.net.au/irc/irc2numerics.html
 		{
 			case 451:
+				break;
+			case 442: //PART of a not joined channel
+				if (__irc_split_destiny_parameters(&parameters,&destiny))
+					return;
+				channel = __irc_get_channel(server,destiny);
+				if (channel)
+					__irc_remove_channel(server,channel);
 				break;
 			case 470: case 471: case 473: case 474: case 475:
 				begin = strchr(parameters,'#');
