@@ -374,6 +374,26 @@ PREFIX void spSetVirtualKeyboardShiftState(int state);
  * int - 1 shift is on, 0 shift is off*/
 PREFIX int spGetVirtualKeyboardShiftState();
 
+/* Function: spSetVirtualKeyboardSpaceButton
+ * 
+ * Sets a button, which is used as space if text is entered via virtual
+ * keyboard.
+ * 
+ * Parameters:
+ * 
+ * button - button id to use, e.g. SP_BUTTON_X or SP_PRACTICE_3 */
+PREFIX void spSetVirtualKeyboardSpaceButton(int button);
+
+/* Function: spSetVirtualKeyboardBackspaceButton
+ * 
+ * Sets a button, which is used as backspace if text is entered via virtual
+ * keyboard.
+ * 
+ * Parameters:
+ * 
+ * button - button id to use, e.g. SP_BUTTON_X or SP_PRACTICE_3 */
+PREFIX void spSetVirtualKeyboardBackspaceButton(int button);
+
 /* Function: spSetTouchscreenEmulationButtons
  * 
  * Sets, whether on systems without touchscreen or

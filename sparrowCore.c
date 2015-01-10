@@ -82,6 +82,9 @@ int spLastFirstTime = 0;
 char spIconName[512] = "";
 char spWindowName[512] = "";
 
+int spVirtualKeyboardSpaceButton = -1;
+int spVirtualKeyboardBackspaceButton = -1;
+
 typedef struct sp_cache_struct *sp_cache_pointer;
 typedef struct sp_cache_struct {
 	char* name;
@@ -970,9 +973,9 @@ void spHandleFakeKeyboard( int steps )
 
 int spShiftStillPressed = 0;
 
-void spClickVirtualKey(int steps)
+void spClickVirtualKey(int steps,int x,int y)
 {
-	if (spVirtualKeyboardMap[spVirtualKeyboardY][spVirtualKeyboardX] == 1)
+	if (spVirtualKeyboardMap[y][x] == 1)
 	{
 		if (spShiftStillPressed == 0)
 		{
@@ -987,9 +990,9 @@ void spClickVirtualKey(int steps)
 	if (spVirtualKeyboardShift)
 		ptr = (char*)spVirtualKeyboardMapShift;
 	
-	SDL_keysym key = {spVirtualKeyboardMap[spVirtualKeyboardY][spVirtualKeyboardX],
-		(SDLKey)spVirtualKeyboardMap[spVirtualKeyboardY][spVirtualKeyboardX],(SDLMod)0,
-		ptr[spVirtualKeyboardY*20+spVirtualKeyboardX]};
+	SDL_keysym key = {spVirtualKeyboardMap[y][x],
+		(SDLKey)spVirtualKeyboardMap[y][x],(SDLMod)0,
+		ptr[y*20+x]};
   
 	if (spVirtualLastKey.sym == key.sym)
 	{
@@ -1065,8 +1068,21 @@ void spHandleVirtualKeyboard( int steps )
 		if ((spVirtualKeyboardMask & (1 << b)) && spGenericInput.button[b])
 		{
 			noButton = 0;
-			spClickVirtualKey(steps);
+			spClickVirtualKey(steps,spVirtualKeyboardX,spVirtualKeyboardY);
 		}
+	}
+	//Special buttons
+	if (spVirtualKeyboardBackspaceButton >= 0 && spVirtualKeyboardBackspaceButton < SP_INPUT_BUTTON_COUNT &&
+		spGenericInput.button[spVirtualKeyboardBackspaceButton])
+	{
+		noButton = 0;
+		spClickVirtualKey(steps,15,0);
+	}
+	if (spVirtualKeyboardSpaceButton >= 0 && spVirtualKeyboardSpaceButton < SP_INPUT_BUTTON_COUNT &&
+		spGenericInput.button[spVirtualKeyboardSpaceButton])
+	{
+		noButton = 0;
+		spClickVirtualKey(steps,10,2);
 	}
 	//Touchscreen input
 	if ( spGenericInput.touchscreen.pressed &&
@@ -1084,7 +1100,7 @@ void spHandleVirtualKeyboard( int steps )
 		spVirtualKeyboardY = spDivHigh(clickY,divisor) >> SP_ACCURACY;
 		spInternalUpdateVirtualKeyboard();
 		noButton = 0;
-		spClickVirtualKey(steps);
+		spClickVirtualKey(steps,spVirtualKeyboardX,spVirtualKeyboardY);
 	}
 	if (noButton)
 	{
@@ -2055,4 +2071,14 @@ PREFIX void spSetReturnBehavior(int ignore,int stops)
 {
 	spKeyboardReturnIgnore = ignore;
 	spKeyboardReturnStops = stops;
+}
+
+PREFIX void spSetVirtualKeyboardSpaceButton(int button)
+{
+	spVirtualKeyboardSpaceButton = button;
+}
+
+PREFIX void spSetVirtualKeyboardBackspaceButton(int button)
+{
+	spVirtualKeyboardBackspaceButton = button;
 }
