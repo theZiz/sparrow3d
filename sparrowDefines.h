@@ -136,7 +136,7 @@
  * the decimal place.
  * spFixedRoundInt(x) - converts the fixed point number x with round to an int */
 
-#define spFixedToFloat(x) ((float)(x)/SP_ACCURACY_FACTOR)
+#define spFixedToFloat(x) ((float)((Sint32)(x))/SP_ACCURACY_FACTOR)
 #define spFloatToFixed(x) ((Sint32)((float)(x)*SP_ACCURACY_FACTOR))
 #define spIntToFixed(x) ((Sint32)(((int)(x))<<SP_ACCURACY))
 #define spFixedToInt(x) ((int)(((Sint32)(x))>>SP_ACCURACY))
