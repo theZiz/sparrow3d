@@ -22,6 +22,8 @@
 #include <math.h>
 #include <string.h>
 
+Sint32 spModelViewStack[SP_MODELVIEW_STACK_SIZE][16];
+
 Sint32 spModelView[16] = {SP_ONE,0,0,0,0,SP_ONE,0,0,0,0,SP_ONE,0,0,0,0,SP_ONE};
 Sint32 spProjection[16];
 int spLightOn = -1;
@@ -29,6 +31,24 @@ spLight spLightDiffuse[SP_MAX_LIGHTS];
 Uint32 spLightAmbient[3] = {1 << SP_ACCURACY-2,1 << SP_ACCURACY-2,1 << SP_ACCURACY-2};
 int spPreNormal = 0;
 int spUsePerspective = 0;
+
+int spStackCounter = 0;
+
+PREFIX void spPushModelView()
+{
+	memcpy(spModelViewStack[spStackCounter],spModelView,sizeof(Sint32)*16);
+	spStackCounter++;
+	if (spStackCounter >= SP_MODELVIEW_STACK_SIZE)
+		spStackCounter = 0;
+}
+
+PREFIX void spPopModelView()
+{
+	spStackCounter--;
+	if (spStackCounter < 0)
+		spStackCounter = SP_MODELVIEW_STACK_SIZE-1;
+	memcpy(spModelView,spModelViewStack[spStackCounter],sizeof(Sint32)*16);
+}
 
 PREFIX void spSetFrustumf2( Sint32 *matrix, Sint32 left, Sint32 right, Sint32 bottom, Sint32 top,
 							Sint32 znear, Sint32 zfar )

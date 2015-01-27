@@ -36,6 +36,11 @@
  
 #define SP_MAX_LIGHTS 8
 
+/* define: SP_MODELVIEW_STACK_SIZE
+ * 
+ * The maximum depth of <spPushModelView> and <spPopModelView> Operations*/
+#define SP_MODELVIEW_STACK_SIZE 16
+
 /* Type: spPoint
  * 
  * a point struct with space, modelview and projected coordinates
@@ -315,12 +320,7 @@ PREFIX Sint32* spGetProjectionMatrix();
 /* Function: spGetMatrix
  * 
  * Returns you the REAL modelview matrix pointer! That
- * means, every change is directly updated. It is usefull for saving
- * the modelview matrix like glPush, e.g.:
- * >Sint16* matrix;
- * >memcpy(spGetMatrix(),matrix,16*sizeof(Sint32)); //Save matrix
- * >//Do fancy stuff
- * >memcpy(matrix,spGetMatrix(),16*sizeof(Sint32)); //Restore matrix
+ * means, every change is directly updated.
  * 
  * Returns:
  * Sint32* - pointer to the modelview matrix
@@ -328,6 +328,23 @@ PREFIX Sint32* spGetProjectionMatrix();
  * See Also:
  * <spGetProjectionMatrix>*/
 PREFIX Sint32* spGetMatrix();
+
+/* Function: spPushModelView
+ * 
+ * Saves the recent ModelView matrix on a stack. Get the last element
+ * of the stack with <spPopModelView>.
+ * 
+ * See Also:
+ * <spPopModelView>*/
+PREFIX void spPushModelView();
+
+/* Function: spPopModelView
+ * 
+ * Loads the ModelView matrix from the stack.
+ * 
+ * See Also:
+ * <spPushModelView>*/
+PREFIX void spPopModelView();
 
 /* Function: spIdentity
  * 
