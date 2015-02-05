@@ -2009,10 +2009,10 @@ PREFIX void spStereoMergeSurfaces(SDL_Surface* left,SDL_Surface* right,int cross
 	//merge
 	SDL_LockSurface(left);
 	SDL_LockSurface(right);
-	Uint16* right_pixels = (Uint16*)right->pixels;
-	Uint16* pixels = (Uint16*)left->pixels;
 	if (crossed)
 	{
+		Uint16* right_pixels = (Uint16*)right->pixels;
+		Uint16* pixels = (Uint16*)left->pixels;
 		int x,y;
 		for (x = 0; x < W/2; x++)
 			for (y = 0; y < H; y++)
@@ -2023,9 +2023,12 @@ PREFIX void spStereoMergeSurfaces(SDL_Surface* left,SDL_Surface* right,int cross
 	}
 	else
 	{
+		Uint32* right_pixels = (Uint32*)right->pixels;
+		Uint32* pixels = (Uint32*)left->pixels;
 		int i;
-		int all = W*H;
+		int all = W*H/2;
 		for (i = 0; i < all; i++)
+		if (right_pixels[i])
 			pixels[i] |= right_pixels[i];
 	}
 	SDL_UnlockSurface(left);	

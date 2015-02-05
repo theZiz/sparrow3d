@@ -1412,6 +1412,8 @@ PREFIX void spEllipse3D( Sint32 x, Sint32 y, Sint32 z, Sint32 rx, Sint32 ry, Uin
 		if (ry == 0)
 			ry = 1;
 	}
+	if (z < 0)
+		return;
 	spEllipse( x, y, z, rx, ry, color );
 }
 

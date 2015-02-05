@@ -84,7 +84,7 @@ typedef struct spParticleBunchStruct
  * to create a new particle bunch and add it to this bunch (see last parameter)
  * feedback - a feedback function, which shall have the parameters
  * spParticleBunchPointer bunch, Sint32 action and Sint32 extra_data. The bunch
- * is the bunch returned by this function, action says the feedback function,
+ * is the bunch returned by this function, action tells the feedback function,
  * what to do (see also <Events for the particle bunch update function>) and
  * extra_data gives some extra data for some actions, e.g. the time since the
  * last frame in ms if the action is SP_PARTICLE_UPDATE.
