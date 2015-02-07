@@ -1774,9 +1774,9 @@ PREFIX int spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile,
 		spGlobalC4ATask->timeOut = timeOut;
 		spGlobalC4ATask->threadStatus = 1;
 		#ifdef _MSC_VER
-			spGlobalC4ATask->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,c4a_delete_thread);
+			spGlobalC4ATask->thread = SDL_CreateThread((int (__cdecl *)(void *))spNetC4AUberThread,data);
 		#else
-			spGlobalC4ATask->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,c4a_delete_thread);
+			spGlobalC4ATask->thread = SDL_CreateThread((int (*)(void *))spNetC4AUberThread,data);
 		#endif
 		return 0;
 	}
