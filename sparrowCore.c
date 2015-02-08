@@ -1536,6 +1536,8 @@ PREFIX void spClearCache()
 PREFIX SDL_Surface* spCreateSurface(int width,int height)
 {
 	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
+	if (spGetRenderTarget() != NULL && spGetWindowSurface() == spGetRenderTarget())
+		spUnlockRenderTarget();
 	SDL_Surface* result = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
 	if (sp_caching)
@@ -1560,6 +1562,8 @@ PREFIX SDL_Surface* spCreateSurface(int width,int height)
 		}
 		sp_first_cache_line = c;
 	}
+	if (spGetRenderTarget() != NULL && spGetWindowSurface() == spGetRenderTarget())
+		spLockRenderTarget();
 	return result;
 }
 
