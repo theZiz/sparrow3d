@@ -715,7 +715,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				switch ( event.key.keysym.sym )
 				{
 				case SDLK_LEFT:
-					if ( spGenericInput.axis[0] == -1 )
+					if ( spGenericInput.axis[0] == -1 || spGenericInput.analog_axis[0] < 0)
 					{
 						spGenericInput.axis[0] = 0;
 						spGenericInput.analog_axis[0] = 0;
@@ -723,7 +723,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					}
 					break;
 				case SDLK_RIGHT:
-					if ( spGenericInput.axis[0] == 1 )
+					if ( spGenericInput.axis[0] == 1 || spGenericInput.analog_axis[0] > 0)
 					{
 						spGenericInput.axis[0] = 0;
 						spGenericInput.analog_axis[0] = 0;
@@ -731,7 +731,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					}
 					break;
 				case SDLK_UP:
-					if ( spGenericInput.axis[1] == -1 )
+					if ( spGenericInput.axis[1] == -1 || spGenericInput.analog_axis[1] < 0)
 					{
 						spGenericInput.axis[1] = 0;
 						spGenericInput.analog_axis[1] = 0;
@@ -739,7 +739,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					}
 					break;
 				case SDLK_DOWN:
-					if ( spGenericInput.axis[1] == 1 )
+					if ( spGenericInput.axis[1] == 1 || spGenericInput.analog_axis[1] > 0)
 					{
 						spGenericInput.axis[1] = 0;
 						spGenericInput.analog_axis[1] = 0;
