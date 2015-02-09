@@ -13,19 +13,20 @@
 SDL_Surface *sprites_texture;
 SDL_Surface *sprites_garfield;
 spSpritePointer sprite;
+spSpriteCollectionPointer collection;
 int sprites_z = 1;
 
 void init_sprites()
 {
 	sprites_garfield = spLoadSurface( "./data/garfield.png" );
 	sprites_texture = spLoadSurface( "./data/science_guy_frames01.png" );
-	sprite = spNewSprite(NULL);
-	spNewSubSpriteTilingRow( sprite, sprites_texture, 1, 1, 22, 46, 24, 48, 9 ,100);
+	collection = spLoadSpriteCollection("./data/exampleSprite.ssc",sprites_texture);
+	sprite = spActiveSprite(collection);
 }
 
 char* caption_sprites(char* caption)
 {
-	sprintf(caption,"Sprites & Rotozoom");
+	sprintf(caption,"Sprites & Rotozoom\n(Sprite by %s)",collection->author);
 	return caption;
 }
 
@@ -40,7 +41,7 @@ char* settings_sprites(char* caption,int button)
 				sprintf(caption,"[A] No Z Test & Set");
 			break;
 		case SP_BUTTON_B:
-				sprintf(caption,"");
+				caption[0] = 0;
 			break;
 	}
 	return caption;
@@ -82,5 +83,5 @@ void quit_sprites()
 {
 	spDeleteSurface(sprites_garfield);
 	spDeleteSurface(sprites_texture);
-	spDeleteSprite(sprite);
+	spDeleteSpriteCollection(collection,0);
 }

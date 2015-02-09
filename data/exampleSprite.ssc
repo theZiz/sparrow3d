@@ -13,6 +13,9 @@
 
 # the default sprite is the first defined or this one defined here:
 
+author = Ziz
+license = CC-BY-SA
+
 default = run right
 
 # if no image in the section is defined, this shall be the default. The

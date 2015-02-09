@@ -890,7 +890,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					spLastAxisType = 1;
 				}
 				else
-				if (event.jaxis.value > SP_JOYSTICK_MIN_TRIGGER_OFF && event.jaxis.value < SP_JOYSTICK_MAX_TRIGGER_OFF)
+				if (event.jaxis.value > SP_JOYSTICK_MIN_TRIGGER_OFF && event.jaxis.value < SP_JOYSTICK_MAX_TRIGGER_OFF  && sp_axis_was_used[event.jaxis.axis & 1] != 0)
 				{
 					spGenericInput.axis[event.jaxis.axis & 1] = 0;
 					sp_axis_was_used[event.jaxis.axis & 1] = 0;
@@ -1535,9 +1535,9 @@ PREFIX void spClearCache()
 
 PREFIX SDL_Surface* spCreateSurface(int width,int height)
 {
-	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
 	if (spGetRenderTarget() != NULL && spGetWindowSurface() == spGetRenderTarget())
 		spUnlockRenderTarget();
+	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
 	SDL_Surface* result = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
 	if (sp_caching)

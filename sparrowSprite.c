@@ -208,6 +208,8 @@ PREFIX spSpriteCollectionPointer spNewSpriteCollection()
 	spSpriteCollectionPointer result = (spSpriteCollectionPointer)malloc(sizeof(spSpriteCollection));
 	result->firstSprite = NULL;
 	result->active = NULL;
+	sprintf(result->author,"Unknown");
+	sprintf(result->license,"Unknown");
 	return result;
 }
 
@@ -297,6 +299,10 @@ int spSpriteCollectionGetKeyword(char* name)
 		return 5;
 	if (strcmp(name,"frame") == 0)
 		return 6;
+	if (strcmp(name,"author") == 0)
+		return 7;
+	if (strcmp(name,"license") == 0)
+		return 8;
 	return 0;
 }
 
@@ -445,6 +451,12 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 					}
 					//We loaded the surface one time more, than we will it delete later, so lets decrease the ref counter:
 					spDeleteSurface( s );
+					break;
+				case 7: //"author"
+					sprintf(collection->author,"%s",value);
+					break;
+				case 8: //"author"
+					sprintf(collection->license,"%s",value);
 					break;
 			}
 		}
