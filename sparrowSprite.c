@@ -210,6 +210,7 @@ PREFIX spSpriteCollectionPointer spNewSpriteCollection()
 	result->active = NULL;
 	sprintf(result->author,"Unknown");
 	sprintf(result->license,"Unknown");
+	result->comment[0] = 0;
 	return result;
 }
 
@@ -303,6 +304,8 @@ int spSpriteCollectionGetKeyword(char* name)
 		return 7;
 	if (strcmp(name,"license") == 0)
 		return 8;
+	if (strcmp(name,"comment") == 0)
+		return 9;
 	return 0;
 }
 
@@ -455,8 +458,11 @@ PREFIX spSpriteCollectionPointer spLoadSpriteCollection(char* filename,SDL_Surfa
 				case 7: //"author"
 					sprintf(collection->author,"%s",value);
 					break;
-				case 8: //"author"
+				case 8: //"license"
 					sprintf(collection->license,"%s",value);
+					break;
+				case 9: //"comment"
+					sprintf(collection->comment,"%s",value);
 					break;
 			}
 		}

@@ -108,13 +108,15 @@ typedef struct spSpriteStruct
  * firstSprite (spSprite*) - the first sprite in the collection
  * active (spSprite*) - the choosen sprite
  * author - author of the sprite. Doesn't have to be set
- * license - license of the sprite. Doesn't have to be set*/
+ * license - license of the sprite. Doesn't have to be set
+ * comment - for a comment. Don't have to be set*/
 typedef struct spSpriteCollectionStruct
 {
 	spSpritePointer firstSprite;
 	spSpritePointer active;
 	char author[256];
 	char license[256];
+	char comment[256];
 } spSpriteCollection;
 
 
