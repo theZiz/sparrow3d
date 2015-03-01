@@ -2276,7 +2276,7 @@ void __irc_command_handling(spNetIRCServerPointer server,char* command,char* par
 					channel->status = -1;
 				return;
 			case 433:case 043:
-				server->status = 0;
+				server->status = 1;
 				server->counter++;
 				sprintf(server->nickname,"%s%i",server->original_nickname,server->counter);
 				break;
@@ -2417,13 +2417,13 @@ int __irc_server_thread(void* data)
 			spNetIRCSend(server,buffer);
 			server->status++;
 		}
-		if (server->status == 1)
+		if (server->status == 0)
 		{
 			sprintf(buffer,"USER %s 8 * :%s",server->username,server->realname);
 			spNetIRCSend(server,buffer);
 			server->status++;
 		}
-		if (server->status == 0)
+		if (server->status == 1)
 		{
 			sprintf(buffer,"NICK %s",server->nickname);
 			spNetIRCSend(server,buffer);
