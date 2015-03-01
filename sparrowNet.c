@@ -2028,6 +2028,7 @@ spNetIRCChannelPointer __irc_add_channel(spNetIRCServerPointer server,char* name
 	{
 		__irc_add_nick(channel,namestring,' ');
 		__irc_add_nick(channel,server->nickname,' ');
+		channel->status = 1;
 	}
 	return channel;
 }
@@ -2236,14 +2237,16 @@ void __irc_command_handling(spNetIRCServerPointer server,char* command,char* par
 	{
 		__irc_split_user_destiny(&parameters,&user,&prefix,&destiny);
 		//Is the channel / user known?
+		char* channel_name;
 		if (destiny[0] == '#')
-			channel = __irc_get_channel(server,destiny);
+			channel_name = destiny;
 		else
-			channel = __irc_get_channel(server,user);
-		if (!channel) //TODO: add channel!
+			channel_name = user;
+		channel = __irc_get_channel(server,channel_name);
+		if (!channel)
 		{
 			int already;
-			channel = __irc_add_channel(server,destiny,&already);
+			channel = __irc_add_channel(server,channel_name,&already);
 		}
 	}
 	if (command[0] >= '0' && command[0] <= '9') //nr
