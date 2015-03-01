@@ -2082,6 +2082,7 @@ void __irc_add_message(spNetIRCServerPointer server,spNetIRCMessagePointer* firs
 	else
 		*first_message = msg;
 	*last_message = msg;
+	msg->time_stamp = time(NULL);
 }
 
 void __irc_split_user_destiny(char** parameters,char** user,char** prefix,char** destiny)

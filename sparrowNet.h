@@ -845,6 +845,7 @@ typedef struct spNetIRCMessageStruct {
 	char type[128];
 	char user[128];
 	char message[1024];
+	time_t time_stamp;
 	spNetIRCMessagePointer next;
 } spNetIRCMessage;
 
