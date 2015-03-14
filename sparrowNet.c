@@ -2279,7 +2279,7 @@ void __irc_command_handling(spNetIRCServerPointer server,char* command,char* par
 				if (channel)
 					channel->status = -1;
 				return;
-			case 433:case 043:
+			case 433:case 043:case 436: case 437:
 				server->status = 1;
 				server->counter++;
 				sprintf(server->nickname,"%s%i",server->original_nickname,server->counter);

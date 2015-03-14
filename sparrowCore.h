@@ -450,7 +450,7 @@ PREFIX Sint32 spGetSizeFactor( void );
  * 
  * Returns:
  * SDL_Surface* - the loaded surface*/
-PREFIX SDL_Surface* spLoadSurface( char* name );
+PREFIX SDL_Surface* spLoadSurface( const char* name );
 
 /* Function: spLoadSurfaceZoom
  * 
@@ -464,7 +464,7 @@ PREFIX SDL_Surface* spLoadSurface( char* name );
  * 
  * Returns:
  * SDL_Surface* - the loaded and zoomed surface*/
-PREFIX SDL_Surface* spLoadSurfaceZoom( char* name, Sint32 zoom);
+PREFIX SDL_Surface* spLoadSurfaceZoom( const char* name, Sint32 zoom);
 
 /* Funtion: spLastCachedSurfaceWasLoadedFirstTime
  * 

@@ -1443,7 +1443,7 @@ PREFIX SDL_Surface* spUniqueCopySurface( SDL_Surface* surface )
 	return result;
 }
 
-PREFIX SDL_Surface* spLoadSurfaceZoom( char* name, Sint32 zoom)
+PREFIX SDL_Surface* spLoadSurfaceZoom( const char* name, Sint32 zoom)
 {
 	if (sp_caching)
 	{
@@ -1502,7 +1502,7 @@ PREFIX int spLastCachedSurfaceWasLoadedFirstTime()
 	return spLastFirstTime;
 }
 
-PREFIX SDL_Surface* spLoadSurface( char* name )
+PREFIX SDL_Surface* spLoadSurface( const char* name )
 {
 	return spLoadSurfaceZoom( name, SP_ONE );
 }
