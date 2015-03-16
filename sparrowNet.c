@@ -2018,6 +2018,7 @@ spNetIRCChannelPointer __irc_add_channel(spNetIRCServerPointer server,char* name
 	channel->got_end_366 = 0;
 	channel->next = NULL;
 	channel->close_query = 0;
+	channel->show_users = 0;
 	sprintf(channel->name,"%s",namestring);
 	if (server->last_channel)
 		server->last_channel->next = channel;
@@ -2306,6 +2307,8 @@ void __irc_command_handling(spNetIRCServerPointer server,char* command,char* par
 						channel->first_nick = next;
 					}
 				channel->got_end_366 = 0;
+				if (channel->show_users)
+					__irc_add_message(server,&(channel->first_message),&(channel->last_message),command,parameters,"Users in channel are");
 				begin = parameters;
 				while (1)
 				{

@@ -897,6 +897,7 @@ typedef struct spNetIRCChannelStruct {
 	spNetIRCMessagePointer first_add_message;
 	spNetIRCMessagePointer last_add_message;
 	spNetIRCMessagePointer last_add_read_message;
+	int show_users;
 } spNetIRCChannel;
 
 /* Type: spNetIRCServer

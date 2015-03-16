@@ -30,6 +30,41 @@ int spFontLastUTF8Length = 0;
 int spFontBackgroundColor = SP_FONT_NO_BORDER;
 int spFontButtonShade = 0;
 
+static void spLetterDelete( spLetterPointer letter )
+{
+	if ( letter == NULL )
+		return;
+	spLetterDelete( letter->left );
+	spLetterDelete( letter->right );
+	spDeleteSurface( letter->surface );
+	free( letter );
+}
+
+PREFIX int spFontReload(spFontPointer font,const char* fontname,Uint32 size)
+{
+	spLetterDelete( font->root );
+	font->root = NULL;
+	spLetterDelete( font->buttonRoot );
+	font->buttonRoot = NULL;
+	if ( font->cache.cache )
+		free( font->cache.cache );
+	TTF_CloseFont( font->font );
+	font->font = TTF_OpenFont( fontname, size );
+	if ( !(font->font) )
+	{
+		printf( "Failed to load Font \"%s\", dude...\n", fontname );
+		printf( "	Error was: \"%s\"\n", TTF_GetError() );
+		free(font);
+		return 1;
+	}
+	font->size = size;
+	font->maxheight = 0;
+	font->cacheOffset = 0;
+	font->cache.cache = NULL;
+	spFontChangeCacheSize( font, SP_FONT_DEFAULT_CACHE );	
+	return 0;
+}
+
 PREFIX spFontPointer spFontLoad(const char* fontname, Uint32 size )
 {
 	TTF_Font* ttf = TTF_OpenFont( fontname, size );
@@ -878,19 +913,10 @@ PREFIX int spFontWidth(const char* text, spFontPointer font )
 	return max_width;
 }
 
-static void spLetterDelete( spLetterPointer letter )
-{
-	if ( letter == NULL )
-		return;
-	spLetterDelete( letter->left );
-	spLetterDelete( letter->right );
-	spDeleteSurface( letter->surface );
-	free( letter );
-}
-
 PREFIX void spFontDelete( spFontPointer font )
 {
 	spLetterDelete( font->root );
+	spLetterDelete( font->buttonRoot );
 	TTF_CloseFont( font->font );
 	if ( font->cache.cache )
 		free( font->cache.cache );

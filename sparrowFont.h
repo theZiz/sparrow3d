@@ -199,6 +199,19 @@ typedef enum
  * spFont* - a pointer to a spFont for later use */
 PREFIX spFontPointer spFontLoad( const char* fontname, Uint32 size );
 
+/* Function: spFontLoad
+ *
+ * Deletes a <spFont> and loads a new font in the same struct.
+ *
+ * Parameters:
+ * font - pointer to <spFont> to reload
+ * fontname - the name of the ttf font file
+ * size - the size to load the font
+ *
+ * Returns:
+ * int - 0 no error, 1 load failed */
+PREFIX int spFontReload(spFontPointer font,const char* fontname,Uint32 size);
+
 /* Function: spFontAdd
  *
  * Adds characters to the font.
