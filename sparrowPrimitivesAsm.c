@@ -15,7 +15,7 @@
   * For feedback and questions about my Files and Projects please mail me,
   * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
 
-#include "sparrowPrimitives.h"
+#include "sparrowPrimitivesAsm.h"
 #include <stdlib.h>
 
 #ifdef __arm__

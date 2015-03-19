@@ -93,6 +93,8 @@ SDL_PATH = -I/usr/include/SDL
 # obviously. Even spSleep is slow moooooo'ed.
 # CFLAGS += -DDEBUG_SLOWMOTION=5
 
+SPARROW_TEST = testsparrow testfile testnet testreal3d testnet_terminal_server testnet_terminal_client
+
 SPARROW3D_LIB = libsparrow3d.so
 SPARROWNET_LIB = libsparrowNet.so
 SPARROWSOUND_LIB = libsparrowSound.so
@@ -119,147 +121,72 @@ ifndef AR
 AR = ar
 endif
 
-all: dynamic static testsparrow testfile testnet testreal3d testnet_terminal_server testnet_terminal_client
+SPARROW_LIBS = $(SPARROW3D_LIB) $(SPARROWNET_LIB) $(SPARROWSOUND_LIB)
+SPARROW_STATIC_LIBS = $(SPARROW3D_STATIC_LIB) $(SPARROWNET_STATIC_LIB) $(SPARROWSOUND_STATIC_LIB)
+
+all: static all_no_static
+
+all_no_static: dynamic $(SPARROW_TEST)
 	@echo "=== Built for Target "$(TARGET)" ==="
 
-all_no_static: dynamic testsparrow testfile testnet testreal3d testnet_terminal_server testnet_terminal_client
-	@echo "=== Built for Target "$(TARGET)" ==="
+static: $(SPARROW_STATIC_LIBS)
 
-static: libsparrow3d.a libsparrowNet.a libsparrowSound.a
-
-dynamic: libsparrow3d.so libsparrowNet.so libsparrowSound.so
+dynamic: $(SPARROW_LIBS)
 
 targets:
 	@echo "The targets are:"
 	@ls ./target-files/*.mk | cut -d/ -f3 | cut -d. -f1
 #	@echo "Default targets are: gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora, gcw"
 
-testsparrow: testsparrow.c libsparrow3d.so test_cube.o test_fill.o test_gears.o test_mesh.o test_primitives.o test_sprites.o test_tube.o test_yinyang.o test_text.o test_target.o test_mapping.o
-	$(CC) $(CFLAGS) testsparrow.c test_cube.o test_fill.o test_gears.o test_mesh.o test_primitives.o test_sprites.o test_tube.o test_yinyang.o test_text.o test_target.o test_mapping.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testsparrow
+testsparrow: testsparrow.c $(SPARROW3D_LIB) test_cube.o test_fill.o test_gears.o test_mesh.o test_primitives.o test_sprites.o test_tube.o test_yinyang.o test_text.o test_target.o test_mapping.o
+	$(CC) $(CFLAGS) $< test_cube.o test_fill.o test_gears.o test_mesh.o test_primitives.o test_sprites.o test_tube.o test_yinyang.o test_text.o test_target.o test_mapping.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/$@
 
-test_cube.o: test_cube.c test_cube.h
-	$(CC) $(CFLAGS) -fPIC -c test_cube.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+testreal3d: testreal3d.c $(SPARROW3D_LIB)
+	$(CC) $(CFLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/$@
 
-test_gears.o: test_gears.c test_gears.h
-	$(CC) $(CFLAGS) -fPIC -c test_gears.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+testfile: testfile.c $(SPARROW3D_LIB)
+	$(CC) $(CFLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/$@
 
-test_primitives.o: test_primitives.c test_primitives.h
-	$(CC) $(CFLAGS) -fPIC -c test_primitives.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+testnet: testnet.c $(SPARROW3D_LIB) $(SPARROWNET_LIB)
+	$(CC) $(CFLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o $(BUILD)/$@
 
-test_tube.o: test_tube.c test_tube.h
-	$(CC) $(CFLAGS) -fPIC -c test_tube.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
+testnet_terminal_server: testnet_terminal_server.c $(SPARROWNET_LIB)
+	$(CC) $(CFLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/$@
 
-test_fill.o: test_fill.c test_fill.h
-	$(CC) $(CFLAGS) -fPIC -c test_fill.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
-
-test_mesh.o: test_mesh.c test_mesh.h
-	$(CC) $(CFLAGS) -fPIC -c test_mesh.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
-
-test_sprites.o: test_sprites.c test_sprites.h
-	$(CC) $(CFLAGS) -fPIC -c test_sprites.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
-
-test_yinyang.o: test_yinyang.c test_yinyang.h
-	$(CC) $(CFLAGS) -fPIC -c test_yinyang.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
-
-test_text.o: test_text.c test_text.h
-	$(CC) $(CFLAGS) -fPIC -c test_text.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
-
-test_target.o: test_target.c test_target.h
-	$(CC) $(CFLAGS) -fPIC -c test_target.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
-
-test_mapping.o: test_mapping.c test_mapping.h
-	$(CC) $(CFLAGS) -fPIC -c test_mapping.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
-
-testreal3d: testreal3d.c libsparrow3d.so
-	$(CC) $(CFLAGS) testreal3d.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testreal3d
-
-testfile: testfile.c libsparrow3d.so
-	$(CC) $(CFLAGS) testfile.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/testfile
-
-testnet: testnet.c libsparrow3d.so libsparrowNet.so
-	$(CC) $(CFLAGS) testnet.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o $(BUILD)/testnet
-
-testnet_terminal_server: testnet_terminal_server.c libsparrowNet.so
-	$(CC) $(CFLAGS) testnet_terminal_server.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/testnet_terminal_server
-
-testnet_terminal_client: testnet_terminal_client.c libsparrowNet.so
-	$(CC) $(CFLAGS) testnet_terminal_client.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/testnet_terminal_client
+testnet_terminal_client: testnet_terminal_client.c $(SPARROWNET_LIB)
+	$(CC) $(CFLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/$@
 
 makeBuildDir:
 	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
 	@if [ ! -d $(BUILD) ]; then mkdir $(BUILD);fi
 
-libsparrow3d.a: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o makeBuildDir
-	$(AR) rcs $(BUILD)/$(SPARROW3D_STATIC_LIB) sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o
+$(SPARROW3D_STATIC_LIB): sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o makeBuildDir
+	$(AR) rcs $(BUILD)/$(SPARROW3D_STATIC_LIB) sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o sparrowParticles.o
 
-libsparrowSound.a: sparrowSound.o makeBuildDir
+$(SPARROWSOUND_STATIC_LIB): sparrowSound.o makeBuildDir
 	$(AR) rcs $(BUILD)/$(SPARROWSOUND_STATIC_LIB) sparrowSound.o
 
-libsparrowNet.a: sparrowNet.o makeBuildDir
+$(SPARROWNET_STATIC_LIB): sparrowNet.o makeBuildDir
 	$(AR) rcs $(BUILD)/$(SPARROWNET_STATIC_LIB) sparrowNet.o
 
-libsparrow3d.so: sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o makeBuildDir
-	$(CC) $(CFLAGS) -shared -Wl,-soname,libsparrow3d.so -rdynamic -o $(BUILD)/$(SPARROW3D_LIB) sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o sparrowParticles.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
+$(SPARROW3D_LIB): sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o makeBuildDir
+	$(CC) $(CFLAGS) -shared -Wl,-soname,$(SPARROW3D_LIB) -rdynamic -o $(BUILD)/$(SPARROW3D_LIB) sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o sparrowParticles.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
-libsparrowSound.so: sparrowSound.o makeBuildDir
-	$(CC) $(CFLAGS) -shared -Wl,-soname,libsparrowSound.so -rdynamic -o $(BUILD)/$(SPARROWSOUND_LIB) sparrowSound.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
+$(SPARROWSOUND_LIB): sparrowSound.o makeBuildDir
+	$(CC) $(CFLAGS) -shared -Wl,-soname,$(SPARROWSOUND_LIB) -rdynamic -o $(BUILD)/$(SPARROWSOUND_LIB) sparrowSound.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
-libsparrowNet.so: sparrowNet.o makeBuildDir
-	$(CC) $(CFLAGS) -shared -Wl,-soname,libsparrowNet.so -rdynamic -o $(BUILD)/$(SPARROWNET_LIB) sparrowNet.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
+$(SPARROWNET_LIB): sparrowNet.o makeBuildDir
+	$(CC) $(CFLAGS) -shared -Wl,-soname,$(SPARROWNET_LIB) -rdynamic -o $(BUILD)/$(SPARROWNET_LIB) sparrowNet.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
-sparrowCore.o: sparrowCore.c sparrowCore.h
-	$(CC) $(CFLAGS) -fPIC -c sparrowCore.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) -DBUILDING_DLL
-
-sparrowPrimitives.o: sparrowPrimitives.c sparrowPrimitives.h sparrowPrimitiveSetPixelInclude.c sparrowPrimitiveTriangleInclude.c sparrowPrimitiveTexTriangleInclude.c sparrowPrimitiveDrawingThread.c sparrowPrimitiveDrawingThread.h sparrowPrimitiveHelperBlending.c sparrowPrimitiveHelperPattern.c sparrowPrimitiveHelperPerspective.c sparrowPrimitiveHelperZStuff.c
-	$(CC) $(CFLAGS) -fPIC -c sparrowPrimitives.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) -DBUILDING_DLL
-
-sparrowPrimitivesAsm.o: sparrowPrimitivesAsm.c sparrowPrimitives.h
-	$(CC) $(CFLAGS) -fsingle-precision-constant -fPIC -c sparrowPrimitivesAsm.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
-
-#sparrowPrimitiveDrawingThread.o: sparrowPrimitiveDrawingThread.c sparrowPrimitiveDrawingThread.h sparrowPrimitiveSetPixelInclude.c sparrowPrimitiveTriangleInclude.c sparrowPrimitiveTexTriangleInclude.c sparrowPrimitiveHelperBlending.c sparrowPrimitiveHelperPattern.c sparrowPrimitiveHelperPerspective.c sparrowPrimitiveHelperZStuff.c
-#	$(CC) $(CFLAGS) -fPIC -c sparrowPrimitiveDrawingThread.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE)
-
-sparrowRenderer.o: sparrowRenderer.c sparrowRenderer.h
-	$(CC) $(CFLAGS) -fPIC -c sparrowRenderer.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
-
-sparrowMath.o: sparrowMath.c sparrowMath.h
-	$(CC) $(CFLAGS) -fPIC -c sparrowMath.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
-
-sparrowFont.o: sparrowFont.c sparrowFont.h
-	$(CC) $(CFLAGS) -fPIC -c sparrowFont.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
-
-sparrowMesh.o: sparrowMesh.c sparrowMesh.h
-	$(CC) $(CFLAGS) -fPIC -c sparrowMesh.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
-
-sparrowSprite.o: sparrowSprite.c sparrowSprite.h
-	$(CC) $(CFLAGS) -fPIC -c sparrowSprite.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
-
-sparrowText.o: sparrowText.c sparrowText.h
-	$(CC) $(CFLAGS) -fPIC -c sparrowText.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
-
-sparrowFile.o: sparrowFile.c sparrowFile.h
-	$(CC) $(CFLAGS) -fPIC -c sparrowFile.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
-
-sparrowMapping.o: sparrowMapping.c sparrowMapping.h
-	$(CC) $(CFLAGS) -fPIC -c sparrowMapping.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
-
-sparrowParticles.o: sparrowParticles.c sparrowParticles.h
-	$(CC) $(CFLAGS) -fPIC -c sparrowParticles.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
-
-sparrowSound.o: sparrowSound.c sparrowSound.h
-	$(CC) $(CFLAGS) -fPIC -c sparrowSound.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
-
-sparrowNet.o: sparrowNet.c sparrowNet.h
-	$(CC) $(CFLAGS) -fPIC -c sparrowNet.c $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
+%.o: %.c %.h Makefile
+	$(CC) $(CFLAGS) -fPIC -c $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
 
 clean:
 	rm -f *.o
 	rm -f $(BUILD)/*.so
 	rm -f $(BUILD)/*.a
 	rm -f $(BUILD)/*.dll
-	rm -f testsparrow
-	rm -f testnet
-	rm -f testfile
+	rm -f $(BUILD)/$(SPARROW_TEST)
 
 oclean:
 	rm -f *.o
