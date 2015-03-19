@@ -7,6 +7,7 @@ SDL = -I/opt/win32/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT
 INCLUDE = -I/opt/win32/include -I/usr/i586-mingw32msvc/include
 LIB = -L/opt/win32/lib -L/usr/i586-mingw32msvc/lib -Wl,-rpath=/opt/win32/lib -Wl,-rpath=/usr/i586-mingw32msvc/lib
 AR = /usr/bin/i586-mingw32msvc-ar
+RANLIB = /usr/bin/i586-mingw32msvc-ranlib
 
 SPARROW3D_LIB = sparrow3d.dll
 SPARROWNET_LIB = sparrowNet.dll

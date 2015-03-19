@@ -6,3 +6,4 @@ SDL = -I/opt/opendingux-toolchain/usr/mipsel-unknown-linux-uclibc/sys-include/SD
 INCLUDE = -I/opt/opendingux-toolchain/usr/mipsel-unknown-linux-uclibc/sys-include
 LIB = -L/opt/opendingux-toolchain/usr/lib -Wl,-rpath=/opt/opendingux-toolchain/usr/lib
 AR = /opt/opendingux-toolchain/usr/bin/mipsel-linux-ar
+RANLIB = /opt/opendingux-toolchain/usr/bin/mipsel-linux-ranlib

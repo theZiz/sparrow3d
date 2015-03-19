@@ -9,3 +9,4 @@ INCLUDE = -I/opt/pandora/arm-2011.09/usr/include
 DYNAMIC += -lpnd
 LIB = -L/opt/pandora/arm-2011.09/usr/lib -Wl,-rpath=/opt/pandora/arm-2011.09/usr/lib
 AR = /opt/pandora/arm-2011.09/bin/arm-none-linux-gnueabi-ar
+RANLIB = /opt/pandora/arm-2011.09/bin/arm-none-linux-gnueabi-ranlib

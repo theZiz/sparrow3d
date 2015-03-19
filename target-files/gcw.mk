@@ -6,3 +6,4 @@ SDL = -I/opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/include/SDL
 INCLUDE = -I/opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/include
 LIB = -L/opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/lib -Wl,-rpath=/opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/lib
 AR = /opt/gcw0-toolchain/usr/bin/mipsel-linux-ar
+RANLIB = /opt/gcw0-toolchain/usr/bin/mipsel-linux-ranlib

@@ -121,6 +121,10 @@ ifndef AR
 AR = ar
 endif
 
+ifndef RANLIB
+RANLIB = ranlib
+endif
+
 SPARROW_LIBS = $(SPARROW3D_LIB) $(SPARROWNET_LIB) $(SPARROWSOUND_LIB)
 SPARROW_STATIC_LIBS = $(SPARROW3D_STATIC_LIB) $(SPARROWNET_STATIC_LIB) $(SPARROWSOUND_STATIC_LIB)
 
@@ -162,12 +166,15 @@ makeBuildDir:
 
 $(SPARROW3D_STATIC_LIB): sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o makeBuildDir
 	$(AR) rcs $(BUILD)/$(SPARROW3D_STATIC_LIB) sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o sparrowParticles.o
+	$(RANLIB) $(BUILD)/$(SPARROW3D_STATIC_LIB)
 
 $(SPARROWSOUND_STATIC_LIB): sparrowSound.o makeBuildDir
 	$(AR) rcs $(BUILD)/$(SPARROWSOUND_STATIC_LIB) sparrowSound.o
+	$(RANLIB) $(BUILD)/$(SPARROWSOUND_STATIC_LIB)
 
 $(SPARROWNET_STATIC_LIB): sparrowNet.o makeBuildDir
 	$(AR) rcs $(BUILD)/$(SPARROWNET_STATIC_LIB) sparrowNet.o
+	$(RANLIB) $(BUILD)/$(SPARROWNET_STATIC_LIB)
 
 $(SPARROW3D_LIB): sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o makeBuildDir
 	$(CC) $(CFLAGS) -shared -Wl,-soname,$(SPARROW3D_LIB) -rdynamic -o $(BUILD)/$(SPARROW3D_LIB) sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o sparrowParticles.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
