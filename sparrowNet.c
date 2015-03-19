@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-#define DEBUG_MESSAGES
+//#define DEBUG_MESSAGES
 
 //This is a copy of spReadOneLine sparrowFile. However, I don't want the
 //extra dependency of libSparrow3d or linking sparrowFile twice.
