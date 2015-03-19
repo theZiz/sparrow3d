@@ -139,22 +139,22 @@ targets:
 #	@echo "Default targets are: gp2x, open2x (like gp2x, but dynamic compiled => smaller), wiz caanoo, dingux, pandora, gcw"
 
 testsparrow: testsparrow.c $(SPARROW3D_LIB) test_cube.o test_fill.o test_gears.o test_mesh.o test_primitives.o test_sprites.o test_tube.o test_yinyang.o test_text.o test_target.o test_mapping.o
-	$(CC) $(CFLAGS) $< test_cube.o test_fill.o test_gears.o test_mesh.o test_primitives.o test_sprites.o test_tube.o test_yinyang.o test_text.o test_target.o test_mapping.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/$@
+	$(CC) $(CFLAGS) $(LINK_FLAGS) $< test_cube.o test_fill.o test_gears.o test_mesh.o test_primitives.o test_sprites.o test_tube.o test_yinyang.o test_text.o test_target.o test_mapping.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/$@
 
 testreal3d: testreal3d.c $(SPARROW3D_LIB)
-	$(CC) $(CFLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/$@
+	$(CC) $(CFLAGS) $(LINK_FLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/$@
 
 testfile: testfile.c $(SPARROW3D_LIB)
-	$(CC) $(CFLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/$@
+	$(CC) $(CFLAGS) $(LINK_FLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/$@
 
 testnet: testnet.c $(SPARROW3D_LIB) $(SPARROWNET_LIB)
-	$(CC) $(CFLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o $(BUILD)/$@
+	$(CC) $(CFLAGS) $(LINK_FLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -lsparrowNet -o $(BUILD)/$@
 
 testnet_terminal_server: testnet_terminal_server.c $(SPARROWNET_LIB)
-	$(CC) $(CFLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/$@
+	$(CC) $(CFLAGS) $(LINK_FLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/$@
 
 testnet_terminal_client: testnet_terminal_client.c $(SPARROWNET_LIB)
-	$(CC) $(CFLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/$@
+	$(CC) $(CFLAGS) $(LINK_FLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) -lSDL_net -lsparrowNet -o $(BUILD)/$@
 
 makeBuildDir:
 	@if [ ! -d $(BUILD:/sparrow3d=/) ]; then mkdir $(BUILD:/sparrow3d=/);fi
