@@ -137,7 +137,7 @@ PREFIX void spChangeBundle(spTextPointer text,spBundlePointer bundle)
 	
 }
 
-PREFIX spBundlePointer spCreateTextBundle()
+PREFIX spBundlePointer spCreateTextBundle( void )
 {
 	spBundlePointer bundle = (spBundlePointer)malloc(sizeof(spBundle));
 	bundle->next = spUberBundle;
@@ -271,7 +271,7 @@ PREFIX void spReadPossibleLanguages(const char* filename)
 	spDeleteBundle(tempBundle,0);
 }
 
-PREFIX int spGetPossibleLanguagesCount()
+PREFIX int spGetPossibleLanguagesCount( void )
 {
 	return spLanguageCount;
 }

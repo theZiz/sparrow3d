@@ -93,12 +93,12 @@ typedef TCPsocket spNetTCPServer;
 /* Function: spInitNet
  * 
  * Initializes sparrowNet. Call always before using this library!*/
-PREFIX void spInitNet();
+PREFIX void spInitNet( void );
 
 /* Function: spQuitNet
  * 
  * Quits sparrowNet.*/
-PREFIX void spQuitNet();
+PREFIX void spQuitNet( void );
 
 /* Function: spNetResolve
  * 
@@ -390,7 +390,7 @@ typedef struct spNetC4AProfileStruct {
  * 
  * Returns:
  * spNetC4AProfilePointer - a pointer to an <spNetC4AProfile> struct*/
-PREFIX spNetC4AProfilePointer spNetC4AGetProfile();
+PREFIX spNetC4AProfilePointer spNetC4AGetProfile( void );
 
 /* Function: spNetC4AFreeProfile
  * 
@@ -719,7 +719,7 @@ PREFIX int spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,ch
 /* Function: spNetC4ACancelTask
  * 
  * Cancels the C4A task running right now (if one is started).*/
-PREFIX void spNetC4ACancelTask();
+PREFIX void spNetC4ACancelTask( void );
 
 /* Function: spNetC4ACancelTaskParallel
  * 
@@ -737,7 +737,7 @@ PREFIX void spNetC4ACancelTaskParallel(spNetC4ATaskPointer task);
  * 
  * Returns:
  * int - 0 if everything went fine, 1 at error*/
-PREFIX int spNetC4AGetTaskResult();
+PREFIX int spNetC4AGetTaskResult( void );
 
 /* Function: spNetC4AGetTaskResultParallel
  * 
@@ -757,7 +757,7 @@ PREFIX int spNetC4AGetTaskResultParallel(spNetC4ATaskPointer task);
  * 
  * Returns:
  * int - the timeOut in ms.*/
-PREFIX int spNetC4AGetTimeOut();
+PREFIX int spNetC4AGetTimeOut( void );
 
 /* Function: spNetC4AGetTimeOutParallel
  * 
@@ -777,7 +777,7 @@ PREFIX int spNetC4AGetTimeOutParallel(spNetC4ATaskPointer task);
  * 
  * Returns:
  * int - <Compo4all statuses>*/
-PREFIX int spNetC4AGetStatus();
+PREFIX int spNetC4AGetStatus( void );
 
 /* Function: spNetC4AGetStatusParallel
  * 
@@ -795,7 +795,7 @@ PREFIX int spNetC4AGetStatusParallel(spNetC4ATaskPointer task);
  * 
  * Deletes the profile file on your system, NOT the online account at skeezix
  * server. See also <spNetC4ADeleteAccount>.*/
-PREFIX void spNetC4ADeleteProfileFile();
+PREFIX void spNetC4ADeleteProfileFile( void );
 
 /* Function: spNetC4ADeleteTask
  * 
@@ -824,7 +824,7 @@ PREFIX void spNetC4ASetCaching(int value);
  * 
  * Returns:
  * int - the number of cached scores*/
-PREFIX int spNetC4AHowManyCached();
+PREFIX int spNetC4AHowManyCached( void );
 
 /* Section: IRC chat protocol stuff
  * 

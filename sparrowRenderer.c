@@ -34,7 +34,7 @@ int spUsePerspective = 0;
 
 int spStackCounter = 0;
 
-PREFIX void spPushModelView()
+PREFIX void spPushModelView( void )
 {
 	memcpy(spModelViewStack[spStackCounter],spModelView,sizeof(Sint32)*16);
 	spStackCounter++;
@@ -42,7 +42,7 @@ PREFIX void spPushModelView()
 		spStackCounter = 0;
 }
 
-PREFIX void spPopModelView()
+PREFIX void spPopModelView( void )
 {
 	spStackCounter--;
 	if (spStackCounter < 0)
@@ -132,12 +132,12 @@ PREFIX void spStereoCreateProjectionMatrixes(Sint32* left_matrix,Sint32* right_m
 	spSetPerspectiveStereoscopic( right_matrix, fovyInDegrees, aspectRatio/(crossed?2.0f:1.0f), znear, zfar, z0, -distance );	
 }
 
-PREFIX Sint32* spGetProjectionMatrix()
+PREFIX Sint32* spGetProjectionMatrix( void )
 {
 	return spProjection;
 }
 
-PREFIX void spIdentity()
+PREFIX void spIdentity( void )
 {
 	spModelView[ 0] = SP_ONE;
 	spModelView[ 1] = 0 << SP_ACCURACY;
@@ -375,7 +375,7 @@ PREFIX void spTranslate( Sint32 x, Sint32 y, Sint32 z )
 	spModelView[15] = spMul( spModelView[ 3], x ) + spMul( spModelView[ 7], y ) + spMul( spModelView[11], z ) + spModelView[15];
 }
 
-PREFIX Sint32* spGetMatrix()
+PREFIX Sint32* spGetMatrix( void )
 {
 	return spModelView;
 }

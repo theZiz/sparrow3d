@@ -203,7 +203,7 @@ PREFIX void spDrawSprite3D( Sint32 x, Sint32 y, Sint32 z, spSpritePointer sprite
 }
 
 
-PREFIX spSpriteCollectionPointer spNewSpriteCollection()
+PREFIX spSpriteCollectionPointer spNewSpriteCollection( void )
 {
 	spSpriteCollectionPointer result = (spSpriteCollectionPointer)malloc(sizeof(spSpriteCollection));
 	result->firstSprite = NULL;

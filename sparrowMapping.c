@@ -43,7 +43,7 @@ struct
 int __spMapIsInitialized = 0;
 int __spMapStrategy = SP_MAPPING_NONE;
 
-PREFIX void spInitMapping()
+PREFIX void spInitMapping( void )
 {
 	if (__spMapIsInitialized)
 		return;
@@ -55,7 +55,7 @@ PREFIX void spInitMapping()
 		__spMapPool[i].active = 0;
 };
 
-PREFIX void spMapClean()
+PREFIX void spMapClean( void )
 {
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
@@ -291,7 +291,7 @@ PREFIX void spMapStartChangeByName(char* name)
 		}
 }
 
-PREFIX int spMapContinueChange()
+PREFIX int spMapContinueChange( void )
 {
 	if (__spMapChangingID < 0)
 		return -1;
@@ -309,17 +309,17 @@ PREFIX int spMapContinueChange()
 	return 0;
 }
 
-PREFIX char* spMapLastCollisionCaption()
+PREFIX char* spMapLastCollisionCaption( void )
 {
 	return __spMapCollisionCaption;
 }
 	
-PREFIX char* spMapLastCollisionPool()
+PREFIX char* spMapLastCollisionPool( void )
 {
 	return __spMapCollisionPool;
 }
 
-PREFIX void spMapCancelChange()
+PREFIX void spMapCancelChange( void )
 {
 	__spMapChangingID = -1;
 }

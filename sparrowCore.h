@@ -265,7 +265,7 @@ PREFIX void spResetAxisState( void );
  * SP_ANALOG_AXIS (1) if the last axis was analog. Most devices return
  * either analog or digital because of missing digital or analog input.
  * Pandora is a counterexample*/
-PREFIX int spGetLastAxisType();
+PREFIX int spGetLastAxisType( void );
 
 /* Function: spPollKeyboardInput
  * 
@@ -311,7 +311,7 @@ PREFIX void spSetReturnBehavior(int ignore,int stops);
  * 
  * Returns:
  * int - 1 if polled, 0 if not polled*/
-PREFIX int spIsKeyboardPolled();
+PREFIX int spIsKeyboardPolled( void );
 
 /* Function: spSetVirtualKeyboard
  * 
@@ -346,7 +346,7 @@ PREFIX void spSetVirtualKeyboard(int state,int x,int y,int width,int height,SDL_
  * int - the state. The value can be <SP_VIRTUAL_KEYBOARD_NEVER> or
  * <SP_VIRTUAL_KEYBOARD_ALWAYS>. <SP_VIRTUAL_KEYBOARD_IF_NEEDED> is
  * translated to one of those above at setup */
-PREFIX int spGetVirtualKeyboardState();
+PREFIX int spGetVirtualKeyboardState( void );
 
 /* Function: spGetVirtualKeyboard
  * 
@@ -356,7 +356,7 @@ PREFIX int spGetVirtualKeyboardState();
  * SDL_Surface* - NULL, if the virtual keyboard is deactivated or no surface was
  * passed, otherwise the keyboard surface with key-marking and shift specific
  * changes. Don't save the result, call it every frame.*/
-PREFIX SDL_Surface* spGetVirtualKeyboard();
+PREFIX SDL_Surface* spGetVirtualKeyboard( void );
 
 /* Function: spSetVirtualKeyboardShiftState
  * 
@@ -372,7 +372,7 @@ PREFIX void spSetVirtualKeyboardShiftState(int state);
  * 
  * Returns:
  * int - 1 shift is on, 0 shift is off*/
-PREFIX int spGetVirtualKeyboardShiftState();
+PREFIX int spGetVirtualKeyboardShiftState( void );
 
 /* Function: spSetVirtualKeyboardSpaceButton
  * 
@@ -472,7 +472,7 @@ PREFIX SDL_Surface* spLoadSurfaceZoom( const char* name, Sint32 zoom);
  * 
  * Returns:
  * int - 1 if it was the first time, 0 if it wasn't*/
-PREFIX int spLastCachedSurfaceWasLoadedFirstTime();
+PREFIX int spLastCachedSurfaceWasLoadedFirstTime( void );
 
 /* Function: spCopySurface
  * 
@@ -509,12 +509,12 @@ PREFIX SDL_Surface* spUniqueCopySurface( SDL_Surface* surface );
  * wont work then anymore) or create an unique copy with <spUniqueCopySurface>.
  * At default caching is enabled. A reference counter counts,
  * how often a surface is loaded for spDeleteSurface*/
-PREFIX void spEnableCaching();
+PREFIX void spEnableCaching( void );
 
 /* Function: spDisableCaching
  * 
  * Disables chaching of surfaces.*/
-PREFIX void spDisableCaching();
+PREFIX void spDisableCaching( void );
 
 /* Function: spIsCachingEnabled
  * 
@@ -522,7 +522,7 @@ PREFIX void spDisableCaching();
  * 
  * Returns:
  * int - 1 means caching is enabled, 0 not enabled*/
-PREFIX int spIsCachingEnabled();
+PREFIX int spIsCachingEnabled( void );
 
 /* Function: spCreateSurface
  * 
@@ -551,7 +551,7 @@ PREFIX void spDeleteSurface( SDL_Surface* surface );
  * 
  * Deletes ALL cached surfaces! You can't use them anymore and have
  * to reload them! */
-PREFIX void spClearCache();
+PREFIX void spClearCache( void );
 
 /* Function: spGetRGB
  * 
@@ -793,4 +793,4 @@ PREFIX void spStereoMergeSurfaces(SDL_Surface* left,SDL_Surface* right,int cross
 
 #endif
 
-PREFIX void spResetLoop();
+PREFIX void spResetLoop( void );

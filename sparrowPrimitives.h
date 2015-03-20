@@ -87,12 +87,12 @@
  * 
  * Initializes some Look up tables and the zBufferCache. Is called by
  * <spInitCore>. */
-PREFIX void spInitPrimitives();
+PREFIX void spInitPrimitives( void );
 
 /* Function: spQuitPrimitives
  * 
  * Releases stuff and frees memory. Is called by <spQuitCore>. */
-PREFIX void spQuitPrimitives();
+PREFIX void spQuitPrimitives( void );
 
 /* Function: spGetOne_over_x_pointer
  * 
@@ -100,7 +100,7 @@ PREFIX void spQuitPrimitives();
  * 
  * Returns:
  * Sint32* - the pointer/array*/
-PREFIX Sint32* spGetOne_over_x_pointer();
+PREFIX Sint32* spGetOne_over_x_pointer( void );
 
 /* Function: spSelectRenderTarget
  * 
@@ -118,7 +118,7 @@ PREFIX void spSelectRenderTarget( SDL_Surface* target );
  * 
  * Returns:
  * SDL_Surface* - the render target*/
-PREFIX SDL_Surface* spGetRenderTarget();
+PREFIX SDL_Surface* spGetRenderTarget( void );
 
 
 /* Function: spGetTargetPixel
@@ -133,7 +133,7 @@ PREFIX SDL_Surface* spGetRenderTarget();
  * 
  * See Also:
  * <spGetRenderTargetZBuffer>*/
-PREFIX Uint16* spGetTargetPixel();
+PREFIX Uint16* spGetTargetPixel( void );
 
 /* Function: spLockRenderTarget
  * 
@@ -143,7 +143,7 @@ PREFIX Uint16* spGetTargetPixel();
  * 
  * See Also:
  * <spUnlockRenderTarget>*/
-PREFIX void spLockRenderTarget();
+PREFIX void spLockRenderTarget( void );
 
 /* Function: spUnlockRenderTarget
  * 
@@ -154,7 +154,7 @@ PREFIX void spLockRenderTarget();
  * See Also:
  * <spLockRenderTarget>
  * */
-PREFIX void spUnlockRenderTarget();
+PREFIX void spUnlockRenderTarget( void );
 
 /* Function: spGetRenderTargetZBuffer
  * 
@@ -164,7 +164,7 @@ PREFIX void spUnlockRenderTarget();
  * Sint32* - the z-buffer pointer. Keep the dimension of the array in mind,
  * which is renderTarget->pitch/renderTarget->format->BytesPerPixel *
  * renderTarget->h*/
-PREFIX Sint32* spGetRenderTargetZBuffer();
+PREFIX Sint32* spGetRenderTargetZBuffer( void );
 
 /* Function: spBindTexture
  * 
@@ -289,7 +289,7 @@ PREFIX void spSetZBufferCache( Uint32 value );
  * 
  * Reallocates the zBuffer. If you switch to a new Render Target, this function
  * is called.*/
-PREFIX void spReAllocateZBuffer();
+PREFIX void spReAllocateZBuffer( void );
 
 /* Function: spResetZBuffer
  * 
@@ -299,7 +299,7 @@ PREFIX void spReAllocateZBuffer();
  * 
  * See Also:
  * <spClearTarget>*/
-PREFIX void spResetZBuffer();
+PREFIX void spResetZBuffer( void );
 
 /* Function: spSetHorizontalOrigin
  * 
@@ -347,7 +347,7 @@ PREFIX void spSetFixedOrign(int x,int y);
  * Sint32 - <SP_LEFT> for left origin, <SP_RIGHT> for right origin and
  * <SP_CENTER> (default) for centered origin
 */
-PREFIX Sint32 spGetHorizontalOrigin();
+PREFIX Sint32 spGetHorizontalOrigin( void );
 
 /* Function: spGetVerticalOrigin
  * 
@@ -357,7 +357,7 @@ PREFIX Sint32 spGetHorizontalOrigin();
  * Sint32 - <SP_TOP> for top origin, <SP_BOTTOM> for bottom origin and
  * <SP_CENTER> (default) for centered origin
 */
-PREFIX Sint32 spGetVerticalOrigin();
+PREFIX Sint32 spGetVerticalOrigin( void );
 
 /* Function: spSetZFar
  * 
@@ -380,7 +380,7 @@ PREFIX void spSetZFar(Sint32 zfar);
  * 
  * See Also:
  * <spSetZFar>, <spGetZNear>*/
-PREFIX Sint32 spGetZFar();
+PREFIX Sint32 spGetZFar( void );
 
 /* Function: spSetZNear
  * 
@@ -403,7 +403,7 @@ PREFIX void spSetZNear(Sint32 znear);
  * 
  * See Also:
  * <spGetZFar>, <spSetZNear>*/
-PREFIX Sint32 spGetZNear();
+PREFIX Sint32 spGetZNear( void );
 
 /* Function: spGetPixelPosition
  * 
@@ -773,7 +773,7 @@ PREFIX void spSetPattern8(Uint8 line1,Uint8 line2,Uint8 line3,Uint8 line4,Uint8 
  * 
  * Deactivates the pattern. They are reactivated again with a call of one of the
  * 3 functions above.*/
-PREFIX void spDeactivatePattern();
+PREFIX void spDeactivatePattern( void );
 
 /* Function: spSetAlphaPattern
  * 
@@ -815,7 +815,7 @@ PREFIX void spSetAlphaPattern4x4(int alpha,int shift);
  * until everything is drawn. If you want to draw stuff on your own, call this
  * to be sure, that every change is done indeed! If no parallel processing is
  * activated nothing happens.*/
-PREFIX void spWaitForDrawingThread();
+PREFIX void spWaitForDrawingThread( void );
 
 /* Function: spDrawInExtraThread
  * 
@@ -831,7 +831,7 @@ PREFIX void spDrawInExtraThread(int value);
  * 
  * Updates the internal pixels pointer used by sparrow3d. Used by
  * <spFlip> for compatibility with Double- or even Triplebuffering. */
-PREFIX void spUpdateTargetPixels();
+PREFIX void spUpdateTargetPixels( void );
 
 /* Function: spFloodFill
  * 

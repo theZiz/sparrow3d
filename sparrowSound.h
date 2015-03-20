@@ -49,7 +49,7 @@ typedef Mix_Chunk spSound;
  * 
  * Returns:
  * int - 1 at success, 0 at failure*/
-PREFIX int spSoundInit();
+PREFIX int spSoundInit( void );
 
 /* Function: spSoundSetChannels
  * 
@@ -63,7 +63,7 @@ PREFIX void spSoundSetChannels(int channels);
 /* Function: spSoundQuit
  * 
  * This has to be called at the end of the program.*/
-PREFIX void spSoundQuit();
+PREFIX void spSoundQuit( void );
 
 /* Function: spSoundPauseAll
  * 
@@ -158,7 +158,7 @@ PREFIX void spSoundSetMusicVolume(int volume);
  * 
  * See Also:
  * <spSoundSetMusicVolume>, <spSoundGetVolume>*/
-PREFIX int spSoundGetMusicVolume();
+PREFIX int spSoundGetMusicVolume( void );
 
 /* Functions: Sound sample functions
  * 
@@ -250,6 +250,6 @@ PREFIX void spSoundSetVolume(int volume);
  * 
  * See Also:
  * <spSoundSetVolume>, <spSoundGetMusicVolume>*/
-PREFIX int spSoundGetVolume();
+PREFIX int spSoundGetVolume( void );
 
 #endif

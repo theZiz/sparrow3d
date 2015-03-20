@@ -315,7 +315,7 @@ PREFIX void spStereoCreateProjectionMatrixes(Sint32* left_matrix,Sint32* right_m
  * 
  * See Also:
  * <spGetMatrix>*/
-PREFIX Sint32* spGetProjectionMatrix();
+PREFIX Sint32* spGetProjectionMatrix( void );
 
 /* Function: spGetMatrix
  * 
@@ -327,7 +327,7 @@ PREFIX Sint32* spGetProjectionMatrix();
  * 
  * See Also:
  * <spGetProjectionMatrix>*/
-PREFIX Sint32* spGetMatrix();
+PREFIX Sint32* spGetMatrix( void );
 
 /* Function: spPushModelView
  * 
@@ -336,7 +336,7 @@ PREFIX Sint32* spGetMatrix();
  * 
  * See Also:
  * <spPopModelView>*/
-PREFIX void spPushModelView();
+PREFIX void spPushModelView( void );
 
 /* Function: spPopModelView
  * 
@@ -344,14 +344,14 @@ PREFIX void spPushModelView();
  * 
  * See Also:
  * <spPushModelView>*/
-PREFIX void spPopModelView();
+PREFIX void spPopModelView( void );
 
 /* Function: spIdentity
  * 
  * Sets the modelview matrix to the identity matrix. This resets the
  * view. If you now would draw something, it would be drawn to (0,0,0),
  * without rotation and without scaling. */
-PREFIX void spIdentity();
+PREFIX void spIdentity( void );
 
 /* Function: spMulMatrix
  * 

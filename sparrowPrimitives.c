@@ -245,16 +245,16 @@ inline void sp_intern_EllipseBorder_overlord( Sint32 x1, Sint32 y1, Sint32 rxl, 
 	SDL_mutexV(spScanLineMutex);
 }
 
-PREFIX Sint32* spGetOne_over_x_pointer()
+PREFIX Sint32* spGetOne_over_x_pointer( void )
 {
 	return spOne_over_x_look_up;
 }
 
-void spRestartDrawingThread();
-void spStopDrawingThread();
-void spStartDrawingThread();
+void spRestartDrawingThread( void );
+void spStopDrawingThread( void );
+void spStartDrawingThread( void );
 
-PREFIX void spInitPrimitives()
+PREFIX void spInitPrimitives( void )
 {
 	if (spPrimitivesIsInitialized)
 		return;
@@ -286,7 +286,7 @@ PREFIX void spInitPrimitives()
 	spScanLineMutex = SDL_CreateMutex();
 }
 
-PREFIX void spQuitPrimitives()
+PREFIX void spQuitPrimitives( void )
 {
 	int cacheline;
 	for ( cacheline = 0; cacheline < spZBufferCacheCount; cacheline++ )
@@ -327,31 +327,31 @@ PREFIX void spSelectRenderTarget( SDL_Surface* target )
 	SDL_LockSurface( spTarget );
 }
 
-PREFIX SDL_Surface* spGetRenderTarget()
+PREFIX SDL_Surface* spGetRenderTarget( void )
 {
 	return spTarget;
 }
 
-PREFIX void spLockRenderTarget()
+PREFIX void spLockRenderTarget( void )
 {
 	if (spTarget)
 		SDL_LockSurface( spTarget );
 }
 
-PREFIX Uint16* spGetTargetPixel()
+PREFIX Uint16* spGetTargetPixel( void )
 {
 	if (spTarget)
 		return (Uint16*)(spTarget->pixels);
 	return NULL;
 }
 
-PREFIX void spUnlockRenderTarget()
+PREFIX void spUnlockRenderTarget( void )
 {
 	if (spTarget)
 		SDL_UnlockSurface( spTarget );
 }
 
-void update_lazy_zBuffer()
+void update_lazy_zBuffer( void )
 {
 	spZBufferCacheLast = ( spZBufferCacheLast + 1 ) % spZBufferCacheCount;
 	if ( spZBufferCache[spZBufferCacheLast] )
@@ -362,7 +362,7 @@ void update_lazy_zBuffer()
 	spSizeCache[spZBufferCacheLast] = spTarget->w * spTarget->h;
 }
 
-PREFIX Sint32* spGetRenderTargetZBuffer()
+PREFIX Sint32* spGetRenderTargetZBuffer( void )
 {
 	if (!spZBuffer)
 		update_lazy_zBuffer();
@@ -1127,7 +1127,7 @@ PREFIX int spPerspectiveQuad_tex( Sint32 x1, Sint32 y1, Sint32 z1, Sint32 u1, Si
 	return 0;
 }
 
-PREFIX void spReAllocateZBuffer()
+PREFIX void spReAllocateZBuffer( void )
 {
 	spWaitForDrawingThread();
 	//in Cache?
@@ -1149,7 +1149,7 @@ PREFIX void spReAllocateZBuffer()
 	}
 }
 
-PREFIX void spResetZBuffer()
+PREFIX void spResetZBuffer( void )
 {
 	spWaitForDrawingThread();
 	int i;
@@ -3550,12 +3550,12 @@ PREFIX void spSetVerticalOrigin( Sint32 origin )
 	spVerticalOrigin = origin;
 }
 
-PREFIX Sint32 spGetHorizontalOrigin()
+PREFIX Sint32 spGetHorizontalOrigin( void )
 {
 	return spHorizontalOrigin;
 }
 
-PREFIX Sint32 spGetVerticalOrigin()
+PREFIX Sint32 spGetVerticalOrigin( void )
 {
 	return spVerticalOrigin;
 }
@@ -3584,7 +3584,7 @@ PREFIX void spSetZFar(Sint32 zfar)
 	spMaxWLogDiff = l - SP_ACCURACY;
 }
 
-PREFIX Sint32 spGetZFar()
+PREFIX Sint32 spGetZFar( void )
 {
 	return spZFar;
 }
@@ -3595,7 +3595,7 @@ PREFIX void spSetZNear(Sint32 znear)
 	spZNear = znear;
 }
 
-PREFIX Sint32 spGetZNear()
+PREFIX Sint32 spGetZNear( void )
 {
 	return spZNear;
 }
@@ -3665,7 +3665,7 @@ PREFIX void spSetPattern8(Uint8 line1,Uint8 line2,Uint8 line3,Uint8 line4,Uint8 
 	#endif
 }
 
-PREFIX void spDeactivatePattern()
+PREFIX void spDeactivatePattern( void )
 {
 	#ifndef NO_PATTERN
 	spUsePattern = 0;
@@ -3837,7 +3837,7 @@ PREFIX void spSetAlphaPattern4x4(int alpha,int shift)
 	#endif
 }
 
-void spRestartDrawingThread()
+void spRestartDrawingThread( void )
 {
 	if (!spUseParallelProcess)
 		return;
@@ -3846,7 +3846,7 @@ void spRestartDrawingThread()
 	spStartDrawingThread();
 }
 
-void spStopDrawingThread()
+void spStopDrawingThread( void )
 {
 	if (spScanLineThread)
 	{
@@ -3856,7 +3856,7 @@ void spStopDrawingThread()
 	}
 }
 
-PREFIX void spWaitForDrawingThread()
+PREFIX void spWaitForDrawingThread( void )
 {
 	if (!spUseParallelProcess)
 		return;
@@ -3871,7 +3871,7 @@ PREFIX void spWaitForDrawingThread()
 	SDL_mutexV(spScanLineMutex);
 }
 
-void spStartDrawingThread()
+void spStartDrawingThread( void )
 {
 	if (!spUseParallelProcess)
 		return;
@@ -3898,7 +3898,7 @@ PREFIX void spDrawInExtraThread(int value)
 }
 
 
-PREFIX void spUpdateTargetPixels()
+PREFIX void spUpdateTargetPixels( void )
 {
 	if (spTarget)
 		spTargetPixel = ( Uint16* )spTarget->pixels;
@@ -3931,9 +3931,9 @@ inline void flood_fill_stack_test_and_push(int x, int y,Uint16 oldColor)
 }
 
 #ifdef __GNUC__
-inline struct spFloodFillPixel* flood_fill_stack_pop() __attribute__((always_inline));
+inline struct spFloodFillPixel* flood_fill_stack_pop( void ) __attribute__((always_inline));
 #endif
-inline struct spFloodFillPixel* flood_fill_stack_pop()
+inline struct spFloodFillPixel* flood_fill_stack_pop( void )
 {
 	//if (spFloodFillStack == NULL) //This SHOULD never happen...
 	//	return NULL;

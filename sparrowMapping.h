@@ -55,12 +55,12 @@
 /* Function: spInitMapping
  *
  * Inits sparrowMapping. This function should be called by <spInitCore>.*/
-PREFIX void spInitMapping();
+PREFIX void spInitMapping( void );
 
 /* Function: spMapClean();
  * 
  * Deletes all mappings and all buttons in the pool.*/
-PREFIX void spMapClean();
+PREFIX void spMapClean( void );
 
 /* Function: spMapPoolAdd
  * 
@@ -264,7 +264,7 @@ PREFIX void spMapStartChangeByName(char* name);
  * was set. That is the case, if the strategy is <SP_MAPPING_CANCEL>, but
  * the mapped was already in use. The collision semantic button and pool button
  * can be read via <spMapLastCollisionName> and <spMapLastCollisionPool>. */
-PREFIX int spMapContinueChange();
+PREFIX int spMapContinueChange( void );
 
 /* Function: spMapLastCollisionName
  * 
@@ -273,7 +273,7 @@ PREFIX int spMapContinueChange();
  * 
  * Returns:
  * char* - caption of the semantic button, may be NULL!*/
-PREFIX char* spMapLastCollisionCaption();
+PREFIX char* spMapLastCollisionCaption( void );
 
 /* Function: spMapLastCollisionPool
  * 
@@ -282,14 +282,14 @@ PREFIX char* spMapLastCollisionCaption();
  * 
  * Returns:
  * char* - name of the pool button, may be NULL!*/
-PREFIX char* spMapLastCollisionPool();
+PREFIX char* spMapLastCollisionPool( void );
 
 /* Function: spMapCancelChange
  * 
  * Cancels the mapping change started with <spMapStartChangeByID> or
  * <spMapStartChangeByName>. No new mapping is set! <spMapContinueChange> will
  * just throw -1 like always when nothing is to do. ;) */
-PREFIX void spMapCancelChange();
+PREFIX void spMapCancelChange( void );
 
 /* Function: spMapLoad
  * 

@@ -106,8 +106,8 @@ PREFIX spParticleBunchPointer spParticleFromSprite(spSpritePointer sprite,int ( 
 				bunch->particle[c].x = x-sprite->momSub->sx;
 				bunch->particle[c].y = y-sprite->momSub->sy;
 				bunch->particle[c].data.color = pixel[x+y*line];
-				bunch->particle[c].dx = (spRand() & 131071) - SP_ONE; // mod SP_ONE
-				bunch->particle[c].dy = (spRand() & 131071) - SP_ONE; // mod SP_ONE
+				bunch->particle[c].dx = (rand() & 131071) - SP_ONE; // mod SP_ONE
+				bunch->particle[c].dy = (rand() & 131071) - SP_ONE; // mod SP_ONE
 				c++;
 			}
 	SDL_UnlockSurface(sprite->momSub->surface);	

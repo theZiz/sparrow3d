@@ -43,7 +43,7 @@ int internal_spNet_spReadOneLine( SDL_RWops* file , char* buffer, int buffer_len
 spNetC4ATaskPointer spGlobalC4ATask = NULL;
 SDL_mutex* spCacheMutex = NULL;
 
-spNetC4ATaskPointer createNewC4ATask()
+spNetC4ATaskPointer createNewC4ATask( void )
 {
 	spNetC4ATaskPointer task = (spNetC4ATaskPointer)malloc(sizeof(spNetC4ATask));
 	task->statusMutex = SDL_CreateMutex();
@@ -63,7 +63,7 @@ void spNetC4ADeleteTask(spNetC4ATaskPointer task)
 	free(task);
 }
 
-PREFIX void spInitNet()
+PREFIX void spInitNet( void )
 {
 	if(SDLNet_Init()==-1)
 		printf("SDLNet_Init: %s\n", SDLNet_GetError());
@@ -362,7 +362,7 @@ PREFIX void spNetCloseTCP(spNetTCPConnection connection)
 	SDLNet_TCP_Close(connection);
 }
 
-PREFIX void spQuitNet()
+PREFIX void spQuitNet( void )
 {
 	spNetC4ADeleteTask(spGlobalC4ATask);
 	spGlobalC4ATask = NULL;
@@ -443,7 +443,7 @@ typedef struct cacheStruct {
 	cachePointer next;
 } cacheType;
 
-cachePointer read_cache()
+cachePointer read_cache( void )
 {
 	SDL_RWops *file = SDL_RWFromFile(spCacheFilename, "rb");
 	if (file)
@@ -703,14 +703,14 @@ PREFIX void spNetC4ASetCaching(int value)
 	spNetC4ACaching = value;
 }
 
-void set_cache_filename()
+void set_cache_filename( void )
 {
 	PROFILE_FILENAME_MAKRO
 	sprintf(spCacheFilename,"%s",filename);
 	sprintf(&spCacheFilename[strlen(spCacheFilename)-4],"cache");
 }
 
-PREFIX spNetC4AProfilePointer spNetC4AGetProfile()
+PREFIX spNetC4AProfilePointer spNetC4AGetProfile( void )
 {
 	set_cache_filename();
 	spNetC4AProfilePointer profile = NULL;
@@ -1351,7 +1351,7 @@ int c4a_commit_thread(void* data)
 	return 0;
 }
 
-PREFIX int spNetC4AHowManyCached()
+PREFIX int spNetC4AHowManyCached( void )
 {
 	int result = 0;
 	SDL_mutexP(spCacheMutex);
@@ -1784,7 +1784,7 @@ PREFIX int spNetC4ADeleteAccount(spNetC4AProfilePointer* profile,int deleteFile,
 	return 1;
 }
 
-PREFIX void spNetC4ADeleteProfileFile()
+PREFIX void spNetC4ADeleteProfileFile( void )
 {
 	PROFILE_FILENAME_MAKRO
 //Copied from spRemoveFile to avoid dependencies
@@ -1897,7 +1897,7 @@ PREFIX int spNetC4AGetStatusParallel(spNetC4ATaskPointer task)
 	return status;
 }
 
-PREFIX int spNetC4AGetStatus()
+PREFIX int spNetC4AGetStatus( void )
 {
 	return spNetC4AGetStatusParallel(spGlobalC4ATask);
 }
@@ -1915,12 +1915,12 @@ PREFIX void spNetC4ACancelTaskParallel(spNetC4ATaskPointer task)
 		SDL_mutexV(task->statusMutex);
 }
 
-PREFIX void spNetC4ACancelTask()
+PREFIX void spNetC4ACancelTask( void )
 {
 	spNetC4ACancelTaskParallel(spGlobalC4ATask);
 }
 
-PREFIX int spNetC4AGetTaskResult()
+PREFIX int spNetC4AGetTaskResult( void )
 {
 	return spGlobalC4ATask->result;
 }
@@ -1930,7 +1930,7 @@ PREFIX int spNetC4AGetTaskResultParallel(spNetC4ATaskPointer task)
 	return task->result;
 }
 
-PREFIX int spNetC4AGetTimeOut()
+PREFIX int spNetC4AGetTimeOut( void )
 {
 	return spGlobalC4ATask->timeOut;
 }

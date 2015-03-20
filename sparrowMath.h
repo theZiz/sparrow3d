@@ -203,6 +203,6 @@ PREFIX void spSetRand( Sint32 seed );
  * 
  * See Also:
  * <spSetRand>*/
-PREFIX Sint32 spRand();
+PREFIX Sint32 spRand( void );
 
 #endif

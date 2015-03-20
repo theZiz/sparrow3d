@@ -145,7 +145,7 @@ PREFIX void spSetRand( Sint32 seed )
 	spLastRandValue = seed;
 }
 
-PREFIX Sint32 spRand()
+PREFIX Sint32 spRand( void )
 {
 	//I stole the magic numbers from glibc...
 	spLastRandValue = ((1103515245*spLastRandValue + 12345) >> 1)  & 0x7fffffff;

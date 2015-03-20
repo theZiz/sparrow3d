@@ -24,7 +24,7 @@ int spMusicVolume = SP_VOLUME_MAX;
 int spSoundVolume = SP_VOLUME_MAX;
 int spSoundInPause = 0;
 
-PREFIX int spSoundInit()
+PREFIX int spSoundInit( void )
 {
 	if (spSoundIsInitialized)
 		return !spNoSoundAvaible;
@@ -232,7 +232,7 @@ PREFIX void spSoundPauseMusic(int pause)
 			Mix_ResumeMusic();
 }
 
-PREFIX int spSoundGetMusicVolume()
+PREFIX int spSoundGetMusicVolume( void )
 {
 	return spMusicVolume;
 }
@@ -248,7 +248,7 @@ PREFIX void spSoundSetMusicVolume(int volume)
 		Mix_VolumeMusic(volume);
 }
 
-PREFIX int spSoundGetVolume()
+PREFIX int spSoundGetVolume( void )
 {
 	return spSoundVolume;
 }
@@ -264,7 +264,7 @@ PREFIX void spSoundSetVolume(int volume)
 		Mix_Volume(-1,volume);
 }
 
-PREFIX void spSoundQuit()
+PREFIX void spSoundQuit( void )
 {
 	if (spBackgroundMusic)
 		Mix_FreeMusic(spBackgroundMusic);

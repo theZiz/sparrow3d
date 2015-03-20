@@ -283,7 +283,7 @@ PREFIX void spDrawSprite3D( Sint32 x, Sint32 y, Sint32 z, spSpritePointer sprite
  * 
  * Returns:
  * spSpriteCollection* - a pointer to a fresh created <spSpriteCollection>*/
-PREFIX spSpriteCollectionPointer spNewSpriteCollection();
+PREFIX spSpriteCollectionPointer spNewSpriteCollection( void );
 
 /* Function: spDeleteSpriteCollection
  * 

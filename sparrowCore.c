@@ -315,7 +315,7 @@ static void spInternalZoomBlit(SDL_Surface* source,int sx,int sy,int sw,int sh,S
 	SDL_UnlockSurface(dest);
 }
 
-static void spInternalUpdateVirtualKeyboard()
+static void spInternalUpdateVirtualKeyboard( void )
 {
 	SDL_Rect dest;
 	dest.x = spVirtualKeyboardX * spVirtualKeyboardInternal[spVirtualKeyboardShift]->w / 20;
@@ -325,12 +325,12 @@ static void spInternalUpdateVirtualKeyboard()
 	SDL_BlitSurface( spVirtualKeyboardSelect[0], NULL, spVirtualKeyboard[spVirtualKeyboardShift], &dest );
 }
 
-static void spInternalResetVirtualKeyboard()
+static void spInternalResetVirtualKeyboard( void )
 {
 	SDL_BlitSurface( spVirtualKeyboardInternal[spVirtualKeyboardShift], NULL, spVirtualKeyboard[spVirtualKeyboardShift], NULL );
 }
 
-static void spInternalCleanVirtualKeyboard()
+static void spInternalCleanVirtualKeyboard( void )
 {
 	SDL_Rect src,dest;
 	dest.x = spVirtualKeyboardX * spVirtualKeyboardInternal[spVirtualKeyboardShift]->w / 20;
@@ -1114,7 +1114,7 @@ Uint32 oldticks;
 Uint32 olderticks;
 Uint32 newticks;
 
-PREFIX void spResetLoop()
+PREFIX void spResetLoop( void )
 {
 	#ifdef DEBUG_SLOWMOTION
 		oldticks = newticks = olderticks = SDL_GetTicks()/DEBUG_SLOWMOTION;
@@ -1497,7 +1497,7 @@ PREFIX SDL_Surface* spLoadSurfaceZoom( const char* name, Sint32 zoom)
 		return spLoadUncachedSurface(name);
 }
 
-PREFIX int spLastCachedSurfaceWasLoadedFirstTime()
+PREFIX int spLastCachedSurfaceWasLoadedFirstTime( void )
 {
 	return spLastFirstTime;
 }
@@ -1507,22 +1507,22 @@ PREFIX SDL_Surface* spLoadSurface( const char* name )
 	return spLoadSurfaceZoom( name, SP_ONE );
 }
 
-PREFIX void spEnableCaching()
+PREFIX void spEnableCaching( void )
 {
 	sp_caching = 1;
 }
 
-PREFIX void spDisableCaching()
+PREFIX void spDisableCaching( void )
 {
 	sp_caching = 0;
 }
 
-PREFIX int spIsCachingEnabled()
+PREFIX int spIsCachingEnabled( void )
 {
 	return sp_caching;
 }
 
-PREFIX void spClearCache()
+PREFIX void spClearCache( void )
 {
 	while (sp_first_cache_line)
 	{
@@ -1973,12 +1973,12 @@ PREFIX void spSetVirtualKeyboard(int state,int x,int y,int width,int height,SDL_
 	spInternalUpdateVirtualKeyboard();
 }
 
-PREFIX int spGetVirtualKeyboardState()
+PREFIX int spGetVirtualKeyboardState( void )
 {
 	return spVirtualKeyboardState;
 }
 
-PREFIX SDL_Surface* spGetVirtualKeyboard()
+PREFIX SDL_Surface* spGetVirtualKeyboard( void )
 {
 	return spVirtualKeyboard[spVirtualKeyboardShift];
 }
@@ -1990,12 +1990,12 @@ PREFIX void spSetVirtualKeyboardShiftState(int state)
 	spInternalUpdateVirtualKeyboard();
 }
 
-PREFIX int spGetVirtualKeyboardShiftState()
+PREFIX int spGetVirtualKeyboardShiftState( void )
 {
 	return spVirtualKeyboardShift;
 }
 
-PREFIX int spIsKeyboardPolled()
+PREFIX int spIsKeyboardPolled( void )
 {
 	return (spGenericInput.keyboard.buffer != NULL);
 }
@@ -2065,7 +2065,7 @@ PREFIX void spSleep(Uint32 microSeconds)
 	#endif
 }
 
-PREFIX int spGetLastAxisType()
+PREFIX int spGetLastAxisType( void )
 {
 	return spLastAxisType;
 }

@@ -206,7 +206,7 @@ PREFIX char* spGetTranslationFromCaption(spBundlePointer bundle, char* caption);
  * 
  * Returns:
  * spBundle* - pointer to the created bundle*/
-PREFIX spBundlePointer spCreateTextBundle();
+PREFIX spBundlePointer spCreateTextBundle( void );
 
 /* Function: spLoadBundle
  * 
@@ -264,7 +264,7 @@ PREFIX void spReadPossibleLanguages(const char* filename);
  * 
  * See Also:
  * <spReadPossibleLanguages>, <spGetPossibleLanguage>, <spGetPossibleLanguageName> */
-PREFIX int spGetPossibleLanguagesCount();
+PREFIX int spGetPossibleLanguagesCount( void );
 
 /* Function: spGetPossibleLanguage
  * 
