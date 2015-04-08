@@ -627,8 +627,8 @@
 	if ( x1 < 0 )
 	{
 		#ifdef PANDORA_NEON
-			int32x4_t scalar = {x1,x1,x1,x1};
-			t = vmlaq_s32(t,s,scalar);
+			int32x4_t scalar = {-x1,-x1,-x1,-x1};
+			t = vmlaq_s32(s,scalar,t);
 		#else
 			#ifndef __SPARROW_INTERNAL_ZNOTHING__
 				z -= x1 * sZ;
