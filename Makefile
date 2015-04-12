@@ -37,7 +37,7 @@ DYNAMIC =  -lSDL_mixer -lSDL_ttf -lSDL_image -lSDL -lm -lSDL_net
 
 # CFLAGS defines some globale flags for gcc. Even on the gp2x with only 16 KB
 # CPU Cache, -O3 is faster than -Os. So most things you don't have to change
-CFLAGS = -O2 -fsingle-precision-constant -fPIC
+CFLAGS = -O3 -fsingle-precision-constant -fPIC
 
 # GENERAL_TWEAKS are some flags for gcc, which should make the compilation
 # faster, but some of them are just poinsoness snake oil - they may help a bit,

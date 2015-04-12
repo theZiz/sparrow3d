@@ -138,6 +138,7 @@
 		int32x2_t MIN = {textureX-1,textureY-1}; \
 		T = vmin_s32(vmax_s32(T,MAX),MIN); \
 		Uint32 pixel = texturePixel[T[0] + T[1] * textureScanLine];*/
+		
 #ifdef UNSAFE_MAGIC
 	#define TEXTURE_CLAMP_MACRO(u,v,texturePixel,textureScanLine,textureX,textureY) \
 		Uint32 pixel = (u) + (v) * textureScanLine; \

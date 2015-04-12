@@ -61,7 +61,10 @@ void draw_sprites(int rotation)
 	spDrawSprite( 2 * screen->w / 5, 5 * screen->h / 8, 0, sprite );
 	sprite->zoomX *= -1;
 	sprite->rotation = rotation * 4;
-	spDrawSprite( 3 * screen->w / 5, 5 * screen->h / 8, 0, sprite );
+	sprite->zoomX = sprite->zoomY = SP_ONE*4;
+	int i;
+	for (i = 0; i < 32; i++)
+		spDrawSprite( 3 * screen->w / 5, 5 * screen->h / 8, 0, sprite );
 	sprite->zoomX = SP_ONE;
 	sprite->zoomY = SP_ONE;
 	spDrawSprite( 4 * screen->w / 5, 5 * screen->h / 8, 0, sprite );

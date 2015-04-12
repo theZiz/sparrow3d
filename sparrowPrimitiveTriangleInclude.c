@@ -114,12 +114,12 @@
 	#endif
 #endif
 {
+	if ( x2 < x1)
+		return;
 	if ( x1 >= spTargetX )
 		return;
 	if ( x2 < 0 )
 		return;
-	if (x1 == x2)
-		x2++;
 	#ifndef __SPARROW_INTERNAL_ZNOTHING__
 		Sint32 z = z1;
 	#endif
@@ -132,9 +132,10 @@
 	}
 	if ( x2 >= spTargetX )
 		x2 = spTargetX - 1;
+
 	#ifdef __SPARROW_INTERNAL_PATTERN__
 		int x;
-		for ( x = x1; x < x2; x++ )
+		for ( x = x1; x <= x2; x++ )
 		{
 			#ifdef __SPARROW_INTERNAL_BLENDING__
 				#ifdef __SPARROW_INTERNAL_ZBOTH__
@@ -164,7 +165,7 @@
 	#else
 		#ifdef __SPARROW_INTERNAL_BLENDING__
 			int x;
-			for ( x = x1; x < x2; x++ )
+			for ( x = x1; x <= x2; x++ )
 			{
 			#ifdef __SPARROW_INTERNAL_ZBOTH__
 				draw_pixel_blending_ztest_zset( x, y, z, color, spBlending)
@@ -181,10 +182,10 @@
 			}
 		#else
 			#ifdef __SPARROW_INTERNAL_ZNOTHING__
-				spHorizentalLine( spTargetPixel, x1, y, x2 - x1, color, 1, spTargetScanLine, spTargetY );
+				spHorizentalLine( spTargetPixel, x1, y, x2 - x1 + 1, color, 1, spTargetScanLine, spTargetY );
 			#else
 				int x;
-				for ( x = x1; x < x2; x++ )
+				for ( x = x1; x <= x2; x++ )
 				{
 					#ifdef __SPARROW_INTERNAL_ZBOTH__
 						draw_pixel_ztest_zset( x, y, z, color )

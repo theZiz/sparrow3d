@@ -592,64 +592,189 @@
 	#endif
 #endif
 {
+	if ( x2 < x1)
+		return;
 	if ( x1 >= spTargetX )
 		return;
 	if ( x2 < 0 )
 		return;
-	#ifdef PANDORA_NEON
-		#ifdef __SPARROW_INTERNAL_PERSPECT__
-			#ifndef __SPARROW_INTERNAL_ZNOTHING__
-				int32x4_t t = {u1,v1,w1,z1};
-				int32x4_t s = {sU,sV,sW,sZ};
-			#else
-				int32x4_t t = {u1,v1,w1, 0};
-				int32x4_t s = {sU,sV,sW, 0};
-			#endif
-		#else
-			#ifndef __SPARROW_INTERNAL_ZNOTHING__
-				int32x4_t t = {u1,v1, 0,z1};
-				int32x4_t s = {sU,sV, 0,sZ};
-			#else
-				int32x4_t t = {u1,v1, 0, 0};
-				int32x4_t s = {sU,sV, 0, 0};
-			#endif
-		#endif
-	#else
-		Sint32 u = u1;
-		Sint32 v = v1;
-		#ifdef __SPARROW_INTERNAL_PERSPECT__
-			Sint32 w = w1;
-		#endif
-		#ifndef __SPARROW_INTERNAL_ZNOTHING__
-			Sint32 z = z1;
-		#endif
+	Sint32 u = u1;
+	Sint32 v = v1;
+	#ifdef __SPARROW_INTERNAL_PERSPECT__
+		Sint32 w = w1;
+	#endif
+	#ifndef __SPARROW_INTERNAL_ZNOTHING__
+		Sint32 z = z1;
 	#endif
 	if ( x1 < 0 )
 	{
-		#ifdef PANDORA_NEON
-			int32x4_t scalar = {-x1,-x1,-x1,-x1};
-			t = vmlaq_s32(s,scalar,t);
-		#else
-			#ifndef __SPARROW_INTERNAL_ZNOTHING__
-				z -= x1 * sZ;
-			#endif
-			u -= x1 * sU;
-			v -= x1 * sV;
-			#ifdef __SPARROW_INTERNAL_PERSPECT__
-				w -= x1 * sW;
-			#endif
+		#ifndef __SPARROW_INTERNAL_ZNOTHING__
+			z -= x1 * sZ;
+		#endif
+		u -= x1 * sU;
+		v -= x1 * sV;
+		#ifdef __SPARROW_INTERNAL_PERSPECT__
+			w -= x1 * sW;
 		#endif
 		x1 = 0;
 	}
 	if ( x2 >= spTargetX )
 		x2 = spTargetX - 1;
 	int x;
-	for ( x = x1; x <= x2; x++ )
-	{
-		#ifdef PANDORA_NEON
-			pixel_macro( x, y, t[3], t[0], t[1], t[2], color)
-			t = vaddq_s32(t,s);
-		#else
+	
+	#if defined(PANDORA_NEON) && defined(PANDORA)
+		//some useful constants
+		int32x4_t _0123 = {0,1,2,3};
+		int32x4_t _4444 = vdupq_n_s32(3);
+		int32x4_t _0000 = vdupq_n_s32(0);
+		#ifdef __SPARROW_INTERNAL_ALPHA__
+			uint16x4_t alpha_4 = vdup_n_u16(SP_ALPHA_COLOR);
+		#endif
+		int32x4_t color_4 = vdupq_n_s32(color);
+		int32x4_t c_tx = vdupq_n_s32(spTextureX-1);
+		int32x4_t c_ty = vdupq_n_s32(spTextureY-1);
+
+		int32x4_t sU_4 = vdupq_n_s32(sU);
+		int32x4_t sV_4 = vdupq_n_s32(sV);
+		#ifndef __SPARROW_INTERNAL_ZNOTHING__
+			int32x4_t sZ_4 = vdupq_n_s32(sZ);
+		#endif
+		#ifdef __SPARROW_INTERNAL_PERSPECT__
+			int32x4_t sW_4 = vdupq_n_s32(sW);
+		#endif
+
+		int32x4_t u_4 = vaddq_s32(vdupq_n_s32(u),vmulq_s32(_0123,sU_4));
+		sU_4 = vshlq_n_s32(sU_4,2); //*4
+		int32x4_t v_4 = vaddq_s32(vdupq_n_s32(v),vmulq_s32(_0123,sV_4));
+		sV_4 = vshlq_n_s32(sV_4,2); //*4
+		#ifndef __SPARROW_INTERNAL_ZNOTHING__
+			int32x4_t z_4 = vaddq_s32(vdupq_n_s32(z),vmulq_s32(_0123,sZ_4));
+			sZ_4 = vshlq_n_s32(sZ_4,2); //*4
+		#endif
+		#ifdef __SPARROW_INTERNAL_PERSPECT__
+			int32x4_t w_4 = vaddq_s32(vdupq_n_s32(w),vmulq_s32(_0123,sW_4));
+			sW_4 = vshlq_n_s32(sW_4,2); //*4
+		#endif
+		
+		int count = ((x2-x1+1+3) >> 2) << 2;
+		
+		for ( x = 0; x < count; x+=4 ) //calculating to much, but doesn't matter
+		{
+			int32x4_t c_u = vminq_s32(vmaxq_s32(vshrq_n_s32(u_4,SP_ACCURACY),_0000),c_tx);
+			int32_t u_buffer[4]; 
+			vst1q_s32(u_buffer,c_u);
+			u_4 = vaddq_s32(u_4,sU_4);
+
+			int32x4_t c_v = vminq_s32(vmaxq_s32(vshrq_n_s32(v_4,SP_ACCURACY),_0000),c_ty);
+			int32_t v_buffer[4]; 
+			vst1q_s32(v_buffer,c_v);
+			v_4 = vaddq_s32(v_4,sV_4);			
+
+			#ifdef __SPARROW_INTERNAL_PERSPECT__
+				w_4 = vaddq_s32(w_4,sW_4);
+			#endif
+			
+			uint16_t texel[4];
+			texel[0] = spTexturePixel[u_buffer[0] + v_buffer[0] * spTextureScanLine];
+			texel[1] = spTexturePixel[u_buffer[1] + v_buffer[1] * spTextureScanLine];
+			texel[2] = spTexturePixel[u_buffer[2] + v_buffer[2] * spTextureScanLine];
+			texel[3] = spTexturePixel[u_buffer[3] + v_buffer[3] * spTextureScanLine];
+			#ifdef __SPARROW_INTERNAL_ALPHA__
+			if (texel[0] == SP_ALPHA_COLOR &&
+				texel[1] == SP_ALPHA_COLOR &&
+				texel[2] == SP_ALPHA_COLOR &&
+				texel[3] == SP_ALPHA_COLOR)
+					continue;
+			#endif
+
+			uint16x4_t pixel = vld1_u16(texel);
+			
+			#ifdef __SPARROW_INTERNAL_ALPHA__
+				#define MASK_DEFINED
+				uint16x4_t mask = vmvn_u16(vceq_u16( pixel, alpha_4));
+			#endif
+			#ifndef __SPARROW_INTERNAL_ZNOTHING__
+				#if defined(__SPARROW_INTERNAL_ZBOTH__) || defined(__SPARROW_INTERNAL_ZTEST__)
+					int32x4_t zbuffer_4 = vld1q_s32( &spZBuffer[(x+x1) + (y) * spTargetScanLine] );
+					#ifdef MASK_DEFINED
+						uint16x4_t z_mask = vmovn_u32( vandq_u32 ( vcltq_s32(z_4,zbuffer_4), vcgeq_s32(z_4,_0000) ) );
+						mask = vand_u16(z_mask,mask);
+					#else
+						#define MASK_DEFINED
+						uint16x4_t mask = vmovn_u32( vandq_u32 ( vcltq_s32(z_4,zbuffer_4), vcgeq_s32(z_4,_0000) ) );
+					#endif
+				#endif
+				#if defined(__SPARROW_INTERNAL_ZBOTH__) || defined(__SPARROW_INTERNAL_ZSET__)
+					//TODO
+				#endif
+				z_4 = vaddq_s32(z_4,sZ_4);
+			#endif
+			void* ptr = &spTargetPixel[(x+x1) + (y) * spTargetScanLine];
+			if ((x == count - 4) && (x2-x1+1 != count))
+			{
+				#ifdef MASK_DEFINED
+					switch (count-(x2-x1+1))
+					{
+						case 3:
+							{
+								uint16x4_t new_mask = {0xffff,0,0,0};
+								mask = vand_u16(new_mask,mask);
+							}
+							break;
+						case 2:
+							{
+								uint16x4_t new_mask = {0xffff,0xffff,0,0};
+								mask = vand_u16(new_mask,mask);
+							}
+							break;
+						case 1:
+							{
+								uint16x4_t new_mask = {0xffff,0xffff,0xffff,0};
+								mask = vand_u16(new_mask,mask);
+							}
+							break;
+					}
+				#else
+					uint16x4_t mask;
+					switch (count-(x2-x1+1))
+					{
+						case 3:
+							{
+								uint16x4_t new_mask = {0xffff,0xffff,0xffff,0};
+								mask = new_mask;
+							}
+							break;
+						case 2:
+							{
+								uint16x4_t new_mask = {0xffff,0xffff,0,0};
+								mask = new_mask;
+							}
+							break;
+						case 1:
+							{
+								uint16x4_t new_mask = {0xffff,0,0,0};
+								mask = new_mask;
+							}
+							break;
+					}
+				#endif				
+				uint16x4_t dest = vld1_u16(ptr);
+				pixel = vbsl_u16(mask,pixel,dest);
+			}
+			else
+			{
+				#ifdef MASK_DEFINED
+					uint16x4_t dest = vld1_u16(ptr);
+					pixel = vbsl_u16(mask,pixel,dest);
+				#endif
+			}
+			vst1_u16(ptr,pixel);
+		}
+		
+		#undef MASK_DEFINED
+	#else
+		for ( x = x1; x <= x2; x++ )
+		{
 			pixel_macro( x, y, z, u, v, w, color)
 			u += sU;
 			v += sV;
@@ -659,8 +784,8 @@
 			#ifndef __SPARROW_INTERNAL_ZNOTHING__
 				z += sZ;
 			#endif
-		#endif
-	}
+		}
+	#endif
 }
 
 #ifndef __SPARROW_INTERNAL_BLENDING__
