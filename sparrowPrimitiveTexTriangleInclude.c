@@ -633,6 +633,23 @@
 		int32x4_t color_4 = vdupq_n_s32(color);
 		int32x4_t c_tx = vdupq_n_s32(spTextureX-1);
 		int32x4_t c_ty = vdupq_n_s32(spTextureY-1);
+		#ifdef __SPARROW_INTERNAL_PATTERN__
+			Uint8 pattern = spPattern[y & 7];
+			int shift = x1 & 7;
+			pattern = (pattern << shift) | (pattern >> 8 - shift);
+			Uint16 p_mask[8] = {
+				((pattern &   1) >> 0) *0xffff,
+				((pattern &   2) >> 1) *0xffff,
+				((pattern &   4) >> 2) *0xffff,
+				((pattern &   8) >> 3) *0xffff,
+				((pattern &  16) >> 4) *0xffff,
+				((pattern &  32) >> 5) *0xffff,
+				((pattern &  64) >> 6) *0xffff,
+				((pattern & 128) >> 7) *0xffff
+			};
+			uint16x4_t pattern_1 = vld1_u16( p_mask );
+			uint16x4_t pattern_2 = vld1_u16( &p_mask[4] );
+		#endif
 
 		int32x4_t sU_4 = vdupq_n_s32(sU);
 		int32x4_t sV_4 = vdupq_n_s32(sV);
@@ -695,7 +712,8 @@
 			#endif
 			#ifndef __SPARROW_INTERNAL_ZNOTHING__
 				#if defined(__SPARROW_INTERNAL_ZBOTH__) || defined(__SPARROW_INTERNAL_ZTEST__)
-					int32x4_t zbuffer_4 = vld1q_s32( &spZBuffer[(x+x1) + (y) * spTargetScanLine] );
+					void* ztr = &spZBuffer[(x+x1) + (y) * spTargetScanLine];
+					int32x4_t zbuffer_4 = vld1q_s32( ztr );
 					#ifdef MASK_DEFINED
 						uint16x4_t z_mask = vmovn_u32( vandq_u32 ( vcltq_s32(z_4,zbuffer_4), vcgeq_s32(z_4,_0000) ) );
 						mask = vand_u16(z_mask,mask);
@@ -704,12 +722,22 @@
 						uint16x4_t mask = vmovn_u32( vandq_u32 ( vcltq_s32(z_4,zbuffer_4), vcgeq_s32(z_4,_0000) ) );
 					#endif
 				#endif
-				#if defined(__SPARROW_INTERNAL_ZBOTH__) || defined(__SPARROW_INTERNAL_ZSET__)
-					//TODO
-				#endif
 				z_4 = vaddq_s32(z_4,sZ_4);
 			#endif
+			#ifdef __SPARROW_INTERNAL_PATTERN__
+				#ifdef MASK_DEFINED
+					mask = vand_u16(((x >> 2) & 1) ? pattern_2 : pattern_1,mask);
+				#else
+					#define MASK_DEFINED
+					uint16x4_t mask = ((x >> 2) & 1) ? pattern_2 : pattern_1;
+				#endif
+			#endif
+						
 			void* ptr = &spTargetPixel[(x+x1) + (y) * spTargetScanLine];
+			#ifdef __SPARROW_INTERNAL_ZSET__
+				void* ztr = &spZBuffer[(x+x1) + (y) * spTargetScanLine];
+				int32x4_t zbuffer_4 = vld1q_s32( ztr );
+			#endif
 			if ((x == count - 4) && (x2-x1+1 != count))
 			{
 				#ifdef MASK_DEFINED
@@ -740,7 +768,7 @@
 					{
 						case 3:
 							{
-								uint16x4_t new_mask = {0xffff,0xffff,0xffff,0};
+								uint16x4_t new_mask = {0xffff,0,0,0};
 								mask = new_mask;
 							}
 							break;
@@ -752,23 +780,36 @@
 							break;
 						case 1:
 							{
-								uint16x4_t new_mask = {0xffff,0,0,0};
+								uint16x4_t new_mask = {0xffff,0xffff,0xffff,0};
 								mask = new_mask;
 							}
 							break;
 					}
-				#endif				
+				#endif
 				uint16x4_t dest = vld1_u16(ptr);
 				pixel = vbsl_u16(mask,pixel,dest);
+				#if defined(__SPARROW_INTERNAL_ZBOTH__) || defined(__SPARROW_INTERNAL_ZSET__)
+					uint32x4_t mask32 = vmovl_u16(mask);
+					mask32 = vorrq_u32(mask32,vshlq_n_u32(mask32,16));
+					zbuffer_4 = vbslq_s32(mask32,z_4,zbuffer_4);
+				#endif
 			}
 			else
 			{
 				#ifdef MASK_DEFINED
 					uint16x4_t dest = vld1_u16(ptr);
 					pixel = vbsl_u16(mask,pixel,dest);
+					#if defined(__SPARROW_INTERNAL_ZBOTH__) || defined(__SPARROW_INTERNAL_ZSET__)
+						uint32x4_t mask32 = vmovl_u16(mask);
+						mask32 = vorrq_u32(mask32,vshlq_n_u32(mask32,16));
+						zbuffer_4 = vbslq_s32(mask32,z_4,zbuffer_4);
+					#endif
 				#endif
 			}
 			vst1_u16(ptr,pixel);
+			#if defined(__SPARROW_INTERNAL_ZBOTH__) || defined(__SPARROW_INTERNAL_ZSET__)
+				vst1q_s32(ztr,zbuffer_4);
+			#endif
 		}
 		
 		#undef MASK_DEFINED
