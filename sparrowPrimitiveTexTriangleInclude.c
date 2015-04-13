@@ -627,10 +627,24 @@
 		int32x4_t _0123 = {0,1,2,3};
 		int32x4_t _4444 = vdupq_n_s32(3);
 		int32x4_t _0000 = vdupq_n_s32(0);
+		int32x4_t _63488 = vdupq_n_s32(63488);
+		int32x4_t _2016 = vdupq_n_s32(2016);
+		int32x4_t _31 = vdupq_n_s32(31);
 		#ifdef __SPARROW_INTERNAL_ALPHA__
 			uint16x4_t alpha_4 = vdup_n_u16(SP_ALPHA_COLOR);
 		#endif
-		int32x4_t color_4 = vdupq_n_s32(color);
+		int32x4_t color_r; //0..31
+		int32x4_t color_g; //0..63
+		int32x4_t color_b; //0..31
+		if (color != 65535)
+		{
+			int r = color >> 11;
+			int g = (color & 2016) >> 5;
+			int b = color & 31;
+			color_r = vdupq_n_s32(r);
+			color_g = vdupq_n_s32(g);
+			color_b = vdupq_n_s32(b);
+		}
 		int32x4_t c_tx = vdupq_n_s32(spTextureX-1);
 		int32x4_t c_ty = vdupq_n_s32(spTextureY-1);
 		#ifdef __SPARROW_INTERNAL_PATTERN__
@@ -675,21 +689,35 @@
 		
 		int count = ((x2-x1+1+3) >> 2) << 2;
 		
-		for ( x = 0; x < count; x+=4 ) //calculating to much, but doesn't matter
+		for ( x = 0; x < count; x+=4 ) //calculating too much, but doesn't matter
 		{
-			int32x4_t c_u = vminq_s32(vmaxq_s32(vshrq_n_s32(u_4,SP_ACCURACY),_0000),c_tx);
-			int32_t u_buffer[4]; 
-			vst1q_s32(u_buffer,c_u);
-			u_4 = vaddq_s32(u_4,sU_4);
-
-			int32x4_t c_v = vminq_s32(vmaxq_s32(vshrq_n_s32(v_4,SP_ACCURACY),_0000),c_ty);
+			int32_t u_buffer[4];
 			int32_t v_buffer[4]; 
-			vst1q_s32(v_buffer,c_v);
-			v_4 = vaddq_s32(v_4,sV_4);			
-
 			#ifdef __SPARROW_INTERNAL_PERSPECT__
+				int32_t w_buffer[4];
+				vst1q_s32(w_buffer,w_4);
+				vst1q_s32(u_buffer,u_4);
+				vst1q_s32(v_buffer,v_4);
+				u_buffer[0] = reciprocal_w_clip(u_buffer[0],w_buffer[0]);
+				u_buffer[1] = reciprocal_w_clip(u_buffer[1],w_buffer[1]);
+				u_buffer[2] = reciprocal_w_clip(u_buffer[2],w_buffer[2]);
+				u_buffer[3] = reciprocal_w_clip(u_buffer[3],w_buffer[3]);
+				v_buffer[0] = reciprocal_w_clip(v_buffer[0],w_buffer[0]);
+				v_buffer[1] = reciprocal_w_clip(v_buffer[1],w_buffer[1]);
+				v_buffer[2] = reciprocal_w_clip(v_buffer[2],w_buffer[2]);
+				v_buffer[3] = reciprocal_w_clip(v_buffer[3],w_buffer[3]);
 				w_4 = vaddq_s32(w_4,sW_4);
+				int32x4_t c_u = vminq_s32(vmaxq_s32(vld1q_s32(u_buffer),_0000),c_tx);
+				int32x4_t c_v = vminq_s32(vmaxq_s32(vld1q_s32(v_buffer),_0000),c_ty);			
+			#else
+				int32x4_t c_u = vminq_s32(vmaxq_s32(vshrq_n_s32(u_4,SP_ACCURACY),_0000),c_tx);
+				int32x4_t c_v = vminq_s32(vmaxq_s32(vshrq_n_s32(v_4,SP_ACCURACY),_0000),c_ty);			
 			#endif
+
+			vst1q_s32(u_buffer,c_u);
+			vst1q_s32(v_buffer,c_v);
+			u_4 = vaddq_s32(u_4,sU_4);
+			v_4 = vaddq_s32(v_4,sV_4);			
 			
 			uint16_t texel[4];
 			texel[0] = spTexturePixel[u_buffer[0] + v_buffer[0] * spTextureScanLine];
@@ -705,11 +733,22 @@
 			#endif
 
 			uint16x4_t pixel = vld1_u16(texel);
-			
+
 			#ifdef __SPARROW_INTERNAL_ALPHA__
 				#define MASK_DEFINED
 				uint16x4_t mask = vmvn_u16(vceq_u16( pixel, alpha_4));
 			#endif
+
+			if (color != 65535)
+			{
+				int32x4_t super_pixel = vreinterpretq_s32_u32(vmovl_u16(pixel));
+				int32x4_t n_r = vandq_s32(vshrq_n_s32(vmulq_s32(color_r,vandq_s32(super_pixel,_63488)),5),_63488);
+				int32x4_t n_g = vandq_s32(vshrq_n_s32(vmulq_s32(color_g,vandq_s32(super_pixel, _2016)),6), _2016);
+				int32x4_t n_b = vandq_s32(vshrq_n_s32(vmulq_s32(color_b,vandq_s32(super_pixel,   _31)),5),   _31);
+				super_pixel = vorrq_s32(n_r,vorrq_s32(n_g,n_b));
+				pixel = vmovn_u32(vreinterpretq_u32_s32(super_pixel));
+			}
+			
 			#ifndef __SPARROW_INTERNAL_ZNOTHING__
 				#if defined(__SPARROW_INTERNAL_ZBOTH__) || defined(__SPARROW_INTERNAL_ZTEST__)
 					void* ztr = &spZBuffer[(x+x1) + (y) * spTargetScanLine];

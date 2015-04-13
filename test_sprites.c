@@ -51,7 +51,6 @@ void draw_sprites(int rotation)
 {
 	spSetZTest( sprites_z );
 	spSetZSet( sprites_z );
-	spSetAlphaTest( 0 );
 	SDL_Surface* screen = spGetWindowSurface();
 	spRotozoomSurface( screen->w / 4, screen->h / 4, 0, sprites_garfield, spSin( rotation * 4 ) + ( spFloatToFixed( 1.5f ) ) >> 2, spCos( rotation * 8 ) + ( spFloatToFixed( 1.5f ) ) >> 2, rotation );
 	spRotozoomSurfacePart( 3 * screen->w / 4, screen->h / 4, 0, sprites_garfield, sprites_garfield->w / 4, sprites_garfield->h / 4, sprites_garfield->w / 2, sprites_garfield->w / 2, spSin( rotation * 4 ) + ( spFloatToFixed( 1.5f ) ) >> 1, spCos( rotation * 8 ) + ( spFloatToFixed( 1.5f ) ) >> 1, rotation );
@@ -69,7 +68,6 @@ void draw_sprites(int rotation)
 	sprite->zoomX = SP_ONE;
 	sprite->zoomY = SP_ONE;
 	spDrawSprite( 4 * screen->w / 5, 5 * screen->h / 8, 0, sprite );
-	spSetAlphaTest( 1 );
 	spSetZTest( 0 );
 	spSetZSet( 0 );
 }

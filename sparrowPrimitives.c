@@ -3243,7 +3243,7 @@ void draw_tiny_quad(Sint32 nx1,Sint32 ny1, Sint32 sx1, Sint32 sy1,
 									  nx4, ny4, z, sx4 , sy4 );
 }
 
-#define MAX_QUAD_SIZE 64
+#define MAX_QUAD_SIZE 128
 
 void draw_recursive_rotoquad(Sint32 nx1,Sint32 ny1, Sint32 sx1, Sint32 sy1,
                              Sint32 nx2,Sint32 ny2, Sint32 sx2, Sint32 sy2,
