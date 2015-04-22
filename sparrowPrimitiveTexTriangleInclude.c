@@ -620,6 +620,7 @@
 	}
 	if ( x2 >= spTargetX )
 		x2 = spTargetX - 1;
+		
 	int x;
 	
 	#if defined(PANDORA_NEON) && defined(PANDORA)
@@ -688,51 +689,48 @@
 		#endif
 		
 		int count = ((x2-x1+1+3) >> 2) << 2;
+		int32_t u_buffer[count];
+		int32_t v_buffer[count]; 
+		#ifdef __SPARROW_INTERNAL_PERSPECT__
+			int32_t w_buffer[count];
+		#endif
+		uint16_t texel[count];
 		
 		for ( x = 0; x < count; x+=4 ) //calculating too much, but doesn't matter
 		{
-			int32_t u_buffer[4];
-			int32_t v_buffer[4]; 
 			#ifdef __SPARROW_INTERNAL_PERSPECT__
-				int32_t w_buffer[4];
-				vst1q_s32(w_buffer,w_4);
-				vst1q_s32(u_buffer,u_4);
-				vst1q_s32(v_buffer,v_4);
-				u_buffer[0] = reciprocal_w_clip(u_buffer[0],w_buffer[0]);
-				u_buffer[1] = reciprocal_w_clip(u_buffer[1],w_buffer[1]);
-				u_buffer[2] = reciprocal_w_clip(u_buffer[2],w_buffer[2]);
-				u_buffer[3] = reciprocal_w_clip(u_buffer[3],w_buffer[3]);
-				v_buffer[0] = reciprocal_w_clip(v_buffer[0],w_buffer[0]);
-				v_buffer[1] = reciprocal_w_clip(v_buffer[1],w_buffer[1]);
-				v_buffer[2] = reciprocal_w_clip(v_buffer[2],w_buffer[2]);
-				v_buffer[3] = reciprocal_w_clip(v_buffer[3],w_buffer[3]);
+				vst1q_s32(&w_buffer[x],w_4);
+				vst1q_s32(&u_buffer[x],u_4);
+				vst1q_s32(&v_buffer[x],v_4);
+				u_buffer[x+0] = reciprocal_w_clip(u_buffer[x+0],w_buffer[x+0]);
+				u_buffer[x+1] = reciprocal_w_clip(u_buffer[x+1],w_buffer[x+1]);
+				u_buffer[x+2] = reciprocal_w_clip(u_buffer[x+2],w_buffer[x+2]);
+				u_buffer[x+3] = reciprocal_w_clip(u_buffer[x+3],w_buffer[x+3]);
+				v_buffer[x+0] = reciprocal_w_clip(v_buffer[x+0],w_buffer[x+0]);
+				v_buffer[x+1] = reciprocal_w_clip(v_buffer[x+1],w_buffer[x+1]);
+				v_buffer[x+2] = reciprocal_w_clip(v_buffer[x+2],w_buffer[x+2]);
+				v_buffer[x+3] = reciprocal_w_clip(v_buffer[x+3],w_buffer[x+3]);
 				w_4 = vaddq_s32(w_4,sW_4);
-				int32x4_t c_u = vminq_s32(vmaxq_s32(vld1q_s32(u_buffer),_0000),c_tx);
-				int32x4_t c_v = vminq_s32(vmaxq_s32(vld1q_s32(v_buffer),_0000),c_ty);			
+				int32x4_t c_u = vminq_s32(vmaxq_s32(vld1q_s32(&u_buffer[x]),_0000),c_tx);
+				int32x4_t c_v = vminq_s32(vmaxq_s32(vld1q_s32(&v_buffer[x]),_0000),c_ty);			
 			#else
 				int32x4_t c_u = vminq_s32(vmaxq_s32(vshrq_n_s32(u_4,SP_ACCURACY),_0000),c_tx);
 				int32x4_t c_v = vminq_s32(vmaxq_s32(vshrq_n_s32(v_4,SP_ACCURACY),_0000),c_ty);			
 			#endif
 
-			vst1q_s32(u_buffer,c_u);
-			vst1q_s32(v_buffer,c_v);
+			vst1q_s32(&u_buffer[x],c_u);
+			vst1q_s32(&v_buffer[x],c_v);
 			u_4 = vaddq_s32(u_4,sU_4);
 			v_4 = vaddq_s32(v_4,sV_4);			
 			
-			uint16_t texel[4];
-			texel[0] = spTexturePixel[u_buffer[0] + v_buffer[0] * spTextureScanLine];
-			texel[1] = spTexturePixel[u_buffer[1] + v_buffer[1] * spTextureScanLine];
-			texel[2] = spTexturePixel[u_buffer[2] + v_buffer[2] * spTextureScanLine];
-			texel[3] = spTexturePixel[u_buffer[3] + v_buffer[3] * spTextureScanLine];
-			#ifdef __SPARROW_INTERNAL_ALPHA__
-			if (texel[0] == SP_ALPHA_COLOR &&
-				texel[1] == SP_ALPHA_COLOR &&
-				texel[2] == SP_ALPHA_COLOR &&
-				texel[3] == SP_ALPHA_COLOR)
-					continue;
-			#endif
-
-			uint16x4_t pixel = vld1_u16(texel);
+			texel[x+0] = spTexturePixel[u_buffer[x+0] + v_buffer[x+0] * spTextureScanLine];
+			texel[x+1] = spTexturePixel[u_buffer[x+1] + v_buffer[x+1] * spTextureScanLine];
+			texel[x+2] = spTexturePixel[u_buffer[x+2] + v_buffer[x+2] * spTextureScanLine];
+			texel[x+3] = spTexturePixel[u_buffer[x+3] + v_buffer[x+3] * spTextureScanLine];
+		}
+		for ( x = 0; x < count; x+=4 ) //calculating too much, but doesn't matter
+		{
+			uint16x4_t pixel = vld1_u16(&texel[x]);
 
 			#ifdef __SPARROW_INTERNAL_ALPHA__
 				#define MASK_DEFINED

@@ -3230,7 +3230,7 @@ inline void sp_intern_Triangle_tex_inter( Sint32 x1, Sint32 y1, Sint32 z1, Sint3
 	#endif
 }
 
-void draw_tiny_quad(Sint32 nx1,Sint32 ny1, Sint32 sx1, Sint32 sy1,
+static void draw_tiny_quad(Sint32 nx1,Sint32 ny1, Sint32 sx1, Sint32 sy1,
                      Sint32 nx2,Sint32 ny2, Sint32 sx2, Sint32 sy2,
                      Sint32 nx3,Sint32 ny3, Sint32 sx3, Sint32 sy3,
                      Sint32 nx4,Sint32 ny4, Sint32 sx4, Sint32 sy4,Sint32 z)
@@ -3243,12 +3243,13 @@ void draw_tiny_quad(Sint32 nx1,Sint32 ny1, Sint32 sx1, Sint32 sy1,
 									  nx4, ny4, z, sx4 , sy4 );
 }
 
-#define MAX_QUAD_SIZE 128
+#define MAX_QUAD_SIZE 256
 
-void draw_recursive_rotoquad(Sint32 nx1,Sint32 ny1, Sint32 sx1, Sint32 sy1,
-                             Sint32 nx2,Sint32 ny2, Sint32 sx2, Sint32 sy2,
-                             Sint32 nx3,Sint32 ny3, Sint32 sx3, Sint32 sy3,
-                             Sint32 nx4,Sint32 ny4, Sint32 sx4, Sint32 sy4,Sint32 z)
+static void draw_recursive_rotoquad(Sint32 nx1,Sint32 ny1, Sint32 sx1, Sint32 sy1,
+                             Sint32 nx2, Sint32 ny2, Sint32 sx2, Sint32 sy2,
+                             Sint32 nx3, Sint32 ny3, Sint32 sx3, Sint32 sy3,
+                             Sint32 nx4, Sint32 ny4, Sint32 sx4, Sint32 sy4,
+                             Sint32 z, Sint32 maxX, Sint32 maxY)
 {
 	if (nx1 < 0 && nx2 < 0 && nx3 < 0 && nx4 < 0)
 		return;
@@ -3258,7 +3259,7 @@ void draw_recursive_rotoquad(Sint32 nx1,Sint32 ny1, Sint32 sx1, Sint32 sy1,
 		return;
 	if (ny1 >= spTargetY && ny2 >= spTargetY && ny3 >= spTargetY && ny4 >= spTargetY)
 		return;
-	if (abs(nx1-nx4)+abs(ny1-ny4) > MAX_QUAD_SIZE)
+	if (abs(sx1-sx4) > maxY)
 	{
 		Sint32 nx14 = nx1 + nx4 >> 1;
 		Sint32 ny14 = ny1 + ny4 >> 1;
@@ -3271,14 +3272,14 @@ void draw_recursive_rotoquad(Sint32 nx1,Sint32 ny1, Sint32 sx1, Sint32 sy1,
 		draw_recursive_rotoquad(nx1 ,ny1 ,sx1 ,sy1 ,
 		                        nx2 ,ny2 ,sx2 ,sy2 ,
 		                        nx23,ny23,sx23,sy23,
-		                        nx14,ny14,sx14,sy14,z);
+		                        nx14,ny14,sx14,sy14,z,maxX,maxY);
 		draw_recursive_rotoquad(nx14,ny14,sx14,sy14,
 		                        nx23,ny23,sx23,sy23,
 		                        nx3 ,ny3 ,sx3 ,sy3 ,
-		                        nx4 ,ny4 ,sx4 ,sy4 ,z);
+		                        nx4 ,ny4 ,sx4 ,sy4 ,z,maxX,maxY);
 		return;
 	}
-	if (abs(nx1-nx2)+abs(ny1-ny2) > MAX_QUAD_SIZE)
+	if (abs(sy1 - sy2) > maxY)
 	{
 		Sint32 nx12 = nx1 + nx2 >> 1;
 		Sint32 ny12 = ny1 + ny2 >> 1;
@@ -3291,11 +3292,11 @@ void draw_recursive_rotoquad(Sint32 nx1,Sint32 ny1, Sint32 sx1, Sint32 sy1,
 		draw_recursive_rotoquad(nx1 ,ny1 ,sx1 ,sy1 ,
 		                        nx12,ny12,sx12,sy12,
 		                        nx34,ny34,sx34,sy34,
-		                        nx4 ,ny4 ,sx4 ,sy4 ,z);
+		                        nx4 ,ny4 ,sx4 ,sy4 ,z,maxX,maxY);
 		draw_recursive_rotoquad(nx12,ny12,sx12,sy12,
 		                        nx2 ,ny2 ,sx2 ,sy2 ,
 		                        nx3 ,ny3 ,sx3 ,sy3 ,
-		                        nx34,ny34,sx34,sy34,z);
+		                        nx34,ny34,sx34,sy34,z,maxX,maxY);
 		return;
 	}
 	draw_tiny_quad(nx1,ny1,sx1,sy1,nx2,ny2,sx2,sy2,nx3,ny3,sx3,sy3,nx4,ny4,sx4,sy4,z);
@@ -3530,7 +3531,9 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 		draw_recursive_rotoquad(nx1,ny1,sx    ,sy    ,
 		                        nx2,ny2,sx    ,sy + h,
 		                        nx3,ny3,sx + w,sy + h,
-		                        nx4,ny4,sx + w,sy    ,z);
+		                        nx4,ny4,sx + w,sy    ,z,
+		                        spFixedToInt(spDiv(spIntToFixed(MAX_QUAD_SIZE),spSqrt(zoomX))),
+		                        spFixedToInt(spDiv(spIntToFixed(MAX_QUAD_SIZE),spSqrt(zoomY))));
 	}
 
 	spTexture = oldTexture;
