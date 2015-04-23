@@ -661,7 +661,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					case SDLK_LALT:
 						spGenericInput.button[SP_BUTTON_B_NOWASD] = 1;
 						break;
-					case SDLK_RCTRL:
+					case SDLK_MENU:
 						spGenericInput.button[SP_BUTTON_X_NOWASD] = 1;
 						break;
 					case SDLK_LSHIFT:case SDLK_RSHIFT:
@@ -829,7 +829,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					case SDLK_LALT:
 						spGenericInput.button[SP_BUTTON_B_NOWASD] = 0;
 						break;
-					case SDLK_RCTRL:
+					case SDLK_MENU:
 						spGenericInput.button[SP_BUTTON_X_NOWASD] = 0;
 						break;
 					case SDLK_LSHIFT:case SDLK_RSHIFT:

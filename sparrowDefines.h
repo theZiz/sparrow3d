@@ -472,11 +472,11 @@
 	#define SP_BUTTON_R_NAME "e"
 	#define SP_BUTTON_R_NOWASD_NAME "PgDn"
 	#define SP_BUTTON_A_NAME "a"
-	#define SP_BUTTON_A_NOWASD_NAME "L Ctrl"
+	#define SP_BUTTON_A_NOWASD_NAME "Ctrl"
 	#define SP_BUTTON_B_NAME "d"
 	#define SP_BUTTON_B_NOWASD_NAME "Alt"
 	#define SP_BUTTON_X_NAME "s"
-	#define SP_BUTTON_X_NOWASD_NAME "R Ctrl"
+	#define SP_BUTTON_X_NOWASD_NAME "Menu"
 	#define SP_BUTTON_Y_NAME "w"	
 	#define SP_BUTTON_Y_NOWASD_NAME "Shift"
 	#define SP_BUTTON_LEFT_NAME         SP_BUTTON_A_NAME
