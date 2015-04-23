@@ -661,10 +661,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					case SDLK_LALT:
 						spGenericInput.button[SP_BUTTON_B_NOWASD] = 1;
 						break;
-					case SDLK_RALT:case SDLK_MODE:
-					#ifdef _WIN32
-					case 0: //AltGr doesn't have a symcode in windows. O_o
-					#endif
+					case SDLK_RCTRL:
 						spGenericInput.button[SP_BUTTON_X_NOWASD] = 1;
 						break;
 					case SDLK_LSHIFT:case SDLK_RSHIFT:
@@ -832,10 +829,7 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					case SDLK_LALT:
 						spGenericInput.button[SP_BUTTON_B_NOWASD] = 0;
 						break;
-					case SDLK_RALT:case SDLK_MODE:
-					#ifdef _WIN32
-					case 0: //AltGr doesn't have a symcode in windows. O_o
-					#endif
+					case SDLK_RCTRL:
 						spGenericInput.button[SP_BUTTON_X_NOWASD] = 0;
 						break;
 					case SDLK_LSHIFT:case SDLK_RSHIFT:
