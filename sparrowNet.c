@@ -2445,10 +2445,18 @@ int __irc_server_thread(void* data)
 			int l;
 			if (l = spNetReceiveFinished(tcp_thread))
 			{
-				buffer[l] = 0;
-				if (buffer[l-1] == 3)
-					buffer[l-1] = 0;
-				__irc_parse_result(server,buffer);
+				if (l > 0)
+				{
+					buffer[l] = 0;
+					if (buffer[l-1] == 3)
+						buffer[l-1] = 0;
+					__irc_parse_result(server,buffer);
+				}
+				else //Disconnect? Reconnect!
+				{
+					spNetCloseTCP(server->connection);
+					server->connection = spNetOpenClientTCP(server->ip);
+				}
 				tcp_thread = NULL;
 			}
 			spNetIRCChannelPointer mom = server->first_channel;
