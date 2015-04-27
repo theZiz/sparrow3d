@@ -3532,8 +3532,8 @@ PREFIX void spRotozoomSurfacePart( Sint32 x, Sint32 y, Sint32 z, SDL_Surface* su
 		                        nx2,ny2,sx    ,sy + h,
 		                        nx3,ny3,sx + w,sy + h,
 		                        nx4,ny4,sx + w,sy    ,z,
-		                        spFixedToInt(spDiv(spIntToFixed(MAX_QUAD_SIZE),spSqrt(zoomX))),
-		                        spFixedToInt(spDiv(spIntToFixed(MAX_QUAD_SIZE),spSqrt(zoomY))));
+		                        spFixedToInt(spDivHigh(spIntToFixed(MAX_QUAD_SIZE),spSqrt(zoomX))),
+		                        spFixedToInt(spDivHigh(spIntToFixed(MAX_QUAD_SIZE),spSqrt(zoomY))));
 	}
 
 	spTexture = oldTexture;
