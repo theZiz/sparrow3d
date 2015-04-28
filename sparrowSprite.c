@@ -154,6 +154,9 @@ PREFIX void spUpdateSprite( spSpritePointer sprite, Sint32 time )
 		return;
 	while ( time > sprite->wholeDuration )
 		time -= sprite->wholeDuration;
+	sprite->wholeAge += time;
+	if (sprite->wholeAge > sprite->wholeDuration)
+		sprite->wholeAge -= sprite->wholeDuration;
 	while ( time > sprite->momSub->duration - sprite->momSub->age )
 	{
 		time -= sprite->momSub->duration - sprite->momSub->age;
