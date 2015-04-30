@@ -238,8 +238,13 @@ PREFIX void spPrintDebug( char* text )
 	debug_time = time;
 }
 
+int spFullscreen = 1;
+int spAllowResize = 0;
+
 PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 {
+	spFullscreen = fullscreen;
+	spAllowResize = allowresize;
 	//if the renderTarget is the screen and the screen is recreated, the pointer
 	//will be invalid. We have to check for that:
 	int recallSelectRenderTarget = 0;
@@ -708,6 +713,16 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 						spLastKey.unicode = 0;
 						spLastKeyCountDown = 0;
 					}
+				#endif
+				#ifdef PANDORA
+				if (event.key.keysym.scancode == 147)
+				{
+					if (spFullscreen)
+						spResizeWindow(790,460,0,spAllowResize);
+					else
+						spResizeWindow(800,480,1,spAllowResize);
+					result = 1;
+				}
 				#endif
 				switch ( event.key.keysym.sym )
 				{
