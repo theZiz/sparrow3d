@@ -18,17 +18,18 @@
 /* File: sparrowMapping
  * 
  * sparrowMapping is for handling different mappings of controls. You
- * don't have think like "A is jumping" but "Jump button is jumping".
+ * don't to have think like "A is jumping" but "Jump button is jumping".
  * You define your own buttons with mapping to real existing buttons,
  * which are changeable. ;)
  * 
  * You first have to define a pool with every button the user shall be able
  * to choice. Afterwards you can add buttons and give the users possibilites to
- * change th button mapping.*/
+ * change the button mapping.*/
 
 #ifndef _SPARROW_MAPPING_H
 #define _SPARROW_MAPPING_H
 #include "sparrowDefines.h"
+#include <SDL.h>
 
 /* Define: SP_MAPPING_MAX
  *
@@ -231,6 +232,29 @@ PREFIX char* spMapButtonByID(int id);
  * char* - the name of the mapped button*/
 PREFIX char* spMapButtonByName(char* name);
 
+/* Function: spMapPoolByID
+ * 
+ * Returns the real button id of the real button behind the mapping via it's ID.
+ * 
+ * Parameters:
+ * id - the id of the button
+ * 
+ * Returns:
+ * int - the button id of the mapped button like SP_BUTTON_A*/
+PREFIX int spMapPoolByID(int id);
+
+/* Function: spMapPoolByName
+ * 
+ * Returns the real button id of the real button behind the mapping via it's name.
+ * Much slower than <spMapPoolByID>.
+ * 
+ * Parameters:
+ * name - the name of the button
+ * 
+ * Returns:
+ * int - the button id of the mapped button like SP_BUTTON_A*/
+PREFIX int spMapPoolByName(char* name);
+
 /* Function: spMapStartChangeByID
  * 
  * Starts the changing of the mapping of a buttons identified by it's ID. Use
@@ -316,5 +340,11 @@ PREFIX void spMapLoad(char* subfolder,char* filename);
  * to ~/.config/subfolder/filename
  * filename - filename to save to*/
 PREFIX void spMapSave(char* subfolder,char* filename);
+
+PREFIX void spMapPoolAddForDesktopHack();
+
+PREFIX void spMapDesktopHack(int value);
+
+PREFIX unsigned char spMapSDLKeyToChar(SDLKey key);
 
 #endif

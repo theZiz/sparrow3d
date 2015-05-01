@@ -649,7 +649,7 @@ static spLetterPointer spLetterFindMap( spLetterPointer root, spLetterPointer bu
 	temp[i] = 0;
 	*length = i+1;
 	//Finding the button:
-	char* realButton = spMapButtonByName(temp);
+	unsigned char* realButton = spMapButtonByName(temp);
 	if (realButton == NULL || strcmp(realButton,"None") == 0)
 	{
 		*length = 0;
@@ -691,7 +691,7 @@ PREFIX spLetterPointer spFontGetButton( spFontPointer font, Uint32 character )
 	return spLetterFind( font->buttonRoot, character );
 }
 
-PREFIX int spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPointer font )
+PREFIX int spFontDraw( Sint32 x, Sint32 y, Sint32 z, const unsigned char* text, spFontPointer font )
 {
 	int l = 0;
 	int pos = x;
@@ -736,7 +736,7 @@ typedef struct spLetterIterStruct
 	spLetterIterPointer next; //For the Drawing functions
 } spLetterIter;
 
-PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, const char *text, spFontPointer font )
+PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, const unsigned char *text, spFontPointer font )
 {
 	int l = 0;
 	int width;
@@ -803,7 +803,7 @@ PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z, const char *text, spFo
 	return width;
 }
 
-PREFIX int spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, const char *text, spFontPointer font )
+PREFIX int spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, const unsigned char *text, spFontPointer font )
 {
 	int l = 0;
 	int width;
@@ -870,7 +870,7 @@ PREFIX int spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z, const char *text, spF
 	return width;
 }
 
-PREFIX int spFontWidth(const char* text, spFontPointer font )
+PREFIX int spFontWidth(const unsigned char* text, spFontPointer font )
 {
 	int l = 0;
 	int width;
@@ -978,7 +978,7 @@ typedef struct spInternalTextLineStruct
 	spInternalTextLinePointer next;
 } spInternalTextLine;
 
-PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, spFontPointer font)
+PREFIX spTextBlockPointer spCreateTextBlock( const unsigned char* text, int max_width, spFontPointer font)
 {
 	//Cutting at spaces. If line break, do!
 	if (text == NULL)
@@ -1139,7 +1139,7 @@ char* add_letter_to_string(spLetterPointer letter,char* buffer,int* length)
 	return buffer;
 }
 
-PREFIX char* spFontGetLetterString(spFontPointer font,char* buffer,int length)
+PREFIX char* spFontGetLetterString(spFontPointer font,unsigned char* buffer,int length)
 {
 	if (buffer == NULL || length==0)
 		return 0;

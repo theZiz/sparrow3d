@@ -432,7 +432,7 @@ PREFIX spLetterPointer spFontGetButton( spFontPointer font, Uint32 character );
  *
  * Returns:
  * int - the printed width in pixels*/
-PREFIX int spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPointer font );
+PREFIX int spFontDraw( Sint32 x, Sint32 y, Sint32 z, const unsigned char* text, spFontPointer font );
 
 /* Function: spFontDrawRight
  *
@@ -446,7 +446,7 @@ PREFIX int spFontDraw( Sint32 x, Sint32 y, Sint32 z, const char* text, spFontPoi
  *
  * Returns:
  * int - the printed width in pixels*/
-PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font );
+PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const unsigned  char* text, spFontPointer font );
 
 /* Function: spFontDrawMiddle
  *
@@ -460,7 +460,7 @@ PREFIX int spFontDrawRight( Sint32 x, Sint32 y, Sint32 z,const char* text, spFon
  *
  * Returns:
  * int - the printed width in pixels*/
-PREFIX int spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spFontPointer font );
+PREFIX int spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const unsigned  char* text, spFontPointer font );
 
 /* Function: spFontWidth
  *
@@ -472,7 +472,7 @@ PREFIX int spFontDrawMiddle( Sint32 x, Sint32 y, Sint32 z,const char* text, spFo
  *
  * Returns:
  * int - the width in pixel, if you would draw the text with the font*/
-PREFIX int spFontWidth(const char* text, spFontPointer font );
+PREFIX int spFontWidth(const unsigned  char* text, spFontPointer font );
 
 /* Function: spFontDelete
  *
@@ -561,7 +561,7 @@ PREFIX void spFontAddEveryLetterOfTextBundle( spFontPointer font, spBundlePointe
  * 
  * Returns:
  * spTextBlockPointer - pointer to the created <spTextBlock> struct.*/
-PREFIX spTextBlockPointer spCreateTextBlock( const char* text, int max_width, spFontPointer font);
+PREFIX spTextBlockPointer spCreateTextBlock( const unsigned  char* text, int max_width, spFontPointer font);
 
 /* Function: spDeleteTextBlock
  * 
@@ -605,5 +605,5 @@ PREFIX int spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y
  * 
  * Returns:
  * char* - the pointer to buffer*/
-PREFIX char* spFontGetLetterString(spFontPointer font,char* buffer,int length);
+PREFIX char* spFontGetLetterString(spFontPointer font,unsigned char* buffer,int length);
 #endif

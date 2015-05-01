@@ -23,7 +23,11 @@
 #include <string.h>
 #include <stdio.h>
 
+#define SP_MAPPING_POOL_MAX 323
+
 char __spMapError[] = "None";
+int __spMapDesktopHack = 0;
+int __spMapDesktopButton[SP_MAPPING_POOL_MAX];
 
 struct
 {
@@ -33,15 +37,41 @@ struct
 	int poolButton;
 } __spMapButton[SP_MAPPING_MAX];
 
-#define SP_MAPPING_POOL_MAX 19
 struct
 {
 	int active;
 	char* realCaption;
-} __spMapPool[SP_MAPPING_POOL_MAX]; //biggest button number, however only on gp2x
+} __spMapPool[SP_MAPPING_POOL_MAX];
 
 int __spMapIsInitialized = 0;
 int __spMapStrategy = SP_MAPPING_NONE;
+
+const unsigned char __spMapOver255[87] = {
+	  1,   2,   3,   4,   5,   6,   7,  10,  11,  14,
+	 15,  16,  17,  18,  20,  21,  22,  23,  24,  25,
+	 26,  28,  29,  31,  37,  65,  66,  67,  68,  69,
+	 70,  71,  72,  73,  74,  75,  76,  77,  78,  79,
+	 80,  81,  82,  83,  84,  85,  86,  87,  88,  89,
+	 90, 123, 124, 125, 126, 128, 129, 130, 131, 132,
+	133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
+	143, 144, 145, 146, 147, 148, 149, 150, 151, 152,
+	153, 154, 155, 156, 157, 158, 159
+};
+
+PREFIX unsigned char spMapSDLKeyToChar(SDLKey key)
+{
+	if (key == '<')
+		return __spMapOver255[83];
+	if (key == '>')
+		return __spMapOver255[84];
+	if (key == '^')
+		return __spMapOver255[85];
+	if (key == 'v')
+		return __spMapOver255[86];
+	if (key < 256)
+		return (unsigned char)key;
+	return __spMapOver255[key-256];
+}
 
 PREFIX void spInitMapping( void )
 {
@@ -76,6 +106,17 @@ PREFIX void spMapPoolAdd(int button_id,char* caption)
 	__spMapPool[button_id].active = 1;
 	__spMapPool[button_id].realCaption = (char*)malloc(strlen(caption)+1);
 	sprintf(__spMapPool[button_id].realCaption,"%s",caption);
+}
+
+PREFIX void spMapPoolAddForDesktopHack()
+{
+	int i;
+	unsigned char buffer[4] = "[ ]";
+	for (i = 0; i < SP_MAPPING_POOL_MAX; i++)
+	{
+		buffer[1] = spMapSDLKeyToChar(i);
+		spMapPoolAdd(i,buffer);
+	}
 }
 
 PREFIX void spMapSetStrategy(int strategy)
@@ -193,6 +234,8 @@ PREFIX int spMapGetByID(int id)
 		return 0;
 	if (__spMapButton[id].poolButton < 0)
 		return 0;
+	if (__spMapDesktopHack)
+		return __spMapDesktopButton[__spMapButton[id].poolButton];
 	return spGetInput()->button[__spMapButton[id].poolButton];
 }
 
@@ -204,7 +247,10 @@ PREFIX void spMapSetByID(int id, int value)
 		return;
 	if (__spMapButton[id].poolButton < 0)
 		return;
-	spGetInput()->button[__spMapButton[id].poolButton] = value;
+	if (__spMapDesktopHack)
+		__spMapDesktopButton[__spMapButton[id].poolButton] = value;
+	else
+		spGetInput()->button[__spMapButton[id].poolButton] = value;
 }
 
 PREFIX int spMapGetByName(char* name)
@@ -212,7 +258,11 @@ PREFIX int spMapGetByName(char* name)
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
 		if (__spMapButton[i].active && __spMapButton[i].poolButton >= 0 && strcmp(__spMapButton[i].name,name) == 0)
+		{
+			if (__spMapDesktopHack)
+				return __spMapDesktopButton[__spMapButton[i].poolButton];
 			return spGetInput()->button[__spMapButton[i].poolButton];
+		}
 	return 0;
 }
 
@@ -222,7 +272,10 @@ PREFIX void spMapSetByName(char* name, int value)
 	for (i = 0; i < SP_MAPPING_MAX; i++)
 		if (__spMapButton[i].active && __spMapButton[i].poolButton >= 0 && strcmp(__spMapButton[i].name,name) == 0)
 		{
-			spGetInput()->button[__spMapButton[i].poolButton] = value;
+			if (__spMapDesktopHack)
+				__spMapDesktopButton[__spMapButton[i].poolButton] = value;
+			else
+				spGetInput()->button[__spMapButton[i].poolButton] = value;
 			return;
 		}
 }
@@ -265,6 +318,26 @@ PREFIX char* spMapButtonByName(char* name)
 	return __spMapError;
 }
 
+PREFIX int spMapPoolByID(int id)
+{
+	if (id < 0 || id >= SP_MAPPING_MAX)
+		return -1;
+	if (!__spMapButton[id].active)
+		return -1;
+	if (__spMapButton[id].poolButton < 0)
+		return -1;
+	return __spMapButton[id].poolButton;
+}
+
+PREFIX int spMapPoolByName(char* name)
+{
+	int i;
+	for (i = 0; i < SP_MAPPING_MAX; i++)
+		if (__spMapButton[i].active && __spMapButton[i].poolButton >= 0 && strcmp(__spMapButton[i].name,name) == 0)
+			return __spMapButton[i].poolButton;
+	return -1;
+}
+
 int __spMapChangingID = -1;
 
 PREFIX void spMapStartChangeByID(int id)
@@ -276,7 +349,12 @@ PREFIX void spMapStartChangeByID(int id)
 	int i;
 	for (i = 0; i < SP_MAPPING_POOL_MAX; i++)
 		if (__spMapPool[i].active)
-			spGetInput()->button[i] = 0;
+		{
+			if (__spMapDesktopHack)
+				__spMapDesktopButton[i] = 0;
+			else
+				spGetInput()->button[i] = 0;
+		}
 	__spMapChangingID = id;
 }
 
@@ -297,10 +375,13 @@ PREFIX int spMapContinueChange( void )
 		return -1;
 	int i;
 	for (i = 0; i < SP_MAPPING_POOL_MAX; i++)
-		if (__spMapPool[i].active && spGetInput()->button[i])
+		if (__spMapPool[i].active && ((__spMapDesktopHack == 0 && spGetInput()->button[i]) || (__spMapDesktopHack && __spMapDesktopButton[i])))
 		{
 			int r = spMapChange(__spMapChangingID,i);
-			spGetInput()->button[i] = 0;
+			if (__spMapDesktopHack)
+				__spMapDesktopButton[i] = 0;
+			else
+				spGetInput()->button[i] = 0;
 			__spMapChangingID = -1;
 			if (r == 1)
 				return 2;
@@ -347,4 +428,9 @@ PREFIX void spMapSave(char* subfolder,char* filename)
 			spConfigSetInt(config,__spMapButton[i].name,__spMapButton[i].poolButton);
 	spConfigWrite(config);
 	spConfigFree(config);
+}
+
+PREFIX void spMapDesktopHack(int value)
+{
+	__spMapDesktopHack = value;
 }

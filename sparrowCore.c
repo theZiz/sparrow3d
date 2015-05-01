@@ -85,6 +85,9 @@ char spWindowName[512] = "";
 int spVirtualKeyboardSpaceButton = -1;
 int spVirtualKeyboardBackspaceButton = -1;
 
+int __spMapDesktopHack;
+int __spMapDesktopButton[SP_MAPPING_MAX];
+
 typedef struct sp_cache_struct *sp_cache_pointer;
 typedef struct sp_cache_struct {
 	char* name;
@@ -542,6 +545,8 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				spGenericInput.button[event.jbutton.button] = 0;
 				break;
 			case SDL_KEYDOWN:
+				if (__spMapDesktopHack)
+					__spMapDesktopButton[event.key.keysym.sym] = 1;
 				//GCW and DINGUX use the "keyboard" for buttons
 				#if (!(defined GCW)) && (!(defined DINGUX))
 					if ( spGenericInput.keyboard.buffer
@@ -706,6 +711,8 @@ inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				}
 				break;
 			case SDL_KEYUP:
+				if (__spMapDesktopHack)
+					__spMapDesktopButton[event.key.keysym.sym] = 0;
 				//GCW and DINGUX use the "keyboard" for buttons
 				#if (!(defined GCW)) && (!(defined DINGUX))
 					if ( spGenericInput.keyboard.buffer )
@@ -1339,7 +1346,7 @@ PREFIX Sint32 spGetSizeFactor( void )
 	return spZoom;
 }
 
-SDL_Surface* spLoadUncachedSurface( char* name )
+SDL_Surface* spLoadUncachedSurface( const char* name )
 {
 	SDL_Surface* surface = IMG_Load( name );
 	if ( !surface )
@@ -1353,7 +1360,7 @@ SDL_Surface* spLoadUncachedSurface( char* name )
 	return result;
 }
 
-SDL_Surface* spLoadUncachedSurfaceZoom( char* name, Sint32 zoom)
+SDL_Surface* spLoadUncachedSurfaceZoom( const char* name, Sint32 zoom)
 {
 	if (zoom == SP_ONE)
 		return spLoadUncachedSurface( name );
@@ -2094,3 +2101,4 @@ PREFIX void spSetVirtualKeyboardBackspaceButton(int button)
 {
 	spVirtualKeyboardBackspaceButton = button;
 }
+
