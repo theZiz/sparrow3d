@@ -31,6 +31,11 @@
 #include "sparrowDefines.h"
 #include <SDL.h>
 
+/* Define: SP_MAPPING_SET_MAX
+ *
+ * The total number of different mapping sets to create.*/
+#define SP_MAPPING_SET_MAX 16
+
 /* Define: SP_MAPPING_MAX
  *
  * The maximal number of buttons to create. This may appeal strange, why to
@@ -347,4 +352,5 @@ PREFIX void spMapDesktopHack(int value);
 
 PREFIX unsigned char spMapSDLKeyToChar(SDLKey key);
 
+PREFIX void spMapSetMapSet(int set);
 #endif

@@ -28,6 +28,7 @@
 char __spMapError[] = "None";
 int __spMapDesktopHack = 0;
 int __spMapDesktopButton[SP_MAPPING_POOL_MAX];
+int __spMapSet = 0;
 
 struct
 {
@@ -35,16 +36,16 @@ struct
 	char* name;
 	int active;
 	int poolButton;
-} __spMapButton[SP_MAPPING_MAX];
+} __spMapButton[SP_MAPPING_SET_MAX][SP_MAPPING_MAX];
 
 struct
 {
 	int active;
 	char* realCaption;
-} __spMapPool[SP_MAPPING_POOL_MAX];
+} __spMapPool[SP_MAPPING_SET_MAX][SP_MAPPING_POOL_MAX];
 
 int __spMapIsInitialized = 0;
-int __spMapStrategy = SP_MAPPING_NONE;
+int __spMapStrategy[SP_MAPPING_SET_MAX] = {SP_MAPPING_NONE};
 
 const unsigned char __spMapOver255[87] = {
 	  1,   2,   3,   4,   5,   6,   7,  10,  11,  14,
@@ -78,34 +79,41 @@ PREFIX void spInitMapping( void )
 	if (__spMapIsInitialized)
 		return;
 	__spMapIsInitialized = 1;
-	int i;
-	for (i = 0; i < SP_MAPPING_MAX; i++)
-		__spMapButton[i].active = 0;
-	for (i = 0; i < SP_MAPPING_POOL_MAX; i++)
-		__spMapPool[i].active = 0;
+	int i,j;
+	for (j = 0; j < SP_MAPPING_SET_MAX; j++)
+	{
+		for (i = 0; i < SP_MAPPING_MAX; i++)
+			__spMapButton[j][i].active = 0;
+		for (i = 0; i < SP_MAPPING_POOL_MAX; i++)
+			__spMapPool[j][i].active = 0;
+	}
+	__spMapSet = 0;
 };
 
 PREFIX void spMapClean( void )
 {
-	int i;
-	for (i = 0; i < SP_MAPPING_MAX; i++)
-		if (__spMapButton[i].active)
-		{
-			__spMapButton[i].active = 0;
-			free(__spMapButton[i].caption);
-			free(__spMapButton[i].name);
-		}
-	for (i = 0; i < SP_MAPPING_POOL_MAX; i++)
-		__spMapPool[i].active = 0;
+	int i,j;
+	for (j = 0; j < SP_MAPPING_SET_MAX; j++)
+	{
+		for (i = 0; i < SP_MAPPING_MAX; i++)
+			if (__spMapButton[j][i].active)
+			{
+				__spMapButton[j][i].active = 0;
+				free(__spMapButton[j][i].caption);
+				free(__spMapButton[j][i].name);
+			}
+		for (i = 0; i < SP_MAPPING_POOL_MAX; i++)
+			__spMapPool[j][i].active = 0;
+	}
 }
 
 PREFIX void spMapPoolAdd(int button_id,char* caption)
 {
 	if (button_id < 0 || button_id >= SP_MAPPING_POOL_MAX)
 		return;
-	__spMapPool[button_id].active = 1;
-	__spMapPool[button_id].realCaption = (char*)malloc(strlen(caption)+1);
-	sprintf(__spMapPool[button_id].realCaption,"%s",caption);
+	__spMapPool[__spMapSet][button_id].active = 1;
+	__spMapPool[__spMapSet][button_id].realCaption = (char*)malloc(strlen(caption)+1);
+	sprintf(__spMapPool[__spMapSet][button_id].realCaption,"%s",caption);
 }
 
 PREFIX void spMapPoolAddForDesktopHack()
@@ -121,11 +129,11 @@ PREFIX void spMapPoolAddForDesktopHack()
 
 PREFIX void spMapSetStrategy(int strategy)
 {
-	__spMapStrategy = strategy;
+	__spMapStrategy[__spMapSet] = strategy;
 }
 
-char* __spMapCollisionCaption = NULL;
-char* __spMapCollisionPool = NULL;
+char* __spMapCollisionCaption[SP_MAPPING_SET_MAX] = {NULL};
+char* __spMapCollisionPool[SP_MAPPING_SET_MAX] = {NULL};
 
 PREFIX int spMapChange(int id,int poolButton)
 {
@@ -133,45 +141,45 @@ PREFIX int spMapChange(int id,int poolButton)
 		return;
 	if (poolButton < 0 || poolButton >= SP_MAPPING_POOL_MAX)
 		return;
-	if (!__spMapButton[id].active)
+	if (!__spMapButton[__spMapSet][id].active)
 		return;
-	if (!__spMapPool[poolButton].active) //not in pool!
+	if (!__spMapPool[__spMapSet][poolButton].active) //not in pool!
 		return;
 	int i;
-	switch (__spMapStrategy)
+	switch (__spMapStrategy[__spMapSet])
 	{
 		case SP_MAPPING_SWITCH:
 			//Searching, whether the button is already used.
 			for (i = 0; i < SP_MAPPING_MAX; i++)
-				if (__spMapButton[i].active && __spMapButton[i].poolButton == poolButton)
+				if (__spMapButton[__spMapSet][i].active && __spMapButton[__spMapSet][i].poolButton == poolButton)
 					break;
 			if (i != SP_MAPPING_MAX) //found
-				__spMapButton[i].poolButton = __spMapButton[id].poolButton;
-			__spMapButton[id].poolButton = poolButton;
+				__spMapButton[__spMapSet][i].poolButton = __spMapButton[__spMapSet][id].poolButton;
+			__spMapButton[__spMapSet][id].poolButton = poolButton;
 			break;
 		case SP_MAPPING_OTHER_INVALID:
 			//Searching, whether the button is already used.
 			for (i = 0; i < SP_MAPPING_MAX; i++)
-				if (__spMapButton[i].active && __spMapButton[i].poolButton == poolButton)
-					__spMapButton[i].poolButton = -1;
-			__spMapButton[id].poolButton = poolButton;
+				if (__spMapButton[__spMapSet][i].active && __spMapButton[__spMapSet][i].poolButton == poolButton)
+					__spMapButton[__spMapSet][i].poolButton = -1;
+			__spMapButton[__spMapSet][id].poolButton = poolButton;
 			break;
 		case SP_MAPPING_CANCEL:
 			//Searching, whether the button is already used.
 			for (i = 0; i < SP_MAPPING_MAX; i++)
-				if (__spMapButton[i].active && __spMapButton[i].poolButton == poolButton)
+				if (__spMapButton[__spMapSet][i].active && __spMapButton[__spMapSet][i].poolButton == poolButton)
 					break;
 			if (i == SP_MAPPING_MAX) //no break!
-				__spMapButton[id].poolButton = poolButton;
+				__spMapButton[__spMapSet][id].poolButton = poolButton;
 			else
 			{
-				__spMapCollisionCaption = __spMapButton[i].caption;
-				__spMapCollisionPool = __spMapPool[poolButton].realCaption;
+				__spMapCollisionCaption[__spMapSet] = __spMapButton[__spMapSet][i].caption;
+				__spMapCollisionPool[__spMapSet] = __spMapPool[__spMapSet][poolButton].realCaption;
 				return 1;
 			}
 			break;
 		default:
-			__spMapButton[id].poolButton = poolButton;
+			__spMapButton[__spMapSet][id].poolButton = poolButton;
 	}
 	return 0;
 }
@@ -180,13 +188,13 @@ PREFIX void spMapChangeNextInPool(int id)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return;
-	if (!__spMapButton[id].active)
+	if (!__spMapButton[__spMapSet][id].active)
 		return;
-	int poolButton = __spMapButton[id].poolButton;
+	int poolButton = __spMapButton[__spMapSet][id].poolButton;
 	do
 	{
 		poolButton = (poolButton+1)%SP_MAPPING_POOL_MAX;
-		while (!__spMapPool[poolButton].active) //not in pool
+		while (!__spMapPool[__spMapSet][poolButton].active) //not in pool
 			poolButton = (poolButton+1)%SP_MAPPING_POOL_MAX;
 	}
 	while (spMapChange(id,poolButton));
@@ -196,13 +204,13 @@ PREFIX void spMapChangePreviousInPool(int id)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return;
-	if (!__spMapButton[id].active)
+	if (!__spMapButton[__spMapSet][id].active)
 		return;
-	int poolButton = __spMapButton[id].poolButton;
+	int poolButton = __spMapButton[__spMapSet][id].poolButton;
 	do
 	{
 		poolButton = (poolButton+SP_MAPPING_POOL_MAX-1)%SP_MAPPING_POOL_MAX;
-		while (!__spMapPool[poolButton].active) //not in pool
+		while (!__spMapPool[__spMapSet][poolButton].active) //not in pool
 			poolButton = (poolButton+SP_MAPPING_POOL_MAX-1)%SP_MAPPING_POOL_MAX;
 	}
 	while (spMapChange(id,poolButton));
@@ -214,54 +222,54 @@ PREFIX void spMapButtonAdd(int id,char* name,char* caption,int poolButton)
 		return;
 	if (poolButton < 0 || poolButton >= SP_MAPPING_POOL_MAX)
 		return;
-	if (__spMapButton[id].active) //Already added
+	if (__spMapButton[__spMapSet][id].active) //Already added
 		return;
-	if (!__spMapPool[poolButton].active) //not in pool!
+	if (!__spMapPool[__spMapSet][poolButton].active) //not in pool!
 		return;
-	__spMapButton[id].active = 1;
-	__spMapButton[id].poolButton = poolButton;
-	__spMapButton[id].caption = (char*)malloc(strlen(caption)+1);
-	sprintf(__spMapButton[id].caption,"%s",caption);
-	__spMapButton[id].name = (char*)malloc(strlen(name)+1);
-	sprintf(__spMapButton[id].name,"%s",name);
+	__spMapButton[__spMapSet][id].active = 1;
+	__spMapButton[__spMapSet][id].poolButton = poolButton;
+	__spMapButton[__spMapSet][id].caption = (char*)malloc(strlen(caption)+1);
+	sprintf(__spMapButton[__spMapSet][id].caption,"%s",caption);
+	__spMapButton[__spMapSet][id].name = (char*)malloc(strlen(name)+1);
+	sprintf(__spMapButton[__spMapSet][id].name,"%s",name);
 }
 
 PREFIX int spMapGetByID(int id)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return 0;
-	if (!__spMapButton[id].active)
+	if (!__spMapButton[__spMapSet][id].active)
 		return 0;
-	if (__spMapButton[id].poolButton < 0)
+	if (__spMapButton[__spMapSet][id].poolButton < 0)
 		return 0;
 	if (__spMapDesktopHack)
-		return __spMapDesktopButton[__spMapButton[id].poolButton];
-	return spGetInput()->button[__spMapButton[id].poolButton];
+		return __spMapDesktopButton[__spMapButton[__spMapSet][id].poolButton];
+	return spGetInput()->button[__spMapButton[__spMapSet][id].poolButton];
 }
 
 PREFIX void spMapSetByID(int id, int value)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return;
-	if (!__spMapButton[id].active)
+	if (!__spMapButton[__spMapSet][id].active)
 		return;
-	if (__spMapButton[id].poolButton < 0)
+	if (__spMapButton[__spMapSet][id].poolButton < 0)
 		return;
 	if (__spMapDesktopHack)
-		__spMapDesktopButton[__spMapButton[id].poolButton] = value;
+		__spMapDesktopButton[__spMapButton[__spMapSet][id].poolButton] = value;
 	else
-		spGetInput()->button[__spMapButton[id].poolButton] = value;
+		spGetInput()->button[__spMapButton[__spMapSet][id].poolButton] = value;
 }
 
 PREFIX int spMapGetByName(char* name)
 {
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
-		if (__spMapButton[i].active && __spMapButton[i].poolButton >= 0 && strcmp(__spMapButton[i].name,name) == 0)
+		if (__spMapButton[__spMapSet][i].active && __spMapButton[__spMapSet][i].poolButton >= 0 && strcmp(__spMapButton[__spMapSet][i].name,name) == 0)
 		{
 			if (__spMapDesktopHack)
-				return __spMapDesktopButton[__spMapButton[i].poolButton];
-			return spGetInput()->button[__spMapButton[i].poolButton];
+				return __spMapDesktopButton[__spMapButton[__spMapSet][i].poolButton];
+			return spGetInput()->button[__spMapButton[__spMapSet][i].poolButton];
 		}
 	return 0;
 }
@@ -270,12 +278,12 @@ PREFIX void spMapSetByName(char* name, int value)
 {
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
-		if (__spMapButton[i].active && __spMapButton[i].poolButton >= 0 && strcmp(__spMapButton[i].name,name) == 0)
+		if (__spMapButton[__spMapSet][i].active && __spMapButton[__spMapSet][i].poolButton >= 0 && strcmp(__spMapButton[__spMapSet][i].name,name) == 0)
 		{
 			if (__spMapDesktopHack)
-				__spMapDesktopButton[__spMapButton[i].poolButton] = value;
+				__spMapDesktopButton[__spMapButton[__spMapSet][i].poolButton] = value;
 			else
-				spGetInput()->button[__spMapButton[i].poolButton] = value;
+				spGetInput()->button[__spMapButton[__spMapSet][i].poolButton] = value;
 			return;
 		}
 }
@@ -284,17 +292,17 @@ PREFIX char* spMapCaptionByID(int id)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return __spMapError;
-	if (!__spMapButton[id].active)
+	if (!__spMapButton[__spMapSet][id].active)
 		return __spMapError;
-	return __spMapButton[id].caption;
+	return __spMapButton[__spMapSet][id].caption;
 }
 
 PREFIX char* spMapCaptionByName(char* name)
 {
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
-		if (__spMapButton[i].active && strcmp(__spMapButton[i].name,name) == 0)
-			return __spMapButton[i].caption;
+		if (__spMapButton[__spMapSet][i].active && strcmp(__spMapButton[__spMapSet][i].name,name) == 0)
+			return __spMapButton[__spMapSet][i].caption;
 	return __spMapError;
 }
 
@@ -302,19 +310,19 @@ PREFIX char* spMapButtonByID(int id)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return __spMapError;
-	if (!__spMapButton[id].active)
+	if (!__spMapButton[__spMapSet][id].active)
 		return __spMapError;
-	if (__spMapButton[id].poolButton < 0)
+	if (__spMapButton[__spMapSet][id].poolButton < 0)
 		return __spMapError;
-	return __spMapPool[__spMapButton[id].poolButton].realCaption;
+	return __spMapPool[__spMapSet][__spMapButton[__spMapSet][id].poolButton].realCaption;
 }
 
 PREFIX char* spMapButtonByName(char* name)
 {
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
-		if (__spMapButton[i].active && __spMapButton[i].poolButton >= 0 && strcmp(__spMapButton[i].name,name) == 0)
-			return __spMapPool[__spMapButton[i].poolButton].realCaption;
+		if (__spMapButton[__spMapSet][i].active && __spMapButton[__spMapSet][i].poolButton >= 0 && strcmp(__spMapButton[__spMapSet][i].name,name) == 0)
+			return __spMapPool[__spMapSet][__spMapButton[__spMapSet][i].poolButton].realCaption;
 	return __spMapError;
 }
 
@@ -322,19 +330,19 @@ PREFIX int spMapPoolByID(int id)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
 		return -1;
-	if (!__spMapButton[id].active)
+	if (!__spMapButton[__spMapSet][id].active)
 		return -1;
-	if (__spMapButton[id].poolButton < 0)
+	if (__spMapButton[__spMapSet][id].poolButton < 0)
 		return -1;
-	return __spMapButton[id].poolButton;
+	return __spMapButton[__spMapSet][id].poolButton;
 }
 
 PREFIX int spMapPoolByName(char* name)
 {
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
-		if (__spMapButton[i].active && __spMapButton[i].poolButton >= 0 && strcmp(__spMapButton[i].name,name) == 0)
-			return __spMapButton[i].poolButton;
+		if (__spMapButton[__spMapSet][i].active && __spMapButton[__spMapSet][i].poolButton >= 0 && strcmp(__spMapButton[__spMapSet][i].name,name) == 0)
+			return __spMapButton[__spMapSet][i].poolButton;
 	return -1;
 }
 
@@ -348,7 +356,7 @@ PREFIX void spMapStartChangeByID(int id)
 		return;
 	int i;
 	for (i = 0; i < SP_MAPPING_POOL_MAX; i++)
-		if (__spMapPool[i].active)
+		if (__spMapPool[__spMapSet][i].active)
 		{
 			if (__spMapDesktopHack)
 				__spMapDesktopButton[i] = 0;
@@ -362,7 +370,7 @@ PREFIX void spMapStartChangeByName(char* name)
 {
 	int i,id = -1;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
-		if (__spMapButton[i].active && __spMapButton[i].poolButton >= 0 && strcmp(__spMapButton[i].name,name) == 0)
+		if (__spMapButton[__spMapSet][i].active && __spMapButton[__spMapSet][i].poolButton >= 0 && strcmp(__spMapButton[__spMapSet][i].name,name) == 0)
 		{
 			spMapStartChangeByID(id);
 			return;
@@ -375,7 +383,7 @@ PREFIX int spMapContinueChange( void )
 		return -1;
 	int i;
 	for (i = 0; i < SP_MAPPING_POOL_MAX; i++)
-		if (__spMapPool[i].active && ((__spMapDesktopHack == 0 && spGetInput()->button[i]) || (__spMapDesktopHack && __spMapDesktopButton[i])))
+		if (__spMapPool[__spMapSet][i].active && ((__spMapDesktopHack == 0 && spGetInput()->button[i]) || (__spMapDesktopHack && __spMapDesktopButton[i])))
 		{
 			int r = spMapChange(__spMapChangingID,i);
 			if (__spMapDesktopHack)
@@ -392,12 +400,12 @@ PREFIX int spMapContinueChange( void )
 
 PREFIX char* spMapLastCollisionCaption( void )
 {
-	return __spMapCollisionCaption;
+	return __spMapCollisionCaption[__spMapSet];
 }
 	
 PREFIX char* spMapLastCollisionPool( void )
 {
-	return __spMapCollisionPool;
+	return __spMapCollisionPool[__spMapSet];
 }
 
 PREFIX void spMapCancelChange( void )
@@ -412,8 +420,8 @@ PREFIX void spMapLoad(char* subfolder,char* filename)
 	//For every mapping changing the config:
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
-		if (__spMapButton[i].active)
-			__spMapButton[i].poolButton = spConfigGetInt(config,__spMapButton[i].name,__spMapButton[i].poolButton);
+		if (__spMapButton[__spMapSet][i].active)
+			__spMapButton[__spMapSet][i].poolButton = spConfigGetInt(config,__spMapButton[__spMapSet][i].name,__spMapButton[__spMapSet][i].poolButton);
 	spConfigFree(config);
 }
 
@@ -424,8 +432,8 @@ PREFIX void spMapSave(char* subfolder,char* filename)
 	//For every mapping changing the config:
 	int i;
 	for (i = 0; i < SP_MAPPING_MAX; i++)
-		if (__spMapButton[i].active)
-			spConfigSetInt(config,__spMapButton[i].name,__spMapButton[i].poolButton);
+		if (__spMapButton[__spMapSet][i].active)
+			spConfigSetInt(config,__spMapButton[__spMapSet][i].name,__spMapButton[__spMapSet][i].poolButton);
 	spConfigWrite(config);
 	spConfigFree(config);
 }
@@ -433,4 +441,13 @@ PREFIX void spMapSave(char* subfolder,char* filename)
 PREFIX void spMapDesktopHack(int value)
 {
 	__spMapDesktopHack = value;
+}
+
+PREFIX void spMapSetMapSet(int set)
+{
+	if (set < 0)
+		return;
+	if (set >= SP_MAPPING_SET_MAX)
+		return;
+	__spMapSet = set;
 }
