@@ -1074,6 +1074,7 @@ PREFIX spTextBlockPointer spCreateTextBlock( const unsigned char* text, int max_
 	while (firstLine)
 	{
 		spInternalTextLinePointer next = firstLine->next;
+		block->line[i].font = font;
 		block->line[i].count = firstLine->count;
 		block->line[i].width = firstLine->width;
 		block->line[i].text = firstLine->text;
@@ -1100,26 +1101,33 @@ PREFIX int spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y
 {
 	if (block == NULL)
 		return;
-	int showable_lines = height/font->maxheight;
+	if (block->line_count < 1)
+		return;
+	int showable_lines = height/(font?font->maxheight:block->line[0].font->maxheight);
 	int unseen_lines = spMax(0,block->line_count - showable_lines);
 	int start_line = spFixedRoundInt(position*unseen_lines);
 	int end_line = spMin(start_line+showable_lines,block->line_count);
 	int i;
+	spFontPointer used_font;
 	for (i = start_line; i < end_line; i++)
 	{
+		if (font)
+			used_font = font;
+		else
+			used_font = block->line[i].font;
 		switch (alignment)
 		{
 			case left:
-				spFontDraw(x,y,z,block->line[i].text,font);
+				spFontDraw(x,y,z,block->line[i].text,used_font);
 				break;
 			case middle:
-				spFontDraw(x+(block->max_width-block->line[i].width)/2,y,z,block->line[i].text,font);
+				spFontDraw(x+(block->max_width-block->line[i].width)/2,y,z,block->line[i].text,used_font);
 				break;
 			case right:
-				spFontDraw(x+block->max_width-block->line[i].width,y,z,block->line[i].text,font);
+				spFontDraw(x+block->max_width-block->line[i].width,y,z,block->line[i].text,used_font);
 				break;
 		}
-		y+=font->maxheight;
+		y+=used_font->maxheight;
 	}
 	return end_line-start_line;
 }

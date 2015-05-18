@@ -145,13 +145,15 @@ typedef struct spFontStruct
  * Variables:
  * count (int) - the number of letters in this line
  * width (int) - the width in pixel of this line
- * text (char*) - the content of the line*/
+ * text (char*) - the content of the line
+ * font (spFontPointer> - the used font*/
 typedef struct spTextLineStruct *spTextLinePointer;
 typedef struct spTextLineStruct
 {
 	int count;
 	int width;
 	char* text;
+	spFontPointer font;
 } spTextLine;
 
 /* type: spTextBlock
@@ -588,7 +590,8 @@ PREFIX void spDeleteTextBlock(spTextBlockPointer block);
  * fits in the block->max_width X height block, of course this parameters doesn't
  * make any sense and is ignored
  * font - the font to draw the text. Should be the same as used in
- * <spCreateTextBlock>, but however don't have to
+ * <spCreateTextBlock> or NULL, but however don't have to. If NULL the font of
+ * <spCreateTextBlock> is used.
  * 
  * Returns:
  * int - the number of lines drawn*/
