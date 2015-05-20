@@ -252,7 +252,11 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	//will be invalid. We have to check for that:
 	int recallSelectRenderTarget = 0;
 	if (spWindow && spWindow == spGetRenderTarget())
+	{
+		//the old target will be invalid in the end
+		spSelectRenderTarget(NULL);
 		recallSelectRenderTarget = 1;
+	}
 #if defined DOUBLEBUFFERING_BLIT || defined DOUBLEBUFFERING_BLIT_AND_FLIP
 	spScreen = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_FULLSCREEN );
 	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );

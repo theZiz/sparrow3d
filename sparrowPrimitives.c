@@ -319,12 +319,15 @@ PREFIX void spSelectRenderTarget( SDL_Surface* target )
 	if (spTarget)
 		SDL_UnlockSurface( spTarget );
 	spTarget = target;
-	spTargetScanLine = target->pitch/target->format->BytesPerPixel;
-	spTargetX = target->w;
-	spTargetY = target->h;
-	spTargetPixel = ( Uint16* )target->pixels;
-	spReAllocateZBuffer();
-	SDL_LockSurface( spTarget );
+	if (target)
+	{
+		spTargetScanLine = target->pitch/target->format->BytesPerPixel;
+		spTargetX = target->w;
+		spTargetY = target->h;
+		spTargetPixel = ( Uint16* )target->pixels;
+		spReAllocateZBuffer();
+		SDL_LockSurface( spTarget );
+	}
 }
 
 PREFIX SDL_Surface* spGetRenderTarget( void )

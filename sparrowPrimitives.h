@@ -109,7 +109,8 @@ PREFIX Sint32* spGetOne_over_x_pointer( void );
  * of the content of the zbuffer after this call!
  * 
  * Parameters:
- * target - the new target every draw call will render to*/
+ * target - the new target every draw call will render to. If NULL the
+ * target is set to Null, but the old target is unlocked.*/
 PREFIX void spSelectRenderTarget( SDL_Surface* target );
 
 /* Function: spGetRenderTarget
