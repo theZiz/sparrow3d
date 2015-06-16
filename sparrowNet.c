@@ -2068,9 +2068,28 @@ void __irc_remove_channel(spNetIRCServerPointer server,spNetIRCChannelPointer ch
 	}
 }
 
-void __irc_add_message(spNetIRCServerPointer server,spNetIRCMessagePointer* first_message,spNetIRCMessagePointer* last_message,char* type,char* message,char* user)
+spNetIRCMessagePointer __irc_add_message(spNetIRCServerPointer server,spNetIRCMessagePointer* first_message,spNetIRCMessagePointer* last_message,char* type,char* message,char* user)
 {
 	spNetIRCMessagePointer msg = (spNetIRCMessagePointer)malloc(sizeof(spNetIRCMessage));
+	msg->ctcp[0] = 0;
+	if (message[0] == 1) //ctcp
+	{
+		char* end = strchr(&message[1],1);
+		if (end)
+			end[0] = 0;
+		int i;
+		for (i = 0; i < 15;i++)
+		{
+			message++;
+			if (message[0] != ' ')
+				msg->ctcp[i] = message[0];
+			else
+				break;
+		}
+		if (message[0] == ' ')
+			message++;
+		msg->ctcp[i] = 0;
+	}
 	sprintf(msg->type,"%s",type);
 	if (user)
 		sprintf(msg->user,"%s",user);
@@ -2084,6 +2103,7 @@ void __irc_add_message(spNetIRCServerPointer server,spNetIRCMessagePointer* firs
 		*first_message = msg;
 	*last_message = msg;
 	msg->time_stamp = time(NULL);
+	return msg;
 }
 
 void __irc_split_user_destiny(char** parameters,char** user,char** prefix,char** destiny)
@@ -2493,7 +2513,10 @@ int __irc_server_thread(void* data)
 						mom->last_add_read_message = mom->last_add_read_message->next;
 					while (1)
 					{
-						__irc_add_message(server,&(mom->first_message),&(mom->last_message),"PRIVMSG",mom->last_add_read_message->message,mom->last_add_read_message->user);
+						memcpy(
+							__irc_add_message(server,&(mom->first_message),&(mom->last_message),"PRIVMSG",mom->last_add_read_message->message,mom->last_add_read_message->user)->ctcp,
+							mom->last_add_read_message->ctcp,
+							16);
 						if (mom->last_add_read_message->next)
 							mom->last_add_read_message = mom->last_add_read_message->next;
 						else
@@ -2636,8 +2659,23 @@ PREFIX void spNetIRCSendMessage(spNetIRCServerPointer server,spNetIRCChannelPoin
 	char buffer[4096];
 	if (channel)
 	{
-		sprintf(buffer,"PRIVMSG %s :%s",channel->name,message);
-		__irc_add_message(server,&(channel->first_add_message),&(channel->last_add_message),"PRIVMSG",message,server->nickname);
+		if (message[0] == '/' &&
+			message[1] == 'm' &&
+			message[2] == 'e' &&
+			message[3] == ' ')		
+		{
+			char message_buffer[4096];
+			sprintf(message_buffer,"\001ACTION%s\001",&message[3]);
+			sprintf(buffer,"PRIVMSG %s :%s",channel->name,message_buffer);
+			spNetIRCSend(server,buffer);
+			__irc_add_message(server,&(channel->first_add_message),&(channel->last_add_message),"PRIVMSG",message_buffer,server->nickname);
+		}
+		else
+		{
+			sprintf(buffer,"PRIVMSG %s :%s",channel->name,message);
+			spNetIRCSend(server,buffer);	
+			__irc_add_message(server,&(channel->first_add_message),&(channel->last_add_message),"PRIVMSG",message,server->nickname);
+		}
 	}
 	else
 	{
@@ -2650,6 +2688,7 @@ PREFIX void spNetIRCSendMessage(spNetIRCServerPointer server,spNetIRCChannelPoin
 			i++;
 		}
 		__irc_add_message(server,&(server->first_add_message),&(server->last_add_message),"PRIVMSG",message,server->nickname);
+		spNetIRCSend(server,buffer);	
 	}
-	spNetIRCSend(server,buffer);	
 }
+

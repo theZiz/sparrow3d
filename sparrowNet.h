@@ -839,7 +839,8 @@ PREFIX int spNetC4AHowManyCached( void );
  * type - type of the message (not always set)
  * user - user. * means server
  * message - message of the message
- * next - pointer to the next element in the list*/
+ * next - pointer to the next element in the list
+ * ctcp - char[16], if not "" the name of the ctcp event like ACTION.*/
 typedef struct spNetIRCMessageStruct *spNetIRCMessagePointer;
 typedef struct spNetIRCMessageStruct {
 	char type[128];
@@ -847,6 +848,7 @@ typedef struct spNetIRCMessageStruct {
 	char message[1024];
 	time_t time_stamp;
 	spNetIRCMessagePointer next;
+	char ctcp[16];
 } spNetIRCMessage;
 
 /* Type: spNetIRCNick
