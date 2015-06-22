@@ -93,7 +93,7 @@ SDL_PATH = -I/usr/include/SDL
 # obviously. Even spSleep is slow moooooo'ed.
 # CFLAGS += -DDEBUG_SLOWMOTION=5
 
-SPARROW_TEST = testsparrow testfile testnet testreal3d testnet_terminal_server testnet_terminal_client
+SPARROW_TEST = testsparrow testfile testnet testreal3d testnet_terminal_server testnet_terminal_client testsimple
 
 SPARROW3D_LIB = libsparrow3d.so
 SPARROWNET_LIB = libsparrowNet.so
@@ -144,6 +144,9 @@ targets:
 
 testsparrow: testsparrow.c $(SPARROW3D_LIB) test_cube.o test_fill.o test_gears.o test_mesh.o test_primitives.o test_sprites.o test_tube.o test_yinyang.o test_text.o test_target.o test_mapping.o
 	$(CC) $(CFLAGS) $(LINK_FLAGS) $< test_cube.o test_fill.o test_gears.o test_mesh.o test_primitives.o test_sprites.o test_tube.o test_yinyang.o test_text.o test_target.o test_mapping.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/$@
+
+testsimple: testsimple.c $(SPARROW3D_LIB)
+	$(CC) $(CFLAGS) $(LINK_FLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/$@
 
 testreal3d: testreal3d.c $(SPARROW3D_LIB)
 	$(CC) $(CFLAGS) $(LINK_FLAGS) $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(SPARROW_LIB) $(STATIC) $(DYNAMIC) -lsparrow3d -o $(BUILD)/$@
