@@ -87,7 +87,7 @@ PREFIX Sint32 spSqrt (Sint32 n)
 {
 	if (n <= 0)
 		return 0;
-	if (n <= (1 << SP_SQRT_ACCURACY)+1)
+	if (n <= (1 << SP_SQRT_ACCURACY))
 		return spSqrtvalue[n];
 #ifdef BLACK_MAGIC
 	int bit_count = 30;
