@@ -3,8 +3,9 @@ Sparrow3D
 
 1. About Sparrow3D
 2. Licence
-3. Compiling Sparrow3D
-4. Author
+3. Documentation
+4. Compiling Sparrow3D
+5. Author
 
 -------------------------------------------------------------------------------
 
@@ -31,7 +32,6 @@ To see, what is possible with this engine take a look at
 
 -------------------------------------------------------------------------------
 
-
 2. Licence
 ==========
 
@@ -40,7 +40,17 @@ kind of BSD licence) feel free to contact me. ;-)
 
 -------------------------------------------------------------------------------
 
-3. Compiling Sparrow3D
+3. Documentation
+==========
+
+You can find the documentation [here][docu] and furthermore some first
+steps and examples in the [github wiki][wiki].
+[docu]: http://ziz.gp2x.de/documentation
+[wiki]: https://github.com/theZiz/sparrow3d/wiki
+
+-------------------------------------------------------------------------------
+
+4. Compiling Sparrow3D
 ======================
 
 For compiling for PC just type  
@@ -105,7 +115,7 @@ PANDORA
 -------------------------------------------------------------------------------
 
 
-4. Author
+5. Author
 =========
 
 Alexander Matthes aka Ziz

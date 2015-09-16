@@ -117,7 +117,8 @@ static void meshParseVertex( char* buffer, spPointPointer point, int max )
 	while ( left < max && buffer[left] != ' ' )
 		left++;
 	//now buffer[left] is the ' ' after 'v' before the first number
-	left++;
+	while ( left < max && buffer[left] == ' ' )
+		left++;
 	int right = left + 1;
 	while ( right < max && buffer[right] != ' ' )
 		right++;
@@ -131,7 +132,8 @@ static void meshParseVertex( char* buffer, spPointPointer point, int max )
 	left = right;
 	while ( left < max && buffer[left] != ' ' )
 		left++;
-	left++;
+	while ( left < max && buffer[left] == ' ' )
+		left++;
 	right = left + 1;
 	while ( right < max && buffer[right] != ' ' )
 		right++;
@@ -144,7 +146,8 @@ static void meshParseVertex( char* buffer, spPointPointer point, int max )
 	left = right;
 	while ( left < max && buffer[left] != ' ' )
 		left++;
-	left++;
+	while ( left < max && buffer[left] == ' ' )
+		left++;
 	right = left + 1;
 	while ( right < max && buffer[right] > ' ' )
 		right++;
@@ -152,6 +155,7 @@ static void meshParseVertex( char* buffer, spPointPointer point, int max )
 	buffer[right] = 0;
 	point->z = spAtof(&( buffer[left] ));
 	buffer[right] = oldc;
+	//printf("Parsed %i %i %i\n",point->x,point->y,point->z);
 }
 
 static void meshParseUV( char* buffer, spTexPointPointer point, int max, int texw, int texh )
@@ -163,7 +167,8 @@ static void meshParseUV( char* buffer, spTexPointPointer point, int max, int tex
 	while ( left < max && buffer[left] != ' ' )
 		left++;
 	//now buffer[left] is the ' ' after 't' before the first number
-	left++;
+	while ( left < max && buffer[left] == ' ' )
+		left++;
 	int right = left + 1;
 	while ( right < max && buffer[right] != ' ' )
 		right++;
@@ -178,7 +183,8 @@ static void meshParseUV( char* buffer, spTexPointPointer point, int max, int tex
 	left = right;
 	while ( left < max && buffer[left] != ' ' )
 		left++;
-	left++;
+	while ( left < max && buffer[left] == ' ' )
+		left++;
 	right = left + 1;
 	while ( right < max && buffer[right] != ' ' )
 		right++;
@@ -199,7 +205,8 @@ static int meshParseFace( char* buffer, int* face, int max ) //3 triangle, 4 qua
 	//now buffer[left] is the ' ' after 'f' before the first number
 	while ( 1 )
 	{
-		left++;
+		while ( left < max && buffer[left] == ' ' )
+			left++;
 		int right = left + 1;
 		while ( right < max && buffer[right] != '/' )
 			right++;

@@ -133,7 +133,7 @@ PREFIX Sint32 spMax(Sint32 a, Sint32 b)
 
 PREFIX Sint32 spAtof( char* buffer )
 {
-	return (Sint32)(atof(buffer)*SP_ACCURACY_FACTOR);
+	return (Sint32)(strtof(buffer,NULL)*SP_ACCURACY_FACTOR);
 }
 
 Sint32 spLastRandValue = 0;

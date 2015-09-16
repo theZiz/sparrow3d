@@ -866,10 +866,10 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 		Sint32 w1 = spMul( spProjection[11], mesh->point[i].tz );
 		if ( w1 == 0 )
 			w1 = 1;
-		Sint32 nx1 = spDivHigh( x1, w1 );
-		Sint32 ny1 = spDivHigh( y1, w1 );
-		mesh->point[i].px = viewPortX + ( ( nx1 * windowX ) >> SP_ACCURACY + 1 );
-		mesh->point[i].py = viewPortY - ( ( ny1 * windowY ) >> SP_ACCURACY + 1 );
+		Sint32 nx1 = spDiv( x1, w1 ) >> SP_HALF_ACCURACY;
+		Sint32 ny1 = spDiv( y1, w1 ) >> SP_HALF_ACCURACY;
+		mesh->point[i].px = viewPortX + ( ( nx1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY );
+		mesh->point[i].py = viewPortY - ( ( ny1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY );
 		mesh->point[i].pz = z1;
 	}
 	for ( i = 0; i < mesh->texPointCount; i++ )
@@ -882,10 +882,10 @@ PREFIX int spMesh3D( spModelPointer mesh, int updateEdgeList )
 		mesh->texPoint[i].w = spMul( spProjection[11], mesh->texPoint[i].tz );
 		if ( mesh->texPoint[i].w == 0 )
 			mesh->texPoint[i].w = 1;
-		Sint32 nx1 = spDivHigh( x1, mesh->texPoint[i].w );
-		Sint32 ny1 = spDivHigh( y1, mesh->texPoint[i].w );
-		mesh->texPoint[i].px = viewPortX + ( ( nx1 * windowX ) >> SP_ACCURACY + 1 );
-		mesh->texPoint[i].py = viewPortY - ( ( ny1 * windowY ) >> SP_ACCURACY + 1 );
+		Sint32 nx1 = spDiv( x1, mesh->texPoint[i].w ) >> SP_HALF_ACCURACY;
+		Sint32 ny1 = spDiv( y1, mesh->texPoint[i].w ) >> SP_HALF_ACCURACY;
+		mesh->texPoint[i].px = viewPortX + ( ( nx1 * ( windowX << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY );
+		mesh->texPoint[i].py = viewPortY - ( ( ny1 * ( windowY << SP_HALF_ACCURACY - 1 ) ) >> SP_ACCURACY );
 		mesh->texPoint[i].pz = z1;
 	}
 	//Project Normals
