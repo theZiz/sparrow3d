@@ -2455,6 +2455,18 @@ int __irc_server_thread(void* data)
 			sprintf(buffer,"NICK %s",server->nickname);
 			spNetIRCSend(server,buffer);
 			server->status++;
+			//Rejoin if needed
+			spNetIRCChannelPointer channel = server->first_channel;
+			while (channel)
+			{
+				if (channel->name[0] == '#') //real channel
+				{
+					char buffer[1024];
+					sprintf(buffer,"JOIN %s",channel->name);
+					spNetIRCSend(server,buffer);
+				}
+				channel = channel->next;
+			}
 		}
 		
 		int finish_flag = server->finish_flag; // same flag for whole loop run
@@ -2476,6 +2488,14 @@ int __irc_server_thread(void* data)
 				{
 					spNetCloseTCP(server->connection);
 					server->connection = spNetOpenClientTCP(server->ip);
+					server->status = 0;
+					spNetIRCChannelPointer channel = server->first_channel;
+					while (channel)
+					{
+						__irc_add_message(server,&(channel->first_message),&(channel->last_message),"PRIVMSG","The server disconnected, try to reconnect...",server->name);
+						channel = channel->next;
+					}
+					
 				}
 				tcp_thread = NULL;
 			}
