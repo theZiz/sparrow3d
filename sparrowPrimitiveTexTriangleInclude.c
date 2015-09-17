@@ -626,7 +626,6 @@
 	#if defined(PANDORA_NEON) && defined(PANDORA)
 		//some useful constants
 		int32x4_t _0123 = {0,1,2,3};
-		int32x4_t _4444 = vdupq_n_s32(3);
 		int32x4_t _0000 = vdupq_n_s32(0);
 		int32x4_t _63488 = vdupq_n_s32(63488);
 		int32x4_t _2016 = vdupq_n_s32(2016);
