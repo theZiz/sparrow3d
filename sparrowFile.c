@@ -681,7 +681,7 @@ PREFIX float spConfigGetFloat(spConfigPointer config,char* key,float default_val
 		sprintf(buffer,"%f",default_value);
 		entry = internalNewEntry(config,key,buffer);
 	}
-	return atof(entry->value);
+	return spAtoFloat(entry->value);
 }
 
 PREFIX void spConfigSetFloat(spConfigPointer config,char* key,float value)
@@ -785,7 +785,7 @@ PREFIX float spConfigGetFloatWithCommentBefore(spConfigPointer config,char* key,
 		sprintf(buffer,"%f",default_value);
 		entry = internalNewEntry(config,key,buffer);
 	}
-	return atof(entry->value);
+	return spAtoFloat(entry->value);
 }
 
 PREFIX void spConfigSetFloatWithCommentBefore(spConfigPointer config,char* key,float value,char* comment)

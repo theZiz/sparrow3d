@@ -205,4 +205,16 @@ PREFIX void spSetRand( Sint32 seed );
  * <spSetRand>*/
 PREFIX Sint32 spRand( void );
 
+/* Function: spAtoFloat
+ * 
+ * Same as atof, but atof doesn't work correctly on the gp2x for some
+ * reason... 
+ * 
+ * Parameters:
+ * buffer - string to convert
+ * 
+ * Returns:
+ * double - the string as double*/
+PREFIX double spAtoFloat( char* buffer );
+
 #endif

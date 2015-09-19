@@ -175,7 +175,7 @@ static void meshParseUV( char* buffer, spTexPointPointer point, int max, int tex
 	//now buffer[right] is the ' ' after the number
 	char oldc = buffer[right];
 	buffer[right] = 0;
-	float number = atof( &( buffer[left] ) );
+	float number = spAtoFloat( &( buffer[left] ) );
 	point->u = ( int )( number * ( float )texw );
 	buffer[right] = oldc;
 
@@ -190,7 +190,7 @@ static void meshParseUV( char* buffer, spTexPointPointer point, int max, int tex
 		right++;
 	oldc = buffer[right];
 	buffer[right] = 0;
-	number = atof( &( buffer[left] ) );
+	number = spAtoFloat( &( buffer[left] ) );
 	point->v = texh - 1 - ( int )( number * ( float )( texh - 1 ) );
 	buffer[right] = oldc;
 }

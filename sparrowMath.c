@@ -133,7 +133,7 @@ PREFIX Sint32 spMax(Sint32 a, Sint32 b)
 
 PREFIX Sint32 spAtof( char* buffer )
 {
-	return (Sint32)(strtof(buffer,NULL)*SP_ACCURACY_FACTOR);
+	return (Sint32)(spAtoFloat(buffer)*SP_ACCURACY_FACTOR);
 }
 
 Sint32 spLastRandValue = 0;
@@ -150,4 +150,69 @@ PREFIX Sint32 spRand( void )
 	//I stole the magic numbers from glibc...
 	spLastRandValue = ((1103515245*spLastRandValue + 12345) >> 1)  & 0x7fffffff;
 	return spLastRandValue;
+}
+
+#define DIGIT_CHECK(v) \
+	((v) == '0' || (v) == '1' || \
+	 (v) == '2' || (v) == '3' || \
+	 (v) == '4' || (v) == '5' || \
+	 (v) == '6' || (v) == '7' || \
+	 (v) == '8' || (v) == '9')
+
+PREFIX double spAtoFloat( char* buffer )
+{
+	int i = 0;
+	while (buffer[i] == ' ' && buffer[i] != 0)
+		i++;
+	if (buffer[i] == 0)
+		return 0.0f;
+	double result = 0.0f;
+	double sign = 1.0f;
+	Sint64 left = 0;
+	Sint64 middle = 0;
+	Sint64 divisor = 1;
+	Sint64 right = 0;
+	//sign
+	if (buffer[i] == '-')
+	{
+		sign = -1.0f;
+		i++;
+	}
+	//left part
+	while ( DIGIT_CHECK(buffer[i]) )
+	{
+		left *= 10;
+		int digit = (int)buffer[i] - (int)'0';
+		left += digit;
+		i++;
+	}
+	//middle part
+	if (buffer[i] == '.')
+	{
+		i++;
+		while ( DIGIT_CHECK(buffer[i]) )
+		{
+			middle *= 10;
+			int digit = (int)buffer[i] - (int)'0';
+			middle += digit;
+			divisor *= 10;
+			i++;
+		}
+	}
+	//right part
+	if (buffer[i] == 'e' || buffer[i] == 'E')
+	{
+		i++;
+		while ( DIGIT_CHECK(buffer[i]) )
+		{
+			right *= 10;
+			int digit = (int)buffer[i] - (int)'0';
+			right += digit;
+			i++;
+		}
+	}
+	if (right)
+		return sign*((double)left + (double)middle/(double)divisor)*pow(10.0f,(double)right);
+	else
+		return sign*((double)left + (double)middle/(double)divisor);
 }
