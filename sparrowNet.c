@@ -19,6 +19,9 @@
 #include <stdio.h>
 #include <errno.h>
 #include <math.h>
+#ifdef __GNUC__
+	#include <sys/stat.h>
+#endif
 
 //#define DEBUG_MESSAGES
 
