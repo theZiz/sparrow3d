@@ -3,21 +3,22 @@
   * it under the terms of the GNU General Public License as published by
   * the Free Software Foundation, either version 2 of the License, or
   * (at your option) any later version.
-  * 
+  *
   * Sparrow3d is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU General Public License for more details.
-  * 
+  *
   * You should have received a copy of the GNU General Public License
   * along with Foobar.  If not, see <http://www.gnu.org/licenses/>
-  * 
+  *
   * For feedback and questions about my Files and Projects please mail me,
   * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
 
 #include "sparrowNet.h"
 #include <stdio.h>
 #include <errno.h>
+#include <math.h>
 
 //#define DEBUG_MESSAGES
 
@@ -140,7 +141,7 @@ void fill_ip_struct(spNetIPPointer ip)
 {
 	ip->type = IPV4;
 	ip->address.ipv4 = ip->sdl_address.host; //bytes are set automaticly, yeah!
-	ip->port = ip->sdl_address.port;	
+	ip->port = ip->sdl_address.port;
 }
 
 PREFIX spNetIP spNetResolve(char* host,Uint16 port)
@@ -293,7 +294,7 @@ SDL_Thread* allreadyReceiving(spNetTCPConnection connection)
 		}
 		before = mom;
 		mom = mom->next;
-	}	
+	}
 	return NULL;
 }
 
@@ -383,7 +384,7 @@ PREFIX int spNetReceiveStillWaiting(SDL_Thread* thread)
 		}
 		before = mom;
 		mom = mom->next;
-	}	
+	}
 	return 0;
 }
 
@@ -418,7 +419,7 @@ PREFIX int spNetReceiveFinished(SDL_Thread* thread)
 		}
 		before = mom;
 		mom = mom->next;
-	}	
+	}
 	return -1;
 }
 
@@ -584,7 +585,7 @@ void write_to_cache(char* game,char* system,char* prid,int score,int lock)
 		SDL_RWwrite(file,prid,256,1);
 		SDL_RWwrite(file,&score,sizeof(int),1);
 		SDL_RWclose(file);
-	}		
+	}
 	while (cache)
 	{
 		mom = cache->next;
@@ -605,7 +606,7 @@ int spNetC4AUberThread(getgenericPointer data)
 		//TODO: Implement!
 		SDL_Delay(100);
 	#elif defined _WIN32
-		SDL_Delay(100);	
+		SDL_Delay(100);
 	#else
 		usleep(100000);
 	#endif
@@ -638,7 +639,7 @@ int spNetC4AUberThread(getgenericPointer data)
 			return result;
 		}
 		if (status <= 0) //finished somehow
-		{			
+		{
 			SDL_WaitThread(thread,&(data->task->result));
 			SDL_mutexP(data->task->statusMutex);
 			data->task->threadStatus = 0;
@@ -791,11 +792,11 @@ PREFIX spNetC4AProfilePointer spNetC4AGetProfile( void )
 	char* pos = strstr( buffer, "\"longname\":");
 	pos+=11;
 	fill_between_paraphrases( pos, profile->longname, 256);
-	
+
 	pos = strstr( buffer, "\"shortname\":");
 	pos+=12;
 	fill_between_paraphrases( pos, profile->shortname, 256);
-	
+
 	pos = strstr( buffer, "\"prid\":");
 	pos+=7;
 	fill_between_paraphrases( pos, profile->prid, 256);
@@ -827,7 +828,7 @@ int c4a_getgame_thread(void* data)
 		gameData->task->status = SP_C4A_ERROR;
 		SDL_mutexV(gameData->task->statusMutex);
 		return 1;
-	}	
+	}
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
 	{
@@ -847,7 +848,7 @@ int c4a_getgame_thread(void* data)
 	}
 	//skeezix saves the top500. So 100 byte should be enough...
 	//Haha. NOT! minislug had 50950 with a top 500...
-	char buffer[100001]; 
+	char buffer[100001];
 	int length;
 	if ((length = spNetReceiveHTTP(connection,buffer,100000)) == 0)
 	{
@@ -896,31 +897,31 @@ int c4a_getgame_thread(void* data)
 		pos+=11;
 		char longname[256];
 		fill_between_paraphrases( pos, longname, 128);
-		
+
 		pos = strstr( start, "\"gamename\":");
 		pos+=11;
 		char shortname[256];
 		fill_between_paraphrases( pos, shortname, 128);
-		
+
 		pos = strstr( start, "\"genre\":");
 		pos+=8;
 		char genre[256];
 		fill_between_paraphrases( pos, genre, 128);
-		
+
 		pos = strstr( start, "\"field\":");
 		pos+=8;
 		char field[256];
 		fill_between_paraphrases( pos, field, 128);
-		
+
 		pos = strstr( start, "\"status\":");
 		pos+=9;
 		char status[256];
 		fill_between_paraphrases( pos, status, 128);
-		
+
 		//Re"inserting" substring:
 		end[0] = '}';
 		found = strchr( end, '{' );
-		
+
 		//Adding the found stuff to the array:
 		spNetC4AGamePointer new_game = (spNetC4AGamePointer)malloc(sizeof(spNetC4AGame));
 		sprintf(new_game->longname,"%s",longname);
@@ -940,7 +941,7 @@ int c4a_getgame_thread(void* data)
 			new_game->field = 0;
 		else
 			new_game->field = -1;
-		
+
 		//sorted insert
 		//Searching the next and before element:
 		spNetC4AGamePointer before = NULL;
@@ -962,7 +963,7 @@ int c4a_getgame_thread(void* data)
 			before->next = new_game;
 			new_game->next = next;
 		}
-	}	
+	}
 	SDL_mutexP(gameData->task->statusMutex);
 	gameData->task->status = SP_C4A_OK;
 	SDL_mutexV(gameData->task->statusMutex);
@@ -993,7 +994,7 @@ PREFIX int spNetC4AGetGame(spNetC4AGamePointer* gameList,int timeOut)
 		return 0;
 	}
 	SDL_mutexV(spGlobalC4ATask->statusMutex);
-	return 1;	
+	return 1;
 }
 
 PREFIX spNetC4ATaskPointer spNetC4AGetGameParallel(spNetC4AGamePointer* gameList,int timeOut)
@@ -1027,7 +1028,7 @@ int c4a_getscore_thread(void* data)
 		scoreData->task->status = SP_C4A_ERROR;
 		SDL_mutexV(scoreData->task->statusMutex);
 		return 1;
-	}	
+	}
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
 	{
@@ -1051,7 +1052,7 @@ int c4a_getscore_thread(void* data)
 	}
 	//skeezix saves the top500. So 100 byte should be enough...
 	//Haha. NOT! minislug had 50950 with a top 500...
-	char buffer[100001]; 
+	char buffer[100001];
 	int length;
 	if ((length = spNetReceiveHTTP(connection,buffer,100000)) == 0)
 	{
@@ -1102,24 +1103,24 @@ int c4a_getscore_thread(void* data)
 		pos+=11;
 		char longname[128];
 		fill_between_paraphrases( pos, longname, 128);
-		
+
 		pos = strstr( start, "\"shortname\":");
 		pos+=12;
 		char shortname[128];
 		fill_between_paraphrases( pos, shortname, 128);
-		
+
 		pos = strstr( start, "\"score\":");
 		pos+=8;
 		int score = atoi(pos);
-		
+
 		pos = strstr( start, "\"time\":");
 		pos+=7;
 		Uint64 commitTime = (Uint64)(internal_spNet_spAtoFloat(pos)); //float becase of bigger numbers
-		
+
 		//Re"inserting" substring:
 		end[0] = '}';
 		found = strchr( end, '{' );
-		
+
 		//Adding the found stuff to the array:
 		if (longname[0] == 0 || shortname[0] == 0)
 			continue;
@@ -1138,8 +1139,8 @@ int c4a_getscore_thread(void* data)
 			lastScore->next = new_score;
 		lastScore = new_score;
 		rank++;
-	}	
-	
+	}
+
 	SDL_mutexP(scoreData->task->statusMutex);
 	scoreData->task->status = SP_C4A_OK;
 	SDL_mutexV(scoreData->task->statusMutex);
@@ -1406,10 +1407,10 @@ int c4a_commit_thread(void* data)
 			}
 			SDL_RWclose(file);
 		}
-			
+
 	}
 	SDL_mutexV(spCacheMutex);
-	
+
 	SDL_mutexP(commitData->task->statusMutex);
 	commitData->task->status = SP_C4A_OK;
 	SDL_mutexV(commitData->task->statusMutex);
@@ -1459,9 +1460,9 @@ int already_in_highscore(spNetC4AScorePointer scoreList,spNetC4AProfilePointer p
 	#define SET_SYSTEM(system) sprintf(system,"wiz");
 #elif defined(DINGUX)
 	#define SET_SYSTEM(system) sprintf(system,"dingux");
-#elif defined(GCW)	
+#elif defined(GCW)
 	#define SET_SYSTEM(system) sprintf(system,"gcw");
-#elif defined(PANDORA)	
+#elif defined(PANDORA)
 	#define SET_SYSTEM(system) sprintf(system,"pandora");
 #elif defined(_WIN32)
 	#define SET_SYSTEM(system) sprintf(system,"win32");
@@ -1483,7 +1484,7 @@ PREFIX int spNetC4ACommitScore(spNetC4AProfilePointer profile,char* game,int sco
 		{
 			char system[256];
 			SET_SYSTEM(system);
-			write_to_cache(game,system,profile->prid,score,1);			
+			write_to_cache(game,system,profile->prid,score,1);
 		}
 		return 1;
 	}
@@ -1531,7 +1532,7 @@ PREFIX spNetC4ATaskPointer spNetC4ACommitScoreParallel(spNetC4AProfilePointer pr
 		{
 			char system[256];
 			SET_SYSTEM(system);
-			write_to_cache(game,system,profile->prid,score,1);			
+			write_to_cache(game,system,profile->prid,score,1);
 		}
 		return NULL;
 	}
@@ -1678,7 +1679,7 @@ int c4a_create_thread(void* data)
 		createData->task->status = SP_C4A_ERROR;
 		SDL_mutexV(createData->task->statusMutex);
 		return 1;
-	}	
+	}
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
 	{
@@ -1736,7 +1737,7 @@ int c4a_create_thread(void* data)
 	SDL_mutexP(createData->task->statusMutex);
 	createData->task->status = SP_C4A_OK;
 	SDL_mutexV(createData->task->statusMutex);
-	return 0;	
+	return 0;
 }
 
 PREFIX int spNetC4ACreateProfile(spNetC4AProfilePointer* profile, char* longname,char* shortname,char* password,char* email,int timeOut)
@@ -1781,7 +1782,7 @@ int c4a_delete_thread(void* data)
 		createData->task->status = SP_C4A_ERROR;
 		SDL_mutexV(createData->task->statusMutex);
 		return 1;
-	}	
+	}
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
 	{
@@ -1811,7 +1812,7 @@ int c4a_delete_thread(void* data)
 		return 1;
 	}
 	spNetCloseTCP(connection);
-	(*(createData->profile)) = NULL;	
+	(*(createData->profile)) = NULL;
 	if (createData->deleteFile)
 		spNetC4ADeleteProfileFile();
 	SDL_mutexP(createData->task->statusMutex);
@@ -1857,7 +1858,7 @@ PREFIX void spNetC4ADeleteProfileFile( void )
 	DeleteFile(filename);
 #else
 	remove(filename);
-#endif	
+#endif
 }
 
 int c4a_edit_thread(void* data)
@@ -1870,7 +1871,7 @@ int c4a_edit_thread(void* data)
 		createData->task->status = SP_C4A_ERROR;
 		SDL_mutexV(createData->task->statusMutex);
 		return 1;
-	}	
+	}
 	spNetTCPConnection connection = spNetOpenClientTCP(ip);
 	if (connection == NULL)
 	{
@@ -1914,7 +1915,7 @@ int c4a_edit_thread(void* data)
 	SDL_mutexP(createData->task->statusMutex);
 	createData->task->status = SP_C4A_OK;
 	SDL_mutexV(createData->task->statusMutex);
-	return 0;	
+	return 0;
 }
 
 PREFIX int spNetC4AEditProfile(spNetC4AProfilePointer* profile,char* longname,char* shortname,char* password,char* email,int timeOut)
@@ -2533,7 +2534,7 @@ int __irc_server_thread(void* data)
 				channel = channel->next;
 			}
 		}
-		
+
 		int finish_flag = server->finish_flag; // same flag for whole loop run
 		if (tcp_thread == NULL)
 			tcp_thread = spNetReceiveTCPUnblocked(server->connection,buffer,65536);
@@ -2560,7 +2561,7 @@ int __irc_server_thread(void* data)
 						__irc_add_message(server,&(channel->first_message),&(channel->last_message),"PRIVMSG","The server disconnected, try to reconnect...",server->name);
 						channel = channel->next;
 					}
-					
+
 				}
 				tcp_thread = NULL;
 			}
@@ -2617,17 +2618,18 @@ int __irc_server_thread(void* data)
 				break;
 			}
 		}
-		
+
 		#ifdef REALGP2X
 			//TODO: Implement!
 			SDL_Delay(100);
 		#elif defined _WIN32
-			SDL_Delay(100);	
+			SDL_Delay(100);
 		#else
 			usleep(100000);
 		#endif
 	}
 	spNetIRCSend(server,"QUIT");
+	return 0;
 }
 
 
@@ -2665,7 +2667,7 @@ PREFIX spNetIRCServerPointer spNetIRCConnectServer(char* name,Uint16 port,char* 
 	server->finish_flag = 0;
 	server->first_channel = NULL;
 	server->last_channel = NULL;
-	server->thread = SDL_CreateThread(__irc_server_thread,server);	
+	server->thread = SDL_CreateThread(__irc_server_thread,server);
 	return server;
 }
 
@@ -2707,7 +2709,7 @@ PREFIX void spNetIRCCloseServer(spNetIRCServerPointer server)
 		{
 			spNetIRCNickPointer next = server->first_channel->first_nick->next;
 			free(server->first_channel->first_nick);
-			server->first_channel->first_nick = next;			
+			server->first_channel->first_nick = next;
 		}
 		spNetIRCChannelPointer next = server->first_channel->next;
 		free(server->first_channel);
@@ -2747,7 +2749,7 @@ PREFIX void spNetIRCSendMessage(spNetIRCServerPointer server,spNetIRCChannelPoin
 		if (message[0] == '/' &&
 			message[1] == 'm' &&
 			message[2] == 'e' &&
-			message[3] == ' ')		
+			message[3] == ' ')
 		{
 			char message_buffer[4096];
 			sprintf(message_buffer,"\001ACTION%s\001",&message[3]);
@@ -2758,7 +2760,7 @@ PREFIX void spNetIRCSendMessage(spNetIRCServerPointer server,spNetIRCChannelPoin
 		else
 		{
 			sprintf(buffer,"PRIVMSG %s :%s",channel->name,message);
-			spNetIRCSend(server,buffer);	
+			spNetIRCSend(server,buffer);
 			__irc_add_message(server,&(channel->first_add_message),&(channel->last_add_message),"PRIVMSG",message,server->nickname);
 		}
 	}
@@ -2773,7 +2775,7 @@ PREFIX void spNetIRCSendMessage(spNetIRCServerPointer server,spNetIRCChannelPoin
 			i++;
 		}
 		__irc_add_message(server,&(server->first_add_message),&(server->last_add_message),"PRIVMSG",message,server->nickname);
-		spNetIRCSend(server,buffer);	
+		spNetIRCSend(server,buffer);
 	}
 }
 

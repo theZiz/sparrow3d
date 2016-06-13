@@ -3,18 +3,18 @@
   * it under the terms of the GNU General Public License as published by
   * the Free Software Foundation, either version 2 of the License, or
   * (at your option) any later version.
-  * 
+  *
   * Sparrow3d is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU General Public License for more details.
-  * 
+  *
   * You should have received a copy of the GNU General Public License
   * along with Foobar.  If not, see <http://www.gnu.org/licenses/>
-  * 
+  *
   * For feedback and questions about my Files and Projects please mail me,
   * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
-  
+
 #include "sparrowFont.h"
 #include "sparrowPrimitives.h"
 #include <stdlib.h>
@@ -61,7 +61,7 @@ PREFIX int spFontReload(spFontPointer font,const char* fontname,Uint32 size)
 	font->maxheight = 0;
 	font->cacheOffset = 0;
 	font->cache.cache = NULL;
-	spFontChangeCacheSize( font, SP_FONT_DEFAULT_CACHE );	
+	spFontChangeCacheSize( font, SP_FONT_DEFAULT_CACHE );
 	return 0;
 }
 
@@ -202,7 +202,7 @@ PREFIX void spFontChangeLetter( spFontPointer font, spLetterPointer letter, Uint
 		for ( y = 0; y < letter->surface->h; y++ )
 			if ( pixel[x + y * scanline] == spFontBackgroundColor )
 				pixel[x + y * scanline] = SP_ALPHA_COLOR;
-	SDL_UnlockSurface( letter->surface );		
+	SDL_UnlockSurface( letter->surface );
 
 	TTF_SizeUNICODE( font->font, buffer, &( letter->width ), &( letter->height ) );
 	if ( font->maxheight < letter->height )
@@ -247,7 +247,7 @@ PREFIX void spFontAddRange( spFontPointer font, char* from, char* to, Uint16 col
 		return;
 	Uint32 character;
 	if (c_from > c_to)
-	{	
+	{
 		character = c_from;
 		c_from = c_to;
 		c_to = character;
@@ -645,7 +645,7 @@ static spLetterPointer spLetterFindMap( spLetterPointer root, spLetterPointer bu
 		*length = 0;
 		return spLetterFind(root,spFontMapLeft);
 	}
-	
+
 	temp[i] = 0;
 	*length = i+1;
 	//Finding the button:
@@ -664,7 +664,7 @@ static spLetterPointer spLetterFindMap( spLetterPointer root, spLetterPointer bu
 		if (letter)
 			return letter;
 		*length = 0;
-		return spLetterFind(root,spFontButtonLeft);		
+		return spLetterFind(root,spFontButtonLeft);
 	}
 	return NULL;
 }
@@ -1078,7 +1078,7 @@ PREFIX spTextBlockPointer spCreateTextBlock( const unsigned char* text, int max_
 		block->line[i].count = firstLine->count;
 		block->line[i].width = firstLine->width;
 		block->line[i].text = firstLine->text;
-		free(firstLine);		
+		free(firstLine);
 		i--;
 		firstLine = next;
 	}
@@ -1100,9 +1100,9 @@ PREFIX void spDeleteTextBlock(spTextBlockPointer block)
 PREFIX int spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y, Sint32 z, spTextBlockPointer block, Sint32 height, Sint32 position, spFontPointer font )
 {
 	if (block == NULL)
-		return;
+		return -1;
 	if (block->line_count < 1)
-		return;
+		return -1;
 	int showable_lines = height/(font?font->maxheight:block->line[0].font->maxheight);
 	int unseen_lines = spMax(0,block->line_count - showable_lines);
 	int start_line = spFixedRoundInt(position*unseen_lines);

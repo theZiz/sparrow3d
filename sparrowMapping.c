@@ -3,15 +3,15 @@
   * it under the terms of the GNU General Public License as published by
   * the Free Software Foundation, either version 2 of the License, or
   * (at your option) any later version.
-  * 
+  *
   * Sparrow3d is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU General Public License for more details.
-  * 
+  *
   * You should have received a copy of the GNU General Public License
   * along with Foobar.  If not, see <http://www.gnu.org/licenses/>
-  * 
+  *
   * For feedback and questions about my Files and Projects please mail me,
   * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
 
@@ -138,13 +138,13 @@ char* __spMapCollisionPool[SP_MAPPING_SET_MAX] = {NULL};
 PREFIX int spMapChange(int id,int poolButton)
 {
 	if (id < 0 || id >= SP_MAPPING_MAX)
-		return;
+		return -1;
 	if (poolButton < 0 || poolButton >= SP_MAPPING_POOL_MAX)
-		return;
+		return -1;
 	if (!__spMapButton[__spMapSet][id].active)
-		return;
+		return -1;
 	if (!__spMapPool[__spMapSet][poolButton].active) //not in pool!
-		return;
+		return -1;
 	int i;
 	switch (__spMapStrategy[__spMapSet])
 	{
@@ -402,7 +402,7 @@ PREFIX char* spMapLastCollisionCaption( void )
 {
 	return __spMapCollisionCaption[__spMapSet];
 }
-	
+
 PREFIX char* spMapLastCollisionPool( void )
 {
 	return __spMapCollisionPool[__spMapSet];

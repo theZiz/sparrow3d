@@ -3,15 +3,15 @@
   * it under the terms of the GNU General Public License as published by
   * the Free Software Foundation, either version 2 of the License, or
   * (at your option) any later version.
-  * 
+  *
   * Sparrow3d is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU General Public License for more details.
-  * 
+  *
   * You should have received a copy of the GNU General Public License
   * along with Foobar.  If not, see <http://www.gnu.org/licenses/>
-  * 
+  *
   * For feedback and questions about my Files and Projects please mail me,
   * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
 
@@ -174,10 +174,10 @@ typedef struct spTextBlockStruct
 } spTextBlock;
 
 /* enum: spTextBlockAlignment
- * 
+ *
  * Defines the orientation of a text block, when drawn. Used by
  * <spFontDrawTextBlock>.
- * 
+ *
  * Values:
  * left - left orientation
  * middle - centered orientation
@@ -339,7 +339,7 @@ PREFIX void spFontSetButtonStrategy(int strategy);
 
 /* Function: spFontAddBorder
  *
- * For better viewing on different backgrounds, most of the time it is useful to 
+ * For better viewing on different backgrounds, most of the time it is useful to
  * have a border around the letters. With this function you can do this.
  * It adds a border to every *currently* loaded letter. (Every letter loaded
  * afterwards will have no border by default )
@@ -549,10 +549,10 @@ PREFIX void spFontShadeButtons(int value);
 PREFIX void spFontAddEveryLetterOfTextBundle( spFontPointer font, spBundlePointer bundle,Uint16 color);
 
 /* Function: spCreateTextBlock
- * 
+ *
  * Creates an <spTextBlock> out of an text. Use it in <spFontDrawTextBlock> to
  * draw scrollable text.
- * 
+ *
  * Parameters:
  * text - the text to convert to a text block
  * max_width - the maximal width one line should have at all. If a line consists
@@ -560,24 +560,24 @@ PREFIX void spFontAddEveryLetterOfTextBundle( spFontPointer font, spBundlePointe
  * added. Otherwise a line break always happens between words
  * font - the font (pointer to <spFont>) to use to determine the width of the
  * rendered text lines
- * 
+ *
  * Returns:
  * spTextBlockPointer - pointer to the created <spTextBlock> struct.*/
 PREFIX spTextBlockPointer spCreateTextBlock( const unsigned  char* text, int max_width, spFontPointer font);
 
 /* Function: spDeleteTextBlock
- * 
+ *
  * Deletes a text block created by <spCreateTextBlock>.
- * 
+ *
  * Parameters:
  * block - pointer to <spTextBlock> to free*/
 PREFIX void spDeleteTextBlock(spTextBlockPointer block);
 
 /* Function: spFontDrawTextBlock
- * 
+ *
  * Draws a previously created text block with a maximum height. Also supports
  * scrolling.
- * 
+ *
  * Parameters:
  * aligment - determines, whether the text should be aligned left, centered or
  * right. Possible values (<spTextBlockAlignment>) are left, middle and right
@@ -592,20 +592,20 @@ PREFIX void spDeleteTextBlock(spTextBlockPointer block);
  * font - the font to draw the text. Should be the same as used in
  * <spCreateTextBlock> or NULL, but however don't have to. If NULL the font of
  * <spCreateTextBlock> is used.
- * 
+ *
  * Returns:
- * int - the number of lines drawn*/
+ * int - the number of lines drawn, -1 at error*/
 PREFIX int spFontDrawTextBlock(spTextBlockAlignment alignment,Sint32 x, Sint32 y, Sint32 z, spTextBlockPointer block, Sint32 height, Sint32 position, spFontPointer font );
 
 /* Function: spFontGetLetterString
- * 
+ *
  * Generates a string to use maybe for another call of <spFontAdd>.
- * 
+ *
  * Parameters:
  * font - spFontPointer to use
  * buffer - char* buffer to fill
  * length - size of the buffer
- * 
+ *
  * Returns:
  * char* - the pointer to buffer*/
 PREFIX char* spFontGetLetterString(spFontPointer font,unsigned char* buffer,int length);
