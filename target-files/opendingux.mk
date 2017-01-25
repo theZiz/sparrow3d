@@ -1,4 +1,4 @@
-# === Target file for the Dingoo with Dingux. Use it with "make TARGET=dingux" ===
+# === Target file for the Dingoo with Opendingux. Use it with "make TARGET=opendingux" ===
 
 CC = /opt/opendingux-toolchain/usr/bin/mipsel-linux-gcc
 FLAGS = -DMOBILE_DEVICE -DDINGUX -DBLACK_MAGIC $(GENERAL_TWEAKS) $(SMALL_RESOLUTION_DEVICES)

@@ -16,6 +16,7 @@
   * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
 
 #include "sparrowSprite.h"
+#include "sparrowPrimitives.h"
 #include <stdlib.h>
 #include <string.h>
 

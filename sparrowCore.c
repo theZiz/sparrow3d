@@ -3,15 +3,15 @@
   * it under the terms of the GNU General Public License as published by
   * the Free Software Foundation, either version 2 of the License, or
   * (at your option) any later version.
-  * 
+  *
   * Sparrow3d is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU General Public License for more details.
-  * 
+  *
   * You should have received a copy of the GNU General Public License
   * along with Foobar.  If not, see <http://www.gnu.org/licenses/>
-  * 
+  *
   * For feedback and questions about my Files and Projects please mail me,
   * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
 
@@ -24,6 +24,7 @@
 #include <SDL_ttf.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -406,7 +407,7 @@ static void spHandleKeyboardInput( const SDL_keysym pressedKey)
 	}
 }
 
-inline int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
+inline static int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 {
 	int result = 0;
 #ifdef PANDORA
@@ -961,7 +962,7 @@ inline void spUpdateAxis( int axis )
 				spGenericInput.button[SP_AXIS_RIGHTDOWN] )
 			spGenericInput.axis[1] = 1;
 	}
-	
+
 	int sav_state = gp2x_axis[axis];
 	gp2x_axis[axis] = spGenericInput.axis[axis];
 	if (old_state != spGenericInput.axis[axis] && //it is different from the old state, but
@@ -1009,11 +1010,11 @@ void spClickVirtualKey(int steps,int x,int y)
 	char* ptr = (char*)spVirtualKeyboardMap;
 	if (spVirtualKeyboardShift)
 		ptr = (char*)spVirtualKeyboardMapShift;
-	
+
 	SDL_keysym key = {spVirtualKeyboardMap[y][x],
 		(SDLKey)spVirtualKeyboardMap[y][x],(SDLMod)0,
 		ptr[y*20+x]};
-  
+
 	if (spVirtualLastKey.sym == key.sym)
 	{
 		spVirtualLastKeyCountDown -= steps;
@@ -1078,7 +1079,7 @@ void spHandleVirtualKeyboard( int steps )
 		}
 		else
 			spVirtualKeyboardTime = 0;
-		
+
 	}
 	int b;
 	int noButton = 1;
@@ -1980,14 +1981,14 @@ PREFIX void spSetVirtualKeyboard(int state,int x,int y,int width,int height,SDL_
 	spVirtualKeyboard[1] = spCreateSurface(width,height);
 	spVirtualKeyboardInternal[1] = spCreateSurface(width,height);
 	spVirtualKeyboardSelect[1] = spCreateSurface(width/20,height/3);
-	
+
 	spInternalZoomBlit(design,0,0,(design->w/21)*20,design->h,spVirtualKeyboardInternal[0],0,0,width,height);
 	spInternalZoomBlit(design,(design->w/21)*20,design->h/3*1,(design->w/21),design->h/3,spVirtualKeyboardSelect[0],0,0,width/20,height/3);
 	SDL_SetColorKey( spVirtualKeyboardSelect[0], SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
 	spInternalZoomBlit(shiftDesign,0,0,(shiftDesign->w/21)*20,shiftDesign->h,spVirtualKeyboardInternal[1],0,0,width,height);
 	spInternalZoomBlit(shiftDesign,(shiftDesign->w/21)*20,shiftDesign->h/3*1,(shiftDesign->w/21),shiftDesign->h/3,spVirtualKeyboardSelect[1],0,0,width/20,height/3);
 	SDL_SetColorKey( spVirtualKeyboardSelect[1], SDL_SRCCOLORKEY, SP_ALPHA_COLOR );
-	
+
 	SDL_BlitSurface(spVirtualKeyboardInternal[0],NULL,spVirtualKeyboard[0],NULL);
 	SDL_BlitSurface(spVirtualKeyboardInternal[1],NULL,spVirtualKeyboard[1],NULL);
 	spInternalUpdateVirtualKeyboard();
@@ -2051,7 +2052,7 @@ PREFIX void spStereoMergeSurfaces(SDL_Surface* left,SDL_Surface* right,int cross
 		if (right_pixels[i])
 			pixels[i] |= right_pixels[i];
 	}
-	SDL_UnlockSurface(left);	
+	SDL_UnlockSurface(left);
 	SDL_UnlockSurface(right);
 }
 
@@ -2075,7 +2076,7 @@ PREFIX void spSleep(Uint32 microSeconds)
 		#else
 			int t = microSeconds/1000;
 		#endif
-		SDL_Delay( (t < 1 ? 1 : t) );	
+		SDL_Delay( (t < 1 ? 1 : t) );
 	#else
 		#ifdef DEBUG_SLOWMOTION
 			usleep(microSeconds*DEBUG_SLOWMOTION);

@@ -8,6 +8,9 @@
 */
 #include <sparrow3d.h>
 #include <SDL_image.h>
+#ifndef _WIN32
+	#include <unistd.h>
+#endif
 
 SDL_Surface *screen;
 spFontPointer font = NULL;

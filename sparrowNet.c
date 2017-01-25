@@ -22,6 +22,9 @@
 #ifdef __GNUC__
 	#include <sys/stat.h>
 #endif
+#ifndef _WIN32
+	#include <unistd.h>
+#endif
 
 //#define DEBUG_MESSAGES
 

@@ -101,6 +101,7 @@ SPARROWSOUND_LIB = libsparrowSound.so
 SPARROW3D_STATIC_LIB = libsparrow3d.a
 SPARROWNET_STATIC_LIB = libsparrowNet.a
 SPARROWSOUND_STATIC_LIB = libsparrowSound.a
+RDYNAMIC = -rdynamic
 
 ifdef TARGET
 include ./target-files/$(TARGET).mk
@@ -115,7 +116,7 @@ BUILD = .
 SPARROW_LIB += -L.
 endif
 
-CFLAGS += $(PARAMETER) $(FLAGS)
+CFLAGS += $(PARAMETER) $(FLAGS) -Wno-pointer-to-int-cast
 
 ifndef AR
 AR = ar
@@ -180,23 +181,22 @@ $(SPARROWNET_STATIC_LIB): sparrowNet.o makeBuildDir
 	$(RANLIB) $(BUILD)/$(SPARROWNET_STATIC_LIB)
 
 $(SPARROW3D_LIB): sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowFont.o sparrowMesh.o sparrowSprite.o sparrowText.o sparrowFile.o sparrowMapping.o sparrowParticles.o makeBuildDir
-	$(CC) $(CFLAGS) -shared -Wl,-soname,$(SPARROW3D_LIB) -rdynamic -o $(BUILD)/$(SPARROW3D_LIB) sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o sparrowParticles.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
+	$(CC) $(CFLAGS) -shared -Wl,-soname,$(SPARROW3D_LIB) $(RDYNAMIC) -o $(BUILD)/$(SPARROW3D_LIB) sparrowFont.o sparrowCore.o sparrowMath.o sparrowPrimitives.o sparrowMesh.o sparrowSprite.o sparrowFile.o sparrowPrimitivesAsm.o sparrowRenderer.o sparrowText.o sparrowMapping.o sparrowParticles.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
 $(SPARROWSOUND_LIB): sparrowSound.o makeBuildDir
-	$(CC) $(CFLAGS) -shared -Wl,-soname,$(SPARROWSOUND_LIB) -rdynamic -o $(BUILD)/$(SPARROWSOUND_LIB) sparrowSound.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
+	$(CC) $(CFLAGS) -shared -Wl,-soname,$(SPARROWSOUND_LIB) $(RDYNAMIC) -o $(BUILD)/$(SPARROWSOUND_LIB) sparrowSound.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
 $(SPARROWNET_LIB): sparrowNet.o makeBuildDir
-	$(CC) $(CFLAGS) -shared -Wl,-soname,$(SPARROWNET_LIB) -rdynamic -o $(BUILD)/$(SPARROWNET_LIB) sparrowNet.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
+	$(CC) $(CFLAGS) -shared -Wl,-soname,$(SPARROWNET_LIB) $(RDYNAMIC) -o $(BUILD)/$(SPARROWNET_LIB) sparrowNet.o $(SDL) $(INCLUDE) $(SDL_INCLUDE) $(SPARROW_INCLUDE) $(LIB) $(STATIC) $(DYNAMIC)
 
 %.o: %.c %.h Makefile
 	$(CC) $(CFLAGS) -fPIC -c $< $(SDL) $(INCLUDE) $(SDL_INCLUDE) -DBUILDING_DLL $(SPARROW_INCLUDE)
 
 clean:
 	rm -f *.o
-	rm -f $(BUILD)/*.so
-	rm -f $(BUILD)/*.a
-	rm -f $(BUILD)/*.dll
-	rm -f $(BUILD)/$(SPARROW_TEST)
+	cd $(BUILD); rm -f $(SPARROW3D_LIB) $(SPARROWNET_LIB) $(SPARROWSOUND_LIB)
+	cd $(BUILD); rm -f $(SPARROW3D_STATIC_LIB) $(SPARROWNET_STATIC_LIB) $(SPARROWSOUND_STATIC_LIB)
+	cd $(BUILD); rm -f $(SPARROW_TEST)
 
 oclean:
 	rm -f *.o
