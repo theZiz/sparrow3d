@@ -261,6 +261,28 @@ PREFIX int spMapPoolByID(int id);
  * int - the button id of the mapped button like SP_BUTTON_A*/
 PREFIX int spMapPoolByName(char* name);
 
+/* Function: spMapNameByID
+ *
+ * Returns the mapping name via it's ID.
+ *
+ * Parameters:
+ * id - the id of the button
+ *
+ * Returns:
+ * char* - the button's mapping name*/
+PREFIX char* spMapNameByID(int id);
+
+/* Function: spMapIDByName
+ *
+ * Returns the mapping ID via it's name.
+ *
+ * Parameters:
+ * name - the name of the button
+ *
+ * Returns:
+ * int - the button's mapping ID*/
+PREFIX int spMapIDByName(char* name);
+
 /* Function: spMapStartChangeByID
  *
  * Starts the changing of the mapping of a buttons identified by it's ID. Use

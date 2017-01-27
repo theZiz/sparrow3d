@@ -346,6 +346,24 @@ PREFIX int spMapPoolByName(char* name)
 	return -1;
 }
 
+PREFIX char* spMapNameByID(int id)
+{
+	if (id < 0 || id >= SP_MAPPING_MAX)
+		return __spMapError;
+	if (!__spMapButton[__spMapSet][id].active)
+		return __spMapError;
+	return __spMapButton[__spMapSet][id].name;
+}
+
+PREFIX int spMapIDByName(char* name)
+{
+	int i;
+	for (i = 0; i < SP_MAPPING_MAX; i++)
+		if (__spMapButton[__spMapSet][i].active && strcmp(__spMapButton[__spMapSet][i].name,name) == 0)
+			return i;
+	return -1;
+}
+
 int __spMapChangingID = -1;
 
 PREFIX void spMapStartChangeByID(int id)
