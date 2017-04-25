@@ -44,6 +44,10 @@
 	#endif
 #endif
 
+#ifndef SP_SURFACE_FLAGS
+	#define SP_SURFACE_FLAGS SDL_HWSURFACE
+#endif
+
 /* Defines: Fixed Point Arithmetic Constants
  * 
  * The following #defines are for the fixed point arithmetic in

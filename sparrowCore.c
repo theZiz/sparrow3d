@@ -259,16 +259,16 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 		recallSelectRenderTarget = 1;
 	}
 #if defined DOUBLEBUFFERING_BLIT || defined DOUBLEBUFFERING_BLIT_AND_FLIP
-	spScreen = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_FULLSCREEN );
-	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
+	spScreen = SDL_SetVideoMode( x, y, 16, SP_SURFACE_FLAGS | SDL_FULLSCREEN );
+	SDL_Surface* surface = SDL_CreateRGBSurface( SP_SURFACE_FLAGS, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
 	spWindow = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
 #else
 	spScreen = NULL;
 	#ifdef DESKTOP
-		spWindow = SDL_SetVideoMode( x, y, 16, SDL_DOUBLEBUF | SDL_HWSURFACE | ( allowresize ? SDL_RESIZABLE : 0 ) | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
+		spWindow = SDL_SetVideoMode( x, y, 16, SDL_DOUBLEBUF | SP_SURFACE_FLAGS | ( allowresize ? SDL_RESIZABLE : 0 ) | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
 	#else
-		spWindow = SDL_SetVideoMode( x, y, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
+		spWindow = SDL_SetVideoMode( x, y, 16, SP_SURFACE_FLAGS | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
 	#endif
 #endif
 	if ( x % 2 != 0 )
@@ -1374,7 +1374,7 @@ SDL_Surface* spLoadUncachedSurfaceZoom( const char* name, Sint32 zoom)
 		return NULL;
 	int w = spFixedToInt(zoom*surface->w);
 	int h = spFixedToInt(zoom*surface->h);
-	SDL_Surface* temp = SDL_CreateRGBSurface( SDL_HWSURFACE, w, h, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
+	SDL_Surface* temp = SDL_CreateRGBSurface( SP_SURFACE_FLAGS, w, h, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
 	SDL_Surface* result = SDL_DisplayFormat( temp );
 	spInternalZoomBlit(surface,0,0,surface->w,surface->h,result,0,0,result->w,result->h);
 	SDL_FreeSurface( surface );
@@ -1556,7 +1556,7 @@ PREFIX void spClearCache( void )
 
 PREFIX SDL_Surface* spCreateSurface(int width,int height)
 {
-	SDL_Surface* surface = SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
+	SDL_Surface* surface = SDL_CreateRGBSurface( SP_SURFACE_FLAGS, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
 	SDL_Surface* result = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
 	if (sp_caching)
