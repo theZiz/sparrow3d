@@ -3,15 +3,15 @@
   * it under the terms of the GNU General Public License as published by
   * the Free Software Foundation, either version 2 of the License, or
   * (at your option) any later version.
-  * 
+  *
   * Sparrow3d is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU General Public License for more details.
-  * 
+  *
   * You should have received a copy of the GNU General Public License
   * along with Foobar.  If not, see <http://www.gnu.org/licenses/>
-  * 
+  *
   * For feedback and questions about my Files and Projects please mail me,
   * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
 #include "sparrowMath.h"
@@ -80,7 +80,7 @@ PREFIX Sint32 spAsin(Sint32 value)
 
 PREFIX Sint32 spUnsave_Small_Sqrt(Sint32 n)
 {
-	return spSqrtvalue[n];	
+	return spSqrtvalue[n];
 }
 
 PREFIX Sint32 spSqrt (Sint32 n)
@@ -203,6 +203,12 @@ PREFIX double spAtoFloat( char* buffer )
 	if (buffer[i] == 'e' || buffer[i] == 'E')
 	{
 		i++;
+		double right_sign = 1.0f;
+		if (buffer[i] == '-')
+		{
+			right_sign = -1.0f;
+			i++;
+		}
 		while ( DIGIT_CHECK(buffer[i]) )
 		{
 			right *= 10;
@@ -210,6 +216,7 @@ PREFIX double spAtoFloat( char* buffer )
 			right += digit;
 			i++;
 		}
+		right *= right_sign;
 	}
 	if (right)
 		return sign*((double)left + (double)middle/(double)divisor)*pow(10.0f,(double)right);
