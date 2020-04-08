@@ -3,23 +3,23 @@
   * it under the terms of the GNU General Public License as published by
   * the Free Software Foundation, either version 2 of the License, or
   * (at your option) any later version.
-  * 
+  *
   * Sparrow3d is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU General Public License for more details.
-  * 
+  *
   * You should have received a copy of the GNU General Public License
   * along with Foobar.  If not, see <http://www.gnu.org/licenses/>
-  * 
+  *
   * For feedback and questions about my Files and Projects please mail me,
   * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
 
 /* Title: sparrowDefines
- * 
+ *
  * SparrowDefines contains many #defines used by the library or which
  * may be usefull for your application */
- 
+
 #ifndef _SPARROW_DEFINES_H
 #define _SPARROW_DEFINES_H
 
@@ -49,11 +49,11 @@
 #endif
 
 /* Defines: Fixed Point Arithmetic Constants
- * 
+ *
  * The following #defines are for the fixed point arithmetic in
  * sparrow3d. Change the values only, if you know, what you are doing.
  * There should be optimal already.
- * 
+ *
  * SP_ACCURACY - Defines how many bits are used for the decimal place
  * SP_HALF_ACCURACY - The half of <SP_ACCURACY>
  * SP_ACCURACY_FACTOR - 2 ^ <SP_ACCURACY>. Needed for float conversation
@@ -73,13 +73,13 @@
 #define SP_ONE 65536
 
 /* Defines: Fixed Point Arithmetics
- * 
+ *
  * These are some #defines for fast multiplication and division of
  * fixed point numbers. Use them like normal functions, e.g.
  * Sint32 a = spMul(b,c); instead of a = b * c (which will not work).
  * However multiplying a fixed point number with a "normal" integer just works
  * with the normal multiplication. For addition you have to convert!
- * 
+ *
  * spMul(a,b) - Multiplies fixed point number a with the fixed point number b
  * spMulHigh(a,b) - Does the same as <spMul(a,b)>, but with guaranteed high precision
  * spMulLow(a,b) - Does the same as <spMul(a,b)>, but maybe with lower precision
@@ -114,7 +114,7 @@
 #endif
 
 /* Defines: Fixed Point Conversion
- * 
+ *
  * These conversions are no function calls, but defines. That means *before* the
  * compiler compiles the code, it is replaced by the defined rule. E.g., you
  * want to convert the float a to a fixed point number using spFloatToFixed. You
@@ -132,7 +132,7 @@
  * just be:
  * > Sint32 foo = 98304;
  * which is obviouly *incredible* fast.
- * 
+ *
  * spFixedToFloat(x) - converts the fixed point number a to a float
  * spFloatToFixed(x) - converts the float a to a fixed point number
  * spIntToFixed(x) - converts the int x to a fixed point number
@@ -148,7 +148,7 @@
 #define spFixedRoundInt(x) ((int)(((Sint32)(x)+(1 << SP_ACCURACY-1))>>SP_ACCURACY))
 
 /* Defines: Generic Buttons
- * 
+ *
  * The following (long) list of #defines gives you the numbers and names
  * of the generic device buttons or of the buttons on the explicit
  * device. The Dingoo e.g. has the A button on the right, but GP2X and
@@ -158,7 +158,7 @@
  * SP_BUTTON_Y on the Dingoo. The same for the names. Buttons like
  * SP_BUTTON_L or similar are defined just one time - because they are
  * the same on every device.
- * 
+ *
  * SP_BUTTON_START - number of the "Start" or "Menu" button
  * SP_BUTTON_SELECT - number of the "Select", "||" or similar button
  * SP_BUTTON_L - number of the left shoulder button
@@ -178,9 +178,9 @@
  * neither ok nor cancel.
  * SP_PRACTICE_4 - number of the other button, which is on the specific device
  * neither ok nor cancel. */
- 
+
 /* Defines: Generic Buttons Names
- * 
+ *
  * SP_BUTTON_START_NAME - name of the "Start" or "Menu" button
  * SP_BUTTON_SELECT_NAME - name of the "Select", "||" or similar button
  * SP_BUTTON_L_NAME - name of the left shoulder button
@@ -274,16 +274,23 @@
 	#define SP_BUTTON_R 11
 	#define SP_BUTTON_A 12
 	#define SP_BUTTON_B 13
-	#define SP_BUTTON_X 14
-	#define SP_BUTTON_Y 15
-	#define SP_BUTTON_LEFT SP_BUTTON_X
-	#define SP_BUTTON_UP SP_BUTTON_Y
+	#ifdef RG350
+		#define SP_BUTTON_Y 14
+		#define SP_BUTTON_X 15
+		#define SP_BUTTON_LEFT SP_BUTTON_Y
+		#define SP_BUTTON_UP SP_BUTTON_X
+	#else
+		#define SP_BUTTON_X 14
+		#define SP_BUTTON_Y 15
+		#define SP_BUTTON_LEFT SP_BUTTON_X
+		#define SP_BUTTON_UP SP_BUTTON_Y
+	#endif
 	#define SP_BUTTON_RIGHT SP_BUTTON_A
 	#define SP_BUTTON_DOWN SP_BUTTON_B
 	#define SP_PRACTICE_OK SP_BUTTON_A
 	#define SP_PRACTICE_CANCEL SP_BUTTON_B
-	#define SP_PRACTICE_3 SP_BUTTON_X
-	#define SP_PRACTICE_4 SP_BUTTON_Y
+	#define SP_PRACTICE_3 SP_BUTTON_LEFT
+	#define SP_PRACTICE_4 SP_BUTTON_UP
 #elif defined PANDORA
 	#define SP_AXIS_LEFTRIGHT 0
 	#define SP_AXIS_UPDOWN 1
@@ -481,7 +488,7 @@
 	#define SP_BUTTON_B_NOWASD_NAME "Alt"
 	#define SP_BUTTON_X_NAME "s"
 	#define SP_BUTTON_X_NOWASD_NAME "Menu"
-	#define SP_BUTTON_Y_NAME "w"	
+	#define SP_BUTTON_Y_NAME "w"
 	#define SP_BUTTON_Y_NOWASD_NAME "Shift"
 	#define SP_BUTTON_LEFT_NAME         SP_BUTTON_A_NAME
 	#define SP_BUTTON_LEFT_NOWASD_NAME  SP_BUTTON_A_NOWASD_NAME
@@ -522,9 +529,9 @@
 #endif
 
 /* Defines: Generic Buttons Masks
- * 
+ *
  * Mask of the buttons, Useful for <spPollKeyboardInput>s last parameter.
- * 
+ *
  * SP_BUTTON_START_MASK - mask of the "Start" or "Menu" button
  * SP_BUTTON_SELECT_MASK - mask of the "Select", "||" or similar button
  * SP_BUTTON_L_MASK - mask of the left shoulder button
@@ -586,10 +593,10 @@
 #endif
 
 /* Defines: Directions
- * 
+ *
  * These are some #defines e.g. for sparrowPrimitives to determine,
  * where the base of the drawn primitive is.
- * 
+ *
  * SP_CENTER - center
  * SP_LEFT - left
  * SP_TOP - top
@@ -621,6 +628,8 @@
 	#define SP_DEVICE_STRING "GP2X Caanoo"
 #elif defined DINGUX
 	#define SP_DEVICE_STRING "Dingoo"
+#elif defined RG350
+	#define SP_DEVICE_STRING "RG-350"
 #elif defined GCW
 	#define SP_DEVICE_STRING "GCW Zero"
 #elif defined PANDORA

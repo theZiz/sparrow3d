@@ -1466,6 +1466,8 @@ int already_in_highscore(spNetC4AScorePointer scoreList,spNetC4AProfilePointer p
 	#define SET_SYSTEM(system) sprintf(system,"wiz");
 #elif defined(DINGUX)
 	#define SET_SYSTEM(system) sprintf(system,"dingux");
+#elif defined(RG350)
+	#define SET_SYSTEM(system) sprintf(system,"rg350");
 #elif defined(GCW)
 	#define SET_SYSTEM(system) sprintf(system,"gcw");
 #elif defined(PANDORA)
@@ -2784,4 +2786,3 @@ PREFIX void spNetIRCSendMessage(spNetIRCServerPointer server,spNetIRCChannelPoin
 		spNetIRCSend(server,buffer);
 	}
 }
-

@@ -3,15 +3,15 @@
   * it under the terms of the GNU General Public License as published by
   * the Free Software Foundation, either version 2 of the License, or
   * (at your option) any later version.
-  * 
+  *
   * Sparrow3d is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   * GNU General Public License for more details.
-  * 
+  *
   * You should have received a copy of the GNU General Public License
   * along with Foobar.  If not, see <http://www.gnu.org/licenses/>
-  * 
+  *
   * For feedback and questions about my Files and Projects please mail me,
   * Alexander Matthes (Ziz) , zizsdl_at_googlemail.com */
 
@@ -258,7 +258,7 @@ static void meshCalcNormal(Sint32 *normal, Sint32 x1,Sint32 y1,Sint32 z1,
 	normal[1] = spMulHigh( z1 - z2, x2 - x3 )
 	          - spMulHigh( x1 - x2, z2 - z3 );
 	normal[2] = spMulHigh( x1 - x2, y2 - y3 )
-	          - spMulHigh( y1 - y2, x2 - x3 );	
+	          - spMulHigh( y1 - y2, x2 - x3 );
 	Sint32 l = spSqrt( spMulHigh( normal[0], normal[0] ) +
 	                   spMulHigh( normal[1], normal[1] ) +
 	                   spMulHigh( normal[2], normal[2] ) );
@@ -437,7 +437,7 @@ PREFIX spModelPointer spMeshLoadObj( char* name, SDL_Surface* texture, Uint16 co
 		uvCount = texTempPointer->nr + 1;
 		texPoints = ( spTexPointPointer )malloc( sizeof( spTexPoint ) * uvCount );
 	}
-	
+
 	while ( tempPointer )
 	{
 		points[tempPointer->nr].x = rawPoints[tempPointer->point].x;
