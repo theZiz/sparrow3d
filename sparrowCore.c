@@ -34,6 +34,17 @@
 	#define DOUBLEBUFFERING_BLIT_AND_FLIP
 #endif
 
+#if defined SCALE2X
+	#define SCALE_X * 2
+	#define SCALE_Y * 2
+	#if !defined DOUBLEBUFFERING_BLIT_AND_FLIP && !defined DOUBLEBUFFERING_BLIT
+		#define DOUBLEBUFFERING_BLIT_AND_FLIP
+	#endif
+#else
+	#define SCALE_X
+	#define SCALE_Y
+#endif
+
 int spWindowX = 0;
 int spWindowY = 0;
 int spZoom;
@@ -259,18 +270,30 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 		recallSelectRenderTarget = 1;
 	}
 #if defined DOUBLEBUFFERING_BLIT || defined DOUBLEBUFFERING_BLIT_AND_FLIP
-	spScreen = SDL_SetVideoMode( x, y, 16, SP_SURFACE_FLAGS | SDL_FULLSCREEN );
+	spScreen =
+#else
+	spWindow =
+#endif
+		SDL_SetVideoMode( x SCALE_X, y SCALE_Y, 16, SP_SURFACE_FLAGS
+#if defined DESKTOP
+			| ( allowresize ? SDL_RESIZABLE : 0 )
+#endif
+#if defined MOBILE_DEVICE
+			| SDL_FULLSCREEN
+#else
+			| SDL_DOUBLEBUF
+			| ( fullscreen ? SDL_FULLSCREEN : 0 )
+#endif
+		);
+
+#if defined DOUBLEBUFFERING_BLIT || defined DOUBLEBUFFERING_BLIT_AND_FLIP
 	SDL_Surface* surface = SDL_CreateRGBSurface( SP_SURFACE_FLAGS, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
 	spWindow = SDL_DisplayFormat( surface );
 	SDL_FreeSurface( surface );
 #else
 	spScreen = NULL;
-	#ifdef DESKTOP
-		spWindow = SDL_SetVideoMode( x, y, 16, SDL_DOUBLEBUF | SP_SURFACE_FLAGS | ( allowresize ? SDL_RESIZABLE : 0 ) | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
-	#else
-		spWindow = SDL_SetVideoMode( x, y, 16, SP_SURFACE_FLAGS | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
-	#endif
 #endif
+
 	if ( x % 2 != 0 )
 		spWindowX = x + 1;
 	else
@@ -1252,12 +1275,16 @@ PREFIX void spFlip( void )
 	spPrintDebug( "    Flip in" );
 #endif
 	//The Flip
-#ifdef DOUBLEBUFFERING_BLIT
-	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
-#elif defined DOUBLEBUFFERING_BLIT_AND_FLIP
-	SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
-	SDL_Flip(spScreen);
-#else
+#if defined DOUBLEBUFFERING_BLIT || defined DOUBLEBUFFERING_BLIT_AND_FLIP
+	#if defined SCALE2X
+		spScale2XSmooth( spWindow, spScreen );
+	#else
+		SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
+	#endif
+#endif
+#if defined DOUBLEBUFFERING_BLIT_AND_FLIP
+	SDL_Flip( spScreen );
+#elif !defined DOUBLEBUFFERING_BLIT
 	SDL_Flip( spWindow );
 #endif
 #ifdef CORE_DEBUG
@@ -2106,4 +2133,3 @@ PREFIX void spSetVirtualKeyboardBackspaceButton(int button)
 {
 	spVirtualKeyboardBackspaceButton = button;
 }
-
