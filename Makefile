@@ -50,7 +50,7 @@ SMALL_RESOLUTION_DEVICES = -DFAST_MULTIPLICATION -DFAST_DIVISION
 
 # The default Compiler is CC (gcc) with debug symbols
 
-FLAGS = -g $(GENERAL_TWEAKS) -DDESKTOP
+FLAGS = -g $(GENERAL_TWEAKS) -DDESKTOP -mtune=native -march=native
 
 # SDL sets some SDL options with the program "sdl-config".
 SDL = `sdl-config --cflags`
@@ -205,4 +205,4 @@ documentation: *.h
 	mkdir -p /tmp/sparrowDocumentationTemp
 	naturaldocs -i . -xi ./documentation -o HTML documentation -p /tmp/sparrowDocumentationTemp
 
-# This Makefile is AWESOME! /)^ɛ^(\ 
+# This Makefile is AWESOME! /)^ɛ^(\

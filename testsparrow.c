@@ -315,7 +315,7 @@ int main( int argc, char **argv )
 	if (argc > 1)
 		test = atoi(argv[1]);
 	//sparrow3D Init
-	spSetDefaultWindowSize( 1024, 768 ); //Creates a 800x480 window at PC instead of 320x240
+	spSetDefaultWindowSize( 800, 480 ); //Creates a 800x480 window at PC instead of 320x240
 	spInitCore();
 
 	//Setup
@@ -352,7 +352,7 @@ int main( int argc, char **argv )
 	//All glory the main loop
 	spLoop( draw_test, calc_test, 10, resize, eventHandling );
 
-	//Winter Wrap up, Winter Wrap up z
+	//Winter Wrap up, Winter Wrap up
 	spFontDelete( font );
 	quit_cube();
 	quit_tube();

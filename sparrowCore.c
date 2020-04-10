@@ -45,6 +45,12 @@
 	#define SCALE_Y
 #endif
 
+#if defined BPP24 || defined BPP32
+	#if !defined DOUBLEBUFFERING_BLIT_AND_FLIP && !defined DOUBLEBUFFERING_BLIT
+		#define DOUBLEBUFFERING_BLIT_AND_FLIP
+	#endif
+#endif
+
 int spWindowX = 0;
 int spWindowY = 0;
 int spZoom;
@@ -274,22 +280,36 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 #else
 	spWindow =
 #endif
-		SDL_SetVideoMode( x SCALE_X, y SCALE_Y, 16, SP_SURFACE_FLAGS
+		SDL_SetVideoMode(
+			x SCALE_X,
+			y SCALE_Y,
+#if defined BPP32
+			32,
+#elif defined BPP24
+			24,
+#else
+			16,
+#endif
+			SP_SURFACE_FLAGS
 #if defined DESKTOP
-			| ( allowresize ? SDL_RESIZABLE : 0 )
+				| ( allowresize ? SDL_RESIZABLE : 0 )
 #endif
 #if defined MOBILE_DEVICE
-			| SDL_FULLSCREEN
+				| SDL_FULLSCREEN
 #else
-			| SDL_DOUBLEBUF
-			| ( fullscreen ? SDL_FULLSCREEN : 0 )
+				| SDL_DOUBLEBUF
+				| ( fullscreen ? SDL_FULLSCREEN : 0 )
 #endif
 		);
 
 #if defined DOUBLEBUFFERING_BLIT || defined DOUBLEBUFFERING_BLIT_AND_FLIP
-	SDL_Surface* surface = SDL_CreateRGBSurface( SP_SURFACE_FLAGS, x, y, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
-	spWindow = SDL_DisplayFormat( surface );
-	SDL_FreeSurface( surface );
+	SDL_Surface* surface = SDL_CreateRGBSurface( SP_SURFACE_FLAGS, x, y, 16, 0xF800, 0x07E0, 0x001F, 0 );
+	#if defined BPP24 || defined BPP32
+		spWindow = surface;
+	#else
+		spWindow = SDL_DisplayFormat( surface );
+		SDL_FreeSurface( surface );
+	#endif
 #else
 	spScreen = NULL;
 #endif
@@ -1266,6 +1286,76 @@ PREFIX int spLoop( void ( *spDraw )( void ), int ( *spCalc )( Uint32 steps ), Ui
 	}
 	return back;
 }
+inline void spInternalSet32From16(
+	Uint16 p,
+	Uint32* dstP,
+	int dstPitch,
+	int x,
+	int y
+) __attribute__((always_inline));
+
+inline void spInternalSet32From16(
+	Uint16 p,
+	Uint32* dstP,
+	int dstPitch,
+	int x,
+	int y
+)
+{
+	dstP[x+y*dstPitch] =
+		(spGetRFromColor(p) << 16) +
+		(spGetGFromColor(p) << 8) +
+		(spGetBFromColor(p) << 0);
+}
+
+void spInternalBlit32( SDL_Surface* src16, SDL_Surface* dst32 )
+{
+	Uint16* srcP = src16->pixels;
+	Uint32* dstP = dst32->pixels;
+	int srcPitch = src16->pitch/2;
+	int dstPitch = dst32->pitch/4;
+	#pragma GCC ivdep
+	for (int y = 0; y < src16->h; ++y)
+		for (int x = 0; x < src16->w; ++x)
+			spInternalSet32From16( srcP[x+y*srcPitch], dstP, dstPitch, x, y);
+}
+
+inline void spInternalSet24From16(
+	Uint16 p,
+	Uint8* dstP,
+	int dstPitch,
+	int x,
+	int y
+)  __attribute__((always_inline));
+
+inline void spInternalSet24From16(
+	Uint16 p,
+	Uint8* dstP,
+	int dstPitch,
+	int x,
+	int y
+)
+{
+	int dstBase = x*3+y*dstPitch;
+	dstP[dstBase+2] = spGetRFromColor(p);
+	dstP[dstBase+1] = spGetGFromColor(p);
+	dstP[dstBase+0] = spGetBFromColor(p);
+}
+
+void spInternalBlit24( SDL_Surface* src16, SDL_Surface* dst24 )
+{
+	Uint16* srcP = src16->pixels;
+	Uint8*  dstP = dst24->pixels;
+	int srcPitch = src16->pitch/2;
+	int dstPitch = dst24->pitch;
+	#pragma GCC ivdep
+	for (int y = 0; y < src16->h; ++y)
+		for (int x = 0; x < src16->w; ++x)
+			spInternalSet24From16( srcP[x+y*srcPitch], dstP, dstPitch, x, y);
+}
+
+void spInternalScale2XSmooth24(SDL_Surface* source,SDL_Surface* destination);
+void spInternalScale2XSmooth32(SDL_Surface* source,SDL_Surface* destination);
 
 PREFIX void spFlip( void )
 {
@@ -1277,9 +1367,21 @@ PREFIX void spFlip( void )
 	//The Flip
 #if defined DOUBLEBUFFERING_BLIT || defined DOUBLEBUFFERING_BLIT_AND_FLIP
 	#if defined SCALE2X
-		spScale2XSmooth( spWindow, spScreen );
+		#if defined BPP32
+			spInternalScale2XSmooth32( spWindow, spScreen );
+		#elif defined BPP24
+			spInternalScale2XSmooth24( spWindow, spScreen );
+		#else
+			spScale2XSmooth( spWindow, spScreen );
+		#endif
 	#else
-		SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
+		#if defined BPP32
+			spInternalBlit32( spWindow, spScreen );
+		#elif defined BPP24
+			spInternalBlit24( spWindow, spScreen );
+		#else
+			SDL_BlitSurface( spWindow, NULL, spScreen, NULL );
+		#endif
 	#endif
 #endif
 #if defined DOUBLEBUFFERING_BLIT_AND_FLIP
@@ -1401,11 +1503,15 @@ SDL_Surface* spLoadUncachedSurfaceZoom( const char* name, Sint32 zoom)
 		return NULL;
 	int w = spFixedToInt(zoom*surface->w);
 	int h = spFixedToInt(zoom*surface->h);
-	SDL_Surface* temp = SDL_CreateRGBSurface( SP_SURFACE_FLAGS, w, h, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
-	SDL_Surface* result = SDL_DisplayFormat( temp );
+	SDL_Surface* temp = SDL_CreateRGBSurface( SP_SURFACE_FLAGS, w, h, 16, 0xF800, 0x07E0, 0x001F, 0 );
+	#if defined BPP24 || defined BPP32
+		SDL_Surface* result = temp;
+	#else
+		SDL_Surface* result = SDL_DisplayFormat( temp );
+		SDL_FreeSurface( temp );
+	#endif
 	spInternalZoomBlit(surface,0,0,surface->w,surface->h,result,0,0,result->w,result->h);
 	SDL_FreeSurface( surface );
-	SDL_FreeSurface( temp );
 	return result;
 }
 
@@ -1583,9 +1689,13 @@ PREFIX void spClearCache( void )
 
 PREFIX SDL_Surface* spCreateSurface(int width,int height)
 {
-	SDL_Surface* surface = SDL_CreateRGBSurface( SP_SURFACE_FLAGS, width, height, 16, 0xFFFF, 0xFFFF, 0xFFFF, 0 );
-	SDL_Surface* result = SDL_DisplayFormat( surface );
-	SDL_FreeSurface( surface );
+	SDL_Surface* surface = SDL_CreateRGBSurface( SP_SURFACE_FLAGS, width, height, 16, 0xF800, 0x07E0, 0x001F, 0 );
+	#if defined BPP24 || defined BPP32
+		SDL_Surface* result = surface;
+	#else
+		SDL_Surface* result = SDL_DisplayFormat( surface );
+		SDL_FreeSurface( surface );
+	#endif
 	if (sp_caching)
 	{
 		sp_cache_pointer c = (sp_cache_pointer)malloc(sizeof(sp_cache));
@@ -1840,6 +1950,178 @@ PREFIX void spScale2XSmooth(SDL_Surface* source,SDL_Surface* destination)
 	P = spScaleP((src_w-1),(source->h-1));
 	A = spScaleA((src_w-1),(source->h-1)); B = P; C = spScaleC((src_w-1),(source->h-1)); D = P;
 	spScalePixel((src_w-1)*2,(source->h-1)*2);
+
+	if (spGetRenderTarget() != source)
+		SDL_UnlockSurface( source );
+	if (spGetRenderTarget() != destination)
+		SDL_UnlockSurface( destination );
+}
+
+#define spScalePixel24(X,Y) \
+	if (C == A && C!=D && A!=B) \
+		spInternalSet24From16( A, dst, dst_w, X, Y ); \
+	else \
+		spInternalSet24From16( P, dst, dst_w, X, Y ); \
+	\
+	if (A == B && A!=C && B!=D) \
+		spInternalSet24From16( B, dst, dst_w, X+1, Y ); \
+	else \
+		spInternalSet24From16( P, dst, dst_w, X+1, Y ); \
+	\
+	if (B == D && B!=A && D!=C) \
+		spInternalSet24From16( D, dst, dst_w, X+1, Y+1 ); \
+	else \
+		spInternalSet24From16( P, dst, dst_w, X+1, Y+1 ); \
+	\
+	if (D == C && D!=B && C!=A) \
+		spInternalSet24From16( C, dst, dst_w, X, Y+1 ); \
+	else \
+		spInternalSet24From16( P, dst, dst_w, X, Y+1 );
+
+void spInternalScale2XSmooth24(SDL_Surface* source,SDL_Surface* destination)
+{
+	if (spGetRenderTarget() != source)
+		SDL_LockSurface( source );
+	if (spGetRenderTarget() != destination)
+		SDL_LockSurface( destination );
+	Uint16* src = (Uint16*)(source->pixels);
+	Uint8* dst = (Uint8*)(destination->pixels);
+	int src_w = source->pitch >> 1;
+	int dst_w = destination->pitch;
+	int x,y,A,B,C,D,P;
+	//Y=0
+	P = spScaleP(0,0);
+	A = P; B = spScaleB(0,0); C = P; D = spScaleD(0,0);
+	spScalePixel24(0,0);
+	for (x = 1; x < src_w-1; x++)
+	{
+		int X = x*2;
+		P = spScaleP(x,0);
+		A = P; B = spScaleB(x,0); C = spScaleC(x,0); D = spScaleD(x,0);
+		spScalePixel24(X,0);
+	}
+	P = spScaleP((src_w-1),0);
+	A = P; B = P; C = spScaleC((src_w-1),0); D = spScaleD((src_w-1),0);
+	spScalePixel24((src_w-1)*2,0);
+
+	//Y=1..n-1
+	for (y = 1; y < source->h-1; y++)
+	{
+		int Y = y*2;
+		P = spScaleP(0,y);
+		A = spScaleA(0,y); B = spScaleB(0,y); C = P; D = spScaleD(0,y);
+		spScalePixel24(0,Y);
+		for (x = 1; x < src_w-1; x++)
+		{
+			int X = x*2;
+			P = spScaleP(x,y);
+			A = spScaleA(x,y); B = spScaleB(x,y); C = spScaleC(x,y); D = spScaleD(x,y);
+			spScalePixel24(X,Y);
+		}
+		P = spScaleP((src_w-1),y);
+		A = spScaleA((src_w-1),y); B = P; C = spScaleC((src_w-1),y); D = spScaleD((src_w-1),y);
+		spScalePixel24((src_w-1)*2,Y);
+	}
+	//Y = n
+	P = spScaleP(0,(source->h-1));
+	A = spScaleA(0,(source->h-1)); B = spScaleB(0,(source->h-1)); C = P; D = P;
+	spScalePixel24(0,(source->h-1)*2);
+	for (x = 1; x < src_w-1; x++)
+	{
+		int X = x*2;
+		P = spScaleP(x,(source->h-1));
+		A = spScaleA(x,(source->h-1)); B = spScaleB(x,(source->h-1)); C = spScaleC(x,(source->h-1)); D = P;
+		spScalePixel24(X,(source->h-1)*2);
+	}
+	P = spScaleP((src_w-1),(source->h-1));
+	A = spScaleA((src_w-1),(source->h-1)); B = P; C = spScaleC((src_w-1),(source->h-1)); D = P;
+	spScalePixel24((src_w-1)*2,(source->h-1)*2);
+
+	if (spGetRenderTarget() != source)
+		SDL_UnlockSurface( source );
+	if (spGetRenderTarget() != destination)
+		SDL_UnlockSurface( destination );
+}
+
+#define spScalePixel32(X,Y) \
+	if (C == A && C!=D && A!=B) \
+		spInternalSet32From16( A, dst, dst_w, X, Y ); \
+	else \
+		spInternalSet32From16( P, dst, dst_w, X, Y ); \
+	\
+	if (A == B && A!=C && B!=D) \
+		spInternalSet32From16( B, dst, dst_w, X+1, Y ); \
+	else \
+		spInternalSet32From16( P, dst, dst_w, X+1, Y ); \
+	\
+	if (B == D && B!=A && D!=C) \
+		spInternalSet32From16( D, dst, dst_w, X+1, Y+1 ); \
+	else \
+		spInternalSet32From16( P, dst, dst_w, X+1, Y+1 ); \
+	\
+	if (D == C && D!=B && C!=A) \
+		spInternalSet32From16( C, dst, dst_w, X, Y+1 ); \
+	else \
+		spInternalSet32From16( P, dst, dst_w, X, Y+1 );
+
+void spInternalScale2XSmooth32(SDL_Surface* source,SDL_Surface* destination)
+{
+	if (spGetRenderTarget() != source)
+		SDL_LockSurface( source );
+	if (spGetRenderTarget() != destination)
+		SDL_LockSurface( destination );
+	Uint16* src = (Uint16*)(source->pixels);
+	Uint32* dst = (Uint32*)(destination->pixels);
+	int src_w = source->pitch >> 1;
+	int dst_w = destination->pitch >> 2;
+	int x,y,A,B,C,D,P;
+	//Y=0
+	P = spScaleP(0,0);
+	A = P; B = spScaleB(0,0); C = P; D = spScaleD(0,0);
+	spScalePixel32(0,0);
+	for (x = 1; x < src_w-1; x++)
+	{
+		int X = x*2;
+		P = spScaleP(x,0);
+		A = P; B = spScaleB(x,0); C = spScaleC(x,0); D = spScaleD(x,0);
+		spScalePixel32(X,0);
+	}
+	P = spScaleP((src_w-1),0);
+	A = P; B = P; C = spScaleC((src_w-1),0); D = spScaleD((src_w-1),0);
+	spScalePixel32((src_w-1)*2,0);
+
+	//Y=1..n-1
+	for (y = 1; y < source->h-1; y++)
+	{
+		int Y = y*2;
+		P = spScaleP(0,y);
+		A = spScaleA(0,y); B = spScaleB(0,y); C = P; D = spScaleD(0,y);
+		spScalePixel32(0,Y);
+		for (x = 1; x < src_w-1; x++)
+		{
+			int X = x*2;
+			P = spScaleP(x,y);
+			A = spScaleA(x,y); B = spScaleB(x,y); C = spScaleC(x,y); D = spScaleD(x,y);
+			spScalePixel32(X,Y);
+		}
+		P = spScaleP((src_w-1),y);
+		A = spScaleA((src_w-1),y); B = P; C = spScaleC((src_w-1),y); D = spScaleD((src_w-1),y);
+		spScalePixel32((src_w-1)*2,Y);
+	}
+	//Y = n
+	P = spScaleP(0,(source->h-1));
+	A = spScaleA(0,(source->h-1)); B = spScaleB(0,(source->h-1)); C = P; D = P;
+	spScalePixel32(0,(source->h-1)*2);
+	for (x = 1; x < src_w-1; x++)
+	{
+		int X = x*2;
+		P = spScaleP(x,(source->h-1));
+		A = spScaleA(x,(source->h-1)); B = spScaleB(x,(source->h-1)); C = spScaleC(x,(source->h-1)); D = P;
+		spScalePixel32(X,(source->h-1)*2);
+	}
+	P = spScaleP((src_w-1),(source->h-1));
+	A = spScaleA((src_w-1),(source->h-1)); B = P; C = spScaleC((src_w-1),(source->h-1)); D = P;
+	spScalePixel32((src_w-1)*2,(source->h-1)*2);
 
 	if (spGetRenderTarget() != source)
 		SDL_UnlockSurface( source );
