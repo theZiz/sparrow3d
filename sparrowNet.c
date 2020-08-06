@@ -2062,6 +2062,8 @@ void __irc_add_nick(spNetIRCChannelPointer channel,char* name,char rights)
 
 spNetIRCChannelPointer __irc_add_channel(spNetIRCServerPointer server,char* name,int* already)
 {
+	if (name[0] == ':')
+		name++;
 	char namestring[512];
 	sprintf(namestring,"%s",name);
 	char *pos;
