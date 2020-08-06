@@ -2020,6 +2020,9 @@ PREFIX void spNetIRCSend(spNetIRCServerPointer server,char* message)
 {
 	char buffer[1024];
 	sprintf(buffer,"%s\n",message);
+	#ifdef DEBUG_MESSAGES
+		printf("\t--> %s",buffer);
+	#endif
 	spNetSendTCP(server->connection,buffer,strlen(buffer));
 }
 
@@ -2242,9 +2245,6 @@ void __irc_command_handling(spNetIRCServerPointer server,char* command,char* par
 	{
 		char buffer[256];
 		sprintf(buffer,"PONG %s",parameters);
-		#ifdef DEBUG_MESSAGES
-			printf("\t--> PONG %s\n",parameters);
-		#endif
 		spNetIRCSend(server,buffer);
 	}
 	if (strcmp(command,"JOIN") == 0)
