@@ -2174,7 +2174,7 @@ spNetIRCMessagePointer __irc_add_message(spNetIRCServerPointer server,spNetIRCMe
 		sprintf(msg->user,"%s",user);
 	else
 		sprintf(msg->user,"%s",server->name);
-	sprintf(msg->message,"%s",message);
+	snprintf(msg->message,sizeof(msg->message),"%s",message);
 	msg->next = NULL;
 	if (*last_message)
 		(*last_message)->next = msg;
