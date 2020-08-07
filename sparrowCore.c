@@ -616,12 +616,21 @@ inline static int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_RETURN:
 					spGenericInput.button[SP_BUTTON_START] = 1;
 					break;
+			#ifdef RG350
+				case SDLK_SPACE:
+					spGenericInput.button[SP_BUTTON_X] = 1;
+					break;
+				case SDLK_LSHIFT:
+					spGenericInput.button[SP_BUTTON_Y] = 1;
+					break;
+			#else
 				case SDLK_SPACE:
 					spGenericInput.button[SP_BUTTON_Y] = 1;
 					break;
 				case SDLK_LSHIFT:
 					spGenericInput.button[SP_BUTTON_X] = 1;
 					break;
+			#endif
 				case SDLK_LCTRL:
 					spGenericInput.button[SP_BUTTON_A] = 1;
 					break;
@@ -799,12 +808,21 @@ inline static int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				case SDLK_RETURN:
 					spGenericInput.button[SP_BUTTON_START] = 0;
 					break;
+			#ifdef RG350
+				case SDLK_SPACE:
+					spGenericInput.button[SP_BUTTON_X] = 0;
+					break;
+				case SDLK_LSHIFT:
+					spGenericInput.button[SP_BUTTON_Y] = 0;
+					break;
+			#else
 				case SDLK_SPACE:
 					spGenericInput.button[SP_BUTTON_Y] = 0;
 					break;
 				case SDLK_LSHIFT:
 					spGenericInput.button[SP_BUTTON_X] = 0;
 					break;
+			#endif
 				case SDLK_LCTRL:
 					spGenericInput.button[SP_BUTTON_A] = 0;
 					break;
@@ -2106,4 +2124,3 @@ PREFIX void spSetVirtualKeyboardBackspaceButton(int button)
 {
 	spVirtualKeyboardBackspaceButton = button;
 }
-
