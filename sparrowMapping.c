@@ -23,8 +23,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#define SP_MAPPING_POOL_MAX 323
-
 char __spMapError[] = "None";
 int __spMapDesktopHack = 0;
 int __spMapDesktopButton[SP_MAPPING_POOL_MAX];

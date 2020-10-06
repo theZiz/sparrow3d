@@ -86,9 +86,6 @@ char spWindowName[512] = "";
 int spVirtualKeyboardSpaceButton = -1;
 int spVirtualKeyboardBackspaceButton = -1;
 
-int __spMapDesktopHack;
-int __spMapDesktopButton[SP_MAPPING_MAX];
-
 typedef struct sp_cache_struct *sp_cache_pointer;
 typedef struct sp_cache_struct {
 	char* name;

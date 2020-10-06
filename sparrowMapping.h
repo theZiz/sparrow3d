@@ -58,6 +58,12 @@
 #define SP_MAPPING_OTHER_INVALID 2
 #define SP_MAPPING_CANCEL 3
 
+#define SP_MAPPING_POOL_MAX 323
+
+extern int __spMapDesktopHack;
+extern int __spMapDesktopButton[SP_MAPPING_POOL_MAX];
+
+
 /* Function: spInitMapping
  *
  * Inits sparrowMapping. This function should be called by <spInitCore>.*/
