@@ -129,6 +129,9 @@ PREFIX void spInitCore( void )
 #ifdef PANDORA
 	spWindowX = 800;
 	spWindowY = 480;
+#elif defined PYRA
+	spWindowX = 1000;
+	spWindowY = 700;
 #elif defined MAEMO5
 	spWindowX = 800;
 	spWindowY = 480;
@@ -262,7 +265,7 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	SDL_FreeSurface( surface );
 #else
 	spScreen = NULL;
-	#ifdef DESKTOP
+	#if defined DESKTOP || defined PYRA
 		spWindow = SDL_SetVideoMode( x, y, 16, SDL_DOUBLEBUF | SP_SURFACE_FLAGS | ( allowresize ? SDL_RESIZABLE : 0 ) | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
 	#else
 		spWindow = SDL_SetVideoMode( x, y, 16, SP_SURFACE_FLAGS | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
@@ -287,7 +290,8 @@ PREFIX SDL_Surface* spCreateWindow( int width, int height, int fullscreen, int a
 
 PREFIX SDL_Surface* spCreateDefaultWindow( void )
 {
-	#ifdef DESKTOP
+	// TODO: Remove PYRA here when fullscreen SDL1.2 works on pyra
+	#if defined DESKTOP || defined PYRA
 		return spCreateWindow( 0, 0, 0, 1 );
 	#else
 		return spCreateWindow( 0, 0, 1, 1 );
@@ -552,7 +556,7 @@ inline static int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				//GCW and DINGUX use the "keyboard" for buttons
 				#if (!(defined GCW)) && (!(defined DINGUX))
 					if ( spGenericInput.keyboard.buffer
-					#ifdef DESKTOP
+					#if defined DESKTOP || defined PYRA
 					&& spVirtualKeyboardState != SP_VIRTUAL_KEYBOARD_ALWAYS
 					#endif
 					)
@@ -670,6 +674,33 @@ inline static int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					break;
 				case SDLK_LALT:
 					spGenericInput.button[SP_BUTTON_START] = 1;
+					break;
+			#elif defined PYRA
+				case SDLK_LALT:
+				case SDLK_RETURN:
+					spGenericInput.button[SP_BUTTON_START] = 1;
+					break;
+				case SDLK_HOME:
+					spGenericInput.button[SP_BUTTON_A] = 1;
+					break;
+				case SDLK_END:
+					spGenericInput.button[SP_BUTTON_B] = 1;
+					break;
+				case SDLK_PAGEDOWN:
+					spGenericInput.button[SP_BUTTON_X] = 1;
+					break;
+				case SDLK_PAGEUP:
+					spGenericInput.button[SP_BUTTON_Y] = 1;
+					break;
+				case SDLK_LCTRL:
+				case SDLK_BACKSPACE:
+					spGenericInput.button[SP_BUTTON_SELECT] = 1;
+					break;
+				case SDLK_RSHIFT:
+					spGenericInput.button[SP_BUTTON_L] = 1;
+					break;
+				case SDLK_RCTRL:
+					spGenericInput.button[SP_BUTTON_R] = 1;
 					break;
 			#else //PC
 				case SDLK_KP_ENTER:
@@ -859,6 +890,33 @@ inline static int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 					break;
 				case SDLK_LALT:
 					spGenericInput.button[SP_BUTTON_START] = 0;
+					break;
+			#elif defined PYRA
+				case SDLK_LALT:
+				case SDLK_RETURN:
+					spGenericInput.button[SP_BUTTON_START] = 0;
+					break;
+				case SDLK_HOME:
+					spGenericInput.button[SP_BUTTON_A] = 0;
+					break;
+				case SDLK_END:
+					spGenericInput.button[SP_BUTTON_B] = 0;
+					break;
+				case SDLK_PAGEDOWN:
+					spGenericInput.button[SP_BUTTON_X] = 0;
+					break;
+				case SDLK_PAGEUP:
+					spGenericInput.button[SP_BUTTON_Y] = 0;
+					break;
+				case SDLK_LCTRL:
+				case SDLK_BACKSPACE:
+					spGenericInput.button[SP_BUTTON_SELECT] = 0;
+					break;
+				case SDLK_RSHIFT:
+					spGenericInput.button[SP_BUTTON_L] = 0;
+					break;
+				case SDLK_RCTRL:
+					spGenericInput.button[SP_BUTTON_R] = 0;
 					break;
 			#else //PC
 				case SDLK_KP_ENTER:
@@ -1961,7 +2019,7 @@ PREFIX void spSetVirtualKeyboard(int state,int x,int y,int width,int height,SDL_
 	switch (state)
 	{
 		case SP_VIRTUAL_KEYBOARD_NEVER: spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_NEVER; break;
-		#if defined PANDORA || defined DESKTOP
+		#if defined PANDORA || defined DESKTOP || defined PYRA
 			case SP_VIRTUAL_KEYBOARD_IF_NEEDED: spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_NEVER; break;
 		#else
 			case SP_VIRTUAL_KEYBOARD_IF_NEEDED: spVirtualKeyboardState = SP_VIRTUAL_KEYBOARD_ALWAYS; break;
