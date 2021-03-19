@@ -262,7 +262,7 @@ PREFIX void spResizeWindow( int x, int y, int fullscreen, int allowresize )
 	SDL_FreeSurface( surface );
 #else
 	spScreen = NULL;
-	#if defined DESKTOP || PYRA
+	#if defined DESKTOP || defined PYRA
 		spWindow = SDL_SetVideoMode( x, y, 16, SDL_DOUBLEBUF | SP_SURFACE_FLAGS | ( allowresize ? SDL_RESIZABLE : 0 ) | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
 	#else
 		spWindow = SDL_SetVideoMode( x, y, 16, SP_SURFACE_FLAGS | SDL_DOUBLEBUF | ( fullscreen ? SDL_FULLSCREEN : 0 ) );
@@ -288,7 +288,7 @@ PREFIX SDL_Surface* spCreateWindow( int width, int height, int fullscreen, int a
 PREFIX SDL_Surface* spCreateDefaultWindow( void )
 {
 	// TODO: Remove PYRA here when fullscreen SDL1.2 works on pyra
-	#ifdef DESKTOP || PYRA
+	#if defined DESKTOP || defined PYRA
 		return spCreateWindow( 0, 0, 0, 1 );
 	#else
 		return spCreateWindow( 0, 0, 1, 1 );
@@ -553,7 +553,7 @@ inline static int spHandleEvent( void ( *spEvent )( SDL_Event *e ) )
 				//GCW and DINGUX use the "keyboard" for buttons
 				#if (!(defined GCW)) && (!(defined DINGUX))
 					if ( spGenericInput.keyboard.buffer
-					#if defined DESKTOP || PYRA
+					#if defined DESKTOP || defined PYRA
 					&& spVirtualKeyboardState != SP_VIRTUAL_KEYBOARD_ALWAYS
 					#endif
 					)
