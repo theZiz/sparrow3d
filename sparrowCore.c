@@ -287,8 +287,8 @@ PREFIX SDL_Surface* spCreateWindow( int width, int height, int fullscreen, int a
 
 PREFIX SDL_Surface* spCreateDefaultWindow( void )
 {
-	// TODO: Maybe PYRA here too:
-	#ifdef DESKTOP
+	// TODO: Remove PYRA here when fullscreen SDL1.2 works on pyra
+	#ifdef DESKTOP || PYRA
 		return spCreateWindow( 0, 0, 0, 1 );
 	#else
 		return spCreateWindow( 0, 0, 1, 1 );
