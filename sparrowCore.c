@@ -129,6 +129,9 @@ PREFIX void spInitCore( void )
 #ifdef PANDORA
 	spWindowX = 800;
 	spWindowY = 480;
+#elif defined PYRA
+	spWindowX = 1000;
+	spWindowY = 700;
 #elif defined MAEMO5
 	spWindowX = 800;
 	spWindowY = 480;
